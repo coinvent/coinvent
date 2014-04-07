@@ -30,7 +30,19 @@ import winterwell.web.app.WebRequest;
 public class DynamicHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * e.g. "robots.txt" -> your robots.txt file
+	 */
 	private final Map<String,File> specialStaticFiles = new HashMap<String, File>();
+	
+	/**
+	 * Over-ride normal servlet routing for a specific file, e.g. robots.txt
+	 * @param path 
+	 * @param file
+	 */
+	public void putSpecialStaticFile(String path, File file) {
+		specialStaticFiles.put(path, file);
+	}
 	
 	/**
 	 * Forward to doPost(), so we handle get and post the same way.

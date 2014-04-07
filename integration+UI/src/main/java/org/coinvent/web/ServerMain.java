@@ -47,15 +47,20 @@ public class ServerMain {
 	}
 
 	public void run() {
-		// Spin up a Jetty server
-		Log.report("web", "Setting up web server...", Level.FINE);
+		// Spin up a Jetty server with reflection-based routing to servlets
+		Log.d("web", "Setting up web server...");
 		jl = new JettyLauncher(config.webAppDir, config.port);
 		jl.setWebXmlFile(null);
+		jl.setCanShutdown(false);
 		jl.setup();
-		jl.addServlet("/*", new DynamicHttpServlet());
+		DynamicHttpServlet dynamicRouter = new DynamicHttpServlet();
+		jl.addServlet("/*", dynamicRouter);
 		jl.addServlet("/static/*", new FileServlet());
 		Log.report("web", "...Launching Jetty web server on port "+config.port, Level.INFO);
 		jl.run();
+		
+		// Put in an index file
+		dynamicRouter.putSpecialStaticFile("/", new File("web/index.html"));
 	}
 
 	public void stop() {
