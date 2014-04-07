@@ -1,0 +1,74 @@
+
+<template id='VanillaWorkspace'>
+
+	<div class='theories'>
+		<h3>Theory Files</h3>
+		<ul id='TheoryList'>
+			<li><form id='AddTheoryForm'><input type='text' name='theoryurl' /> <button>add</button></form></li>			
+		</ul>
+	</div>
+	
+</template>
+
+
+<template id='VanillaEditor'>
+	<%= templates.VanillaActionBar() %>		
+
+	<%= templates.VanillaTheoryEditor({posn:'Blend'}) %>		
+	
+	<%= templates.VanillaMappingEditor({sourceposn:'Theory A', targetposn:'Blend'}) %>
+	<%= templates.VanillaMappingEditor({sourceposn:'Theory B', targetposn:'Blend'}) %>
+	
+	<%= templates.VanillaTheoryEditor({posn:'Theory A'}) %>
+	
+	<%= templates.VanillaTheoryEditor({posn:'Theory B'}) %>
+
+	<%= templates.VanillaMappingEditor({sourceposn:'Base', targetposn:'Theory A'}) %>
+	<%= templates.VanillaMappingEditor({sourceposn:'Base', targetposn:'Theory B'}) %>
+	
+	<%= templates.VanillaTheoryEditor({posn:'Base'}) %>
+	
+	<%= templates.VanillaIssues({}) %>
+	
+</template>
+
+<template id='VanillaActionBar'>
+	<div class='ActionBar'>
+		<button>Find Base (anti-unify)</button>
+		<button>Find Blend</button>
+		<button>Check Blend for Consistency</button>
+		<button>Score Blend</button>
+	</div>
+</template>
+
+<template id='VanillaTheoryEditor'>
+	<div class='Theory'><h3><%= posn %></h3>
+	<%= posn==='Theory A' || posn==='Theory B'? templates.VanillaTheoryEditorDropBits() : '' %>	
+	<textarea></textarea>
+	</div>
+</template>
+
+<template id='VanillaTheoryEditorDropBits'>
+	<div><h4>Modify by Dropping</h4>
+		<ul>
+			<li>Symbol <select></select></li>
+		</ul>
+		<ul>
+			<li>Sentence <select></select></li>
+		</ul>
+	</div>
+</template>
+
+<template id='VanillaMappingEditor'>
+	<div class='Mapping'><h3><%= sourceposn %> &rightarrow; <%= targetposn %></h3>
+		<h4>Rename</h4>
+		<ul>
+			<li><select></select> &rightarrow; <input type='text'></li>
+		</ul>
+	</div>
+</template>
+
+<template id='VanillaIssues'>
+	<div class='Theory'><h3>Issues</h3>
+	</div>
+</template>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.utils"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.web"/>
+	<classpathentry kind="lib" path="/middleware/jetty/jetty-continuation.jar"/>
+	<classpathentry kind="lib" path="/middleware/jetty/jetty-http.jar"/>
+	<classpathentry kind="lib" path="/middleware/jetty/jetty-io.jar"/>
+	<classpathentry kind="lib" path="/middleware/jetty/jetty-security.jar"/>
+	<classpathentry kind="lib" path="/middleware/jetty/jetty-server.jar" sourcepath="/middleware/jetty-8-git/jetty-server/src"/>
+	<classpathentry kind="lib" path="/middleware/jetty/jetty-servlet.jar"/>
+	<classpathentry kind="lib" path="/middleware/jetty/jetty-util.jar" sourcepath="/home/agis/.m2/repository/org/eclipse/jetty/jetty-util/7.5.4.v20111024/jetty-util-7.5.4.v20111024-sources.jar"/>
+	<classpathentry kind="lib" path="/middleware/jetty/jetty-websocket.jar"/>
+	<classpathentry kind="lib" path="/middleware/servlet/servlet-api-3.0.jar" sourcepath="/middleware/servlet/servlet-api-3.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="web/WEB-INF/classes"/>
+</classpath>

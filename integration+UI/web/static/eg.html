@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html><head>
+	<!-- Bootstrap -->
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">		
+	<!-- Scripts -->
+	<script src="/static/code/lib/underscore-min.js"></script>
+	<script src="/static/code/lib/jquery.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	<script src="/static/code/lib/SJTest.js"></script>
+	<script src="/static/code/base/Templates.js"></script>
+
+	<!-- Load Templates -->
+	<script>
+	loadTemplates('/static/code/widgets/eg-templates.html', function() {
+		$(".loading").removeClass("loading");
+		$('#main').html( templates.EGTemplate({'foo':'bar'}) );
+	});
+	</script>
+</head>
+<body>
+
+<div id='main' class='loading'>
+	Loading...
+</div>
+
+</body>
+</html>
