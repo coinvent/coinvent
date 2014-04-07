@@ -1,0 +1,1 @@
+# OntoHub: The preferred file store\n\nOntoHub provides git-based file storage with specialised viewers for ontology files. It is therefore the preferred file storage system for Coinvent, although use of OntoHub is not required (files can be stored elsewhere too).
