@@ -4,6 +4,16 @@
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/winterwell.utils.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-continuation.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-http.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-io.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-security.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-server.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-servlet.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-util.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-websocket.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/winterwell.web.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
