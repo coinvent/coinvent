@@ -1,0 +1,87 @@
+%% First we set the logic to be used.
+%% HETS supports a lot of logics, and if your logic
+%% is not there yet, contact us to add it.
+%% The default logic is CASL, a many-sorted
+%% partial first-order logic with free datatypes.
+%% Here we use the Web Ontology Language OWL.
+
+logic OWL
+
+%% DOL provides structuring mechanisms for 
+%% ontologies. The structuring language is
+%% independent of the choice of logic.
+%% Here we give a simple ontology with just one 
+%% concept as a named ontology. We have used the
+%% Manchester syntax for OWL, but other formats
+%% are supported as well (functional syntax, XML,
+%% RDF etc.)
+
+ontology Hello = 
+ Class: Hello
+end
+
+%% Similarly, we give an ontology with concept 
+%% World
+
+ontology World = 
+ Class: World
+end
+
+%% The next step is to give a base for the blend.
+%% This is done for now manually by the user.
+%% In our example, we want to blend Hello and World
+%% to get HelloWorld, so we need a concept in the
+%% base that generalizes the two (OK, the
+%% example is artificial, but illustrative). 
+
+ontology Base = 
+ Class: Greeting
+end
+
+%% followed by two theory interpretations
+%% of the base ontology into the two ontologies
+%% that we want to blend
+
+interpretation I1 : Base to Hello =
+  Greeting |-> Hello
+
+%% this is done by 
+%% giving a name to the interpretation (I1)
+%% the source ontology (Base)
+%% and the target ontology (Hello) 
+%% then specifying how the symbols
+%% of Base are mapped to symbols of Hello
+%% using |-> 
+
+%% same for Base to World
+
+interpretation I2 : Base to World = 
+ Greeting |-> World
+
+%% As a result, we have a diagram consisting of
+%% three nodes, Base, Hello, World
+%% and two edges, one from Base to Hello
+%% and one from Base to World.
+%% The blendoid is computed automatically by 
+%% HETS as the colimit of this diagram, using
+%% the combine mechanism.
+
+ontology Colimit = 
+   combine I1, I2
+
+%% combine takes as argument a diagram 
+%% which is given by enumerating its constituents
+%% Here it suffices to give the edges, as the 
+%% nodes linked by them are automatically included
+
+%% The next step is to rename explicitly, using
+%% the DOL construct "with", the symbol generated
+%% in the colimit in a convenient way.
+
+ontology Blend = 
+  Colimit with Greeting |-> HelloWorld
+
+%% this can also be done in one step:
+%% ontology Blend = 
+%%  combine I1, I2 
+%%   with Greeting |-> HelloWorld

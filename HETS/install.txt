@@ -1,1 +1,17 @@
-TODO
+To install HETS under Ubuntu, do: 
+  $ sudo apt-add-repository ppa:hets/hets
+  $ sudo apt-get update
+  $ sudo apt-get install hets
+
+To run HETS on the helloworld blending example
+provided here, do:
+  $ hets -g helloworld.dol
+
+The DOL file gets parsed, statically analyzed and
+then the GUI displays the graph of the structure of
+specification, where the ontologies can be
+inspected, checked for consistency,
+proof obligations discharged and so on.
+
+Try out the other examples provided here if you
+want to get more familiar with DOL.
