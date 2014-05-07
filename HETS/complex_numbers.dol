@@ -1,0 +1,103 @@
+logic CASL
+
+%%%% This is just a standard notion of field
+
+spec Field =
+     sort Real
+     preds 
+          __ >= __, __ > __: Real * Real;
+
+	  ops
+	  __ + __:Real * Real -> Real;
+	  __ * __:Real * Real -> Real;
+	  - __: Real -> Real;
+	  ti __: Real -> Real;
+     	  0:Real;
+	  1:Real
+		     
+     forall x,y,z,v:Real
+	    . (exists t:Real.(x+y)=t)
+     	    . x+0=x			
+     	    . x+y=y+x
+	    . x+(y+z) = (x+y)+z
+	    . x + (-x) = 0
+	    . ((not (x=0)) /\ (not (y=0))) => (exists t:Real.x*y=t)
+	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x
+	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z)
+	    . (not (x=0)) => x*(ti x) = 1 
+	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z)
+	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v)
+	    . (x>0) /\ (y>0) => (x*y)>0
+ end
+				    
+	     	   
+
+%%%% This is a vector space with a norm
+
+spec VectorSpace = 
+     sorts Vec,Real
+     preds 
+          __ >= __, __ > __: Real * Real;
+
+	   ops
+	   __ + __:Real * Real -> Real;
+	   __ * __:Real * Real -> Real;
+	  - __: Real -> Real;
+	  ti __: Real -> Real;
+     	  0:Real;
+	  1:Real;
+	  field_norm __:Real -> Real;
+	  __ vpl __:Vec * Vec -> Vec;
+	  __ vti __:Real * Vec -> Vec;
+	  vmi __:Vec -> Vec;
+	  vec_norm __:Vec->Real;
+	  vzero:Vec
+	  
+ forall x,y,z,v:Real;
+	a,b,c,d:Vec
+	    . (exists t:Real.(x+y)=t)
+     	    . x+0=x			
+     	    . x+y=y+x
+	    . x+(y+z) = (x+y)+z
+	    . x + (-x) = 0
+	    . ((not (x=0)) /\ (not (y=0))) => (exists t:Real.x*y=t)
+	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x
+	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z)
+	    . (not (x=0)) => x*(ti x) = 1 
+	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z)
+	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v)
+	    . (x>0) /\ (y>0) => (x*y)>0
+	    . (exists e:Vec. (a vpl b)=e)
+	    . (a vpl vzero) = a
+	    . (a vpl b) = (b vpl a)
+	    . (a vpl (c vpl d)) = ((a vpl c) vpl d)
+	    . (a vpl (vmi a)) = vzero
+	    . (x vti (a vpl b)) = (x vti a) vpl (x vti b)
+	    . ((x+y) vti a) = (x vti a) vpl (y vti a)
+	    . (x vti (y vti a)) = (x * y) vti a
+	    . (1 vti a) = a
+	    . (vec_norm a) >= 0
+	    . (vec_norm a >= 0 <=> (not (a = vzero)))
+	    . (vec_norm (x vti a)) = (field_norm x)*(vec_norm a)
+	    . (vec_norm (a vpl b)) = (vec_norm a) + (vec_norm b)
+end
+
+spec Gen =
+     sort Complex
+     ops
+     __ plus __:Complex * Complex -> Complex;
+     zero:Complex     
+end
+
+
+view I1: Gen to Field = 
+__ plus __ |-> __ + __,
+zero |-> 0
+
+view I2: Gen to VectorSpace = 
+	       __ plus __ |-> __ vpl __,
+	       zero |-> vzero
+
+
+spec Colimit =
+  combine I1,I2
