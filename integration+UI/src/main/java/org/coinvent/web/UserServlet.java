@@ -15,16 +15,17 @@ import winterwell.web.app.WebRequest;
 public class UserServlet extends AServlet {
 
 	private User user;
-	private String userName;
+	private XId userId;
 
 	Gson gson = SharedStatic.get(Gson.class);
 	
 	@Override
 	public void doPost(WebRequest state) throws Exception {
 		String[] bits = state.getSlugBits();
-		userName = bits[1];
+		String userName = bits[1];
 		if ( ! userName.contains("@")) userName+="@coinvent";
-		user = DataLayerFactory.get().getUser(userName);
+		userId = new XId(userName);
+		user = DataLayerFactory.get().getUser(userId);
 
 		if (state.getAction()!=null) doAction(state);
 
@@ -38,7 +39,7 @@ public class UserServlet extends AServlet {
 	private void doAction(WebRequest state) {
 		if (state.actionIs("create")) {
 			if (user!=null) throw new WebEx.E40X(400, "Already exists", new Exception());
-			user = DataLayerFactory.get().getCreate(new XId(userName));
+			user = DataLayerFactory.get().getCreateUser(userId);
 		}
 	}
 

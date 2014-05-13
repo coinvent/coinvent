@@ -1,5 +1,7 @@
 package org.coinvent.data;
 
+import java.io.File;
+
 import creole.data.XId;
 
 public class User {
@@ -9,5 +11,9 @@ public class User {
 	}
 
 	XId xid;
+
+	public XId getXId() {
+		return xid;
+	}
 	
 }

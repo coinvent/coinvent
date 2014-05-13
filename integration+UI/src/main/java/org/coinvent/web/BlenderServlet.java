@@ -10,6 +10,7 @@ import org.coinvent.data.IJob;
 
 import com.winterwell.utils.threads.Actor;
 
+import creole.data.XId;
 import winterwell.utils.Utils;
 import winterwell.utils.containers.ArrayMap;
 import winterwell.utils.time.Dt;
@@ -38,14 +39,14 @@ public class BlenderServlet extends AServlet {
 		}
 		// actor
 		String actorName = bits[1];
-		Object actor = DataLayerFactory.get().getUser(actorName);
+		Object actor = DataLayerFactory.get().getUser(new XId(actorName,"coinvent"));
 		// concept / job
 		String type = bits[1];
 		
 		
 		// my theory
 		String theoryName = bits.length>0? bits[1] : null; 
-		Object theory = DataLayerFactory.get().getConcept(theoryName);
+		Object theory = DataLayerFactory.get().getConcept(new XId(actorName+"__"+theoryName+"@coinvent"));
 		// TODO someone else's theory
 
 		jr = new JsonResponse(r, null);
@@ -58,33 +59,8 @@ public class BlenderServlet extends AServlet {
 		WebUtils2.sendJson(jr, r);
 	}
 
-	private void doAction(WebRequest r) {
+	void doAction(WebRequest r) {
 		
-	}
-
-
-	AField<String> JOB_ID = new AField("jobid");
-	
-	/**
-	 * A url to call when the task is done (or fails).
-	 * <p>
-	 * NB: we don't use "callback" as the parameter because this would conflict with a common jsonp setup.
-	 */
-	AField<String> ON_COMPLETE = new AField("oncomplete");
-
-	/**
-	 * The caller has asked for this job's status and output (if its ready).
-	 * @param jobId
-	 * @param state
-	 * @throws IOException
-	 */
-	private void doSendJobUpdate(String jobId, WebRequest state) throws IOException {
-		IJob job = DataLayerFactory.get().getJob(jobId);
-		if (job==null) throw new WebEx(404, "Unrecognised jobid: "+jobId);
-		String cargo = job.getResult()==null? "Please wait longer..." : job.getResult().toString();
-		JsonResponse jr = new JsonResponse(state, cargo);
-		jr.put(JOB_ID, jobId);
-		WebUtils2.sendJson(jr, state);
 	}
 
 }

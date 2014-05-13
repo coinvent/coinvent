@@ -9,6 +9,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import com.winterwell.utils.containers.SharedStatic;
+
 import winterwell.utils.Printer;
 import winterwell.utils.Utils;
 import winterwell.utils.io.ArgsParser;
@@ -27,7 +29,7 @@ public class ServerMain {
 	private JettyLauncher jl;
 
 	public ServerMain(ServerConfig config) {
-		this.config = config;
+		this.config = config;		
 	}
 
 	public static void main(String[] args) {
@@ -35,6 +37,7 @@ public class ServerMain {
 		ServerConfig config = new ServerConfig();
 		File props = new File("src/main/config/ServerConfig.properties");		
 		config = ArgsParser.parse(config, args, props, null);
+		SharedStatic.put(ServerConfig.class, config);
 		
 		// Run it!
 		ServerMain sm = new ServerMain(config);
