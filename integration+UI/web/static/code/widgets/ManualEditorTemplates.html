@@ -1,0 +1,74 @@
+
+<template id='ManualWorkspace'>
+
+	<div class='theories'>
+		<h3>Theory Files</h3>
+		<ul id='TheoryList'>
+			<li><form id='AddTheoryForm'><input type='text' name='theoryurl' /> <button>add</button></form></li>			
+		</ul>
+	</div>
+	
+</template>
+
+
+<template id='ManualEditor'>
+	<%= templates.ManualActionBar() %>		
+
+	<%= templates.ManualTheoryEditor({posn:'Blend'}) %>		
+	
+	<%= templates.ManualMappingEditor({sourceposn:'Theory A', targetposn:'Blend'}) %>
+	<%= templates.ManualMappingEditor({sourceposn:'Theory B', targetposn:'Blend'}) %>
+	
+	<%= templates.ManualTheoryEditor({posn:'Theory A'}) %>
+	
+	<%= templates.ManualTheoryEditor({posn:'Theory B'}) %>
+
+	<%= templates.ManualMappingEditor({sourceposn:'Base', targetposn:'Theory A'}) %>
+	<%= templates.ManualMappingEditor({sourceposn:'Base', targetposn:'Theory B'}) %>
+	
+	<%= templates.ManualTheoryEditor({posn:'Base'}) %>
+	
+	<%= templates.ManualIssues({}) %>
+	
+</template>
+
+<template id='ManualActionBar'>
+	<div class='ActionBar'>
+		<button>Find Base (anti-unify)</button>
+		<button>Find Blend</button>
+		<button>Check Blend for Consistency</button>
+		<button>Score Blend</button>
+	</div>
+</template>
+
+<template id='ManualTheoryEditor'>
+	<div class='Theory'><h3><%= posn %></h3>
+	<%= posn==='Theory A' || posn==='Theory B'? templates.ManualTheoryEditorDropBits() : '' %>	
+	<textarea></textarea>
+	</div>
+</template>
+
+<template id='ManualTheoryEditorDropBits'>
+	<div><h4>Modify by Dropping</h4>
+		<ul>
+			<li>Symbol <select></select></li>
+		</ul>
+		<ul>
+			<li>Sentence <select></select></li>
+		</ul>
+	</div>
+</template>
+
+<template id='ManualMappingEditor'>
+	<div class='Mapping'><h3><%= sourceposn %> &rightarrow; <%= targetposn %></h3>
+		<h4>Rename</h4>
+		<ul>
+			<li><select></select> &rightarrow; <input type='text'></li>
+		</ul>
+	</div>
+</template>
+
+<template id='ManualIssues'>
+	<div class='Theory'><h3>Issues</h3>
+	</div>
+</template>

@@ -9,25 +9,22 @@
 	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	<script src="/static/code/lib/SJTest.js"></script>
 	<script src="/static/code/base/Templates.js"></script>
-	<script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
-
-	<script src="/static/code/lsystem/lsystem.js"></script>
+	<script src="/static/code/ManualEditor.js"></script>
 
 	<!-- Load Templates -->
-	<script>	
-	$(function() {
-		var ls = new LSystem('demoCanvas');
-		// Branch
-		ls.addRule(new LRule('fwd', ['!fwd', 'open', 'left', 'fwd', 'close', 'open', 'fwd', 'close']));
-		ls.run();
+	<script>
+	loadTemplates('/static/code/widgets/ManualEditorTemplates.html', function() {
+		$(".loading").removeClass("loading");
+		$('#main').html( templates.ManualEditor() );
+		wireup();
 	});
 	</script>
 </head>
 <body>
 
-<canvas id="demoCanvas" width="500" height="500">
-        alternate content
-</canvas>
+<div id='main' class='loading'>
+	Loading...
+</div>
 
 </body>
 </html>

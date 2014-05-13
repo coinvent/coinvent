@@ -123,7 +123,7 @@ public class DynamicHttpServlet extends HttpServlet {
 				return (AServlet) sc.newInstance();
 			} catch (Throwable ex) {
 				// not that then
-			}
+			}			
 			name += bit;
 		}
 		// fail -- no such servlet

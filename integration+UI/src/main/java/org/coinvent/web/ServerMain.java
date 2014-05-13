@@ -33,14 +33,9 @@ public class ServerMain {
 	public static void main(String[] args) {
 		// Load config, if we have any
 		ServerConfig config = new ServerConfig();
-		ArgsParser ap = new ArgsParser(config);
-		File props = new File("src/main/config/ServerConfig.properties");
-		if (props.exists()) {
-			ap.set(props);
-		}
-		// Allow command-line args to override settings
-		ap.parse(args);
-
+		File props = new File("src/main/config/ServerConfig.properties");		
+		config = ArgsParser.parse(config, args, props, null);
+		
 		// Run it!
 		ServerMain sm = new ServerMain(config);
 		sm.run();
