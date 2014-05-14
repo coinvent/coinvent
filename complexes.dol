@@ -78,6 +78,7 @@ spec VectorSpace =
 	    . (a vpl (c vpl d)) = ((a vpl c) vpl d)
 	    . (a vpl (vmi a)) = vzero
 	    . (x vti (a vpl b)) = (x vti a) vpl (x vti b)
+	    . (pair(x,y) vpl (pair(z,v)) = pair(x+z,y+v)
 	    . ((x+y) vti a) = (x vti a) vpl (y vti a)
 	    . (x vti (y vti a)) = (x * y) vti a
 	    . (1 vti a) = a
