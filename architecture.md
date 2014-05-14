@@ -22,6 +22,27 @@ This document presents the archictectural design for the integrated Coinvent sys
 
 Please read the [Glossary / Jargon buster](http://ccg.doc.gold.ac.uk/research/coinvent/internal/?page_id=356) first. For further information, please see the reference documents listed at the end of this file.
 
+
+## Core Object: The Partial Blend Diagram
+
+The object type at the heart of Coinvent is the Blend Diagram. The specification is intentionally broad to support several use-cases.
+
+Concepts are defined in CASL or OWL. Mappings between concepts are defined in DOL. Metadata is also defined in DOL. The Blend Diagram may be a single file, or several linked files, using DOL's support for urls.
+
+A `Blend Diagram` consists of:
+
+1. A Blended Concept
+2. A set of Input Concepts (typically 2)
+3. A Base Concept, which is a common base for all the Input Concepts
+4. Mappings from the Base Concept to each of the Input Concepts.
+5. Mappings from each of the Input Concepts to the Blended Concept.
+6. Optional metadata about each of the Concepts, such as evaluation scores,  proof obligations, or relationship to other Concepts.
+
+The Blended Concept *may* be a colimit, but it does not have to be.
+The Base Concept *may* be found via anti-unification, but it does not have to be.
+
+A `Partial Blend Diagram` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. The Partial Blend Diagram allows that blends may be developed (perhaps iteratively).
+
 ## Languages / File Formats
 
 Coinvent will focus on human-readable text-file formats. 
@@ -73,25 +94,6 @@ The music team are investigating the use of OWL by producing a worked example of
 
 The established OWL description logic, via the Manchester Syntax, should be used for other domains.
 
-## Core Object: The Partial Blend Diagram
-
-The object type at the heart of Coinvent is the Blend Diagram. The specification is intentionally broad to support several use-cases.
-
-Concepts are defined in CASL or OWL. Mappings between concepts are defined in DOL. Metadata is also defined in DOL. The Blend Diagram may be a single file, or several linked files, using DOL's support for urls.
-
-A `Blend Diagram` consists of:
-
-1. A Blended Concept
-2. A set of Input Concepts (typically 2)
-3. A Base Concept, which is a common base for all the Input Concepts
-4. Mappings from the Base Concept to each of the Input Concepts.
-5. Mappings from each of the Input Concepts to the Blended Concept.
-6. Optional metadata about each of the Concepts, such as evaluation scores,  proof obligations, or relationship to other Concepts.
-
-The Blended Concept *may* be a colimit, but it does not have to be.
-The Base Concept *may* be found via anti-unification, but it does not have to be.
-
-A `Partial Blend Diagram` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. The Partial Blend Diagram allows that blends may be developed (perhaps iteratively).
 
 ## Components
 
