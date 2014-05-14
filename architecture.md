@@ -124,6 +124,14 @@ Default implementations:
  - HETS for automated consistency checks.
  - Manual for other scores.
 
+### Concept Store: Store Concepts and Blend Diagrams
+
+Must provide save and load over http.
+
+Default implementation: 
+
+ - File-system backed. Adding git to the file-system would provide integration with Ontohub.
+
 ## Architecture
 
 ### Independent components, linked via http APIs
