@@ -1,9 +1,9 @@
 
 # Coinvent Architecture
 
-Author: Daniel, with input from Ewen and Mihai
+Author: Daniel, with input from Ewen and Mihai   
 Status: Draft   
-Version: 0.1
+Version: 0.1   
 
 <!-- MarkdownTOC depth=2 -->
 
@@ -157,20 +157,16 @@ Each top-level component is an actor, which can send and receive messages to oth
  - Slow messages send an immediate receipt response with a job-id, followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
 
 
-### System Stack
+### TODO System Stack Diagram
 
-[Browser-based UI]
-[http]
-
-[Example Finder]
-
-[OS: Ubuntu Linux]
 
 ## References
 
- - CASL: <>
+ - CASL: <http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_user_manual>
  - DOL: <https://github.com/tillmo/DOL>
  - HDTP: Talk to Martin Mohrmann
  - HETS: <http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/hets>
  - OWL Manchester Syntax: <http://www.w3.org/TR/owl2-manchester-syntax/>
+
+# TODO Appendix 1: Component APIs
  
