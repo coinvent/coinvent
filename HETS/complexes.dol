@@ -13,15 +13,16 @@ spec Field =
 	  - __: Real -> Real;
 	  ti __: Real -> Real;
      	  0:Real;
-	  1:Real
+	  1:Real;
+	  sqrt __: Real ->? Real;
+	  sq __: Real -> Real
+
 		     
      forall x,y,z,v:Real
-	    . (exists t:Real.(x+y)=t)
      	    . x+0=x			
      	    . x+y=y+x
 	    . x+(y+z) = (x+y)+z
 	    . x + (-x) = 0
-	    . ((not (x=0)) /\ (not (y=0))) => (exists t:Real.x*y=t)
 	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x
 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z)
 	    . (not (x=0)) => x*(ti x) = 1 
@@ -55,23 +56,25 @@ spec VectorSpace =
 	  vzero:Vec
 	  %%% introducing 2-d vectors
 	  basis_real:Vec;
-	  basis_complex:Vec
+	  basis_complex:Vec;
+	  sqrt __: Real ->? Real;
+	  sq __: Real -> Real
+
 
  forall x,y,z,v:Real;
 	a,b,c,d:Vec
-	    . (exists t:Real.(x+y)=t)
      	    . x+0=x			
      	    . x+y=y+x
 	    . x+(y+z) = (x+y)+z
 	    . x + (-x) = 0
-	    . ((not (x=0)) /\ (not (y=0))) => (exists t:Real.x*y=t)
 	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x
 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z)
 	    . (not (x=0)) => x*(ti x) = 1 
 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z)
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v)
 	    . (x>0) /\ (y>0) => (x*y)>0
-	    . (exists e:Vec. (a vpl b)=e)
+	    . vzero = pair (0,0) 
+	    . (pair(x,y) vpl pair (z,v)) = pair(x+z,y+v)
 	    . (a vpl vzero) = a
 	    . (a vpl b) = (b vpl a)
 	    . (a vpl (c vpl d)) = ((a vpl c) vpl d)
@@ -111,7 +114,7 @@ view I2: Gen to VectorSpace =
 
 
 spec Colimit =
-  combine I1,I2 
+  combine I1,I2  with gn_n2 |-> gt,gn_n4 |-> gte
 end
 
 
@@ -139,23 +142,24 @@ spec Complex_Field =
      basis_complex:Complex;
      __ prod __: Complex * Complex -> Complex;
      times_inv __: Complex -> Complex;
-     norm __: Complex -> Real
+     norm __: Complex -> Real;
+     sqrt __: Real ->? Real;
+     sq __: Real -> Real;
+     csq __: Complex -> Complex;
+     csqrt __: Complex ->? Complex
 
      forall x,y,z,v:Real;
 	    a,b,c,d:Complex
-	    . (exists t:Real.(x+y) = t)
 	    . x+0=x			
      	    . x+y=y+x
 	    . x+(y+z) = (x+y)+z
 	    . x + (-x) = 0
-	    . ((not (x=0)) /\ (not (y=0))) => (exists t:Real.x*y=t)
 	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x
 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z)
 	    . (not (x=0)) => x*(ti x) = 1 
 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z)
 	    . ((x >= y) /\ (z >= v)) => (x+z) >= (y+v)
 	    . (x>0) /\ (y>0) => (x*y)>0
-	    . (exists e:Complex. (a cpl b)=e)
 	    . (a cpl complex_zero) = a
 	    . (a cpl b) = (b cpl a)
 	    . (a cpl (c cpl d)) = ((a cpl c) cpl d)
@@ -163,29 +167,39 @@ spec Complex_Field =
 	    . (x cti (a cpl b)) = (x cti a) cpl (x cti b)
 	    . ((x+y) cti a) = (x cti a) cpl (y cti a)
 	    . (x cti (y cti a)) = (x * y) cti a
+	    . complex_zero = pair(0,0)
 	    . basis_real = pair(1,0)
 	    . basis_complex = pair(0,1)
 	    . (pair (x,y)) cpl (pair (z,v)) = (pair((x+z),(y+v)))
 	    . (pair(x,y) prod pair(z,v)) = pair(((x*z)+(-(y*v))),((x*v)+(y*z)))
-	    . times_inv a = a
-	    . norm a = 0
+	    . times_inv (pair(x,y)) = (ti (sq (norm (pair(x,y))))) cti (pair(x,(- y)))
+	    . norm (pair(x,y)) = sqrt((x*x) + (y*y)) 
 end
 
-%[view I3: Colimit to Complex_Field =]%
-%[     1 |-> basis_real,]%
-%[     __ * __ |-> __ prod __]%
-
-    %[ __ prod __ |-> __ * __,]%
-    %[ __ + __ |->  __ + __,]%
-    %[ __ cpl __ |-> __ vpl __,]%
-    %[ __ cti __ |-> __ vti __,]%
-    %[ basis_complex |-> basis_complex,]%
-    %[ basis_real |-> basis_real,]%
-    %[ times_inv __ |-> ti,]%
-    %[ norm __ |-> vec_norm,]%
-    %[ cmi __ |-> vmi __,]%
-    %[ zero |-> vzero,]%
-    %[ __ gt __ |-> __ > __,]%
-    %[__ gte __ |-> __ >= __]%
+view I3: Colimit to Complex_Field =
+     Generic |-> Complex,
+     Real |-> Real,
+     1 |-> basis_real,
+     zero |-> complex_zero,
+     gte:Real |-> 1,
+     __ * __ |-> __ prod __,
+     __ + __ |->  __ + __,
+     __ vpl __ |-> __ cpl __,
+     __ vti __ |-> __ cti __,
+     basis_complex |-> basis_complex,
+     basis_real |-> basis_real,
+     ti __ |-> times_inv __,
+     vec_norm __ |-> norm __,
+     vmi __ |-> cmi __,
+    gn_n6 : Real * Real -> Real |->  __ * __,
+    gn_ti22 __: Real -> Real |-> ti __,
+     __ > __ |-> __ gt __,
+    __ >= __ |-> __ gte __,
+    gt: Real * Real |-> __ > __,
+    gte:Real * Real |-> __ >= __,
+    gn_sq18 __: Real -> Real |-> sq __,
+    gn_sqrt20 __: Real -> Real |-> sqrt __,
+    sq __ |-> csq __,
+    sqrt __ |-> csqrt __
 
 			  
