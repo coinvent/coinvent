@@ -44,6 +44,8 @@ The Base Concept *may* be found via anti-unification, but it does not have to be
 
 A `Partial Blend Diagram` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. The Partial Blend Diagram allows that blends may be developed (perhaps iteratively).
 
+TODO Draw a diagram of this.
+
 ## Languages / File Formats
 
 Coinvent will focus on human-readable text-file formats. 
