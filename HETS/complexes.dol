@@ -73,6 +73,7 @@ spec VectorSpace =
 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z)
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v)
 	    . (x>0) /\ (y>0) => (x*y)>0
+	    . vzero = pair (0,0) 
 	    . (pair(x,y) vpl pair (z,v)) = pair(x+z,y+v)
 	    . (a vpl vzero) = a
 	    . (a vpl b) = (b vpl a)
@@ -166,6 +167,7 @@ spec Complex_Field =
 	    . (x cti (a cpl b)) = (x cti a) cpl (x cti b)
 	    . ((x+y) cti a) = (x cti a) cpl (y cti a)
 	    . (x cti (y cti a)) = (x * y) cti a
+	    . complex_zero = pair(0,0)
 	    . basis_real = pair(1,0)
 	    . basis_complex = pair(0,1)
 	    . (pair (x,y)) cpl (pair (z,v)) = (pair((x+z),(y+v)))
