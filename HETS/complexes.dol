@@ -84,7 +84,7 @@ spec VectorSpace =
 	    . (x vti (y vti a)) = (x * y) vti a
 	    . (1 vti a) = a
 	    . (vec_norm a) >= 0
-	    . (vec_norm a >= 0 <=> (not (a = vzero)))
+	    . (vec_norm a > 0 <=> (not (a = vzero)))
 	    . (vec_norm (x vti a)) = (field_norm x)*(vec_norm a)
 	    . (vec_norm (a vpl b)) = (vec_norm a) + (vec_norm b)
 	      %%% forcing linear independence
