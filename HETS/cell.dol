@@ -1,0 +1,92 @@
+logic OWL
+
+ontology Prison = 
+ Class: Cell
+ Class: Inmate
+ ObjectProperty: sits_in
+   Domain: Inmate  
+   Range: Cell
+ Individual: cell_151
+  Types: Cell
+ Individual: john
+   Types: Inmate
+   Facts: sits_in cell_151
+end
+
+ontology Biology = 
+ Class: Cell
+ Class: EukaryoticCell 
+  SubClassOf: Cell
+ Class: Nucleus
+ ObjectProperty: isLocatedIn
+  Domain: Nucleus
+  Range: EukaryoticCell
+ Individual: ec
+  Types: EukaryoticCell
+ Individual: ec_nucleus
+  Types: Nucleus
+  Facts: isLocatedIn ec
+ ObjectProperty: partOf
+end
+
+ontology ColimitEmptyBase = 
+  combine Biology, Prison
+ with O:Cell |-> PrisonCell, 1:Cell |-> BiologicalCell
+
+
+ontology General = 
+ Class: Object
+ Class: Location
+ ObjectProperty: isLocatedIn
+  Domain: Object
+  Range: Location
+end
+
+interpretation I1 : General to Biology = 
+ Object |-> Nucleus,
+ Location |-> EukaryoticCell,
+ %% isLocatedIn |-> isLocatedIn %% this could be omitted
+end
+
+interpretation I2 : General to Prison = 
+ Object |-> Inmate,
+ Location |-> Cell,
+ isLocatedIn |-> sits_in
+end
+
+ontology DifferentCells =  
+  combine I1, I2
+
+
+ontology ContainerSchema = 
+ Class: Object
+ Class: Container
+ ObjectProperty: isLocatedIn
+  Domain: Object
+  Range: Container
+ Individual: container 
+  Types: Container
+ Individual: object
+  Types: Object
+  Facts: isLocatedIn container
+end
+
+view V1 : ContainerSchema to Prison = 
+ Object |-> Inmate,
+ Container |-> Cell,
+ container |-> cell_151,
+ object |-> john,
+ isLocatedIn |-> sits_in
+end
+
+view V2 : ContainerSchema to Biology = 
+ Object |-> Nucleus,
+ Container |-> EukaryoticCell,
+ isLocatedIn |-> isLocatedIn,
+ object |-> ec_nucleus,
+ container |-> ec
+
+ontology ContainerCombine = 
+ combine V1, V2
+
+
