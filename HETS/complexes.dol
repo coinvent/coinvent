@@ -142,7 +142,6 @@ spec Complex_Field =
      basis_complex:Complex;
      __ prod __: Complex * Complex -> Complex;
      times_inv __: Complex -> Complex;
-     norm __: Complex -> Real;
      sqrt __: Real ->? Real;
      sq __: Real -> Real;
      csq __: Complex -> Complex;
@@ -172,34 +171,38 @@ spec Complex_Field =
 	    . basis_complex = pair(0,1)
 	    . (pair (x,y)) cpl (pair (z,v)) = (pair((x+z),(y+v)))
 	    . (pair(x,y) prod pair(z,v)) = pair(((x*z)+(-(y*v))),((x*v)+(y*z)))
-	    . times_inv (pair(x,y)) = (ti (sq (norm (pair(x,y))))) cti (pair(x,(- y)))
-	    . norm (pair(x,y)) = sqrt((x*x) + (y*y)) 
+	    . times_inv (pair(x,y)) = (ti (sq (complex_norm (pair(x,y))))) cti (pair(x,(- y)))
+	    . complex_norm (pair(x,y)) = sqrt((x*x) + (y*y)) 
 end
 
-view I3: Colimit to Complex_Field =
-     Generic |-> Complex,
+%%basis_real -> basis_real?
+
+view I3: Complex_Field to Colimit =
+     Complex |-> Generic,
      Real |-> Real,
-     1 |-> basis_real,
-     zero |-> complex_zero,
-     gte:Real |-> 1,
-     __ * __ |-> __ prod __,
+     basis_real |-> 1,
+     complex_zero |-> zero,
+     1 |-> gte:Real,
+     0 |-> 0,
+     __ prod  __ |-> __ * __,
      __ + __ |->  __ + __,
-     __ vpl __ |-> __ cpl __,
-     __ vti __ |-> __ cti __,
+     __ cpl __ |-> __ vpl __,
+     __ cti __ |-> __ vti __,
      basis_complex |-> basis_complex,
-     basis_real |-> basis_real,
-     ti __ |-> times_inv __,
-     vec_norm __ |-> norm __,
-     vmi __ |-> cmi __,
-    gn_n6 : Real * Real -> Real |->  __ * __,
-    gn_ti22 __: Real -> Real |-> ti __,
-     __ > __ |-> __ gt __,
-    __ >= __ |-> __ gte __,
-    gt: Real * Real |-> __ > __,
-    gte:Real * Real |-> __ >= __,
-    gn_sq18 __: Real -> Real |-> sq __,
-    gn_sqrt20 __: Real -> Real |-> sqrt __,
-    sq __ |-> csq __,
-    sqrt __ |-> csqrt __
+     times_inv __ |-> ti __,
+     complex_norm __ |-> vec_norm __,
+     cmi __ |-> vmi __,
+    __ *__ |-> gn_n6 : Real * Real -> Real,
+    ti __ |-> gn_ti22 __: Real -> Real,
+     __ gt __ |-> __ > __,
+    __ gte __ |-> __ >= __,
+    __ > __ |-> gt: Real * Real,
+    __ >= __ |-> gte:Real * Real,
+    sq __ |-> gn_sq18 __: Real -> Real,
+    sqrt __ |-> gn_sqrt20 __: Real ->? Real,
+    csq __ |-> sq __,
+    csqrt __ |-> sqrt __,
+    field_norm __ |-> field_norm __
 
 			  
+%%% complex_Field -> colimit
