@@ -1,0 +1,40 @@
+spec Strict_Partial_Order =
+%% Let's start with a simple example !
+    sort Elem
+    pred __<__ : Elem * Elem
+	 %% pred abbreviates predicate
+    forall x, y, z:Elem
+    . not (x < x) %(strict)%
+    . (x < y) => not (y < x) %(asymmetric)%
+    . (x < y) /\ (y < z) => (x < z) %(transitive)%
+    %{ Note that there may exist x, y such that
+       neither x < y nor y < x. }%
+end
+
+spec Total_Order =
+    Strict_Partial_Order
+then
+    forall x, y:Elem
+    . (x < y) \/ (y < x) \/ x = y %(total)%
+end
+
+spec OvGU = 
+       free type Human ::= Mihai | Oliver | Fabian
+
+       pred __heavier_than__ : Human * Human
+       . Fabian heavier_than Mihai  %(FM)%
+       . forall x:Human . not (Mihai heavier_than x) %(Mihai_small)%
+       . Oliver heavier_than Fabian %(OF)%
+       . not (Fabian heavier_than Oliver) %(Oliver_big)%
+       . Oliver heavier_than Mihai  %(OM)%
+       . not (Fabian heavier_than Fabian) %(not_FF)%
+       . not (Oliver heavier_than Oliver) %(not_OO)%
+ 
+       . not (Mihai heavier_than Oliver) %implied
+       . not (Mihai heavier_than Fabian) %implied
+
+
+view V : Total_Order to OvGU =
+  Elem |-> Human,
+  __<__ |-> __heavier_than__
+

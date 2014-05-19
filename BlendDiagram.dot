@@ -1,0 +1,36 @@
+
+
+digraph BlendDiagrams {
+
+
+	subgraph cluster_WeakeningInMapping {
+		label = "Option 1: Blend Mappings Can Use Weakenings";
+
+		Concept1 -> Blend;
+		Concept2 -> Blend [label = "Mapping can weaken Concept"];
+
+		Base -> Concept1;
+		Base -> Concept2 [label = "Due to weakening later, Base is not necc a base for Blend"];
+
+	}
+
+
+	subgraph cluster_ExplicitWeakening {
+		label = "Option 2: Explicit Weakening Steps";
+
+		Weakening1 -> Blendb [label="This mapping only renames symbols"];
+
+		Concept2b -> Blendb;
+		Concept1b -> Weakening1 [label="This mapping can weaken"];
+
+		Baseb -> Weakening1;
+		Baseb -> Concept2b;
+
+		Baseb [label=Base]
+		Blendb [label=Blend]
+		Concept2b [label=Concept2]
+		Concept1b [label=Concept1]
+		Concept1b [label=Concept1]
+	}
+
+}

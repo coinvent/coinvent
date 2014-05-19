@@ -33,15 +33,18 @@ A `Blend Diagram` consists of:
 
 1. A Blended Concept
 2. A set of Input Concepts (typically 2)
-3. A Base Concept, which is a common base for all the Input Concepts
-4. Mappings from the Base Concept to each of the Input Concepts.
-5. Mappings from each of the Input Concepts to the Blended Concept.
-6. Optional metadata about each of the Concepts, such as evaluation scores,  proof obligations, or relationship to other Concepts.
+3. Optionally, weakenings of the Input Concepts. E.g. a mapping Concept1 -> WeakerConcept1, by dropping symbols or sentences.
+4. A Base Concept, which is a common base for all the Input Concepts. If there are weakenings, then the Base is a base for the weakened concepts (not the originals).
+5. Mappings from the Base Concept to each of the (weakened) Input Concepts.
+6. Mappings from each of the (weakened) Input Concepts to the Blended Concept.
+7. Optional metadata about each of the Concepts, such as evaluation scores,  proof obligations, or relationship to other Concepts.
 
 The Blended Concept *may* be a colimit, but it does not have to be.
 The Base Concept *may* be found via anti-unification, but it does not have to be.
 
 A `Partial Blend Diagram` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. The Partial Blend Diagram allows that blends may be developed (perhaps iteratively).
+
+TODO Draw a diagram of this.
 
 ## Languages / File Formats
 
@@ -69,7 +72,7 @@ Briefly, the supported symbols are:
  - `:`
  - `,` List separator.
  - `|->` Part of a mapping, e.g. `zero |-> 0`
- - `%predicate(value)%` An annotation on a sentence.
+ - `%predicate(value)%` An annotation on a sentence. 
  - `%%` Starts a comment
 
 #### DOL: Extra Conventions and Language Terms
@@ -130,7 +133,7 @@ Must provide save and load over http.
 
 Default implementation: 
 
- - File-system backed. Adding git to the file-system would provide integration with Ontohub.
+ - File-system backed. By adding git to the file-system we can provide integration with Ontohub.
 
 ## Architecture
 
