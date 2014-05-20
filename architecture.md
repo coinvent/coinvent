@@ -51,11 +51,21 @@ TODO Draw a diagram of this.
 Coinvent will focus on human-readable text-file formats. 
 A couple of formats for concepts will be supported, with the DOL language used to describe the connections between concepts.
 
+### 3 Levels of languages: software, meta-logic, domain-logic
+
+1. The outer language (json) is used to connect software components. E.g. specifying software inputs & callbacks, reporting on job-status, etc.
+2. The meta-logic language (DOL) is used to describe the mappings between concepts.
+3. The domain-logics (OWL, CASL) are used to describe actual concepts.
+
 ### Connecting concepts: DOL (modified)
 DOL (Distributed Ontology, Modeling and Specification Language) is a language for describing how ontologies connect. 
-DOL is currently in development by Till Mossakowski's group. It is used by the HETS system.
+DOL is currently in development by Till Mossakowski's group. It is used by the HETS system. This integration with HETS makes it a good choice for Coinvent.
 
-#### DOL: Supported Language Terms
+DOL is both larger than we need, and does not have a couple of things we need. So
+we specify a modified version of DOL. We will work with the DOL team aiming to
+converge on a true subset of DOL.
+
+#### DOL subset: Supported Language Terms
 
 Coinvent does not need all the features of DOL, and so we specify a reduced subset of DOL which should be used. Sticking to a smaller set reduces the learning curve for new Coinvent users.
 
@@ -65,7 +75,7 @@ Briefly, the supported symbols are:
  - `ontology` Start defining a Concept.
  - `end` Finish defining a Concept. 
  - `view` Specify a mapping between Concepts, e.g. `view MyView : A to B =`
- - `with` Start of a symbol mapping.
+ - `with` Start of a symbol mapping within a combine statement.
  - `combine` Compute the colimit, e.g. `ontology B = combine I1, I2`
  - `hide` Used in a mapping to drop a symbol.
  - `=`
@@ -97,6 +107,16 @@ The music team are investigating the use of OWL by producing a worked example of
 
 The established OWL description logic, via the Manchester Syntax, should be used for other domains.
 
+### Web-service Wrapper: JSON
+
+The web-service components (see below) will use JSON 
+as a black-box wrapper, for web-services to
+talk to each other. I.e. JSON is used to encode commands, such as "", and describe results, such as "success" or "failure due to timeout".
+
+JSON is the best choice here, because it's a universal standard.
+
+Low-level components (e.g. HDTP) will not take in JSON. That would be done by a
+web-service wrapper, which then calls HDTP.
 
 ## Components
 
@@ -152,7 +172,30 @@ An added benefit of this architecture is that it provides flexibility regarding 
 
 #### Software Wrapped as a Server
 
-Software such as HDTP will be incorporated into this framework using a server which "wraps" the low-level software. E.g. the other components connect to the HDTP-server over http, and the server manages calling HDTP itself.
+"Calculation" software such as HDTP will be incorporated into this framework using a server which "wraps" the low-level software. E.g. the other components connect to the HDTP-server over http, and the server manages calling HDTP itself.
+
+### Top-level Stateful, Low-level Stateless
+
+Calculation software will be stateless. This is simpler, and avoids tying the
+low-level components to the bigger system.
+
+There's the question of: paging through results.
+E.g. HDTP can produce multiple outputs for some inputs.
+If we have one mapping & we want a 2nd or a 3rd -- how do we do that?   
+
+This will be handled via input flags, and just repeating
+the calculation asking for more outputs (i.e. iterative deepening).
+
+The overall system will be stateful, because being stateful is the
+most natural way to support a couple of features we want:
+
+ - Slow tasks, where a job is started, runs, finishes later.
+ - Interactive UI, where the user has a fixed reference point to view
+a developing blend.
+
+The state would be handled at the top level. The components
+(HDTP, HETS-as-a-colimit-calculator, etc) are used in a stateless manner.
+
 
 ### Actor / Queue Pattern
 
@@ -167,7 +210,7 @@ This means a standard call/response would timeout. We therefore adopt an actor /
 Each top-level component is an actor, which can send and receive messages to other actors. Each API request is marked as either *fast* or *slow*:
 
  - Fast messages get an immediate result within the http response.
- - Slow messages send an immediate receipt response with a job-id, followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
+ - Slow messages send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
 
 
 ### TODO System Stack Diagram
@@ -182,4 +225,128 @@ Each top-level component is an actor, which can send and receive messages to oth
  - OWL Manchester Syntax: <http://www.w3.org/TR/owl2-manchester-syntax/>
 
 # TODO Appendix 1: Component APIs
+
+## Common
+
+This document uses JSDoc to describe input and output types, e.g. `{?string}` would mark an optional string.
+
+### Url structure
+
+The default server is coinvent.soda.sh and the default port is 8400.
+
+For each component, we provide a default implementation, and these follow a
+common url pattern.
+Other implementations are possible, and may not follow the pattern.
+
+	http://server:port/actor/component
+
+So we can have multiple different instances of a component, e.g.
+http://coinvent.soda.sh:8400/hets/blender and http://coinvent.soda.sh:8400/hr3/blender
+
+The actor may refer to a piece of software (e.g. hets), or to a user, which allows that any component function can be fulfilled manually by a human being. E.g. http://coinvent.soda.sh:8400/alice/blender
+
+This structure anticipates multi-agent setups, which will be wanted for the 
+investigation of social aspects later in the project.
+
+The default file store also fits into this pattern, with component=files. 
+E.g. the user Alice's houseboat file could be 
+http://coinvent.soda.sh:8400/alice/files/houseboat.omn
+
+
+### Common Inputs
+
+`concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text.
+
+`mapping` type: Mappings are provided as DOL fragments, using only the inner part of the DOL mapping.
+E.g. "sun |-> nucleus, planet |-> electron".
+
+All inputs are of course sent URL encoded.
+
+### Common Outputs
+
+With the exception of files, all outputs are in JSON and have a common envelope.
+
+#### Envelope
+
+Each response has the same top level structure:
+
+	{
+		"success": {boolean} usually true,
+		"cargo": the meat of the response, or null if it is a slow asynchronous request,
+		"jobid": {string} The job id for slow requests,
+		"messages": {string[]} an array of notifications for the user -- usually null,
+		"cursor": {uri} the next page in a series -- usually null				
+	}
+
+### Authentication: none
+
+No authentication is required at this stage in the project.
+
+### Cross-server requests: CORS
+
+Cross-server calls -- where a webpage hosted on one server makes an ajax request
+on another server -- are supported via CORS. This means they just work, although CORS may not work with older browsers.
+
+## Component APIs
+
+### /blender: Given a Partial Blend Diagram, compute the Blend Concept
+
+Default implementation: HETS   
+Default end point: http://coinvent.soda.sh:8400/hets/blender
+
+Parameters:
+
+ - lang: owl|casl
+ - input1: {concept} 
+ - input2: {concept}
+ - base: {concept}
+ - base_input1: {mapping} from base to input1
+ - base_input2: {mapping} from base to input1
+  
+Response-cargo: 
+	
+	{
+		blend: {concept} which is a blend of input1 and input2,
+		input1_blend: {mapping} from input1 to blend,
+		input2_blend: {mapping} from input2 to blend
+	}
+
+### /base: Given 2 Concepts, compute a common base Concept
+
+Default implementation: HDTP   
+Default end point: http://coinvent.soda.sh:8400/hdtp/base
+
+Parameters:
+
+ - lang: owl|casl
+ - input1: {concept} 
+ - input2: {concept}
+ - base: {?concept}
+ - base_input1: {?mapping} from base to input1
+ - base_input2: {?mapping} from base to input1
+  
+Response-cargo: 
+	
+	{
+		base: {concept} which is a common base for input1 and input2,
+		base_input1: {mapping} from base to input1,
+		base_input2: {mapping} from base to input2
+	}
+
+
+### TODO Example Finder: Given a Concept, find examples
+
+Default implementation: Manual
+
+### TODO Concept Scorer: How good is a Concept?
+
+Default implementations: 
+
+ - HETS for automated consistency checks.
+ - Manual for other scores.
+
+### TODO Concept Store: Store Concepts and Blend Diagrams
+
+Must provide save and load over http.
+
  
