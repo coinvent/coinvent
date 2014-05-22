@@ -1,0 +1,248 @@
+logic Isabelle
+
+typedecl Real
+
+datatype Complex = X_pair "Real" "Real" ("pair''/'(_,/ _')" [3,3] 999)
+
+consts
+X0 :: "Real" ("0''")
+X1 :: "Real" ("1''")
+XMinus__X :: "Real => Real" ("(-''/ _)" [56] 56)
+X__XGtXEq__X :: "Real => Real => bool" ("(_/ >=''/ _)" [44,44] 42)
+X__XGt__X :: "Real => Real => bool" ("(_/ >''/ _)" [44,44] 42)
+X__XPlus__X :: "Real => Real => Real" ("(_/ +''/ _)" [54,54] 52)
+X__Xx__X :: "Real => Real => Real" ("(_/ *''/ _)" [54,54] 52)
+X__cpl__X :: "Complex => Complex => Complex" ("(_/ cpl/ _)" [54,54] 52)
+X__cti__X :: "Real => Complex => Complex" ("(_/ cti/ _)" [54,54] 52)
+X__gt__X :: "Complex => Complex => bool" ("(_/ gt/ _)" [44,44] 42)
+X__gte__X :: "Complex => Complex => bool" ("(_/ gte/ _)" [44,44] 42)
+X__prod__X :: "Complex => Complex => Complex" ("(_/ prod/ _)" [54,54] 52)
+X_basis_complex :: "Complex" ("basis'_complex")
+X_basis_real :: "Complex" ("basis'_real")
+X_c_ident :: "Complex" ("c'_ident")
+X_complex :: "Complex => Real" ("complex/'(_')" [3] 999)
+X_complex_zero :: "Complex" ("complex'_zero")
+X_real :: "Complex => Real" ("real/'(_')" [3] 999)
+cmi__X :: "Complex => Complex" ("(cmi/ _)" [56] 56)
+complex_norm__X :: "Complex => Real" ("(complex'_norm/ _)" [56] 56)
+csq__X :: "Complex => Complex" ("(csq/ _)" [56] 56)
+csqrt__X :: "Complex => Complex partial" ("(csqrt/ _)" [56] 56)
+field_norm__X :: "Real => Real" ("(field'_norm/ _)" [56] 56)
+sq__X :: "Real => Real" ("(sq/ _)" [56] 56)
+sqrt__X :: "Real => Real partial" ("(sqrt/ _)" [56] 56)
+times_inv__XX1 :: "Complex => Complex" ("(times'_inv''/ _)" [56] 56)
+times_inv__XX2 :: "Real => Real" ("(times'_inv''''/ _)" [56] 56)
+
+ga_selector_real [rule_format] :
+"ALL (XX1 :: Real). ALL (XX2 :: Real). real(pair'(XX1, XX2)) = XX1"
+
+ga_selector_complex [rule_format] :
+"ALL (XX1 :: Real).
+ ALL (XX2 :: Real). complex(pair'(XX1, XX2)) = XX2"
+
+ga_injective_pair [rule_format] :
+"ALL (XX1 :: Real).
+ ALL (XX2 :: Real).
+ ALL (Y1 :: Real).
+ ALL (Y2 :: Real).
+ pair'(XX1, XX2) = pair'(Y1, Y2) = (XX1 = Y1 & XX2 = Y2)"
+
+Ax5 [rule_format] : "ALL (x :: Real). x +' 0' = x"
+
+Ax6 [rule_format] :
+"ALL (x :: Real). ALL (y :: Real). x +' y = y +' x"
+
+Ax7 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real). ALL (z :: Real). x +' (y +' z) = (x +' y) +' z"
+
+Ax8 [rule_format] : "ALL (x :: Real). x +' -' x = 0'"
+
+Ax9 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real). ~ x = 0' & ~ y = 0' --> x *' y = y *' x"
+
+Ax10 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ ~ x = 0' & ~ y = 0' & ~ z = 0' --> (x *' y) *' z = x *' (y *' z)"
+
+Ax11 [rule_format] :
+"ALL (x :: Real). ~ x = 0' --> x *' times_inv'' x = 1'"
+
+Ax12 [rule_format] : "ALL (x :: Real). ~ x = 0' --> x *' 1' = 1'"
+
+Ax13 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ ~ x = 0' & ~ y = 0' & ~ z = 0' -->
+ x *' (y +' z) = (x *' y) +' (x *' z)"
+
+Ax14 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ ALL (v :: Real). x >=' y & z >=' v --> x +' z >=' y +' v"
+
+Ax15 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real). x >' 0' & y >' 0' --> x *' y >' 0'"
+
+Ax16 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ ALL (v :: Real).
+ pair'(x, y) cpl pair'(z, v) = pair'(x +' z, y +' v)"
+
+Ax17 [rule_format] : "complex_zero = pair'(0', 0')"
+
+Ax18 [rule_format] : "basis_real = pair'(1', 0')"
+
+Ax19 [rule_format] : "basis_complex = pair'(0', 1')"
+
+Ax20 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ ALL (v :: Real).
+ pair'(x, y) prod pair'(z, v) =
+ pair'((x *' z) +' -' (y *' v), (x *' v) +' (y *' z))"
+
+Ax21 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ times_inv' pair'(x, y) =
+ times_inv'' sq complex_norm pair'(x, y) cti pair'(x, -' y)"
+
+Ax22 [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ makePartial (complex_norm pair'(x, y)) =
+ sqrt ((x *' x) +' (y *' y))"
+
+Ax23 [rule_format] :
+"ALL (a :: Complex).
+ ALL (b :: Complex).
+ complex_norm (a prod b) = complex_norm a *' complex_norm b"
+
+theorem Ax1 : "ALL (x :: Complex). x cpl complex_zero = x"
+oops
+
+theorem Ax2 :
+"ALL (x :: Complex). ALL (y :: Complex). x cpl y = y cpl x"
+oops
+
+theorem Ax3 :
+"ALL (x :: Complex).
+ ALL (y :: Complex).
+ ALL (z :: Complex). x cpl (y cpl z) = (x cpl y) cpl z"
+oops
+
+theorem Ax4 : "ALL (x :: Complex). x cpl cmi x = complex_zero"
+oops
+
+theorem Ax5_26 :
+"ALL (x :: Complex).
+ ALL (y :: Complex).
+ ~ x = complex_zero & ~ y = complex_zero --> x prod y = y prod x"
+oops
+
+theorem Ax6_27 :
+"ALL (x :: Complex).
+ ALL (y :: Complex).
+ ALL (z :: Complex).
+ ~ x = complex_zero & ~ y = complex_zero & ~ z = complex_zero -->
+ (x prod y) prod z = x prod (y prod z)"
+oops
+
+theorem Ax7_28 :
+"ALL (x :: Complex).
+ ~ x = complex_zero --> x prod times_inv' x = c_ident"
+oops
+
+theorem Ax8_29 :
+"ALL (x :: Complex).
+ ~ x = complex_zero --> x prod c_ident = c_ident"
+oops
+
+theorem Ax9_30 :
+"ALL (x :: Complex).
+ ALL (y :: Complex).
+ ALL (z :: Complex).
+ ~ x = complex_zero & ~ y = complex_zero & ~ z = complex_zero -->
+ x prod (y cpl z) = (x prod y) cpl (x prod z)"
+oops
+
+theorem Ax10_24 :
+"ALL (x :: Complex).
+ ALL (y :: Complex).
+ ALL (z :: Complex).
+ ALL (v :: Complex). x gte y & z gte v --> x cpl z gte y cpl v"
+oops
+
+theorem Ax11_25 :
+"ALL (x :: Complex).
+ ALL (y :: Complex).
+ x gt complex_zero & y gt complex_zero --> x prod y gt complex_zero"
+oops
+
+theorem Ax18_43 :
+"ALL (x :: Real).
+ ALL (y :: Real). cmi pair'(x, y) = pair'(-' x, -' y)"
+oops
+
+theorem Ax19_44 :
+"ALL (x :: Real).
+ ALL (a :: Complex).
+ ALL (b :: Complex). x cti (a cpl b) = (x cti a) cpl (x cti b)"
+oops
+
+theorem Ax20_45 :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (a :: Complex). (x +' y) cti a = (x cti a) cpl (y cti a)"
+oops
+
+theorem Ax21_46 :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (a :: Complex). x cti (y cti a) = (x *' y) cti a"
+oops
+
+theorem Ax22_47 : "ALL (a :: Complex). 1' cti a = a"
+oops
+
+theorem Ax23_48 : "ALL (a :: Complex). complex_norm a >=' 0'"
+oops
+
+theorem Ax24 :
+"ALL (a :: Complex). (complex_norm a >' 0') = (~ a = complex_zero)"
+oops
+
+theorem Ax25 :
+"ALL (x :: Real).
+ ALL (a :: Complex).
+ complex_norm (x cti a) = field_norm x *' complex_norm a"
+oops
+
+theorem Ax26 :
+"ALL (a :: Complex).
+ ALL (b :: Complex).
+ complex_norm (a cpl b) = complex_norm a +' complex_norm b"
+oops
+
+theorem Ax27 :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ (x cti basis_real) cpl (y cti basis_complex) = complex_zero =
+ (x = 0' & y = 0')"
+oops
+
+theorem Ax28 :
+"ALL (a :: Complex).
+ EX (s :: Real).
+ EX (t :: Real). a = (s cti basis_real) cpl (t cti basis_complex)"
+oops

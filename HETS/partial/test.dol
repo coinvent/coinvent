@@ -1,0 +1,52 @@
+logic CASL
+
+%%%% Generic type -  Gen theory contains theorems about 
+%%%% the operators which we want to be true in a model
+spec Gen = 
+     sort Gen_type
+     ops 
+     zero: Gen_type;
+     __ plus __: Gen_type * Gen_type -> Gen_type;
+     minus __: Gen_type -> Gen_type
+
+forall x,y,z: Gen_type
+       . x plus zero = x  %plus_ident%
+       . x plus y = y plus x  %com_plus%
+       . x plus (y plus z) = (x plus y) plus z %assoc_plus%
+       . x plus (minus x) = zero %plus_inv%
+end
+
+%%%% Vec theory in which some operations are defined
+spec Vec = 
+     sort Real
+     free type Vec ::= pair(x:Real;y:Real)      
+     ops
+     0 : Real;
+     __ + __: Real * Real -> Real;
+     op - __: Real -> Real; 
+     op vzero : Vec;
+     op __ vpl__ : Vec * Vec -> Vec;
+     op vminus __ : Vec -> Vec
+
+
+forall x,y,z,t: Real
+       . x + 0 = x  %field_plus_ident%
+       . x + y = y + x  %field_com_plus%
+       . x + (y + z) = (x + y) + z %field_assoc_plus%
+       . x + (- x) = 0 %field_plus_inv%
+       . pair(x,y) vpl pair(z,t) = pair(x+z,y+t) %def_vplus%
+       . vminus (pair(x,y)) = pair(- x, -y) %def_vminus%
+       . vzero = pair(0, 0) %def_vzero%
+%%% This is a manually inserted proof obligation
+forall a:Vec. vminus (vminus a) = a %implied
+end
+
+%%%% Signature morphism definition from Gen to Vec theory
+%%%% Proving Development Graph in HETS generates proof obligations -
+%%%% These are the theorems stated in Gen Theory
+%%%% about the definitions of the symbols in Vec Theory
+view I: Gen to Vec = 
+     Gen_type |-> Vec,
+     __ plus __ |-> __ vpl __,
+     minus __ |-> vminus __,
+     zero |-> vzero
