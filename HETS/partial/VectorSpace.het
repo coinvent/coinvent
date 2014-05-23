@@ -21,7 +21,7 @@ X_real :: "Vec => Real" ("real/'(_')" [3] 999)
 field_norm__X :: "Real => Real" ("(field'_norm/ _)" [56] 56)
 sq__X :: "Real => Real" ("(sq/ _)" [56] 56)
 sqrt__X :: "Real => Real partial" ("(sqrt/ _)" [56] 56)
-times_inv__X :: "Real => Real" ("(times'_inv/ _)" [56] 56)
+times_inv__X :: "Real => Real partial" ("(times'_inv/ _)" [56] 56)
 vec_norm__X :: "Vec => Real" ("(vec'_norm/ _)" [56] 56)
 vmi__X :: "Vec => Vec" ("(vmi/ _)" [56] 56)
 vzero :: "Vec"
@@ -52,26 +52,26 @@ Ax7 [rule_format] :
 Ax8 [rule_format] : "ALL (x :: Real). x +' -' x = 0'"
 
 Ax9 [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real). ~ x = 0' & ~ y = 0' --> x *' y = y *' x"
+"ALL (x :: Real). ALL (y :: Real). x *' y = y *' x"
 
 Ax10 [rule_format] :
 "ALL (x :: Real).
- ALL (y :: Real).
- ALL (z :: Real).
- ~ x = 0' & ~ y = 0' & ~ z = 0' --> (x *' y) *' z = x *' (y *' z)"
+ ALL (y :: Real). ALL (z :: Real). (x *' y) *' z = x *' (y *' z)"
 
-Ax11 [rule_format] : "ALL (x :: Real). ~ x = 0' --> x *' 1' = 1'"
+Ax11 [rule_format] : "ALL (x :: Real). x *' 1' = x"
 
 Ax12 [rule_format] :
-"ALL (x :: Real). ~ x = 0' --> x *' times_inv x = 1'"
+"ALL (x :: Real).
+ ~ x = 0' -->
+ (case times_inv x of
+  None => undefinedOp |
+  Some Xc0 => makePartial (x *' Xc0)) =
+ makePartial 1'"
 
 Ax13 [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- ~ x = 0' & ~ y = 0' & ~ z = 0' -->
- x *' (y +' z) = (x *' y) +' (x *' z)"
+ ALL (z :: Real). x *' (y +' z) = (x *' y) +' (x *' z)"
 
 Ax14 [rule_format] :
 "ALL (x :: Real).
