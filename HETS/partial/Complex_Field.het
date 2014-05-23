@@ -59,26 +59,21 @@ Ax7 [rule_format] :
 Ax8 [rule_format] : "ALL (x :: Real). x +' -' x = 0'"
 
 Ax9 [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real). ~ x = 0' & ~ y = 0' --> x *' y = y *' x"
+"ALL (x :: Real). ALL (y :: Real). x *' y = y *' x"
 
 Ax10 [rule_format] :
 "ALL (x :: Real).
- ALL (y :: Real).
- ALL (z :: Real).
- ~ x = 0' & ~ y = 0' & ~ z = 0' --> (x *' y) *' z = x *' (y *' z)"
+ ALL (y :: Real). ALL (z :: Real). (x *' y) *' z = x *' (y *' z)"
 
 Ax11 [rule_format] :
 "ALL (x :: Real). ~ x = 0' --> x *' times_inv'' x = 1'"
 
-Ax12 [rule_format] : "ALL (x :: Real). ~ x = 0' --> x *' 1' = 1'"
+Ax12 [rule_format] : "ALL (x :: Real). x *' 1' = x"
 
 Ax13 [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- ~ x = 0' & ~ y = 0' & ~ z = 0' -->
- x *' (y +' z) = (x *' y) +' (x *' z)"
+ ALL (z :: Real). x *' (y +' z) = (x *' y) +' (x *' z)"
 
 Ax14 [rule_format] :
 "ALL (x :: Real).
@@ -145,17 +140,13 @@ theorem Ax4 : "ALL (x :: Complex). x cpl cmi x = complex_zero"
 oops
 
 theorem Ax5_26 :
-"ALL (x :: Complex).
- ALL (y :: Complex).
- ~ x = complex_zero & ~ y = complex_zero --> x prod y = y prod x"
+"ALL (x :: Complex). ALL (y :: Complex). x prod y = y prod x"
 oops
 
 theorem Ax6_27 :
 "ALL (x :: Complex).
  ALL (y :: Complex).
- ALL (z :: Complex).
- ~ x = complex_zero & ~ y = complex_zero & ~ z = complex_zero -->
- (x prod y) prod z = x prod (y prod z)"
+ ALL (z :: Complex). (x prod y) prod z = x prod (y prod z)"
 oops
 
 theorem Ax7_28 :
@@ -164,16 +155,13 @@ theorem Ax7_28 :
 oops
 
 theorem Ax8_29 :
-"ALL (x :: Complex).
- ~ x = complex_zero --> x prod c_ident = c_ident"
+"ALL (x :: Complex). ~ x = complex_zero --> x prod c_ident = x"
 oops
 
 theorem Ax9_30 :
 "ALL (x :: Complex).
  ALL (y :: Complex).
- ALL (z :: Complex).
- ~ x = complex_zero & ~ y = complex_zero & ~ z = complex_zero -->
- x prod (y cpl z) = (x prod y) cpl (x prod z)"
+ ALL (z :: Complex). x prod (y cpl z) = (x prod y) cpl (x prod z)"
 oops
 
 theorem Ax10_24 :
