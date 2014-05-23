@@ -23,11 +23,11 @@ spec Field =
      	    . x+y=y+x   %f_com_plus%
 	    . x+(y+z) = (x+y)+z  %f_assoc_plus%
 	    . x + (-x) = 0    %f_plus_inv%
-	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x  %f_com_times%
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %f_assoc_times%
+	    . x*y = y*x  %f_com_times%
+	    . (x*y)*z=x*(y*z) %f_assoc_times%
 	    . (not (x=0)) => x*(times_inv x) = 1 %f_times_inv%
-	    . (not (x=0)) => x*1 = 1 %f_times_ident$
- 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %f_dist_times%
+	    . (not (x=0)) => x*1 = x %f_times_ident$
+ 	    . x*(y+z) = (x*y)+(x*z) %f_dist_times%
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %f_order_+%
 	    . (x>0) /\ (y>0) => (x*y)>0  %f_order_*%
  end
@@ -46,7 +46,7 @@ spec VectorSpace =
 	   __ + __:Real * Real -> Real;
 	   __ * __:Real * Real -> Real;
 	  - __: Real -> Real;
-	  times_inv __: Real -> Real;
+	  times_inv __: Real ->? Real;
      	  0:Real;
 	  1:Real;
 	  field_norm __:Real -> Real;
@@ -69,11 +69,11 @@ spec VectorSpace =
      	    . x+y=y+x %vf_com_plus%
 	    . x+(y+z) = (x+y)+z %vf_assoc_plus%
 	    . x + (-x) = 0 %vf_plus_inv%
-	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x %vf_times_ident%
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %vf_assoc_times%
-	    . (not (x=0)) => x*1 = 1 %vf_times_ident%
+	    . x*y = y*x %vf_times_ident%
+	    . (x*y)*z=x*(y*z) %vf_assoc_times%
+	    . x*1 = x %vf_times_ident%
 	    . (not (x=0)) => x*(times_inv x) = 1 %vf_times_inv% 
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %vf_dist%
+	    . x*(y+z) = (x*y)+(x*z) %vf_dist%
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %vf_order_+%
 	    . (x>0) /\ (y>0) => (x*y)>0 %vf_order_*%
 	    . vzero = pair (0,0) %vzero_def%
@@ -160,11 +160,11 @@ spec Complex_Field =
      	    . x+y=y+x   %c_com_plus%
 	    . x+(y+z) = (x+y)+z  %c_assoc_plus%
 	    . x + (-x) = 0    %c_plus_inv%
-	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x  %c_com_times%
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %c_assoc_times%
+	    . x*y = y*x  %c_com_times%
+	    . (x*y)*z=x*(y*z) %c_assoc_times%
 	    . (not (x=0)) => x*(times_inv x) = 1 %c_times_inv%
-	    . (not (x=0)) => x*1 = 1 %c_times_ident$
- 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %c_dist_times%
+	    . x*1 = x %c_times_ident$
+ 	    . x*(y+z) = (x*y)+(x*z) %c_dist_times%
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %c_order_+%
 	    . (x>0) /\ (y>0) => (x*y)>0  %c_order_*%
 	    . (pair(x,y) cpl pair (z,v)) = pair((x+z),(y+v)) %cplus_def$
