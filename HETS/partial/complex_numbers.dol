@@ -175,7 +175,7 @@ spec Complex_Field =
 	    . times_inv (pair(x,y)) = (times_inv (sq (complex_norm (pair(x,y))))) cti (pair(x,(- y))) %ctimes_inv_def%
 	    . complex_norm (pair(x,y)) = sqrt((x*x) + (y*y)) %norm_def%
 	     %%% properties we want in the complex numbers
-      forall a,b: Complex. complex_norm (a prod b) = (complex_norm a) * (complex_norm b) 
+      forall a,b: Complex. complex_norm (a prod b) = (complex_norm a) * (complex_norm b) %implied
 end
 
 view I3: Colimit to Complex_Field =
