@@ -118,10 +118,11 @@ Ax22 [rule_format] :
  makePartial (complex_norm pair'(x, y)) =
  sqrt ((x *' x) +' (y *' y))"
 
-Ax23 [rule_format] :
+theorem Ax23 :
 "ALL (a :: Complex).
  ALL (b :: Complex).
  complex_norm (a prod b) = complex_norm a *' complex_norm b"
+oops
 
 theorem Ax1 : "ALL (x :: Complex). x cpl complex_zero = x"
 oops
