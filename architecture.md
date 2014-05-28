@@ -2,7 +2,7 @@
 # Coinvent Architecture
 
 Author: Daniel, with input from Ewen and Mihai   
-Status: Draft   
+Status: Draft, due for delivery in June.   
 Version: 0.1   
 
 <!-- MarkdownTOC depth=2 -->
@@ -18,10 +18,14 @@ Version: 0.1
 
 ## Overview
 
-This document presents the archictectural design for the integrated Coinvent system. It is currently a draft for discussion. It is due for delivery in June.
+This document presents the archictectural design for the integrated Coinvent system. 
 
-Please read the [Glossary / Jargon buster](http://ccg.doc.gold.ac.uk/research/coinvent/internal/?page_id=356) first. For further information, please see the reference documents listed at the end of this file.
+Please first read:
 
+1. The [Glossary / Jargon buster](http://ccg.doc.gold.ac.uk/research/coinvent/internal/?page_id=356) first. 
+2. The [requirements / user-stories](requirements.md) which motivate this design.
+
+For further information, please see the reference documents listed at the end of this file.
 
 ## Core Object: The Partial Blend Diagram
 
@@ -329,7 +333,8 @@ Parameters:
  - base: {?concept}
  - base_input1: {?mapping} from base to input1
  - base_input2: {?mapping} from base to input1
-  
+ - cursor: {?url} For requesting follow-on results.
+ 
 Response-cargo: 
 	
 	{
@@ -340,11 +345,24 @@ Response-cargo:
 
 ## TODO /weaken
 
-### TODO Example Finder: Given a Concept, find examples
+### /model: Given a Concept, find examples
 
-Default implementation: Manual
+Default implementation: Manual   
+Default end point: http://coinvent.soda.sh:8400/<user-name>/model
 
-### TODO Concept Scorer: How good is a Concept?
+Parameters:
+
+ - lang: owl|casl
+ - concept: {concept} 
+ - cursor: {?url} For requesting follow-on results.
+   
+Response-cargo: 
+	
+	{
+		models: {concept[]} 
+	}
+
+### /eval: Concept Scorer: How good is a Concept?
 
 Default implementations: 
 
@@ -360,10 +378,9 @@ Default end point: http://coinvent.soda.sh:8400/files/<user-name>
 
 Load Parameters: 
 
- - Use the path (i.e. the slug) to specify a file.
-
-E.g. 
-http://coinvent.soda.sh:8400/files/alice/alices_boat.dol
+ - Use the path (i.e. the slug) to specify a file.   
+ E.g. `http://coinvent.soda.sh:8400/files/alice/stuff/alices_boat.dol`
+ would fetch the file stored at `<base dir>/alice/stuff/alices_boat.dol`
 
 Response: the file  
   
