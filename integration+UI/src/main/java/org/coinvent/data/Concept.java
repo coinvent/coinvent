@@ -4,8 +4,11 @@ import creole.data.XId;
 
 public class Concept {
 
-	private XId oxid;
-	private XId xid;
+	public XId oxid;
+	public XId xid;
+	public String lang;
+	public String iri;
+	public String contents;
 
 	public Concept(User owner, XId concept) {
 		this.xid = concept;

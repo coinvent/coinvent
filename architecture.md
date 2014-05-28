@@ -136,6 +136,10 @@ Default implementation: HETS
 
 Default implementation: HDTP
 
+### Amalgam Finder: Given an inconsistent Blend Diagram, weaken the inputs
+
+Default implementation: manual
+
 ### Example Finder: Given a Concept, find examples
 
 Default implementation: Manual
@@ -238,27 +242,28 @@ For each component, we provide a default implementation, and these follow a
 common url pattern.
 Other implementations are possible, and may not follow the pattern.
 
-	http://server:port/actor/component
+	http://server:port/component/actor
 
 So we can have multiple different instances of a component, e.g.
-http://coinvent.soda.sh:8400/hets/blender and http://coinvent.soda.sh:8400/hr3/blender
+http://coinvent.soda.sh:8400/blender/hets and http://coinvent.soda.sh:8400/blender/hr3
 
-The actor may refer to a piece of software (e.g. hets), or to a user, which allows that any component function can be fulfilled manually by a human being. E.g. http://coinvent.soda.sh:8400/alice/blender
+The actor may refer to a piece of software (e.g. hets), or to a user, which allows that any component function can be fulfilled manually by a human being. E.g. http://coinvent.soda.sh:8400/blender/alice
 
 This structure anticipates multi-agent setups, which will be wanted for the 
 investigation of social aspects later in the project.
 
 The default file store also fits into this pattern, with component=files. 
 E.g. the user Alice's houseboat file could be 
-http://coinvent.soda.sh:8400/alice/files/houseboat.omn
+http://coinvent.soda.sh:8400/files/alice/houseboat.omn
 
 
 ### Common Inputs
 
 `concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text.
 
-`mapping` type: Mappings are provided as DOL fragments, using only the inner part of the DOL mapping.
-E.g. "sun |-> nucleus, planet |-> electron".
+`mapping` type: Mappings are provided either as:   
+ 1. JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"
+ 2. DOL fragments, using only the inner part of the DOL mapping, e.g. "sun |-> nucleus, planet |-> electron".
 
 All inputs are of course sent URL encoded.
 
@@ -292,7 +297,7 @@ on another server -- are supported via CORS. This means they just work, although
 ### /blender: Given a Partial Blend Diagram, compute the Blend Concept
 
 Default implementation: HETS   
-Default end point: http://coinvent.soda.sh:8400/hets/blender
+Default end point: http://coinvent.soda.sh:8400/blender/hets
 
 Parameters:
 
@@ -314,7 +319,7 @@ Response-cargo:
 ### /base: Given 2 Concepts, compute a common base Concept
 
 Default implementation: HDTP   
-Default end point: http://coinvent.soda.sh:8400/hdtp/base
+Default end point: http://coinvent.soda.sh:8400/base/hdtp
 
 Parameters:
 
@@ -333,6 +338,7 @@ Response-cargo:
 		base_input2: {mapping} from base to input2
 	}
 
+## TODO /weaken
 
 ### TODO Example Finder: Given a Concept, find examples
 
@@ -345,8 +351,34 @@ Default implementations:
  - HETS for automated consistency checks.
  - Manual for other scores.
 
-### TODO Concept Store: Store Concepts and Blend Diagrams
+### /file: Store Concepts and Blend Diagrams
 
 Must provide save and load over http.
 
+Default implementation: file-system based   
+Default end point: http://coinvent.soda.sh:8400/files/<user-name>
+
+Load Parameters: 
+
+ - Use the path (i.e. the slug) to specify a file.
+
+E.g. 
+http://coinvent.soda.sh:8400/files/alice/alices_boat.dol
+
+Response: the file  
+  
+Save Parameters:
+
+ - Use the path (i.e. the slug) to specify a file.
+ - Use PUT or the parameter=value pair `action=save`
+ - The post body contains the text to save.
+
+Response: the file  
  
+### /job: List open tasks
+
+
+
+
+
+	

@@ -4,13 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.coinvent.web.FileServlet;
+
 import winterwell.utils.io.FileUtils;
 import winterwell.utils.web.XStreamUtils;
 import creole.data.XId;
 
 public class FileDataLayer implements IDataLayer {
 
-	File base = new File("data");
+	File base = FileServlet.BASE;
 	
 	@Override
 	public User getUser(XId user) {
