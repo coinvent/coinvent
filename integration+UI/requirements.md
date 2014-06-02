@@ -77,7 +77,7 @@ Requirements:
 
 1. A format which can define mathematical concepts.
 2. Specify two theories, and blend them to produce a new concept.
-2. Weaken input concepts and strengthen output blends ??. 
+2. Weaken input concepts (to remove inconsistency) and strengthen output blends (to reach "interesting" results). 
 3. Given a concept, check it for consistency.
 4. Given a concept, produce examples / a model.
 5. Given a concept, identify the unresolved questions in the blend (for complex numbers, the missing formula x.y=?).
