@@ -279,11 +279,14 @@ http://coinvent.soda.sh:8400/files/alice/houseboat.omn
 
 ### Common Inputs
 
-`concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text.
+`Concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text.
 
-`mapping` type: Mappings are provided either as:   
- 1. JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"
+`Mapping` type: Mappings are provided either as:   
+ 1. JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"   
  2. DOL fragments, using only the inner part of the DOL mapping, e.g. "sun |-> nucleus, planet |-> electron".
+
+`BlendDiagram` type: A packet of data comprising the Concepts and Mappings for a (partial) blend diagram. The component Concepts of a BlendDiagram use the names `base`, `blend`, `input1`, `input2`, and the Mappings `base_input1`, `base_input2`, `input1_blend`, `input2_blend`. If weakenings are used, then these Concepts are names `weakinput1`, `weakinput2`, and `weakbase`, with corresponding Mappings. Can be provided as the source text itself,  
+or as a uri for a file containing the BlendDiagram. Can be in JSON or in DOL, identified in the case of a uri by a .json or .dol file-ending.
 
 All inputs are of course sent URL encoded.
 
@@ -359,12 +362,26 @@ Response-cargo:
 		base_input2: {mapping} from base to input2
 	}
 
-## TODO /weaken
 
+## /weaken: Given an inconsistent partial blend diagram, weaken the concepts
+
+This is the key method for Amalgams.
+
+Default implementation: Manual (Amalgams later in the project)         
+Default end point: http://coinvent.soda.sh:8400/weaken/<user-name>
+
+Parameters: 
+
+ - blend_diagram: A Partial Blend Diagram
+ - cursor: {?url} For requesting follow-on results.
+ 
+Response-cargo: A weakened blend diagram
+
+	
 ### /model: Given a Concept, find examples
 
 Default implementation: Manual   
-Default end point: http://coinvent.soda.sh:8400/<user-name>/model
+Default end point: http://coinvent.soda.sh:8400/model/<user-name>
 
 Parameters:
 
@@ -390,7 +407,7 @@ Default implementations:
 Must provide save and load over http.
 
 Default implementation: file-system based   
-Default end point: http://coinvent.soda.sh:8400/files/<user-name>
+Default end point: http://coinvent.soda.sh:8400/file/<user-name>
 
 Load Parameters: 
 
@@ -403,15 +420,58 @@ Response: the file
 Save Parameters:
 
  - Use the path (i.e. the slug) to specify a file.
- - Use PUT or the parameter=value pair `action=save`
+ - Use http PUT or the parameter=value pair `action=save`
  - The post body contains the text to save.
 
 Response: the file  
  
+Delete Parameters:
+
+ - Use http DELETE or the parameter=value pair `action=delete`
+
+Response: just the envelope, indicating success or failure 
+ 
 ### /job: List open tasks
 
+Default implementation: Coinvent Integration+UI module      
+Default end point: http://coinvent.soda.sh:8400/job/<user-name>
 
+Parameters:
 
+ - status: {?string} open|closed Optional filter.
+ - cursor: {?url} For requesting follow-on results.
+   
+Response-cargo: 
+	
+	{
+		jobs: [
+			{
+				id: {string},   
+				status: open|closed
+			}
+			] 
+	}
 
+#### /job/<user-name>/<job-id>: Show / delete job details
+
+Default implementation: Coinvent Integration+UI module      
+Default end point: http://coinvent.soda.sh:8400/job/<user-name>
+
+ - Use the path (i.e. the slug) to specify a file.   
+ E.g. `http://coinvent.soda.sh:8400/job/alice/1234`
+ would fetch details on job id 1234, assigned to Alice.
+If a job-id is not specified, this endpoint will list jobs (see above).
+ - action: delete Use this, or the http method DELETE, to request cancellation of a job.
+
+Response-cargo: 
+	
+	{
+		job: {
+			id: {string},
+			status: open|closed
+			} 
+	}
+
+This may optionally provide more information about the job, such as a progress update.
 
 	
