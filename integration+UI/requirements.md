@@ -2,8 +2,8 @@
 # Coinvent Requirements / User-Stories
 
 Author: Daniel, with input from the April workshop 
-Status: Draft, due for delivery in June.      
-Version: 0.1   
+Status: Final Draft, due for delivery in June.      
+Version: 0.9   
 
 ## Overview
 
@@ -48,13 +48,18 @@ Priority: This is a key strand of the project plan. For Year 2/3.
 Later in the project, we aim to run Coinvent hackathons, where other developers
 use Coinvent to build things.
 
-User: A researcher with ontology experience.   
-Task: Explore concept blending.
+User: A researcher with ontology experience.    
+Task: Explore concept blending.   
+Needs: Same as for a Coinvent Logic Researcher, plus a user-friendly UI and documentation.
 
-User: A developer making a creativity tool for a domain of their choice.       
-Task: 
-Use-case: 
-Requirements: The system must be flexible enough to support modified back-end components, and other user interfaces. Enough documentation to support 3rd party developers, including a Hello-World example project.      
+User: A developer making a creativity tool for a domain of their choice (e.g. one of the domains considered below).      
+Needs: 
+
+ - The system must be flexible enough to support:
+   - Modified back-end components.
+   - Other user interfaces, built on top of the API. 
+ - Enough documentation to support 3rd party developers, including a Hello-World example project.      
+
 Success criteria: Developers from outside the project produce projects (which may be just proof-of-concept scratch projects) using Coinvent.   
 Priority: For Year 3.
 
