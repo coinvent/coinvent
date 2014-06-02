@@ -2,8 +2,8 @@
 # Coinvent Architecture
 
 Author: Daniel, with input from Ewen and Mihai   
-Status: Draft, due for delivery in June.   
-Version: 0.1   
+Status: Final Draft, due for delivery in June.   
+Version: 0.9   
 
 <!-- MarkdownTOC depth=2 -->
 
@@ -221,8 +221,24 @@ Each top-level component is an actor, which can send and receive messages to oth
  - Slow messages send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
 
 
-### TODO System Stack Diagram
+### System Stack Diagram
 
+<!--
+Coinvent EcoSystem
+[Default User Interface]
+[AJAX][jQuery][underscore templates]
+[Web browser]
+[http: JSON format REST API]
+[Java web-service wrapper]
+[HDTP][Files][HETS server^1]
+[SWI Prolog^2][Git^3][Theorem Provers]
+[OS: Linux (Ubuntu)]
+1: The HETS server provides an http API. This is lower-level than the Coinvent API.
+2: HDTP might be re-written by Martin Möhrmann to use a different backend.
+3: Git integration provides OntoHub integration without a hard dependency.   
+-->
+
+<div id="diadraw"><div class="dia panel panel-primary"><div class="panel-heading"><h3 class="panel-title">Coinvent EcoSystem</h3></div><table class="dia"><tbody><tr><td class="default" colspan="3">Default User Interface</td></tr><tr><td class="ajax" colspan="1">AJAX</td><td class="jquery" colspan="1">jQuery</td><td class="underscore" colspan="1">underscore templates</td></tr><tr><td class="web" colspan="3">Web browser</td></tr><tr><td class="http" colspan="3">http:  JSON format REST API</td></tr><tr><td class="java" colspan="3">Java web-service wrapper</td></tr><tr><td class="hdtp" colspan="1">HDTP</td><td class="files" colspan="1">Files</td><td class="hets" colspan="HETS server^1">HETS server<sup>1</sup></td></tr><tr><td class="swi" colspan="SWI Prolog^2">SWI Prolog<sup>2</sup></td><td class="git" colspan="Git^3">Git<sup>3</sup></td><td class="theorem" colspan="1">Theorem Provers</td></tr><tr><td class="os" colspan="3">OS:  Linux <small>(Ubuntu)</small></td></tr></tbody></table><ul><li>1:  The HETS server provides an http API. This is lower-level than the Coinvent API.</li><li>2:  HDTP might be re-written by Martin Möhrmann to use a different backend.</li><li>3:  Git integration provides OntoHub integration without a hard dependency.</li></ul></div></div>
 
 ## References
 
@@ -232,7 +248,7 @@ Each top-level component is an actor, which can send and receive messages to oth
  - HETS: <http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/hets>
  - OWL Manchester Syntax: <http://www.w3.org/TR/owl2-manchester-syntax/>
 
-# TODO Appendix 1: Component APIs
+# Appendix 1: Component APIs
 
 ## Common
 
