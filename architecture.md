@@ -23,7 +23,7 @@ This document presents the archictectural design for the integrated Coinvent sys
 Please first read:
 
 1. The [Glossary / Jargon buster](http://ccg.doc.gold.ac.uk/research/coinvent/internal/?page_id=356) first. 
-2. The [requirements / user-stories](requirements.md) which motivate this design.
+2. The [requirements / user-stories](integration+UI/requirements.md) which motivate this design.
 
 For further information, please see the reference documents listed at the end of this file.
 
