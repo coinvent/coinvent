@@ -115,7 +115,7 @@ The established OWL description logic, via the Manchester Syntax, should be used
 
 The web-service components (see below) will use JSON 
 as a black-box wrapper, for web-services to
-talk to each other. I.e. JSON is used to encode commands, such as "", and describe results, such as "success" or "failure due to timeout".
+talk to each other. I.e. JSON is used to encode commands, such as "blend these concepts", and describe results, such as "success" or "failure due to timeout".
 
 JSON is the best choice here, because it's a universal standard.
 
