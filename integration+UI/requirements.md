@@ -7,7 +7,7 @@ Version: 0.1
 
 ## Overview
 
-This document presents the motivating requirements for the integrated Coinvent system. It does so via the agile method of user-stories: each requirement is driven by an example of who needs it and why.
+This document presents the motivating requirements for the integrated Coinvent system. It does so via the agile method of user-stories: requirements are driven by example use-cases of who needs it and why.
 
 
 Please first read:
@@ -18,42 +18,30 @@ For further information, please see the reference documents listed at the end of
 
 ## User Stories
 
-### As a Coinvent developer...
-
-User: HETS developer    
-Task: 
-Use-case:    
-Success criteria: 
-Priority: For Year 1.
-
-User: HDTP developer    
-Task: 
-Use-case:    
-Success criteria: 
-Priority: For Year 1.
-
-User: Amalgams developer    
-Task: 
-Use-case:    
-Success criteria: 
-Priority: For Year 1.
-
-User: UI developer    
-Task: 
-Use-case:    
-Success criteria: 
-Priority: For Year 1.
-
-User: Social creativity researcher    
-Task: 
-Use-case:    
-Success criteria: 
-Priority: For Year 2/3.
-
 ### As a Coinvent Researcher...
 
-??replay
+User: Logic researcher    
+Task: Explore creating and using blends   
+Needs:
 
+ - Specify concepts.
+ - Create blends.
+ - Evaluate blends (this is domain specific -- see specific domains below).
+ - Reliably replay a "session" of concept blending plus associated concept development (such as theorem proving or example music generation).
+
+Success criteria: The software supports research, leading to papers on blending which extend the state of research.   
+Priority: High.
+
+
+User: Social creativity researcher    
+Task: Explore multiple users/agents creating & using blends      
+Needs:
+
+ - As for Logic Researcher, plus...
+ - Agent-based system to model & explore social interactions.
+ - Setup different starting models for agents.
+
+Priority: This is a key strand of the project plan. For Year 2/3.
 
 ### As a non-Coinvent developer...
 
