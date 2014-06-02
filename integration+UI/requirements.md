@@ -50,6 +50,10 @@ Use-case:
 Success criteria: 
 Priority: For Year 2/3.
 
+### As a Coinvent Researcher...
+
+??replay
+
 
 ### As a non-Coinvent developer...
 
@@ -77,14 +81,35 @@ Further develop the blended concept to create interesting outputs -- possibly mo
 Requirements: 
 
 1. A format which can define mathematical concepts.
-3. Blend concepts to produce new concepts.
-3. Weaken input concepts and strengthen output blends ??. 
-4. Given a concept, check it for consistency.
+2. Specify two theories, and blend them to produce a new concept.
+2. Weaken input concepts and strengthen output blends ??. 
+3. Given a concept, check it for consistency.
 4. Given a concept, produce examples / a model.
+5. Given a concept, identify the unresolved questions in the blend (for complex numbers, the missing formula x.y=?).
+6. Solve the unresolved questions in the blend, adding axioms and resolving any proof obligations.
+
+Note that some steps may have to be manual or semi-automated, and so it is a requirement that the
+system supports interactive reasoning.
 
 Success criteria: It works.       
-Priority: High. This is the basis for all music-domain work.
+Priority: High. This is a project deliverable.
  
+ 
+User: A non-mathematical analyst (e.g. someone who'd normally use Excel)    
+Task: Quantitative analysis of data   
+Wants: To meaningfully analyse some data using bayesian mathematical models.   
+Specific use-case: Interpret Twitter conversational data on a topic, in terms of types of person and types of conversation.   
+Needs:
+
+ - A friendly UI.
+ - To create a model by blending pre-defined models.
+ - To understand what they've made without understanding the source code -- i.e. a clear natural language summary of the model.
+ - To apply the model to the data...
+ - ...And get back results they can understand (e.g. pie-charts and time-series charts with meaningful labels).
+
+Success criteria: It works and is adopted for use by a researcher or analyst outside the project.   
+Priority: Medium. This is an achievable valuable goal within the important mathematics thread.
+
 
 #### Domain: Music
 
@@ -115,17 +140,56 @@ Success criteria: A composer collaborates with the project and uses Coinvent to 
 Priority: For Year 2/3. This is an achievable goal for this project.
 
 
-#### Domain: Other
+#### Other Domains
 
-Domain: Fictional beasts   
+##### Domain: Fictional beasts   
 User: A child    
 Task: Create a fictional beast
-Use-case: Pick two input beasts (using a simple user-friendly GUI), and get back a fictional blended beast with a mini-story about how it behaves.   
+Use-case: Pick two input beasts (using a simple user-friendly GUI), and get back a fictional blended beast with a mini-story about how it behaves.  
+Wants: To play around creating fun new animals and interacting with them.
+Needs:
+
+ - A very friendly UI.
+ - An ontology of animals behind it.
+ - To specify two animals to blend.
+ - To get a pictorial view of the blend.
+ - To see some behaviour, e.g. robot cat chases mutant mice, stops to drink some milk, short-circuits.
+
 Success criteria: Adopted for use by a school, or distributed publicly as an app.         
-Priority: For Year 2. This is an achievable goal for this project.
+Priority: Medium. For Year 2. This is an achievable goal for this project.
 
-?? Poetry
 
-Other domains: recipes, interior design, ??take from blog.
+##### Domain: Mechanical engineering.   
+
+User: A mechnical engineer.   
+Task: Create a new product, and streamline the 3D modelling, requirements checking, & safety testing by leaning on an existing database.   
+Wants: To specify a new component (e.g. a car ejector seat), which has aspects of existing components. Then get a CAD model which fits the spec.   
+Priority: Low. This lacks a sponsor within the project.
+
+##### Domain: Poetry
+
+User: A poet   
+Task: Create poetry fragments to use as inspiration / source material   
+Use-case: 
+
+1. Pick 2 concepts as input, and get back a newly-created metaphor and sentences illustrating it.   
+2. Pick a concept and a property, and get back a 2nd concept which when blended with the first provides a metaphor for the desired property. 
+
+Success criteria: A poet collaborates with the project and uses Coinvent to create a piece of poetry they then publish.  
+Priority: Medium. This is an achievable goal for this project. This is an accessible domain for technology testing, and it fits with the research interests of Goldsmiths group.
+
+User: A reader   
+Wants: To be entertained or stimulated.   
+Success criteria: Producing poems that are rated as interesting, either by literature critics or a more general readership.    
+Priority: Low. This is an accessible domain for technology testing, and it fits with the research interests of Goldsmiths group. However there is considerable extra work required for software to go from a blended-concept metaphor, to a complete poem.
+
+##### Domain: Recipes
+
+User: An amateur cook   
+Wants: To create a new recipe or meal-plan by blending ideas.   
+Success criteria: Some new & tasty recipes.   
+Priority: Low. This is an accessible domain for proving the technology. However there is so much cooking material online, that a new resource would not be very valuable.   
+
+
 
 
