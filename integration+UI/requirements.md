@@ -20,7 +20,7 @@ For further information, please see the reference documents listed at the end of
 
 ### As a Coinvent Researcher...
 
-User: Logic researcher    
+#### User: Logic researcher    
 Task: Explore creating and using blends   
 Needs:
 
@@ -33,7 +33,7 @@ Success criteria: The software supports research, leading to papers on blending 
 Priority: High.
 
 
-User: Social creativity researcher    
+#### User: Social creativity researcher    
 Task: Explore multiple users/agents creating & using blends      
 Needs:
 
@@ -48,11 +48,13 @@ Priority: This is a key strand of the project plan. For Year 2/3.
 Later in the project, we aim to run Coinvent hackathons, where other developers
 use Coinvent to build things.
 
-User: A researcher with ontology experience.    
+#### User: A researcher with ontology experience    
 Task: Explore concept blending.   
 Needs: Same as for a Coinvent Logic Researcher, plus a user-friendly UI and documentation.
 
-User: A developer making a creativity tool for a domain of their choice (e.g. one of the domains considered below).      
+#### User: A developer  
+
+Task: Making a creativity tool for a domain of their choice (e.g. one of the domains considered below).      
 Needs: 
 
  - The system must be flexible enough to support:
@@ -67,7 +69,7 @@ Priority: For Year 3.
 
 #### Domain: Mathematics
 
-User: Coinvent researcher
+##### User: Coinvent researcher
 Task: Explore the blending of mathematical concepts.      
 Use-case: Define concepts. Pick 2 concepts as input, and get back a blended concept. Further develop the blend to resolve "quality issues" such as.
 Further develop the blended concept to create interesting outputs -- possibly models / examples.   
@@ -88,7 +90,7 @@ Success criteria: It works.
 Priority: High. This is a project deliverable.
  
  
-User: A non-mathematical analyst (e.g. someone who'd normally use Excel)    
+##### User: Non-mathematical Analyst (e.g. someone who'd normally use Excel)    
 Task: Quantitative analysis of data   
 Wants: To meaningfully analyse some data using bayesian mathematical models.   
 Specific use-case: Interpret Twitter conversational data on a topic, in terms of types of person and types of conversation.   
@@ -106,7 +108,7 @@ Priority: Medium. This is an achievable valuable goal within the important mathe
 
 #### Domain: Music
 
-User: Coinvent researcher
+##### User: Coinvent Researcher
 Task: Explore the blending of musical idioms      
 Use-case: Define idioms. Pick 2 musical idioms as input, and get back a blended idiom. Given an idiom, evaluate it, by creating examples and subjectively assessing them.   
 Requirements: 
@@ -120,13 +122,13 @@ Requirements:
 Success criteria: It works.       
 Priority: High. This is the basis for all music-domain work.
  
-User: A listener
+##### User: A Listener
 Task: Create music they like      
 Use-case: Pick 2 musical idioms as input, and get back a newly-created high-quality piece of music.
 Success criteria: A group is identified who adopt Coinvent-based software as part of their music listening software. Or a Coinvent-created piece of music gains small-scale public success.   
 Priority: Low. This is a very hard task and may not be achieved within this project.
  
-User: An avant-garde composer    
+##### User: An avant-garde composer    
 Task: Create music to use as inspiration / source material   
 Use-case: Pick 2 musical idioms as input, and get back a newly-created *low-quality* piece of music.   
 Success criteria: A composer collaborates with the project and uses Coinvent to create a piece of music they then perform.      
