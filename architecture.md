@@ -28,7 +28,19 @@ For further information, please see the reference documents listed at the end of
 <a name='bdip'></a>
 ## Core Object: The Blend Diagram in Progress
 
-The object type at the heart of Coinvent is the Blend Diagram. The specification is intentionally broad to support several use-cases.
+The object type at the heart of Coinvent is the Blend Diagram. The specification below is intentionally broad to support several use-cases.
+
+Crucially we must support blend diagrams which are "works in progress". The high-level process of developing a new blended concept is:
+
+1. Pick two concepts to blend.
+2. Compute a common base concept.
+3. Compute a blend.
+4. Evaluate the blend for consistency.
+5. ...Which may lead to changes in either the input concepts, such as logical weakenings to remove the conflict. This process of evaluate-modify could be iterated several times.
+6. Evaluate the blend for value, perhaps by generating examples/models and evaluating them.
+7. ...This evaluation may lead to modifications, and so the whole process is iterative.
+
+Hence we talk of a Blend Diagram *in Progress* to allow that blends may be developed step-by-step and iteratively.
 
 Concepts are defined in CASL or OWL. Mappings between concepts are defined in DOL. Metadata is also defined in DOL. The Blend Diagram may be a single file, or several linked files, using DOL's support for urls.
 
@@ -45,7 +57,7 @@ A `Blend Diagram` consists of:
 The Blended Concept *may* be a colimit, but it does not have to be.
 The Base Concept *may* be found via anti-unification, but it does not have to be.
 
-A `Blend Diagram in Progress` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. The Blend Diagram in Progress allows that blends may be developed (perhaps iteratively).
+A `Blend Diagram in Progress` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. 
 
 TODO Draw a diagram of this.
 
