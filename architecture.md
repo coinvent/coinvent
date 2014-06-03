@@ -14,6 +14,7 @@ Version: 0.9
 - [Appendix 1: Component APIs](#appendix1)
 
 <a name='overview'></a>
+
 ## Overview
 
 This document presents the archictectural design for the integrated Coinvent system. 
@@ -26,6 +27,7 @@ Please first read:
 For further information, please see the reference documents listed at the end of this file.
 
 <a name='bdip'></a>
+
 ## Core Object: The Blend Diagram in Progress
 
 The object type at the heart of Coinvent is the Blend Diagram. The specification below is intentionally broad to support several use-cases.
@@ -62,6 +64,7 @@ A `Blend Diagram in Progress` is simply a Blend Diagram where any part may be mi
 TODO Draw a diagram of this.
 
 <a name='languages'></a>
+
 ## Languages / File Formats
 
 Coinvent will focus on human-readable text-file formats. 
@@ -116,8 +119,12 @@ There are some features Coinvent needs which DOL does not yet provide (see the p
 
 CASL is the first order logic language used by HETS. We will adopt it as the language Coinvent should use for mathematical concepts.
 
-### Music: TBD
+### Music: OWL?
+
 The music team are investigating the use of OWL by producing a worked example of cadence blending.
+
+It is anticipated that musical idioms will comprise both rules (e.g. constraints on a cadence) and statistical parts 
+(e.g. hidden-markov-models).
 
 ### Other Domains: OWL Manchester Syntax
 
@@ -135,6 +142,7 @@ Low-level components (e.g. HDTP) will not take in JSON. That would be done by a
 web-service wrapper, which then calls HDTP.
 
 <a name='components'></a>
+
 ## Components
 
 A Coinvent system will be made up of the following components.
@@ -157,9 +165,24 @@ Default implementation: HDTP
 
 Default implementation: manual
 
-### Example Finder: Given a Concept, find examples
+### Example Finder: Given a Concept, find examples / models
 
 Default implementation: Manual
+
+This is a key part of creative blending, especially around evaluating a concept. 
+It is noticeable that when people learn and evaluate concepts, they often do so via examples.
+
+The meaning of "example" is domain specific.
+
+In mathematical theories, an example is a model, which is itself a theory. 
+E.g. in the complex numbers case-study (c.f. https://github.com/coinvent/coinvent/tree/master/HETS/complex_numbers), 
+an example is the refined theory where `i^2 = -1` has been added to provide a constructive formula for the existential
+axiom `\forall vectors x,y, \exists vector z, x*y = z` (note: in the .dol file, this existential axiom is 
+implicit in * being a total function).
+ 
+In musical theories, an example is a piece of music conforming to the theory.
+ 
+Automated implementations will also be domain specific, and may not be possible in all domains.
 
 ### Concept Scorer: How good is a Concept?
 
@@ -179,6 +202,7 @@ Default implementation:
  - File-system backed. By adding git to the file-system we can provide integration with Ontohub.
 
 <a name="architecture"></a>
+
 ## Architecture
 
 ### Independent components, linked via http APIs
@@ -198,6 +222,8 @@ An added benefit of this architecture is that it provides flexibility regarding 
 #### Scripting the system
 
 Requirement (3) relates to research users, who need to run repeatable concept development sessions. This requirement is met in this architecture by scripts which drive the API. Such scripts would most naturally be developed in javascript, perhaps using a test-runner. Indeed, the test scripts we develop as part of software QA will provide templates for scriptable use.
+
+Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent.
 
 #### Software Wrapped as a Server
 
@@ -261,7 +287,19 @@ Coinvent EcoSystem
 
 <div id="diadraw"><div class="dia panel panel-primary"><div class="panel-heading"><h3 class="panel-title">Coinvent EcoSystem</h3></div><table class="dia"><tbody><tr><td class="default" colspan="3">Default User Interface</td></tr><tr><td class="ajax" colspan="1">AJAX</td><td class="jquery" colspan="1">jQuery</td><td class="underscore" colspan="1">underscore templates</td></tr><tr><td class="web" colspan="3">Web browser</td></tr><tr><td class="http" colspan="3">http:  JSON format REST API</td></tr><tr><td class="java" colspan="3">Java web-service wrapper</td></tr><tr><td class="hdtp" colspan="1">HDTP</td><td class="files" colspan="1">Files</td><td class="hets" colspan="HETS server^1">HETS server<sup>1</sup></td></tr><tr><td class="swi" colspan="SWI Prolog^2">SWI Prolog<sup>2</sup></td><td class="git" colspan="Git^3">Git<sup>3</sup></td><td class="theorem" colspan="1">Theorem Provers</td></tr><tr><td class="os" colspan="3">OS:  Linux <small>(Ubuntu)</small></td></tr></tbody></table><ul><li>1:  The HETS server provides an http API. This is lower-level than the Coinvent API.</li><li>2:  HDTP might be re-written by Martin Möhrmann to use a different backend.</li><li>3:  Git integration provides OntoHub integration without a hard dependency.</li></ul></div></div>
 
+
+<a name='open'></a>
+
+## Open Questions
+
+Many development questions remain open at this stage in the project. Notable open questions are:
+
+1. How to generate examples in the different domains.
+2. How to use "3rd party systems" such as the Isabelle interactive theorem prover within Coinvent.
+3. What format is best for musical idioms?
+
 <a name='references'></a>
+
 ## References
 
  - CASL: <http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_user_manual>
@@ -271,6 +309,8 @@ Coinvent EcoSystem
  - OWL Manchester Syntax: <http://www.w3.org/TR/owl2-manchester-syntax/>
 
 <a name='appendix1'></a>
+
+
 # Appendix 1: Component APIs
 
 ## Common

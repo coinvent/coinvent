@@ -13,7 +13,7 @@ import winterwell.web.WebEx;
 import winterwell.web.app.WebRequest;
 
 /**
- * Base class for servlets.
+ * Base class for Coinvent servlets.
  * @author Daniel
  *
  */
