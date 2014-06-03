@@ -172,6 +172,8 @@ Default implementations:
 
 Must provide save and load over http.
 
+Note that most of the other components do *not* depend on a dedicated storage component. They can work with concepts stored on *any* server, as long as the format is correct and the concept can be identified by url. The User Interface does require a file storage component to store blend diagrams as they're modified.
+
 Default implementation: 
 
  - File-system backed. By adding git to the file-system we can provide integration with Ontohub.
@@ -384,12 +386,12 @@ Response-cargo:
 	}
 
 
-## /weaken: Given an inconsistent blend diagram in progress, weaken the concepts
+### /weaken: Given an inconsistent blend diagram in progress, weaken the concepts
 
 This is the key method for Amalgams.
 
 Default implementation: Manual (Amalgams later in the project)         
-Default end point: http://coinvent.soda.sh:8400/weaken/<user-name>
+Default end point: http://coinvent.soda.sh:8400/weaken/$user_name
 
 Parameters: 
 
@@ -398,11 +400,14 @@ Parameters:
  
 Response-cargo: A weakened blend diagram
 
+Open question: What information should be passed to /weaken to guide it? 
+For example, it might take in line-numbers marking sets of inconsistent sentences.
+
 	
 ### /model: Given a Concept, find examples
 
 Default implementation: Manual   
-Default end point: http://coinvent.soda.sh:8400/model/<user-name>
+Default end point: http://coinvent.soda.sh:8400/model/$user_name
 
 Parameters:
 
@@ -427,14 +432,17 @@ Default implementations:
 
 Must provide save and load over http.
 
-Default implementation: file-system based   
-Default end point: http://coinvent.soda.sh:8400/file/<user-name>
+Note that most of the other components do *not* depend on the /file component. They
+can work with concepts stored on any server (and identified by uri). The User Interface requires it to store blend diagrams as they're modified.
+
+Default implementation: file-system based, with git support   
+Default end point: http://coinvent.soda.sh:8400/file/$user_name
 
 Load Parameters: 
 
  - Use the path (i.e. the slug) to specify a file.   
  E.g. `http://coinvent.soda.sh:8400/files/alice/stuff/alices_boat.dol`
- would fetch the file stored at `<base dir>/alice/stuff/alices_boat.dol`
+ would fetch the file stored at `$base_dir/alice/stuff/alices_boat.dol`
 
 Response: the file  
   
@@ -445,6 +453,11 @@ Save Parameters:
  - The post body contains the text to save.
 
 Response: the file  
+
+A save (or a delete) triggers a git commit and push. 
+Distributed git repositories cany be linked together, and in particular OntoHub
+uses git-based storage. This allows for connection with OntoHub.
+
  
 Delete Parameters:
 
@@ -455,7 +468,7 @@ Response: just the envelope, indicating success or failure
 ### /job: List open tasks
 
 Default implementation: Coinvent Integration+UI module      
-Default end point: http://coinvent.soda.sh:8400/job/<user-name>
+Default end point: http://coinvent.soda.sh:8400/job/$user_name
 
 Parameters:
 
@@ -473,10 +486,10 @@ Response-cargo:
 			] 
 	}
 
-#### /job/<user-name>/<job-id>: Show / delete job details
+#### /job/$user_name/$job_id: Show / delete job details
 
 Default implementation: Coinvent Integration+UI module      
-Default end point: http://coinvent.soda.sh:8400/job/<user-name>
+Default end point: http://coinvent.soda.sh:8400/job/$user_name
 
  - Use the path (i.e. the slug) to specify a file.   
  E.g. `http://coinvent.soda.sh:8400/job/alice/1234`
