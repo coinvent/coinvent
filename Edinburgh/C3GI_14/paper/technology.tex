@@ -1,0 +1,96 @@
+\section{Technology} \label{sec:technology}
+%% EWEN TO DO
+
+In order to automate the process of discovering blends between
+theories, we employ the HETS system \cite{MossakowskiEA06} as described in
+\S\ref{sec:background}, which given signature morphisms between
+theories, can compute a {\em colimit} which is the categorical
+equivalent of what we have thus far referred to as a {\em blend}. In order to compute a blend between two theories, we must first calculate the signature morphisms defining the {\em generic} space which is common to both theories. To do this we exploit the HDTP software \cite{GustKS2006,Schmidt2010} which computes analogies between theories.
+%mention ontohub
+
+
+\subsection{Specification using DOL}
+
+In order to specify a theory, and to further define signature morphisms we use the {\em DOL} specification language \cite{DBLP:conf/aisc/0002KMG12}. For our example of complex numbers we use the CASL logic \cite{BidoitMosses2004} to describe the theories. Initially we define the signature of an ordered field and a two-dimensional vector space. The specification files themselves are too big to show here but can be found in full online in the Ontohub system \cite{ontohub} at \url{http://ontohub.org/complex-blend/complex_blend}. For the purposes of exposition we show simplified files here. Below is pat of a definition of an ordered field, and part of a definition of a vector space:
+\begin{small}
+\begin{verbatim}
+spec Field =
+  sort Real
+  ops
+    0:Real;
+    __ + __: Real * Real -> Real;
+    - __   : Real -> Real;
+    __ * __: Real * Real -> Real     
+  forall x,y:Real
+    . x+0=x    %f_plus_ident%
+    . x+y=y+x  %f_com_plus%
+    . x+(-x)=0 %f_plus_inv%
+end
+
+spec VectorSpace = 
+  sort Real
+  free type Vec ::= pair(r:Real;c:Real)
+  ops
+    vzero:     Vec;
+    0:         Real;
+    vmi __:    Vec -> Vec;
+    __ vpl __: Vec * Vec -> Vec
+  forall x,y:Vec;
+    . x vpl vzero = x;     %v_plus_ident%
+    . x vpl y = y vpl x    %v_com_plus%
+    . x vpl (vmi x) = zero %v_plus_inv%
+end
+\end{verbatim}
+\end{small}
+This gives us the following diagram. $Ax(F)$ are the axioms of the real ordered field, and $Ax(NVS2)$ are the axioms of a normed 2-dimensional vectors space. The $?$ correspond to the signature morphisms that will be calculated by HDTP and HETS.
+\begin{center}
+  \begin{diagram}[size=7mm]
+    &       &   $Gen$   &       & \\
+    & \ruTo^{\rotatebox{-45}{$?$}} &       & \luTo^{\rotatebox{45}{$?$}} &          \\
+    $Ax(NVS2)$ &       &   &       & $Ax(F)$ \\
+    & \luTo_{\rotatebox{45}{$?$}} &       & \ruTo_{\rotatebox{-45}{$?$}} &  \\
+    & & $Blend$ & &
+  \end{diagram}
+\end{center}
+
+
+\subsection{Calculation of Generic Space}
+
+Since a vector space itself comprises an ordered field, there is a
+generic space which is calculated using identity morphisms which
+reproduces the vector space in the blend, as described in
+\S\ref{sec:formal}. We are interested here in a morphism which identifies a different morphism between the two theories. We exploit the HDTP system to generate the following signature morphism:
+\begin{align}
+0&\leftarrow G\to f&zero&G\to v\rightarrow&vzero\\
++&\leftarrow G\to f&plus&G \to v\rightarrow&vpl\\
+-&\leftarrow G \to f&minus&G \to v\rightarrow&vmi
+\end{align}
+\noindent which generates the following Generic space in HETS:
+\begin{verbatim}
+spec Gen = 
+  sort Generic
+  ops
+    __ plus __: Generic * Generic -> Generic;
+    zero:       Generic;
+    minus __:   Generic -> Generic   
+  forall x,y,z:Generic
+    . x plus  zero=x          %gen_plus_ident%
+    . x plus y=y plus x       %gen_com_plus%
+    . x plus (minus x) = zero %gen_plus_inv%
+end
+\end{verbatim}
+We now have a calculated definition of a generic space by which we can calculate a colimit:
+\begin{center}
+  \begin{diagram}[size=7mm]
+    &       &   $Gen$   &       & \\
+    & \ruTo^{\rotatebox{-45}{$G\to v$}} &       & \luTo^{\rotatebox{45}{$G\to f$}} &          \\
+    $Ax(NVS2)$ &       &   &       & $Ax(F)$ \\
+    & \luTo_{\rotatebox{45}{$?$}} &       & \ruTo_{\rotatebox{-45}{$?$}} &  \\
+    & & $Blend$ & &
+  \end{diagram}
+\end{center}
+
+\subsection{Calculation of Colimit (Blend)}
+
+Within
+

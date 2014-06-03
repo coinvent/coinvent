@@ -1,6 +1,6 @@
 logic CASL
 
-%%%% This is just a standard notion of field
+%%% ordered field
 
 spec Field =
      sort Real
@@ -11,23 +11,25 @@ spec Field =
 	  __ + __:Real * Real -> Real;
 	  __ * __:Real * Real -> Real;
 	  - __: Real -> Real;
-	  ti __: Real -> Real;
+	  times_inv __: Real ->? Real;
      	  0:Real;
-	  1:Real
+	  1:Real;
+	  sqrt __: Real ->? Real;
+	  sq __: Real -> Real
+
 		     
      forall x,y,z,v:Real
-	    . (exists t:Real.(x+y)=t)
-     	    . x+0=x			
-     	    . x+y=y+x
-	    . x+(y+z) = (x+y)+z
-	    . x + (-x) = 0
-	    . ((not (x=0)) /\ (not (y=0))) => (exists t:Real.x*y=t)
-	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z)
-	    . (not (x=0)) => x*(ti x) = 1 
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z)
-	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v)
-	    . (x>0) /\ (y>0) => (x*y)>0
+	    . x+0=x	%f_plus_ident%		
+     	    . x+y=y+x   %f_com_plus%
+	    . x+(y+z) = (x+y)+z  %f_assoc_plus%
+	    . x + (-x) = 0    %f_plus_inv%
+	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x  %f_com_times%
+	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %f_assoc_times%
+	    . (not (x=0)) => x*(times_inv x) = 1 %f_times_inv%
+	    . (not (x=0)) => x*1 = 1 %f_times_ident$
+ 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %f_dist_times%
+	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %f_order_+%
+	    . (x>0) /\ (y>0) => (x*y)>0  %f_order_*%
  end
 				    
 	     	   
@@ -35,7 +37,8 @@ spec Field =
 %%%% This is a vector space with a norm
 
 spec VectorSpace = 
-     sorts Vec,Real
+     sort Real
+     free type Vec ::= pair(real:Real;complex:Real)
      preds 
           __ >= __, __ > __: Real * Real;
 
@@ -43,7 +46,7 @@ spec VectorSpace =
 	   __ + __:Real * Real -> Real;
 	   __ * __:Real * Real -> Real;
 	  - __: Real -> Real;
-	  ti __: Real -> Real;
+	  times_inv __: Real -> Real;
      	  0:Real;
 	  1:Real;
 	  field_norm __:Real -> Real;
@@ -52,52 +55,153 @@ spec VectorSpace =
 	  vmi __:Vec -> Vec;
 	  vec_norm __:Vec->Real;
 	  vzero:Vec
+	  %%% introducing 2-d vectors
+	  basis_real:Vec;
+	  basis_complex:Vec;
 	  
+          sqrt __: Real ->? Real;
+          sq __: Real -> Real
+
+
  forall x,y,z,v:Real;
 	a,b,c,d:Vec
-	    . (exists t:Real.(x+y)=t)
-     	    . x+0=x			
-     	    . x+y=y+x
-	    . x+(y+z) = (x+y)+z
-	    . x + (-x) = 0
-	    . ((not (x=0)) /\ (not (y=0))) => (exists t:Real.x*y=t)
-	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z)
-	    . (not (x=0)) => x*(ti x) = 1 
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z)
-	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v)
-	    . (x>0) /\ (y>0) => (x*y)>0
-	    . (exists e:Vec. (a vpl b)=e)
-	    . (a vpl vzero) = a
-	    . (a vpl b) = (b vpl a)
-	    . (a vpl (c vpl d)) = ((a vpl c) vpl d)
-	    . (a vpl (vmi a)) = vzero
-	    . (x vti (a vpl b)) = (x vti a) vpl (x vti b)
-	    . ((x+y) vti a) = (x vti a) vpl (y vti a)
-	    . (x vti (y vti a)) = (x * y) vti a
-	    . (1 vti a) = a
-	    . (vec_norm a) >= 0
-	    . (vec_norm a >= 0 <=> (not (a = vzero)))
-	    . (vec_norm (x vti a)) = (field_norm x)*(vec_norm a)
-	    . (vec_norm (a vpl b)) = (vec_norm a) + (vec_norm b)
+     	    . x+0=x  %vf_plus_ident%			
+     	    . x+y=y+x %vf_com_plus%
+	    . x+(y+z) = (x+y)+z %vf_assoc_plus%
+	    . x + (-x) = 0 %vf_plus_inv%
+	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x %vf_times_ident%
+	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %vf_assoc_times%
+	    . (not (x=0)) => x*1 = 1 %vf_times_ident%
+	    . (not (x=0)) => x*(times_inv x) = 1 %vf_times_inv% 
+	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %vf_dist%
+	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %vf_order_+%
+	    . (x>0) /\ (y>0) => (x*y)>0 %vf_order_*%
+	    . vzero = pair (0,0) %vzero_def%
+	    . (pair(x,y) vpl pair (z,v)) = pair(x+z,y+v) %vplus_def%
+	    . vmi pair(x,y) = pair(-x,-y) %vminus_def%
+	    . (x vti (a vpl b)) = (x vti a) vpl (x vti b) %scalar_vecplus%
+	    . ((x+y) vti a) = (x vti a) vpl (y vti a) %scalarplus_vec%
+	    . (x vti (y vti a)) = (x * y) vti a %scalar_times_vec%
+	    . (1 vti a) = a %scalar_vec_times_ident%
+	    . (vec_norm a) >= 0 %vec_norm_non_neg%
+	    . (vec_norm a > 0 <=> (not (a = vzero))) %vec_norm_zero%
+	    . (vec_norm (x vti a)) = (field_norm x)*(vec_norm a) %norms%
+	    . (vec_norm (a vpl b)) = (vec_norm a) + (vec_norm b) %norm_plus%
+	      %%% forcing linear independence
+	    . (((x vti basis_real) vpl (y vti basis_complex)) = vzero) <=> (x = 0) /\ (y = 0) %li1%
+	    . (exists s,t:Real. a = ((s vti basis_real) vpl (t vti basis_complex))) %comp_vec%
 end
 
-spec Gen =
-     sort Complex
+spec Gen = 
+     sort Generic
      ops
-     __ plus __:Complex * Complex -> Complex;
-     zero:Complex     
+     __ plus __:Generic * Generic -> Generic;
+     zero:Generic;
+     minus __:Generic -> Generic
+	   
+	forall x,y,z:Generic
+     	       . x plus  zero=x	 %gen_plus_ident%		
+     	       . x plus y=y plus x %gen_com_plus%
+	       . x plus (y plus z) = (x plus y) plus z %gen_assoc_plus%
+	       . x plus (minus x) = zero %gen_plus_inv%
 end
 
 
 view I1: Gen to Field = 
-__ plus __ |-> __ + __,
-zero |-> 0
+		__ plus __ |-> __ + __, zero |-> 0, minus __ |-> - __
 
 view I2: Gen to VectorSpace = 
-	       __ plus __ |-> __ vpl __,
-	       zero |-> vzero
+	       __ plus __ |-> __ vpl __,zero |-> vzero, minus __ |-> vmi __
 
 
 spec Colimit =
-  combine I1,I2
+     combine I1,I2  
+	     with 
+	     gn_n2 |-> gt, gn_n4:Real*Real |-> gte,
+             gn_n4:Real |-> one,
+             gn_n6 |-> co_times:Real * Real -> Real,
+             gn_sq18 __ |-> co_sq __,
+             gn_sqrt20 __ |-> co_sqrt __, 
+             gn_times_inv22 __ |-> co_times_inv __
+end
+
+
+spec Complex_Field = 
+     sort Real
+     free type Complex ::= pair(real:Real,complex:Real)
+     preds 
+	   __ >= __, __ > __:Real * Real;
+	   __ gte __, __ gt __: Complex * Complex;
+     ops
+     __ + __: Real * Real -> Real;
+     __ * __: Real * Real -> Real;
+     - __: Real -> Real;
+     times_inv __: Real -> Real;
+     0: Real;
+     1: Real;
+     field_norm __:Real -> Real;
+     __ cpl __:Complex * Complex -> Complex;
+     __ cti __:Real * Complex -> Complex;
+     cmi __:Complex -> Complex;
+     complex_norm __:Complex -> Real;
+     complex_zero:Complex;
+     basis_real:Complex;
+     basis_complex:Complex;
+     c_ident:Complex;
+     __ prod __: Complex * Complex -> Complex;
+     times_inv __: Complex -> Complex;
+     sqrt __: Real ->? Real;
+     sq __: Real -> Real;
+     csq __: Complex -> Complex;
+     csqrt __: Complex ->? Complex
+
+     forall x,y,z,v:Real
+	    . x+0=x	%c_plus_ident%		
+     	    . x+y=y+x   %c_com_plus%
+	    . x+(y+z) = (x+y)+z  %c_assoc_plus%
+	    . x + (-x) = 0    %c_plus_inv%
+	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x  %c_com_times%
+	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %c_assoc_times%
+	    . (not (x=0)) => x*(times_inv x) = 1 %c_times_inv%
+	    . (not (x=0)) => x*1 = 1 %c_times_ident$
+ 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %c_dist_times%
+	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %c_order_+%
+	    . (x>0) /\ (y>0) => (x*y)>0  %c_order_*%
+	    . (pair(x,y) cpl pair (z,v)) = pair((x+z),(y+v)) %cplus_def$
+	    . complex_zero = pair(0,0) %czero_def%
+	    . basis_real = pair(1,0) %creal_def%
+	    . basis_complex = pair(0,1) %ccomplex_def%
+	    . (pair(x,y) prod pair(z,v)) = pair(((x*z)+(-(y*v))),((x*v)+(y*z))) %ctimes_def%
+	    . times_inv (pair(x,y)) = (times_inv (sq (complex_norm (pair(x,y))))) cti (pair(x,(- y))) %ctimes_inv_def%
+	    . complex_norm (pair(x,y)) = sqrt((x*x) + (y*y)) %norm_def%
+	     %%% properties we want in the complex numbers
+      forall a,b: Complex. complex_norm (a prod b) = (complex_norm a) * (complex_norm b) 
+end
+
+view I3: Colimit to Complex_Field =
+     Generic |-> Complex,
+     Real |-> Real,
+     1 |-> c_ident,
+     basis_real |-> basis_real,
+     zero |-> complex_zero,
+     one |-> 1,
+     0 |-> 0,
+     __ *  __ |-> __ prod __,
+     __ + __ |->  __ + __,
+     __ vpl __ |-> __ cpl __,
+     __ vti __ |-> __ cti __,
+     basis_complex |-> basis_complex,
+     times_inv __ |-> times_inv __,
+     vec_norm __ |-> complex_norm __,
+     vmi __ |-> cmi __,
+    co_times: Real * Real -> Real |-> __ * __,
+    co_times_inv __ |-> times_inv __,
+     __ > __ |-> __ gt __,
+    __ >= __ |-> __ gte __,
+    gt: Real * Real |-> __ > __,
+    gte:Real * Real |-> __ >= __,
+    co_sq __ |-> sq __,
+    co_sqrt __ |-> sqrt __,
+    sq __ |-> csq __,
+    sqrt __ |-> csqrt __,
+    field_norm __ |-> field_norm __

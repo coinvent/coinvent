@@ -1,7 +1,6 @@
 logic CASL
 
-%%%% This is just a standard notion of field
-
+%% ORDERED FIELD AXIOMS
 spec Field =
      sort Real
      preds 
@@ -38,8 +37,6 @@ spec Field =
 spec VectorSpace = 
      sort Real
      free type Vec ::= pair(real:Real;complex:Real)
-     preds 
-          __ >= __, __ > __: Real * Real;
 
 	   ops
 	   __ + __:Real * Real -> Real;
@@ -71,7 +68,6 @@ spec VectorSpace =
 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z)
 	    . (not (x=0)) => x*(ti x) = 1 
 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z)
-	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v)
 	    . (x>0) /\ (y>0) => (x*y)>0
 	    . vzero = pair (0,0) 
 	    . (pair(x,y) vpl pair (z,v)) = pair(x+z,y+v)
@@ -175,34 +171,31 @@ spec Complex_Field =
 	    . complex_norm (pair(x,y)) = sqrt((x*x) + (y*y)) 
 end
 
-%%basis_real -> basis_real?
-
-view I3: Complex_Field to Colimit =
-     Complex |-> Generic,
+view I3: Colimit to Complex_Field =
+     Generic |-> Complex,
      Real |-> Real,
-     basis_real |-> 1,
-     complex_zero |-> zero,
-     1 |-> gte:Real,
+     1 |-> basis_real,
+     zero |-> complex_zero,
+     gte:Real |-> 1,
      0 |-> 0,
-     __ prod  __ |-> __ * __,
+     __ *  __ |-> __ prod __,
      __ + __ |->  __ + __,
-     __ cpl __ |-> __ vpl __,
-     __ cti __ |-> __ vti __,
+     __ vpl __ |-> __ cpl __,
+     __ vti __ |-> __ cti __,
      basis_complex |-> basis_complex,
-     times_inv __ |-> ti __,
-     complex_norm __ |-> vec_norm __,
-     cmi __ |-> vmi __,
-    __ *__ |-> gn_n6 : Real * Real -> Real,
-    ti __ |-> gn_ti22 __: Real -> Real,
-     __ gt __ |-> __ > __,
-    __ gte __ |-> __ >= __,
-    __ > __ |-> gt: Real * Real,
-    __ >= __ |-> gte:Real * Real,
-    sq __ |-> gn_sq18 __: Real -> Real,
-    sqrt __ |-> gn_sqrt20 __: Real ->? Real,
-    csq __ |-> sq __,
-    csqrt __ |-> sqrt __,
+     ti __ |-> times_inv __,
+     vec_norm __ |-> complex_norm __,
+     vmi __ |-> cmi __,
+    gn_n6 : Real * Real -> Real |-> __ * __,
+    gn_ti22 __: Real -> Real |-> ti __,
+     __ > __ |-> __ gt __,
+    __ >= __ |-> __ gte __,
+    gt: Real * Real |-> __ > __,
+    gte:Real * Real |-> __ >= __,
+    gn_sq18 __: Real -> Real |-> sq __,
+    gn_sqrt20 __: Real ->? Real |-> sqrt __,
+    sq __ |-> csq __,
+    sqrt __ |-> csqrt __,
     field_norm __ |-> field_norm __
 
-			  
-%%% complex_Field -> colimit
+
