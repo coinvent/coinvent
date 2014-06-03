@@ -5,17 +5,15 @@ Author: Daniel, with input from Ewen and Mihai
 Status: Final Draft, due for delivery in June.   
 Version: 0.9   
 
-<!-- MarkdownTOC depth=2 -->
+- [Overview](#overview)
+- [The Blend Diagram in Progress](#bdip)
+- [Languages / File Formats](#languages)
+- [Components](#components)
+- [Architecture](#architecture)
+- [References](#references)
+- [Appendix 1: Component APIs](#appendix1)
 
-- Overview
-- Languages / File Formats
-- Core Object: The Partial Blend Diagram
-- Components
-- Architecture
-- References
-
-<!-- /MarkdownTOC -->
-
+<a name='overview'></a>
 ## Overview
 
 This document presents the archictectural design for the integrated Coinvent system. 
@@ -27,7 +25,8 @@ Please first read:
 
 For further information, please see the reference documents listed at the end of this file.
 
-## Core Object: The Partial Blend Diagram
+<a name='bdip'></a>
+## Core Object: The Blend Diagram in Progress
 
 The object type at the heart of Coinvent is the Blend Diagram. The specification is intentionally broad to support several use-cases.
 
@@ -46,10 +45,11 @@ A `Blend Diagram` consists of:
 The Blended Concept *may* be a colimit, but it does not have to be.
 The Base Concept *may* be found via anti-unification, but it does not have to be.
 
-A `Partial Blend Diagram` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. The Partial Blend Diagram allows that blends may be developed (perhaps iteratively).
+A `Blend Diagram in Progress` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. The Blend Diagram in Progress allows that blends may be developed (perhaps iteratively).
 
 TODO Draw a diagram of this.
 
+<a name='languages'></a>
 ## Languages / File Formats
 
 Coinvent will focus on human-readable text-file formats. 
@@ -122,6 +122,7 @@ JSON is the best choice here, because it's a universal standard.
 Low-level components (e.g. HDTP) will not take in JSON. That would be done by a
 web-service wrapper, which then calls HDTP.
 
+<a name='components'></a>
 ## Components
 
 A Coinvent system will be made up of the following components.
@@ -132,7 +133,7 @@ An interface through which the user drives the system.
 
 Default implementation: To be developed.
 
-### Blender: Given a Partial Blend Diagram, compute the Blend Concept
+### Blender: Given a Blend Diagram in Progress, compute the Blend Concept
 
 Default implementation: HETS
 
@@ -163,6 +164,7 @@ Default implementation:
 
  - File-system backed. By adding git to the file-system we can provide integration with Ontohub.
 
+<a name="architecture"></a>
 ## Architecture
 
 ### Independent components, linked via http APIs
@@ -171,12 +173,17 @@ Requirements:
 
 1. The components of the system may be developed in different languages.
 2. The system should be easy to maintain and extend.
+3. The system should support both interactive use, and repeatable scripted use.
 
-This suggests a loose coupling between components. The use of http-based APIs is an established way of achieving this. In particular, http-based APIs with a REST-like setup (i.e. the url follows a simple readable structure) and using JSON to encode data are now becoming the standard for modern software development. 
+Requirements (1) and (2) above suggest a loose coupling between components. The use of http-based APIs is an established way of achieving this. In particular, http-based APIs with a REST-like setup (i.e. the url follows a simple readable structure) and using JSON to encode data are now becoming the standard for modern software development. 
 
 JSON will provide a wrapper for API-level information. JSON is not part of the file format for Blend Diagrams. Blend Diagrams are written in DOL + OWL or CASL, and sent within a JSON packet as JSON strings.
 
 An added benefit of this architecture is that it provides flexibility regarding the hardware infrastructure. The components of the Coinvent system may be run either on a single server, or across multiple servers.
+
+#### Scripting the system
+
+Requirement (3) relates to research users, who need to run repeatable concept development sessions. This requirement is met in this architecture by scripts which drive the API. Such scripts would most naturally be developed in javascript, perhaps using a test-runner. Indeed, the test scripts we develop as part of software QA will provide templates for scriptable use.
 
 #### Software Wrapped as a Server
 
@@ -240,6 +247,7 @@ Coinvent EcoSystem
 
 <div id="diadraw"><div class="dia panel panel-primary"><div class="panel-heading"><h3 class="panel-title">Coinvent EcoSystem</h3></div><table class="dia"><tbody><tr><td class="default" colspan="3">Default User Interface</td></tr><tr><td class="ajax" colspan="1">AJAX</td><td class="jquery" colspan="1">jQuery</td><td class="underscore" colspan="1">underscore templates</td></tr><tr><td class="web" colspan="3">Web browser</td></tr><tr><td class="http" colspan="3">http:  JSON format REST API</td></tr><tr><td class="java" colspan="3">Java web-service wrapper</td></tr><tr><td class="hdtp" colspan="1">HDTP</td><td class="files" colspan="1">Files</td><td class="hets" colspan="HETS server^1">HETS server<sup>1</sup></td></tr><tr><td class="swi" colspan="SWI Prolog^2">SWI Prolog<sup>2</sup></td><td class="git" colspan="Git^3">Git<sup>3</sup></td><td class="theorem" colspan="1">Theorem Provers</td></tr><tr><td class="os" colspan="3">OS:  Linux <small>(Ubuntu)</small></td></tr></tbody></table><ul><li>1:  The HETS server provides an http API. This is lower-level than the Coinvent API.</li><li>2:  HDTP might be re-written by Martin Möhrmann to use a different backend.</li><li>3:  Git integration provides OntoHub integration without a hard dependency.</li></ul></div></div>
 
+<a name='references'></a>
 ## References
 
  - CASL: <http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_user_manual>
@@ -248,6 +256,7 @@ Coinvent EcoSystem
  - HETS: <http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/hets>
  - OWL Manchester Syntax: <http://www.w3.org/TR/owl2-manchester-syntax/>
 
+<a name='appendix1'></a>
 # Appendix 1: Component APIs
 
 ## Common
@@ -285,7 +294,7 @@ http://coinvent.soda.sh:8400/files/alice/houseboat.omn
  1. JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"   
  2. DOL fragments, using only the inner part of the DOL mapping, e.g. "sun |-> nucleus, planet |-> electron".
 
-`BlendDiagram` type: A packet of data comprising the Concepts and Mappings for a (partial) blend diagram. The component Concepts of a BlendDiagram use the names `base`, `blend`, `input1`, `input2`, and the Mappings `base_input1`, `base_input2`, `input1_blend`, `input2_blend`. If weakenings are used, then these Concepts are names `weakinput1`, `weakinput2`, and `weakbase`, with corresponding Mappings. Can be provided as the source text itself,  
+`BlendDiagram` type: A packet of data comprising the Concepts and Mappings for a blend diagram in progress. The component Concepts of a BlendDiagram use the names `base`, `blend`, `input1`, `input2`, and the Mappings `base_input1`, `base_input2`, `input1_blend`, `input2_blend`. If weakenings are used, then these Concepts are names `weakinput1`, `weakinput2`, and `weakbase`, with corresponding Mappings. Can be provided as the source text itself,  
 or as a uri for a file containing the BlendDiagram. Can be in JSON or in DOL, identified in the case of a uri by a .json or .dol file-ending.
 
 All inputs are of course sent URL encoded.
@@ -317,7 +326,7 @@ on another server -- are supported via CORS. This means they just work, although
 
 ## Component APIs
 
-### /blender: Given a Partial Blend Diagram, compute the Blend Concept
+### /blender: Given a Blend Diagram in Progress, compute the Blend Concept
 
 Default implementation: HETS   
 Default end point: http://coinvent.soda.sh:8400/blender/hets
@@ -363,7 +372,7 @@ Response-cargo:
 	}
 
 
-## /weaken: Given an inconsistent partial blend diagram, weaken the concepts
+## /weaken: Given an inconsistent blend diagram in progress, weaken the concepts
 
 This is the key method for Amalgams.
 
@@ -372,7 +381,7 @@ Default end point: http://coinvent.soda.sh:8400/weaken/<user-name>
 
 Parameters: 
 
- - blend_diagram: A Partial Blend Diagram
+ - blend_diagram: A Blend Diagram in Progress
  - cursor: {?url} For requesting follow-on results.
  
 Response-cargo: A weakened blend diagram
