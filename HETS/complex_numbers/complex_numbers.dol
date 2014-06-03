@@ -163,6 +163,7 @@ spec Complex_Field =
 	    . cmi pair(x,y) = pair(-x,-y) %cminus_def%
 	    . x cti pair(y,z) = pair(x*y,x*z) %cti_def%
 	    . basis_real = pair(1,0) %creal_def%
+	    . c_ident = basis_real %cident%
 	    . basis_complex = pair(0,1) %ccomplex_def%
 	    . (pair(x,y) prod pair(z,v)) = pair(((x*z)+(-(y*v))),((x*v)+(y*z))) %ctimes_def%
 	    . times_inv (pair(x,y)) = (times_inv (complex_normsq (pair(x,y)))) cti (pair(x,(- y))) %ctimes_inv_def%
