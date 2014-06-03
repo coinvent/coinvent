@@ -264,7 +264,7 @@ Coinvent EcoSystem
 
  - CASL: <http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_user_manual>
  - DOL: <https://github.com/tillmo/DOL>
- - HDTP: Talk to Martin Mohrmann
+ - HDTP: <http://link.springer.com/chapter/10.1007%2F978-3-642-54516-0_7>
  - HETS: <http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/hets>
  - OWL Manchester Syntax: <http://www.w3.org/TR/owl2-manchester-syntax/>
 
@@ -285,7 +285,7 @@ Other implementations are possible, and may not follow the pattern.
 
 	http://server:port/component/actor
 
-So we can have multiple different instances of a component, e.g.
+This means we can have multiple different instances of a component, e.g.
 http://coinvent.soda.sh:8400/blender/hets and http://coinvent.soda.sh:8400/blender/hr3
 
 The actor may refer to a piece of software (e.g. hets), or to a user, which allows that any component function can be fulfilled manually by a human being. E.g. http://coinvent.soda.sh:8400/blender/alice
@@ -295,7 +295,7 @@ investigation of social aspects later in the project.
 
 The default file store also fits into this pattern, with component=files. 
 E.g. the user Alice's houseboat file could be 
-http://coinvent.soda.sh:8400/files/alice/houseboat.omn
+http://coinvent.soda.sh:8400/file/alice/houseboat.omn
 
 
 ### Common Inputs
