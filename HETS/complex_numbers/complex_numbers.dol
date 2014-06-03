@@ -14,8 +14,6 @@ spec Field =
 	  times_inv __: Real ->? Real;
      	  0:Real;
 	  1:Real;
-	  sqrt __: Real ->? Real;
-	  sq __: Real -> Real
 
 		     
      forall x,y,z,v:Real
@@ -23,11 +21,11 @@ spec Field =
      	    . x+y=y+x   %f_com_plus%
 	    . x+(y+z) = (x+y)+z  %f_assoc_plus%
 	    . x + (-x) = 0    %f_plus_inv%
-	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x  %f_com_times%
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %f_assoc_times%
+	    . x*y = y*x  %f_com_times%
+	    . (x*y)*z=x*(y*z) %f_assoc_times%
 	    . (not (x=0)) => x*(times_inv x) = 1 %f_times_inv%
-	    . (not (x=0)) => x*1 = 1 %f_times_ident$
- 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %f_dist_times%
+	    . (not (x=0)) => x*1 = x %f_times_ident$
+ 	    . x*(y+z) = (x*y)+(x*z) %f_dist_times%
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %f_order_+%
 	    . (x>0) /\ (y>0) => (x*y)>0  %f_order_*%
  end
@@ -46,7 +44,7 @@ spec VectorSpace =
 	   __ + __:Real * Real -> Real;
 	   __ * __:Real * Real -> Real;
 	  - __: Real -> Real;
-	  times_inv __: Real -> Real;
+	  times_inv __: Real ->? Real;
      	  0:Real;
 	  1:Real;
 	  field_norm __:Real -> Real;
@@ -59,9 +57,6 @@ spec VectorSpace =
 	  basis_real:Vec;
 	  basis_complex:Vec;
 	  
-          sqrt __: Real ->? Real;
-          sq __: Real -> Real
-
 
  forall x,y,z,v:Real;
 	a,b,c,d:Vec
@@ -69,11 +64,11 @@ spec VectorSpace =
      	    . x+y=y+x %vf_com_plus%
 	    . x+(y+z) = (x+y)+z %vf_assoc_plus%
 	    . x + (-x) = 0 %vf_plus_inv%
-	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x %vf_times_ident%
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %vf_assoc_times%
-	    . (not (x=0)) => x*1 = 1 %vf_times_ident%
+	    . x*y = y*x %vf_times_ident%
+	    . (x*y)*z=x*(y*z) %vf_assoc_times%
+	    . x*1 = x %vf_times_ident%
 	    . (not (x=0)) => x*(times_inv x) = 1 %vf_times_inv% 
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %vf_dist%
+	    . x*(y+z) = (x*y)+(x*z) %vf_dist%
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %vf_order_+%
 	    . (x>0) /\ (y>0) => (x*y)>0 %vf_order_*%
 	    . vzero = pair (0,0) %vzero_def%
@@ -86,7 +81,7 @@ spec VectorSpace =
 	    . (vec_norm a) >= 0 %vec_norm_non_neg%
 	    . (vec_norm a > 0 <=> (not (a = vzero))) %vec_norm_zero%
 	    . (vec_norm (x vti a)) = (field_norm x)*(vec_norm a) %norms%
-	    . (vec_norm (a vpl b)) = (vec_norm a) + (vec_norm b) %norm_plus%
+	    . ((vec_norm a) + (vec_norm b)) >= vec_norm (a vpl b) %norm_plus%
 	      %%% forcing linear independence
 	    . (((x vti basis_real) vpl (y vti basis_complex)) = vzero) <=> (x = 0) /\ (y = 0) %li1%
 	    . (exists s,t:Real. a = ((s vti basis_real) vpl (t vti basis_complex))) %comp_vec%
@@ -120,9 +115,7 @@ spec Colimit =
 	     gn_n2 |-> gt, gn_n4:Real*Real |-> gte,
              gn_n4:Real |-> one,
              gn_n6 |-> co_times:Real * Real -> Real,
-             gn_sq18 __ |-> co_sq __,
-             gn_sqrt20 __ |-> co_sqrt __, 
-             gn_times_inv22 __ |-> co_times_inv __
+             gn_times_inv18 __ |-> co_times_inv __
 end
 
 
@@ -143,39 +136,42 @@ spec Complex_Field =
      __ cpl __:Complex * Complex -> Complex;
      __ cti __:Real * Complex -> Complex;
      cmi __:Complex -> Complex;
+     complex_normsq __: Complex -> Real;
      complex_norm __:Complex -> Real;
      complex_zero:Complex;
      basis_real:Complex;
      basis_complex:Complex;
      c_ident:Complex;
      __ prod __: Complex * Complex -> Complex;
-     times_inv __: Complex -> Complex;
-     sqrt __: Real ->? Real;
-     sq __: Real -> Real;
-     csq __: Complex -> Complex;
-     csqrt __: Complex ->? Complex
+     times_inv __: Complex -> Complex
 
-     forall x,y,z,v:Real
+     forall x,y,z,v:Real;
+	    a,b:Complex
 	    . x+0=x	%c_plus_ident%		
      	    . x+y=y+x   %c_com_plus%
 	    . x+(y+z) = (x+y)+z  %c_assoc_plus%
 	    . x + (-x) = 0    %c_plus_inv%
-	    . ((not (x=0)) /\ (not (y=0))) => x*y = y*x  %c_com_times%
-	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => (x*y)*z=x*(y*z) %c_assoc_times%
+	    . x*y = y*x  %c_com_times%
+	    . (x*y)*z=x*(y*z) %c_assoc_times%
 	    . (not (x=0)) => x*(times_inv x) = 1 %c_times_inv%
-	    . (not (x=0)) => x*1 = 1 %c_times_ident$
- 	    . ((not (x=0)) /\ (not (y=0)) /\ (not (z=0))) => x*(y+z) = (x*y)+(x*z) %c_dist_times%
+	    . x*1 = x %c_times_ident$
+ 	    . x*(y+z) = (x*y)+(x*z) %c_dist_times%
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %c_order_+%
 	    . (x>0) /\ (y>0) => (x*y)>0  %c_order_*%
 	    . (pair(x,y) cpl pair (z,v)) = pair((x+z),(y+v)) %cplus_def$
 	    . complex_zero = pair(0,0) %czero_def%
+	    . cmi pair(x,y) = pair(-x,-y) %cminus_def%
+	    . x cti pair(y,z) = pair(x*y,x*z) %cti_def%
 	    . basis_real = pair(1,0) %creal_def%
 	    . basis_complex = pair(0,1) %ccomplex_def%
 	    . (pair(x,y) prod pair(z,v)) = pair(((x*z)+(-(y*v))),((x*v)+(y*z))) %ctimes_def%
-	    . times_inv (pair(x,y)) = (times_inv (sq (complex_norm (pair(x,y))))) cti (pair(x,(- y))) %ctimes_inv_def%
-	    . complex_norm (pair(x,y)) = sqrt((x*x) + (y*y)) %norm_def%
-	     %%% properties we want in the complex numbers
-      forall a,b: Complex. complex_norm (a prod b) = (complex_norm a) * (complex_norm b) 
+	    . times_inv (pair(x,y)) = (times_inv (complex_normsq (pair(x,y)))) cti (pair(x,(- y))) %ctimes_inv_def%
+	    . complex_normsq (pair(x,y)) = ((x*x) + (y*y)) %norm_def%
+	    . complex_normsq a = (complex_norm a) * (complex_norm a) %cnormsq_def%
+	    . a gt b <=> (complex_norm a) > (complex_norm b)  %gt_def%
+	    . a gte b <=> (complex_norm a) >= (complex_norm b) %gte_def%
+	      %%%% properties we want to be true about complex numbers
+	    . complex_norm (a prod b) = (complex_norm a) * (complex_norm b) %implied
 end
 
 view I3: Colimit to Complex_Field =
@@ -200,8 +196,4 @@ view I3: Colimit to Complex_Field =
     __ >= __ |-> __ gte __,
     gt: Real * Real |-> __ > __,
     gte:Real * Real |-> __ >= __,
-    co_sq __ |-> sq __,
-    co_sqrt __ |-> sqrt __,
-    sq __ |-> csq __,
-    sqrt __ |-> csqrt __,
     field_norm __ |-> field_norm __

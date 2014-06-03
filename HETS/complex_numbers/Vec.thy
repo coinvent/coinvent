@@ -6,7 +6,7 @@ begin
 setup "Header.initialize
        [\"ga_selector_x\", \"ga_selector_y\", \"ga_injective_pair\",
         \"Ax5\", \"Ax6\", \"Ax7\", \"Ax8\", \"Ax9\", \"Ax10\", \"Ax11\",
-        \"Ax12\", \"Ax1\", \"Ax2\", \"Ax3\", \"Ax4\"]"
+        \"Ax1\", \"Ax2\", \"Ax3\", \"Ax4\"]"
 
 typedecl Real
 
@@ -40,9 +40,6 @@ Ax5 [rule_format] : "ALL X_x. X_x +' 0' = X_x"
 and
 Ax6 [rule_format] : "ALL X_x. ALL X_y. X_x +' X_y = X_y +' X_x"
 and
-Ax77 [rule_format] :
-"ALL X_x. ALL X_y. ALL z.  (X_x +' X_y) +' z = X_x +' (X_y +' z)"
-and
 Ax7 [rule_format] :
 "ALL X_x. ALL X_y. ALL z. X_x +' (X_y +' z) = (X_x +' X_y) +' z"
 and
@@ -64,43 +61,40 @@ declare ga_selector_y [simp]
 declare Ax5 [simp]
 declare Ax8 [simp]
 
-theorem double_minus: "-' (-' z) = z"
-proof -
-have "z +' ((-' z) +' (-' (-' z))) = z +' 0'"
-by (simp only: Ax8)
-also have "(z +' -' z) +' (-' (-' z)) = z +' 0'"
-by (simp only: Ax7)
-also have "'0 +' (-' (-' z)) = ..."
-by (simp only: Ax8)
-
-
-theorem Ax12 : "ALL a. vminus vminus a = a"
-apply safe
-apply (case_tac a)
-apply (auto simp add: Ax9 Ax8 Ax10 Ax11)
-oops
-
-setup "Header.record \"Ax12\""
-
 theorem Ax1 : "ALL X_x. X_x vpl vzero = X_x"
-by (auto)
+apply safe
+apply (case_tac X_x)
+apply (auto simp add: Ax9 Ax11)
+done
 
 setup "Header.record \"Ax1\""
 
 theorem Ax2 : "ALL X_x. ALL X_y. X_x vpl X_y = X_y vpl X_x"
-by (auto)
+apply safe
+apply (case_tac X_x)
+apply (case_tac X_y)
+apply (auto simp add: Ax6 Ax9)
+done
 
 setup "Header.record \"Ax2\""
 
 theorem Ax3 :
 "ALL X_x.
  ALL X_y. ALL z. X_x vpl (X_y vpl z) = (X_x vpl X_y) vpl z"
-by (auto)
+apply safe
+apply (case_tac X_x)
+apply (case_tac X_y)
+apply (case_tac z)
+apply (auto simp add: Ax7 Ax9)
+done
 
 setup "Header.record \"Ax3\""
 
 theorem Ax4 : "ALL X_x. X_x vpl vminus X_x = vzero"
-by (auto)
+apply safe
+apply (case_tac X_x)
+apply (auto simp add: Ax9 Ax8 Ax11 Ax10)
+done
 
 setup "Header.record \"Ax4\""
 
