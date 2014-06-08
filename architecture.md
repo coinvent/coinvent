@@ -164,7 +164,9 @@ Default implementation: HDTP
 
 ### Amalgam Finder: Given an inconsistent Blend Diagram, weaken the inputs
 
-Default implementation: manual
+Initial implementation: manual
+
+TODO update following conversation with Mannfred.
 
 ### Example Finder: Given a Concept, find examples / models
 
