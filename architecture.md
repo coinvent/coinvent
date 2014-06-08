@@ -3,7 +3,7 @@
 
 Author: Daniel, with input from Ewen and Mihai   
 Status: Final Draft, due for delivery in June.   
-Version: 0.9   
+Version: 0.9.1   
 
 - [Overview](#overview)
 - [The Blend Diagram in Progress](#bdip)
@@ -103,6 +103,7 @@ Briefly, the supported symbols are:
  - `|->` Part of a mapping, e.g. `zero |-> 0`
  - `%predicate(value)%` An annotation on a sentence. 
  - `%%` Starts a comment
+ - `%implied` Marks a proof obligation (i.e. a statement which is required to be true, but has not been proved)
 
 #### DOL: Extra Conventions and Language Terms
 There are some features Coinvent needs which DOL does not yet provide (see the project's [GitHub issue tracker](https://github.com/coinvent/coinvent/issues?labels=DOL+%2F+file-formats)). Where possible, we fit these within the current DOL specification by specifying non-standard annotations.
