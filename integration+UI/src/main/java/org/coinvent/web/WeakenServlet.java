@@ -1,5 +1,12 @@
 package org.coinvent.web;
 
-public class WeakenServlet {
+import winterwell.web.app.WebRequest;
+
+public class WeakenServlet extends AServlet {
+
+	@Override
+	public void doPost(WebRequest req) throws Exception {
+		init(req);
+	}
 
 }

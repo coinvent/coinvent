@@ -159,6 +159,11 @@ Default implementation: To be developed.
 
 Default implementation: HETS
 
+As well as producing blends, this component also outputs proof obligations.
+
+The HETS API is currently still in development, and improvements are needed
+before it fits all requirements. Specific open issues are logged here: <https://github.com/coinvent/coinvent/issues?labels=HETS&page=1&state=open>
+
 ### Base Finder: Given 2 Concepts, compute a common base Concept
 
 Default implementation: HDTP

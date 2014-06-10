@@ -1,4 +1,7 @@
 package org.coinvent.web;
+
+import winterwell.web.app.WebRequest;
+
 /**
  * Given 2 Concepts, compute a common base Concept
 
@@ -27,6 +30,12 @@ Response-cargo:
  * @author daniel
  *
  */
-public class BaseServlet {
+public class BaseServlet extends AServlet {
+
+	@Override
+	public void doPost(WebRequest webRequest) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
