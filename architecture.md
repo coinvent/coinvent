@@ -6,6 +6,7 @@ Status: Final Draft, due for delivery in June.
 Version: 0.9.1   
 
 - [Overview](#overview)
+- [A Typical Coinvent Session](#typical)
 - [The Blend Diagram in Progress](#bdip)
 - [Languages / File Formats](#languages)
 - [Components](#components)
@@ -13,6 +14,8 @@ Version: 0.9.1
 - [Open Questions & Risks](#open)
 - [References](#references)
 - [Appendix 1: Component APIs](#appendix1)
+- [Appendix 2: Requirements / User-Stories](#appendix2)
+- [Appendix 3: Definitions / Glossary](#appendix3)
 
 <a name='overview'></a>
 
@@ -22,10 +25,16 @@ This document presents the archictectural design for the integrated Coinvent sys
 
 Please first read:
 
-1. The [Glossary / Jargon buster](http://ccg.doc.gold.ac.uk/research/coinvent/internal/?page_id=356) first. 
+1. The [Glossary](#appendix2)
 2. The [requirements / user-stories](integration+UI/requirements.md) which motivate this design.
 
-For further information, please see the reference documents listed at the end of this file.
+
+<a name='typical'></a>
+
+## TODO A Typical Coinvent Session
+
+TODO describe a typical blending session, as background & motivation for the spec.
+
 
 <a name='bdip'></a>
 
@@ -56,6 +65,7 @@ A `Blend Diagram` consists of:
 5. Mappings from the Base Concept to each of the (weakened) Input Concepts.
 6. Mappings from each of the (weakened) Input Concepts to the Blended Concept.
 7. Optional metadata about each of the Concepts, such as evaluation scores,  proof obligations, or relationship to other Concepts.
+8. Optional metadata about the system setup, such as preferred component setup.
 
 The Blended Concept *may* be a colimit, but it does not have to be.
 The Base Concept *may* be found via anti-unification, but it does not have to be.
@@ -81,8 +91,7 @@ A couple of formats for concepts will be supported, with the DOL language used t
 DOL (Distributed Ontology, Modeling and Specification Language) is a language for describing how ontologies connect. 
 DOL is currently in development by Till Mossakowski's group. It is used by the HETS system. This integration with HETS makes it a good choice for Coinvent.
 
-DOL is both larger than we need, and does not have a couple of things we need. So
-we specify a modified version of DOL. We will work with the DOL team aiming to
+DOL is both larger than we need, and does not provide a couple of features we require. So we specify a modified version of DOL. We will work with the DOL team aiming to
 converge on a true subset of DOL.
 
 #### DOL subset: Supported Language Terms
@@ -161,6 +170,8 @@ Default implementation: HETS
 
 As well as producing blends, this component also outputs proof obligations.
 
+The Blender does not have to compute consistency. This is the job of the Concept Scorer.
+
 The HETS API is currently still in development, and improvements are needed
 before it fits all requirements. Specific open issues are logged here: <https://github.com/coinvent/coinvent/issues?labels=HETS&page=1&state=open>
 
@@ -214,7 +225,8 @@ Automated implementations will also be domain specific, and may not be possible 
 
 Default implementations: 
 
- - HETS for automated consistency checks.
+ - HETS for automated consistency checks, where possible. However consistency checks can
+ be beyond the capability of the HETS automated theorem provers.
  - Manual for other scores.
 
 ### Concept Store: Store Concepts and Blend Diagrams
@@ -245,6 +257,18 @@ JSON will provide a wrapper for API-level information. JSON is not part of the f
 
 An added benefit of this architecture is that it provides flexibility regarding the hardware infrastructure. The components of the Coinvent system may be run either on a single server, or across multiple servers.
 
+#### Component Setup
+
+With the architecture supporting different implementations for components, the system
+requires a setup describing which implementations to call.
+
+Each component has a default implementation, which will be specified in a config file.
+
+The Social Creativity strand of the Coinvent project requires that different setups
+can be run and interact. In order to support this from within one server, we allow
+that a Blend Diagram in Progress can carry meta-data about which component implementations to call (if different from the defaults). This meta-data might include implementation-specific configuration parameters.
+
+
 #### Scripting the system
 
 Requirement (3) relates to research users, who need to run repeatable concept development sessions. This requirement is met in this architecture by scripts which drive the API. Such scripts would most naturally be developed in javascript, perhaps using a test-runner. Indeed, the test scripts we develop as part of software QA will provide templates for scriptable use.
@@ -255,7 +279,8 @@ Where steps involve systems such as the interactive theorem prover Isabelle, it 
 
 "Calculation" software such as HDTP will be incorporated into this framework using a server which "wraps" the low-level software. E.g. the other components connect to the HDTP-server over http, and the server manages calling HDTP itself.
 
-### Top-level Stateful, Low-level Stateless
+
+#### Top-level Stateful, Low-level Stateless
 
 Calculation software will be stateless. This is simpler, and avoids tying the
 low-level components to the bigger system.
@@ -268,7 +293,7 @@ This will be handled via input flags, and just repeating
 the calculation asking for more outputs (i.e. iterative deepening).
 
 The overall system will be stateful, because being stateful is the
-most natural way to support a couple of features we want:
+most natural way to support several required features:
 
  - Slow tasks, where a job is started, runs, finishes later.
  - Interactive UI, where the user has a fixed reference point to view
@@ -276,6 +301,11 @@ a developing blend.
 
 The state would be handled at the top level. The components
 (HDTP, HETS-as-a-colimit-calculator, etc) are used in a stateless manner.
+
+
+### Manual / Interactive Mode
+
+TODO describe how each component can be manual.
 
 
 ### Actor / Queue Pattern
@@ -311,7 +341,7 @@ Coinvent EcoSystem
 3: Git integration provides OntoHub integration without a hard dependency.   
 -->
 
-<div id="diadraw"><div class="dia panel panel-primary"><div class="panel-heading"><h3 class="panel-title">Coinvent EcoSystem</h3></div><table class="dia"><tbody><tr><td class="default" colspan="3">Default User Interface</td></tr><tr><td class="ajax" colspan="1">AJAX</td><td class="jquery" colspan="1">jQuery</td><td class="underscore" colspan="1">underscore templates</td></tr><tr><td class="web" colspan="3">Web browser</td></tr><tr><td class="http" colspan="3">http:  JSON format REST API</td></tr><tr><td class="java" colspan="3">Java web-service wrapper</td></tr><tr><td class="hdtp" colspan="1">HDTP</td><td class="files" colspan="1">Files</td><td class="hets" colspan="HETS server^1">HETS server<sup>1</sup></td></tr><tr><td class="swi" colspan="SWI Prolog^2">SWI Prolog<sup>2</sup></td><td class="git" colspan="Git^3">Git<sup>3</sup></td><td class="theorem" colspan="1">Theorem Provers</td></tr><tr><td class="os" colspan="3">OS:  Linux <small>(Ubuntu)</small></td></tr></tbody></table><ul><li>1:  The HETS server provides an http API. This is lower-level than the Coinvent API.</li><li>2:  HDTP might be re-written by Martin Möhrmann to use a different backend.</li><li>3:  Git integration provides OntoHub integration without a hard dependency.</li></ul></div></div>
+<div id="diadraw"><div class="dia panel panel-primary"><table class="dia"><tbody><tr><td class="default" colspan="3">Default User Interface</td></tr><tr><td class="ajax" colspan="1">AJAX</td><td class="jquery" colspan="1">jQuery</td><td class="underscore" colspan="1">underscore templates</td></tr><tr><td class="web" colspan="3">Web browser</td></tr><tr><td class="http" colspan="3">http:  JSON format REST API</td></tr><tr><td class="java" colspan="3">Java web-service wrapper</td></tr><tr><td class="hdtp" colspan="1">HDTP</td><td class="files" colspan="1">Files</td><td class="hets" colspan="HETS server^1">HETS server<sup>1</sup></td></tr><tr><td class="swi" colspan="SWI Prolog^2">SWI Prolog<sup>2</sup></td><td class="git" colspan="Git^3">Git<sup>3</sup></td><td class="theorem" colspan="1">Theorem Provers</td></tr><tr><td class="os" colspan="3">OS:  Linux <small>(Ubuntu)</small></td></tr></tbody></table><ul><li>1:  The HETS server provides an http API. This is lower-level than the Coinvent API.</li><li>2:  HDTP might be re-written by Martin Möhrmann to use a different backend.</li><li>3:  Git integration provides OntoHub integration without a hard dependency.</li></ul></div></div>
 
 
 <a name='open'></a>
@@ -353,7 +383,6 @@ In Proceedings of the International Conference on Logic Programming (ICLP) (1988
 solutions. In ICCBR (2010).
     
 <a name='appendix1'></a>
-
 
 # Appendix 1: Component APIs
 
@@ -592,4 +621,212 @@ Response-cargo:
 
 This may optionally provide more information about the job, such as a progress update.
 
+<a name='appendix2'></a>
+
+# Appendix 2: User-Stories
+
+This appendix presents the motivating requirements for the integrated Coinvent system. It does so via the agile method of user-stories: requirements are driven by example use-cases of who needs it and why.
+
+## As a Coinvent Researcher...
+
+### User: Logic researcher    
+Task: Explore creating and using blends   
+Needs:
+
+ - Specify concepts.
+ - Create blends.
+ - Evaluate blends (this is domain specific -- see specific domains below).
+ - Reliably replay a "session" of concept blending plus associated concept development (such as theorem proving or example music generation).
+
+Success criteria: The software supports research, leading to papers on blending which extend the state of research.   
+Priority: High.
+
+
+### User: Social creativity researcher    
+Task: Explore multiple users/agents creating & using blends      
+Needs:
+
+ - As for Logic Researcher, plus...
+ - Agent-based system to model & explore social interactions.
+ - Setup different starting models for agents.
+
+Priority: This is a key strand of the project plan. For Year 2/3.
+
+## As a non-Coinvent developer...
+
+Later in the project, we aim to run Coinvent hackathons, where other developers
+use Coinvent to build things.
+
+### User: A researcher with ontology experience    
+Task: Explore concept blending.   
+Needs: Same as for a Coinvent Logic Researcher, plus a user-friendly UI and documentation.
+
+### User: A developer  
+
+Task: Making a creativity tool for a domain of their choice (e.g. one of the domains considered below).      
+Needs: 
+
+ - The system must be flexible enough to support:
+   - Modified back-end components.
+   - Other user interfaces, built on top of the API. 
+ - Enough documentation to support 3rd party developers, including a Hello-World example project.      
+
+Success criteria: Developers from outside the project produce projects (which may be just proof-of-concept scratch projects) using Coinvent.   
+Priority: For Year 3.
+
+## As an end-user...
+
+### Domain: Mathematics
+
+#### User: Coinvent researcher
+Task: Explore the blending of mathematical concepts.      
+Use-case: Define concepts. Pick 2 concepts as input, and get back a blended concept. Further develop the blend to resolve "quality issues" such as.
+Further develop the blended concept to create interesting outputs -- possibly models / examples.   
+Requirements: 
+
+1. A format which can define mathematical concepts.
+2. Specify two theories, and blend them to produce a new concept.
+2. Weaken input concepts (to remove inconsistency) and strengthen output blends (to reach "interesting" results). 
+3. Given a concept, check it for consistency.
+4. Given a concept, produce examples / a model.
+5. Given a concept, identify the unresolved questions in the blend (for complex numbers, the missing formula x.y=?).
+6. Solve the unresolved questions in the blend, adding axioms and resolving any proof obligations.
+
+Note that some steps may have to be manual or semi-automated, and so it is a requirement that the
+system supports interactive reasoning.
+
+Success criteria: It works.       
+Priority: High. This is a project deliverable.
+ 
+ 
+#### User: Non-mathematical Analyst (e.g. someone who'd normally use Excel)    
+Task: Quantitative analysis of data   
+Wants: To meaningfully analyse some data using bayesian mathematical models.   
+Specific use-case: Interpret Twitter conversational data on a topic, in terms of types of person and types of conversation.   
+Needs:
+
+ - A friendly UI.
+ - To create a model by blending pre-defined models.
+ - To understand what they've made without understanding the source code -- i.e. a clear natural language summary of the model.
+ - To apply the model to the data...
+ - ...And get back results they can understand (e.g. pie-charts and time-series charts with meaningful labels).
+
+Success criteria: It works and is adopted for use by a researcher or analyst outside the project.   
+Priority: Medium. This is an achievable valuable goal within the important mathematics thread.
+
+
+### Domain: Music
+
+#### User: Coinvent Researcher
+Task: Explore the blending of musical idioms      
+Use-case: Define idioms. Pick 2 musical idioms as input, and get back a blended idiom. Given an idiom, evaluate it, by creating examples and subjectively assessing them.   
+Requirements: 
+
+1. A format which can define musical idioms. Open question: What levels of structure does this have to capture?
+2. Optional? The ability to statistically analyse a body of example music as part of fleshing out a musical idiom (e.g. creating an HMM for use in generation).
+3. Blend idioms to produce new idioms. This requires support for weakening or otherwise resolving clashes, as fully-fledged idioms are likely to be logically inconsistent.
+4. Given an idiom, produce example music.
+4. Optional: Support for evaluating music / idioms.
+
+Success criteria: It works.       
+Priority: High. This is the basis for all music-domain work.
+ 
+#### User: A Listener
+Task: Create music they like      
+Use-case: Pick 2 musical idioms as input, and get back a newly-created high-quality piece of music.
+Success criteria: A group is identified who adopt Coinvent-based software as part of their music listening software. Or a Coinvent-created piece of music gains small-scale public success.   
+Priority: Low. This is a very hard task and may not be achieved within this project.
+ 
+#### User: An avant-garde composer    
+Task: Create music to use as inspiration / source material   
+Use-case: Pick 2 musical idioms as input, and get back a newly-created *low-quality* piece of music.   
+Success criteria: A composer collaborates with the project and uses Coinvent to create a piece of music they then perform.      
+Priority: For Year 2/3. This is an achievable goal for this project.
+
+
+### Other Domains
+
+#### Domain: Fictional beasts   
+User: A child    
+Task: Create a fictional beast
+Use-case: Pick two input beasts (using a simple user-friendly GUI), and get back a fictional blended beast with a mini-story about how it behaves.  
+Wants: To play around creating fun new animals and interacting with them.
+Needs:
+
+ - A very friendly UI.
+ - An ontology of animals behind it.
+ - To specify two animals to blend.
+ - To get a pictorial view of the blend.
+ - To see some behaviour, e.g. robot cat chases mutant mice, stops to drink some milk, short-circuits.
+
+Success criteria: Adopted for use by a school, or distributed publicly as an app.         
+Priority: Medium. For Year 2. This is an achievable goal for this project.
+
+
+#### Domain: Mechanical engineering.   
+
+User: A mechnical engineer.   
+Task: Create a new product, and streamline the 3D modelling, requirements checking, & safety testing by leaning on an existing database.   
+Wants: To specify a new component (e.g. a car ejector seat), which has aspects of existing components. Then get a CAD model which fits the spec.   
+Priority: Low. This lacks a sponsor within the project.
+
+#### Domain: Poetry
+
+User: A poet   
+Task: Create poetry fragments to use as inspiration / source material   
+Use-case: 
+
+1. Pick 2 concepts as input, and get back a newly-created metaphor and sentences illustrating it.   
+2. Pick a concept and a property, and get back a 2nd concept which when blended with the first provides a metaphor for the desired property. 
+
+Success criteria: A poet collaborates with the project and uses Coinvent to create a piece of poetry they then publish.  
+Priority: Medium. This is an achievable goal for this project. This is an accessible domain for technology testing, and it fits with the research interests of Goldsmiths group.
+
+User: A reader   
+Wants: To be entertained or stimulated.   
+Success criteria: Producing poems that are rated as interesting, either by literature critics or a more general readership.    
+Priority: Low. This is an accessible domain for technology testing, and it fits with the research interests of Goldsmiths group. However there is considerable extra work required for software to go from a blended-concept metaphor, to a complete poem.
+
+#### Domain: Recipes
+
+User: An amateur cook   
+Wants: To create a new recipe or meal-plan by blending ideas.   
+Success criteria: Some new & tasty recipes.   
+Priority: Low. This is an accessible domain for proving the technology. However there is so much cooking material online, that a new resource would not be very valuable.   
+
+<a name='appendix3'></a>
 	
+# Appendix 3: Definitions / Glossary
+
+<!-- Adapted from http://ccg.doc.gold.ac.uk/research/coinvent/internal/?page_id=356 -->
+	
+Collecting technical terms in use across the Coinvent project.
+
+ - ABox = assertions about an individual — describes an instance. See TBox
+ - ASP = Answer Set Programming, a class of automated reasoning systems for "hard"
+ boolean satisifiability searches.
+ - Base = A common shared starting theory.
+ - Blend = Any theory created by merging two parent theories. Might be a colimit (but needn't be).
+ - Blendoid = a Theory created by blending
+ - Cadence = sequence (progression) of chords which concludes a section of music. E.g. fifth to root, D, G in key of G.
+ - Colimit = Pushout. A category-theory term which can be applied to blending. The least-specific specialisation which combines two theories with a common base.
+ - Concept = No one definition, but probably a Theory.
+ - Conservativity / conservative extension: "Safely" extending a theory by adding statements about new constants which don’t affect the old statements. See https://en.wikipedia.org/wiki/Conservativity_theorem.
+ - DOL = HETS language for describing the relationship between theories. Can work with any ontology language. So DOL does not itself describe theories.
+ - Entity = Individual
+ - GCT = Generalised Chord Type, e.g. 0,[0,4,7] is C-major, if in the key of C.
+ - HETS = the Heterogeneous Tool Set. A meta-logic system, which can map between logics and theorem provers.
+ - Idiom = a Theory in music.
+ - Interpretation: a symbol mapping between two theories with the following proof obligation: the target theory must extend (ie. logically entail) the source theory. Most likely, the sentences from the source theory are just included (with symbol renaming) into the target.
+ - IRI = International URI = URI which can use unicode. A CURIE is a short fragment, which with extra context can be resolved into a URI (e.g. like a relative url).
+ - Mapping = signature morphism = how to translate symbols between two domains. E.g. “bank” here maps to “river_bank” there.
+ - Model = an example of a Theory (which may be a more concrete theory, or a domain-specific example, such as a a piece of music).
+ - Ontology = Domain = Space = Theory = Idiom
+ - OWL = a description language for writing ontologies, most commonly OWL2 using Manchester syntax
+ - Sentence = A statement in a Theory. E.g. an axiom.
+ - Signature = the set of symbols used in a theory.
+ - Sort = Type = Class. E.g. “Person” or “Boat”
+ - Symbol = Term. Anything used in a Sentence. E.g. “x” or “+” or “Chord”
+ - TBox = assertions about a domain (T for terminology).
+ - Theory = a set of symbols (the signature) and sentences.
+ 

@@ -25,6 +25,9 @@ public abstract class AServlet {
 	 * e.g. opName="blender", class=BlenderServlet
 	 */
 	protected String opName;
+	/**
+	 * slug (after actor and op)
+	 */
 	protected String slug;
 	protected User actor;
 	protected String type;
@@ -43,7 +46,7 @@ public abstract class AServlet {
 		// actor
 		actorName = bits[1];
 		actor = DataLayerFactory.get().getUser(new XId(actorName,"coinvent"));
-		// slug
+		// slug (after actor and op)
 		StringBuilder sb = new StringBuilder();
 		for(int i=2; i<bits.length; i++) {
 			sb.append(bits[i]);

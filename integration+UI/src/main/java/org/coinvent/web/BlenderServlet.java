@@ -10,6 +10,7 @@ import org.coinvent.data.DataLayerFactory;
 import org.coinvent.data.FileDataLayer;
 import org.coinvent.data.IDataLayer;
 import org.coinvent.data.IJob;
+import org.coinvent.data.Job;
 import org.coinvent.data.Mapping;
 
 import com.winterwell.utils.threads.Actor;
@@ -79,23 +80,22 @@ public class BlenderServlet extends AServlet {
 		}
 		
 		// Interactive/manual
+		jr = doInteractive(req);
+				
+		// send back json		
+		WebUtils2.sendJson(jr, req);
+	}
+
+	JsonResponse doInteractive(WebRequest req) {
 		// ...make a job 
+		String id = req.getHash();
+		job = new Job(actor, opName, req);
 		
 		// ...use history?
 		
 		
 		jr = new JsonResponse(req, null);
-		
-		if (req.getAction()!=null) {
-			doAction(req);
-		}
-		
-		// send back json		
-		WebUtils2.sendJson(jr, req);
-	}
-
-	void doAction(WebRequest r) {
-		
+		return jr;
 	}
 
 }
