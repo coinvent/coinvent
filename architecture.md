@@ -1,9 +1,9 @@
 
 # Coinvent Architecture
 
-Author: Daniel, with input from Ewen and Mihai   
+Author: Daniel, with input from Ewen and Mihai, and feedback from    
 Status: Final Draft, due for delivery in June.   
-Version: 0.9.1   
+Version: 0.9.2    
 
 - [Overview](#overview)
 - [A Typical Coinvent Session](#typical)
@@ -31,10 +31,45 @@ Please first read:
 
 <a name='typical'></a>
 
-## TODO A Typical Coinvent Session
+## A Typical Coinvent Session
 
-TODO describe a typical blending session, as background & motivation for the spec.
+Coinvent covers several domains and use-cases. The following description may be taken
+as typical of planned usage, but not normative.
 
+In a typical session, the user browses & selects two concepts from the 
+rich background of domain concepts. A blended concept is then developed, which
+may be automatic or interactive. Examples of the concept are generated (again, either
+automatically or interactively, depending on the capability of the automatic software). Finally, the concept's quality is evaluated based on the examples.
+
+This is illustrated in the UML sequence diagram below:
+
+<img src='sequence-diagram.png' style='width:90%;'>
+<!-- title Coinvent: Typical Session
+
+Participant User
+Participant WebApp
+
+/file->WebApp: List
+User->WebApp: Select 2 Concepts
+/file->WebApp: Load
+loop 
+   WebApp->/base: Compute Common Base...
+   /base->WebApp: Base Concept + mappings
+   WebApp->/blend: Compute Blend...
+   /blend->WebApp: Blend Concept
+   User->WebApp: OK
+   WebApp->/consistency: Evaluate consistency...
+   /job->WebApp: ...status...
+   /consistency->WebApp: Inconsistent!
+   WebApp->/weaken: Solve inconsistency...
+   /weaken->WebApp: 2 Weaker Concepts
+end
+User->WebApp: OK
+WebApp->/model: Create example...
+/model->WebApp: Examples of Concept
+WebApp->/quality: Concept and Examples...
+/quality->WebApp: Quality score
+WebApp->/file: Save -->
 
 <a name='bdip'></a>
 
@@ -159,8 +194,11 @@ web-service wrapper, which then calls HDTP.
 A Coinvent system will be made up of the following components.
 A component can be "manual", which means a human being provides the result (using a web interface).
 
-### User Portal
-An interface through which the user drives the system.
+### User Portal (Web App)
+An interface through which the user drives the system. This will be a web-app,
+i.e. a browser-based ajax app.
+
+It will build on established toolkits, including Bootstrap, jQuery, and underscore.js.
 
 Default implementation: To be developed.
 
@@ -221,13 +259,18 @@ In musical theories, an example is a piece of music conforming to the theory.
  
 Automated implementations will also be domain specific, and may not be possible in all domains.
 
+### Concept Correctness: Is it consistent?
+
+Blending can lead to inconsistent concepts. HETS has support for using various theorem provers to check for consistency. However detecting inconsistency is not always
+easy. In the complex numbers example, it has been found to require manually guided
+proofs.
+
 ### Concept Scorer: How good is a Concept?
 
-Default implementations: 
+A key part of creativity is judging the quality of the outputs; discarding
+low-value concepts, and selecting valuable ones. How to do this is one of the research questions this project will explore. HR has automatic scores for detecting interesting concepts, which it would be interesting to incorporate.
 
- - HETS for automated consistency checks, where possible. However consistency checks can
- be beyond the capability of the HETS automated theorem provers.
- - Manual for other scores.
+Default implementation: Manual
 
 ### Concept Store: Store Concepts and Blend Diagrams
 
@@ -424,6 +467,9 @@ http://coinvent.soda.sh:8400/file/alice/houseboat.omn
 `BlendDiagram` type: A packet of data comprising the Concepts and Mappings for a blend diagram in progress. The component Concepts of a BlendDiagram use the names `base`, `blend`, `input1`, `input2`, and the Mappings `base_input1`, `base_input2`, `input1_blend`, `input2_blend`. If weakenings are used, then these Concepts are names `weakinput1`, `weakinput2`, and `weakbase`, with corresponding Mappings. Can be provided as the source text itself,  
 or as a uri for a file containing the BlendDiagram. Can be in JSON or in DOL, identified in the case of a uri by a .json or .dol file-ending.
 
+`sentence` type: A specific sentence within a Concept. Either the sentence itself, 
+or a DOL annotation labelling that sentence.
+
 All inputs are of course sent URL encoded.
 
 ### Common Outputs
@@ -534,12 +580,55 @@ Response-cargo:
 		models: {concept[]} 
 	}
 
-### /eval: Concept Scorer: How good is a Concept?
+### /consistency: Is a concept consistent?
 
 Default implementations: 
 
  - HETS for automated consistency checks.
- - Manual for other scores.
+ - Manual where HETS fails.
+ - Can we include semi-automated consistency proofs, e.g. using Isabelle?
+ 
+Default end point: http://coinvent.soda.sh:8400/consistency/hets
+
+Parameters:
+
+ - lang: owl|casl
+ - concept: {concept} 
+ - goal: {?sentence} For focused testing.
+
+Response-cargo: 
+	
+	{
+		result: {?boolean},
+		inconsistent: {sentence[]},
+		unknown: {sentence[]}
+	}
+
+
+### /quality: How good is a Concept?
+
+Default implementation: Manual.
+
+HR has automatic scores for detecting interesting concepts, which it would be interesting
+to explore.
+
+Quality scoring will most likely work on examples, rather than on the concepts directly.
+ 
+Default end point: http://coinvent.soda.sh:8400/quality/$user_name
+
+Parameters:
+
+ - lang: owl|casl
+ - concept: {concept}
+ - models: {concept[]} 
+ - metric: {?string} Optional name of a metric to score against.
+
+Response-cargo: 
+	
+	{
+		score: {number} A number. The [0, 1] scale is recommended for most metrics.
+	}
+
 
 ### /file: Store Concepts and Blend Diagrams
 
