@@ -6,7 +6,7 @@
 //import com.google.gson.Gson;
 //import com.winterwell.utils.containers.SharedStatic;
 //
-//import creole.data.XId;
+//
 //import winterwell.utils.web.WebUtils2;
 //import winterwell.web.WebEx;
 //import winterwell.web.ajax.JsonResponse;
@@ -15,7 +15,7 @@
 //public class UserServlet extends AServlet {
 //
 //	private User user;
-//	private XId userId;
+//	private Id userId;
 //
 //	Gson gson = SharedStatic.get(Gson.class);
 //	
@@ -24,7 +24,7 @@
 //		String[] bits = state.getSlugBits();
 //		String userName = bits[1];
 //		if ( ! userName.contains("@")) userName+="@coinvent";
-//		userId = new XId(userName);
+//		userId = new Id(userName);
 //		user = DataLayerFactory.get().getUser(userId);
 //
 //		if (state.getAction()!=null) doAction(state);

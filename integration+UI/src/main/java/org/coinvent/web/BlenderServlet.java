@@ -14,8 +14,9 @@ import org.coinvent.data.Job;
 import org.coinvent.data.Mapping;
 
 import com.winterwell.utils.threads.Actor;
+import com.winterwell.utils.threads.ATask.QStatus;
 
-import creole.data.XId;
+
 import winterwell.utils.Key;
 import winterwell.utils.TodoException;
 import winterwell.utils.Utils;
@@ -74,27 +75,48 @@ public class BlenderServlet extends AServlet {
 		Mapping base_input1 = req.get(BASE_INPUT1);
 		Mapping base_input2 = req.get(BASE_INPUT2);
 		
-		// Which method? HETS?
+		// A fast method? HETS?
 		if (AgentRegistry.recognise(actorName)) {
 			throw new TodoException("Call out to "+actorName);
 		}
 		
 		// Interactive/manual
-		jr = doInteractive(req);
+		jr = doSlow(req);
 				
 		// send back json		
 		WebUtils2.sendJson(jr, req);
 	}
 
-	JsonResponse doInteractive(WebRequest req) {
+	JsonResponse doSlow(WebRequest req) {
 		// ...make a job 
-		String id = req.getHash();
-		job = new Job(actor, opName, req);
+		IJob job = new Job(actor, opName, req);
 		
 		// ...use history?
-		
-		
-		jr = new JsonResponse(req, null);
+		Id jid = job.getId();
+		IJob oldJob = DataLayerFactory.get().getJob(jid);
+		if (oldJob!=null 
+				&& oldJob.getStatus()!=QStatus.ERROR 
+				&& oldJob.getStatus()!=QStatus.CANCELLED) {
+			job = oldJob;
+			
+			// Done?
+			if (job.getStatus()==QStatus.DONE) {
+				Object r = oldJob.getResult();
+				jr = new JsonResponse(req, r);
+				return jr;			
+			}
+		} else {
+			// Save this new job
+			job = DataLayerFactory.get().saveJob(job);			
+		}
+				
+		// wait for it
+		jr = new JsonResponse(req, new ArrayMap(
+				"actor", actorName,
+				"op", opName,
+				"id", job.getId(),
+				"status", job.getStatus()
+				));
 		return jr;
 	}
 

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import org.coinvent.data.DataLayerFactory;
 import org.coinvent.data.User;
 
-import creole.data.XId;
+
 import winterwell.utils.StrUtils;
 import winterwell.utils.io.FileUtils;
 import winterwell.web.WebEx;
@@ -45,7 +45,7 @@ public abstract class AServlet {
 		opName = bits[0];		
 		// actor
 		actorName = bits[1];
-		actor = DataLayerFactory.get().getUser(new XId(actorName,"coinvent"));
+		actor = DataLayerFactory.get().getUser(new Id(actorName,"coinvent"));
 		// slug (after actor and op)
 		StringBuilder sb = new StringBuilder();
 		for(int i=2; i<bits.length; i++) {

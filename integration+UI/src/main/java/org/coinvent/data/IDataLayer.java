@@ -2,24 +2,26 @@ package org.coinvent.data;
 
 import java.util.List;
 
-import creole.data.XId;
+
 
 public interface IDataLayer {
 
-	User getUser(XId user);
+	User getUser(Id user);
 
-	List<XId> getConcepts(XId user);
+	List<Id> getConcepts(Id user);
 
-	List<XId> getUserJobs(XId user);
+	List<Id> getUserJobs(Id user);
 
-	List<XId> getConceptJobs(XId concept);
+	List<Id> getConceptJobs(Id concept);
 
-	Concept getConcept(XId theoryName);
+	Concept getConcept(Id theoryName);
 
-	IJob getJob(XId id);
+	IJob getJob(Id id);
 
-	User getCreateUser(XId xid);
+	User getCreateUser(Id xid);
 
 	Concept getCreateConcept(User user, String conceptName);
+
+	IJob saveJob(IJob job);
 
 }

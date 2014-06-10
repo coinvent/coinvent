@@ -1,18 +1,20 @@
 package org.coinvent.data;
 
-import creole.data.XId;
-
 public class Concept {
 
-	public XId oxid;
-	public XId xid;
+	public Id oxid;
+	public Id xid;
 	public String lang;
 	public String iri;
 	public String contents;
 
-	public Concept(User owner, XId concept) {
+	public Concept(User owner, Id concept) {
 		this.xid = concept;
-		this.oxid = owner.getXId();
+		this.oxid = owner.getId();
+	}
+
+	public static Id getId(Id user, String conceptName) {
+		return new Id(user, KKind.Concept, conceptName);
 	}
 
 }

@@ -2,17 +2,17 @@ package org.coinvent.data;
 
 import java.io.File;
 
-import creole.data.XId;
+
 
 public class User {
 
-	public User(XId xid) {
+	public User(Id xid) {
 		this.xid = xid;
 	}
 
-	XId xid;
+	Id xid;
 
-	public XId getXId() {
+	public Id getId() {
 		return xid;
 	}
 	

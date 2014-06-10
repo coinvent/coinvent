@@ -5,7 +5,7 @@
 //import com.google.gson.Gson;
 //import com.winterwell.utils.containers.SharedStatic;
 //
-//import creole.data.XId;
+//
 //import winterwell.utils.TodoException;
 //import winterwell.utils.web.WebUtils2;
 //import winterwell.web.FakeBrowser;
@@ -24,7 +24,7 @@
 //	 * @see org.coinvent.data.IDataLayer#getUser(java.lang.String)
 //	 */
 //	@Override
-//	public User getUser(XId actorName) {
+//	public User getUser(Id actorName) {
 //		if (actorName==null) return null;
 //		try {
 //			FakeBrowser fb = new FakeBrowser();
@@ -37,24 +37,24 @@
 //	}
 //	
 //	/* (non-Javadoc)
-//	 * @see org.coinvent.data.IDataLayer#getConcepts(creole.data.XId)
+//	 * @see org.coinvent.data.IDataLayer#getConcepts(creole.data.Id)
 //	 */
 //	@Override
-//	public List<XId> getConcepts(XId user) {
+//	public List<Id> getConcepts(Id user) {
 //		throw new TodoException();
 //	}
 //	/* (non-Javadoc)
-//	 * @see org.coinvent.data.IDataLayer#getUserJobs(creole.data.XId)
+//	 * @see org.coinvent.data.IDataLayer#getUserJobs(creole.data.Id)
 //	 */
 //	@Override
-//	public List<XId> getUserJobs(XId user) {
+//	public List<Id> getUserJobs(Id user) {
 //		throw new TodoException();
 //	}
 //	/* (non-Javadoc)
-//	 * @see org.coinvent.data.IDataLayer#getConceptJobs(creole.data.XId)
+//	 * @see org.coinvent.data.IDataLayer#getConceptJobs(creole.data.Id)
 //	 */
 //	@Override
-//	public List<XId> getConceptJobs(XId concept) {
+//	public List<Id> getConceptJobs(Id concept) {
 //		throw new TodoException();
 //	}
 //
@@ -62,7 +62,7 @@
 //	 * @see org.coinvent.data.IDataLayer#getConcept(java.lang.String)
 //	 */
 //	@Override
-//	public Concept getConcept(XId theoryName) {
+//	public Concept getConcept(Id theoryName) {
 //		if (theoryName==null) return null;
 //		FakeBrowser fb = new FakeBrowser();
 //		String json = fb.getPage("http://localhost:9200/coinvent/concept/"+WebUtils2.urlEncode(theoryName));
@@ -73,7 +73,7 @@
 //	 * @see org.coinvent.data.IDataLayer#getJob(java.lang.String)
 //	 */
 //	@Override
-//	public IJob getJob(XId id) {
+//	public IJob getJob(Id id) {
 //		if (id==null) return null;
 //		FakeBrowser fb = new FakeBrowser();
 //		String json = fb.getPage("http://localhost:9200/coinvent/job/"+WebUtils2.urlEncode(id));
@@ -82,10 +82,10 @@
 //	}
 //
 //	/* (non-Javadoc)
-//	 * @see org.coinvent.data.IDataLayer#getCreateUser(creole.data.XId)
+//	 * @see org.coinvent.data.IDataLayer#getCreateUser(creole.data.Id)
 //	 */
 //	@Override
-//	public User getCreateUser(XId xid) {		
+//	public User getCreateUser(Id xid) {		
 //		// TODO Get
 //		// Create
 //		User u = new User(xid);

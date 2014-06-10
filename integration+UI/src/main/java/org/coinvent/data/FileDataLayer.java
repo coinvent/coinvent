@@ -8,14 +8,13 @@ import org.coinvent.web.FileServlet;
 
 import winterwell.utils.io.FileUtils;
 import winterwell.utils.web.XStreamUtils;
-import creole.data.XId;
 
 public class FileDataLayer implements IDataLayer {
 
 	File base = FileServlet.BASE;
 	
 	@Override
-	public User getUser(XId user) {
+	public User getUser(Id user) {
 		File f = new File(base, user.getName()+"/user.xml");
 		if (f.isFile()) {
 			return FileUtils.load(f);
@@ -24,30 +23,30 @@ public class FileDataLayer implements IDataLayer {
 	}
 
 	@Override
-	public List<XId> getConcepts(XId user) {
+	public List<Id> getConcepts(Id user) {
 		File dir = new File(base, user.getName());		
-		List<XId> cs = new ArrayList();
+		List<Id> cs = new ArrayList();
 		for(File f : dir.listFiles()) {
 			if (f.getName().equals("user.xml")) continue;
-			cs.add(new XId(user.getName()+"__"+f.getName()+"@coinvent"));
+			cs.add(Concept.getId(user, f.getName()));
 		}
 		return cs;
 	}
 
 	@Override
-	public List<XId> getUserJobs(XId user) {
+	public List<Id> getUserJobs(Id user) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<XId> getConceptJobs(XId concept) {
+	public List<Id> getConceptJobs(Id concept) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Concept getConcept(XId concept) {
+	public Concept getConcept(Id concept) {
 		String[] bits = concept.getName().split("__");
 		File f = new File(base, bits[0]+"/"+bits[1]);
 		if (f.isFile()) return FileUtils.load(f);
@@ -55,15 +54,20 @@ public class FileDataLayer implements IDataLayer {
 	}
 
 	@Override
-	public IJob getJob(XId xid) {
-		String[] bits = xid.getName().split("__");		
-		File f = new File(base, bits[0]+"/"+bits[1]);		
+	public IJob getJob(Id xid) {
+		File f = getFile(xid);
 		if ( ! f.isFile()) return null;
 		return XStreamUtils.serialiseFromXml(FileUtils.read(f));
 	}
 
+	private File getFile(Id xid) {
+		return new File(base, xid.getParent().getName()
+							+"/_"+xid.getKind().toString()
+							+"/"+xid.getName());
+	}
+
 	@Override
-	public User getCreateUser(XId xid) {
+	public User getCreateUser(Id xid) {
 		File f = new File(base, xid.getName()+"/user.xml");
 		if (f.isFile()) return FileUtils.load(f);
 		User u = new User(xid);
@@ -74,15 +78,23 @@ public class FileDataLayer implements IDataLayer {
 
 	@Override
 	public Concept getCreateConcept(User user, String conceptName) {
-		XId concept = new XId(user.getXId().getName()+"__"+conceptName+"@coinvent");
+		Id concept = Concept.getId(user.getId(), conceptName);
 		String[] bits = concept.getName().split("__");
-		assert bits[0].equals(user.getXId().getName()) : concept;
-		File f = new File(base, user.getXId().getName()+"/"+bits[1]);
+		assert bits[0].equals(user.getId().getName()) : concept;
+		File f = new File(base, user.getId().getName()+"/"+bits[1]);
 		if (f.isFile()) return FileUtils.load(f);
 		Concept u = new Concept(user, concept);
 		f.getParentFile().mkdirs();
 		FileUtils.save(u, f);
 		return u;
+	}
+
+	@Override
+	public IJob saveJob(IJob job) {
+		File f = new File(base, job.getActor()+"/_jobs/"+job.getId());
+		f.getParentFile().mkdirs();
+		FileUtils.save(job, f);
+		return job;
 	}
 
 }
