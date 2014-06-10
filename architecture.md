@@ -162,11 +162,28 @@ Default implementation: HETS
 
 Default implementation: HDTP
 
+Required work: HDTP currently uses a custom Prolog-based format. To plug into Coinvent (or HETS without Coinvent), a translation layer will be developed so that HDTP can take in OWL or CASL.
+
+Note: HDTP will remain stateless. It will not itself manage sessions or run a web-server.
+
 ### Amalgam Finder: Given an inconsistent Blend Diagram, weaken the inputs
 
 Initial implementation: manual
 
-TODO update following conversation with Mannfred.
+Since the colimit operation (and blending in general) can generate inconsistent blends, it may be necessary to weaken the input theories until a consistent blend is found. 
+
+The Amalgams team will lead on this, exploring the generalization operation for amalgams described in [4], and developing a stand-alone Theory Weakener (TW).
+
+The TW will not be capable of computing colimits itself; therefore it requires a feedback loop with HETS.
+
+In case the colimit is inconsistent, the TW analyzes the input theories and the inconsistencies
+in the blend and weakens the theories based on this information by removing sentences from the
+input theories. This removal will be based on heuristics known from amalgam reasoning [4]. The whole procedure is repeated until a consistent colimit is found.
+
+For the implementation of the TW, we are currently investigating using an 
+Answer Set Programming (ASP) approach, calling on online ASP solvers. This allows us to (i) rapidly implement prototypes, 
+(ii) make use of the highly optimized search problem algorithms that drive modern ASP solvers [2], and (iii) use the advantages of online ASP solvers like oclingo [1] that will re-use partial solutions of earlier weakenings. Towards this, a weakening operation is modeled as sequence of theory transitions, based on atomic operations that each affect the different types of sentences (eg. SubClassOf , EquivalentTo, ObjectProperty, etc. for OWL) within theories. Perceiving the theory weakening as a sequence of theory transitions also allows us to exploit the iterative problem solving capabilities of modern ASP solvers and to re-use coding strategies known from other kinds
+of state transition based problems that are typically modeled in ASP [2].
 
 ### Example Finder: Given a Concept, find examples / models
 
@@ -293,13 +310,22 @@ Coinvent EcoSystem
 
 <a name='open'></a>
 
-## Open Questions
+## Open Questions and Risks
 
 Many development questions remain open at this stage in the project. Notable open questions are:
 
 1. How to generate examples in the different domains.
 2. How to use "3rd party systems" such as the Isabelle interactive theorem prover within Coinvent.
+3. How to weaken theories to resolve inconsistencies?
 3. What format is best for musical idioms?
+
+### Software development risks & mitigation
+
+Much of the Coinvent system builds upon existing components (HETS, HDTP, DOL), or can use standard software & approaches (the UI). These components therefore have a relatively low risk. That said, all the base components require some development to meet the needs of this project.
+
+Higher risk components are /model and /weaken. How these functions can be implemented is a research topic. The problems are deep, and no readily adaptable solution exists. The team do have relevant expertise in techniques to tackle these tasks, but, as with any open-ended research task, there is a high level of technical risk.
+
+To mitigate these risks, the system design allows for components to be fulfilled by manual interactive input. This means work on automated solutions to /model and /weaken is not a blocker for use of the system.
 
 <a name='references'></a>
 
@@ -310,7 +336,14 @@ Many development questions remain open at this stage in the project. Notable ope
  - HDTP: <http://link.springer.com/chapter/10.1007%2F978-3-642-54516-0_7>
  - HETS: <http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/hets>
  - OWL Manchester Syntax: <http://www.w3.org/TR/owl2-manchester-syntax/>
-
+ - ASP:
+	1. M.Gebser et al, Engineering an Incremental ASP Solver. In International Converence on Logic Programming (2008), no. 1.
+	2. M.Gebser et al, Answer Set Solving in Practice. Morgan and Claypool, 2012.
+	3. M.Gelfond and V.Lifschitz, The Stable Model Semantics for Logic Programming.
+In Proceedings of the International Conference on Logic Programming (ICLP) (1988).
+	4. S.Ontan and E.Plaza, Amalgams: A formal approach for combining multiple case
+solutions. In ICCBR (2010).
+    
 <a name='appendix1'></a>
 
 
