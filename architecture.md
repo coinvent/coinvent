@@ -25,8 +25,8 @@ This document presents the archictectural design for the integrated Coinvent sys
 
 Please first read:
 
-1. The [Glossary](#appendix2)
-2. The [requirements / user-stories](integration+UI/requirements.md) which motivate this design.
+1. The [Glossary](#appendix3)
+2. The [requirements / user-stories](#appendix2) which motivate this design.
 
 
 <a name='typical'></a>
