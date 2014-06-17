@@ -75,7 +75,10 @@ WebApp->/file: Save -->
 
 ## Core Object: The Blend Diagram in Progress
 
-The object type at the heart of Coinvent is the Blend Diagram. The specification below is intentionally broad to support several use-cases.
+The object type at the heart of Coinvent is the Blend Diagram. The specification below is intentionally broad to support several use-cases. The Blend Diagram is illustrated in the flowchart diagram below:
+
+<img src='BlendDiagram.png' style='width:90%;'>
+<!-- source: -->
 
 Crucially we must support blend diagrams which are "works in progress". The high-level process of developing a new blended concept is:
 
@@ -107,7 +110,6 @@ The Base Concept *may* be found via anti-unification, but it does not have to be
 
 A `Blend Diagram in Progress` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. 
 
-TODO Draw a diagram of this.
 
 <a name='components'></a>
 
