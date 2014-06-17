@@ -1,0 +1,539 @@
+% please make sure FP7 and LP logos are in the subdirectory logos
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%       Standard Cover Pages, Header and Footers
+%               for COINVENT Reports
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%       The following parameters can be defined for a document:
+%
+%       PARAMETER               DEFAULT VALUE
+%
+%       title                   ?
+%       shorttitle
+%       chiefeditor             ?
+%       coreauthors             ?
+%       editors                 ?
+%       LPgroupleaders          ?
+%       LPprojectleader         ?
+%       identifier              ?
+%       project                 ?
+%       synopsis
+%       revised                 \today
+%       format                  \LaTeX
+%       distribution            Restricted
+%       version                 ?
+%       state                   ?
+%
+%       The following LaTeX command generates the actual text:
+%
+%       \coverpages
+%       Generates frontpage with title, authors, logo synopsis
+%                       and an inner page with company information
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\catcode`\@=11\relax
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                       DEFAULT PAGE STYLE                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Dimension Of Text:
+
+\textheight     22cm    %    Height of text (including footnotes and
+                        %    figures, excl. running head and foot).
+\textwidth      15cm    %    Width of text line.
+
+% Top of page
+
+\topmargin      0pt     %    Nominal distance from top of page to top
+                        %    of box containing running head.
+\headheight     12pt    %    Height of box containing running head.
+\headsep        25pt    %    Space between running head and text.
+
+% Bottom of page:
+
+%\footheight 12pt        %    Height of box containing running foot.
+%\footskip 30pt          %    Distance from baseline of box containing
+%                        %    foot to baseline of last line of text.
+
+% For two-column mode:
+
+\oddsidemargin  1cm
+\evensidemargin 1cm
+\marginparwidth 0pt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                       COVER PAGES                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newcommand{\kwebtitle}{?}
+%\newcommand{\kwebauthor}{?}
+% \newcommand{\kwebchiefeditor}{?}
+\newcommand{\kwebcoreauthors}{?}
+\newcommand{\kwebeditors}{?}
+\newcommand{\kwebreviewers}{?}
+\newcommand{\kwebLPgroupleaders}{?}
+\newcommand{\kwebLPprojectleader}{?}
+\newcommand{\kwebissuer}{The contributors}
+\newcommand{\kwebidentifier}{?}
+\newcommand{\kwebproject}{?}
+\newcommand{\kwebrevised}{\today}
+\newcommand{\kwebsynopsis}{?}
+% \newcommand{\kwebversion}{?}
+\newcommand{\kwebstate}{?}
+\newcommand{\kwebformat}{LaTeX}
+\newcommand{\kwebdistribution}{Private - partners and advisory board members}
+% Empty field at bottom of page if CEC reference is not defined
+\newcommand{\kwebcecfield}{}
+\newcommand{\coverpages}{\docoverpages{1}}
+\newcommand{\coverpage}{\docoverpages{0}}
+\newcommand{\kwparticipants}{IIIA - CSIC\\Goldsmiths' College\\Vrije Universiteit Brussels\\SONY Europe Limited}
+
+\newcommand{\shorttitle}[1]{\def\shorthead{#1}}
+
+\renewcommand{\title}[1]{
+  \def\frontpagetitle{#1}
+  \def\kwebtitle{#1}}
+%\renewcommand{\author}[1]{\renewcommand{\kwebauthor}{#1}}
+% \newcommand{\chiefeditor}[1]{\renewcommand{\kwebchiefeditor}{#1}}
+\newcommand{\coreauthors}[1]{\renewcommand{\kwebcoreauthors}{#1}}
+\newcommand{\editors}[1]{\renewcommand{\kwebeditors}{#1}}
+\newcommand{\reviewers}[1]{\renewcommand{\kwebreviewers}{#1}}
+\newcommand{\LPgroupleaders}[1]{\renewcommand{\kwebLPgroupleaders}{#1}}
+\newcommand{\LPprojectleader}[1]{\renewcommand{\kwebLPprojectleader}{#1}}
+
+\newcommand{\issuer}[1]{\renewcommand{\kwebissuer}{#1}}
+\newcommand{\participants}[1]{\renewcommand{\kwparticipants}{#1}}
+\newcommand{\identifier}[1]{\renewcommand{\kwebidentifier}{#1}}
+\newcommand{\project}[1]{\renewcommand{\kwebproject}{#1}}
+\renewcommand{\kwebcecfield}{EU Reference\\}
+\newcommand{\revised}[1]{\renewcommand{\kwebrevised}{#1}}
+\newcommand{\synopsis}[1]{
+  \def\synopsisheader{Abstract}
+  \renewcommand{\kwebsynopsis}{#1}}
+\newcommand{\format}[1]{\renewcommand{\kwebformat}{#1}}
+\newcommand{\distribution}[1]{\renewcommand{\kwebdistribution}{#1}}
+% \newcommand{\version}[1]{\renewcommand{\kwebversion}{#1}}
+% \newcommand{\state}[1]{\renewcommand{\kwebstate}{#1}}
+\newcommand{\clsize}{\footnotesize}
+\newcommand{\smallcons}{\renewcommand{\clsize}{\scriptsize}}
+
+\def\docoverpages#1{{%
+\parindent 0pt
+%
+% lay out parameters:
+%
+% You may wish to modify the following layout parameters if your
+% printer can not handle this size. The layout will be scaled, but
+% the fontsize will not!
+% Please only modify a parameter if indicated that this is possible
+%
+% you can redefine unitlength in order to get a smaller frontpage
+% e.g., \setlength{\unitlength}{0.008cm}
+%
+\setlength{\unitlength}{0.01cm}
+%
+% define offset of page (in picture units) (you can modify this)
+%
+\def\frontbasex{140}
+\def\frontbasey{-285}
+%
+% define width of right column (you can modify this)
+%
+\def\maincolwidth{1360}
+%
+% define height of columns on front page (you can modify this)
+%
+\def\frontpageheight{2610}
+%
+% define cadreheight
+%
+\def\cadreheight{2460}
+%
+% define height of bottomline
+%
+\def\bottomline{2560}
+%
+% define width of left column
+%
+\def\leftcolwidth{300}
+%
+% define width of logo
+%
+\def\logowidth{800}
+%
+% define middle of page
+%
+\def\halfpage{830}
+%
+% define left corner of logo ( halfpage - logowidth /2)
+%
+\def\leftcornerlogo{1200}
+%
+% define left corner of logo ( halfpage - logowidth /2)
+%
+\def\leftcornerFPSevenlogo{50}
+%
+% keep some space between logo and cadre
+%
+\def\leftcorneraddsome{710}
+%
+% define right corner of logo
+%
+\def\rightcornerlogo{1230}
+%
+% define width of frontpage as \maincolwidth + \leftcolwidth
+%
+\newcounter{frontpagewidth}
+\setcounter{frontpagewidth}{\leftcolwidth}
+\addtocounter{frontpagewidth}{\maincolwidth}
+%
+% DEFINE (!!!) frontwidth
+%
+\def\frontwidth{1660}
+%
+% define width of document statushead
+%
+\def\headwidth{660}
+%
+% define horizontal pos of document statushead
+% as frontpagewidth - headwidth
+%
+\def\headpos{1000}
+%
+% define space between header and title (you may modify this)
+%
+\def\titleskip{570}
+%
+% idem for inner title page (you may modify this)
+%
+\def\titleinnerskip{100}
+%
+%
+% define space between title and author (you may modify this)
+%
+\def\authorskip{160}
+%
+% idem for inner title page (you may modify this)
+%
+\def\authorinnerskip{160}
+%
+% define space between author(s)/institute pairs (divided by \with)
+% (you may modify this)
+%
+\def\withauthorskip{130}
+%
+% next author/instute pair in authorfield \with
+\def\with{\\ \vskip \wsk}
+% institute in authorfield
+\def\at##1{\\ {\Large \em ##1}}
+% more than one author
+\def\and{\\}
+% Redefine footnotemark
+   \def\thefootnote{\fnsymbol{footnote}}
+%   \def\@makefnmark{\hbox
+%       to 0pt{$^{\@thefnmark}$\hss}}
+% make a new dimension of ##2 unitlengts
+\def\newprop##1##2{\newlength{##1}\setlength{##1}{\unitlength}
+\multiply ##1 by ##2}
+%
+% put title out
+%
+
+\def\dotitle{
+\begin{minipage}{\mcw}
+\begin{center}
+\vskip \tsk
+\hrule\vspace*{5mm}\strut
+{\Huge\bf
+\frontpagetitle}
+\strut\vspace*{4mm}\hrule
+\vspace*{2cm}
+%\vskip \ask
+%\large\kwebauthor
+\begin{tabular}{|p{24mm}|p{87mm}|} \hline
+% Maintainer/Editor-in-chief        & \kwebchiefeditor \\ \hline
+Authors                      & \kwebcoreauthors \\ \hline
+% Maintainers/Editors               & \kwebeditors \\ \hline
+Reviewers                         & \kwebreviewers \\ \hline
+% COINVENT research group leaders  & \kwebLPgroupleaders \\ \hline
+% COINVENT project leader          & \kwebLPprojectleader \\ \hline
+\end{tabular}
+\end{center}
+%\footnotesize
+%\strut\\[6pt]{\bf \synopsisheader}
+%\kwebsynopsis
+%\setcounter{footnote}{0}
+\end{minipage}}
+
+%
+% put copyrightline out
+%
+\def\copyrightline{Copyright \copyright\ \number\year\ \kwebissuer}
+%
+% put document description fields out
+%
+\def\docstatushead{%
+\begin{minipage}{\mcw}
+\bf
+\begin{flushleft}
+FP7-ICT-2013-10 Collaborative project\\
+COINVENT - Concept Invention Theory\\
+\end{flushleft}
+\end{minipage}}
+%
+\def\docstatusfields{%
+\begin{minipage}{\logofigwidth}
+\bf
+\begin{flushleft}
+Document Id.\\
+Project\\
+Date\\
+Distribution
+\end{flushleft}
+\end{minipage}}
+%
+% put document description out
+%
+\def\docstatus{%
+\begin{minipage}{\mcw}
+\begin{tabular}{|p{3cm}|p{6cm}|} \hline
+Grant agreement no.  & \kwebidentifier \\ \hline
+Project acronym      & \kwebproject \\ \hline
+% Version              & \kwebversion \\ \hline
+Date                 & \kwebrevised \\ \hline
+% State                & \kwebstate \\ \hline
+Distribution         & \kwebdistribution \\ \hline
+\end{tabular}
+\end{minipage}}
+%
+% put footer out
+%
+\def\dofoot{
+\begin{picture}(0,0)(0,0)
+\put(0,36){\makebox(0,0)[bl]{\rule{\fpw}{\ruleth}}}
+%no copyright at the moment \put(0,0){\makebox(0,0)[bl]{\copyrightline}}
+%\put(45,140){\makebox(0,0)[bl]{\docstatusfields}}
+\put(670,140){\makebox(0,0)[bl]{\docstatus}} % 770 for 5cm width of 2nd column
+%\put(\headpos,140){\makebox(0,0)[bl]{\docstatushead}}
+\end{picture}}
+%
+% compute some dimensions from the unit specifications
+% e.g. \logofigwidth is \logowidth * unitlength
+%
+\newprop{\logofigwidth}{\logowidth}
+\newprop{\lcw}{\leftcolwidth}
+\newprop{\ruleth}{3}
+\newprop{\mcw}{\maincolwidth}
+\newprop{\fpw}{\thefrontpagewidth}
+\newprop{\tsk}{\titleskip}
+\newprop{\ask}{\authorskip}
+\newprop{\wsk}{\withauthorskip}
+
+%
+% Here we begin drawing the cover page
+%
+
+
+\ifnum #1=1		% no headers or footers for titlepage
+  \thispagestyle{empty}
+  \footnotesize
+  \begin{picture}(0,0)(\frontbasex,\frontbasey)
+  \put(\leftcornerFPSevenlogo,-300){\includegraphics[width=3cm]{logos/FP7_logo}}
+  \put(\leftcornerlogo,-380){\includegraphics[width=4cm]{logos/COINVENT}}
+  \put(0,-160){\makebox(\frontwidth,0)[t]{\dotitle}}
+  \put(0,-\frontpageheight){\makebox(0,0)[bl]{\dofoot}}
+  \end{picture}
+  \vfill
+  \newpage
+\fi
+
+%
+% end of pagezero
+%
+
+
+%
+% Company information
+%
+\def\lpartner##1{\begin{minipage}[t]{\lhpwidth}\begin{flushleft}##1
+\end{flushleft}\end{minipage}}
+\def\rpartner##1{\begin{minipage}[t]{\rhpwidth}\begin{flushleft}##1
+\end{flushleft}\end{minipage}}
+
+\def\doconsortium{
+  \begin{minipage}{\fpw}
+  \newlength{\lhpwidth}
+  \newlength{\rhpwidth}
+  \setlength{\lhpwidth}{\fpw}
+  \divide\lhpwidth by 2
+  \setlength{\rhpwidth}{\lhpwidth}
+  \advance\lhpwidth by -12pt
+  \advance\rhpwidth by -12pt
+  {\begin{flushleft}\bf Disclaimer \end{flushleft}}
+  {\clsize
+    \vskip 12pt\disclaimer
+    \vskip 12pt\consortium
+    \vskip 42pt \begin{center}{\Large\bf \synopsisheader}\end{center}
+    \kwebsynopsis
+    \setcounter{footnote}{0}
+    %\vskip 22pt{\lpartner{\csic}\hfill\rpartner{\iiia}}
+    %\vskip 16pt{\lpartner{\gold}\hfill\rpartner{\vub}}
+    %\vskip 16pt{\lpartner{\sony}}
+  }
+  \end{minipage}
+}
+
+\def\doconsortiumm{
+  \begin{minipage}{\fpw}
+  \setlength{\lhpwidth}{\fpw}
+  \divide\lhpwidth by 2
+  \setlength{\rhpwidth}{\lhpwidth}
+  \advance\lhpwidth by -12pt
+  \advance\rhpwidth by -12pt
+  {\clsize}
+  \end{minipage}}
+
+%\def\dolistpartners{
+%\begin{minipage}{\fpw}
+%\setlength{\lhpwidth}{\fpw}
+%\divide\lhpwidth by 2
+%\setlength{\rhpwidth}{\lhpwidth}
+%\advance\lhpwidth by -12pt
+%\advance\rhpwidth by -12pt
+%\chapter*{Work package participants}
+%{\normalsize \begin{flushleft}
+%The following partners have taken an active part in the work leading
+%to the elaboration of this document:
+%\vspace{0.5cm}
+
+%\kwparticipants
+%\end{flushleft}}
+%\end{minipage}}
+
+\def\doconsortiumfoot{
+  \begin{picture}(0,0)(0,0)
+  \put(0,36){\makebox(0,0)[bl]{\rule{\fpw}{\ruleth}}}
+  %\put(0,120){\makebox(0,0)[bl]{\vbox{
+  %This document was produced using the \kwebformat\ wordprocessor}}}
+  \end{picture}}
+
+%
+% Here we begin drawing the Company page
+%
+\ifnum #1=1
+  \thispagestyle{empty}
+  \begin{picture}(0,0)(\frontbasex,\frontbasey)
+  \put(0,-85){\rule{\fpw}{\ruleth}}
+  \put(0,-160){\makebox(0,0)[tl]{\doconsortium}}
+  \put(0,-\frontpageheight){\makebox(0,0)[bl]{\doconsortiumfoot}}
+  %\put(0,-\frontpageheight){\makebox(0,0)[bl]{\copyrightline}}
+  \end{picture}
+\fi
+
+%
+% end of first Company information page
+%
+
+%\vfill
+%\newpage
+
+%
+% Here we begin drawing the second Company page
+%
+\thispagestyle{empty}
+\begin{picture}(0,0)(\frontbasex,\frontbasey)
+\put(0,-85){\rule{\fpw}{\ruleth}}
+\put(0,-160){\makebox(0,0)[tl]{\doconsortiumm}}
+\put(0,-\frontpageheight){\makebox(0,0)[bl]{\doconsortiumfoot}}
+%\put(0,-\frontpageheight){\makebox(0,0)[bl]{\copyrightline}}
+\end{picture}
+
+%
+% end of second Company information page
+%
+
+%\vfill
+%\newpage
+%
+
+%
+% Here is the acknowledgement pages
+%
+%\thispagestyle{empty}
+%\begin{picture}(0,0)(\frontbasex,\frontbasey)
+%\put(0,-85){\rule{\fpw}{\ruleth}}
+%\put(0,-160){\makebox(0,0)[tl]{\dolistpartners}}
+%\put(0,-\frontpageheight){\makebox(0,0)[bl]{\doconsortiumfoot}}
+%\put(0,-\frontpageheight){\makebox(0,0)[bl]{\copyrightline}}
+%\end{picture}
+
+%
+% end of second Company information page
+%
+
+%\vfill
+%\newpage
+%\fi
+%
+}
+\def\title##1{\gdef\@title{##1}}
+\def\author##1{\gdef\@author{##1}}
+\pagenumbering{arabic}
+}
+%
+% end of coverpages
+%
+
+% The 'revision' environment can be used to insert revisions:
+
+\newenvironment{revision}{%
+        \def\when##1{\tag{Revision date:}{##1}}
+        \def\who##1{\tag{Author:}{##1}}
+        \def\what##1{\tag{Modifications:}{##1}}}{\vskip 1cm}
+
+\def\ps@kweb{\let\@mkboth\markboth
+\def\@oddhead{\underline{\makebox[\textwidth]{\strut\small
+\shorthead \hfill FP7-ICT-2013-10 Collaborative Project 611553 COINVENT \strut}}}%
+\def\@evenhead{\underline{\makebox[\textwidth]{\strut\small
+\strut \hfill \rightmark}}}%
+\def\@oddfoot{\small \kwebidentifier \hfill \kwebrevised \hfill
+                                           \thepage}%
+\def\@evenfoot{\small \thepage \hfill \kwebrevised \hfill
+                                     \kwebidentifier}%
+\ifnum\c@tocdepth=2
+\def\chaptermark##1{\markright{\uppercase{\ifnum \c@secnumdepth>\m@ne
+\thechapter. \fi ##1}}}
+\def\sectionmark##1{}\def\subsectionmark##1{}
+\else
+\def\sectionmark##1{\markright{\kwebtitle}}
+\def\subsectionmark##1{}
+\fi
+ }
+
+\pagestyle{kweb}
+
+
+
+\newcommand{\disclaimer}{%
+The information in this document is subject to change without notice. Company or product names mentioned in this document may be trademarks or registered trademarks of their respective companies.}
+
+\newcommand{\consortium}{%
+The project COINVENT acknowledges the financial support of the Future
+and Emerging Technologies (FET) programme within the Seventh Framework
+Programme for Research of the European Commission, under FET-Open
+Grant number 611553.}
+
+% Standard COINVENT Acknowledgement (can be used in \thanks command)
+
+%\newcommand{\ackkweb}{%
+%}
+
+\catcode`\@=12\relax
+
+% end of COINVENT.sty

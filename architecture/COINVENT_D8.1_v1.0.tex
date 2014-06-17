@@ -1,0 +1,74 @@
+\documentclass[a4paper,twoside,11pt]{article}
+\usepackage[latin1]{inputenc}	% latin1 is the file encoding
+\usepackage{coinvent}		% coinvent style file
+\usepackage{mathptmx}		% times fonts in both text & maths
+\usepackage{hyperref}		% clickable references
+\usepackage{multirow}		% row & column spanning in tables
+\usepackage{amsmath,amssymb}	% math structures and symbols
+\usepackage{graphicx}		% including of graphics files in various formats
+\usepackage{appendix}           % added appendices
+\input{commands}		% user-defined commands
+\begin{document}
+
+% TITLE INFORMATION
+\title{D8.1\\[2mm]
+Initial specification of the system}
+\shorttitle{D8.1 Initial specification of the system}
+\coreauthors{Daniel Winterstein}	
+\reviewers{name}
+
+% DOCUMENT STATUS INFORMATION
+\identifier{611553}
+\project{COINVENT - Concept Invention Theory}
+\revised{October 1, 2013}			%!
+\distribution{PU/RE/CO}		%!
+
+% SYNOPSIS & KEYWORDS
+\synopsis{\strut				%!
+This deliverable... Please be concise and check that abstract
+and keywords fit the title page. Fusce tristique. Morbi
+dignissim scelerisque ligula. Nulla facilisi. Etiam eu purus.
+Proin pretium bibendum sem. Integer diam leo, ultrices eu,
+posuere id, nonummy eget, libero.\\
+Keyword list: \textbf{keyword 1}, \textbf{keyword 2},...
+}
+
+\coverpages			% creates the first two pages
+
+\setcounter{page}{0}
+\pagenumbering{roman}
+
+\include{changes}		% includes the list of changes
+
+\vfill
+\newpage
+% This is to make Executive summary appear on an odd page.
+% Please remove "\newpage" command if your list
+% of changes takes two pages.
+
+\include{execSummary}		% includes the executive summary
+
+\setlength{\parskip}{0.0cm}
+\tableofcontents
+\setlength{\parskip}{1.0ex}
+
+\newpage
+\pagenumbering{arabic}
+
+%----------------------------------------------------------------
+% MAIN BODY OF THE TEXT STARTS HERE -----------------------------
+%----------------------------------------------------------------
+
+%% \section{Introduction}
+%% Here goes your text.
+
+%% \section{Use numbered sections for parts of the deliverable}
+%% Here we introduce this section.
+
+%% \subsection{Use numbered subsections for even smaller pieces}
+\include{architecture}
+
+\bibliographystyle{acm}
+\bibliography{LP_D8.1}
+
+\end{document}
