@@ -71,6 +71,7 @@ WebApp->/quality: Concept and Examples...
 /quality->WebApp: Quality score
 WebApp->/file: Save -->
 
+
 <a name='bdip'></a>
 
 ## Core Object: The Blend Diagram in Progress
@@ -78,7 +79,7 @@ WebApp->/file: Save -->
 The object type at the heart of Coinvent is the Blend Diagram. The specification below is intentionally broad to support several use-cases. The Blend Diagram is illustrated in the flowchart diagram below:
 
 <img src='BlendDiagram.png' style='width:90%;'>
-<!-- source: -->
+<!-- source: BlendDiagram.xml and http://draw.io -->
 
 Crucially we must support blend diagrams which are "works in progress". The high-level process of developing a new blended concept is:
 
