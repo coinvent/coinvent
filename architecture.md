@@ -3,14 +3,14 @@
 
 Author: Daniel, with input from Ewen and Mihai, and feedback from    
 Status: Final Draft, due for delivery in June.   
-Version: 0.9.2    
+Version: 0.9.3    
 
 - [Overview](#overview)
 - [A Typical Coinvent Session](#typical)
 - [The Blend Diagram in Progress](#bdip)
-- [Languages / File Formats](#languages)
 - [Components](#components)
 - [Architecture](#architecture)
+- [Languages / File Formats](#languages)
 - [Open Questions & Risks](#open)
 - [References](#references)
 - [Appendix 1: Component APIs](#appendix1)
@@ -109,6 +109,243 @@ A `Blend Diagram in Progress` is simply a Blend Diagram where any part may be mi
 
 TODO Draw a diagram of this.
 
+<a name='components'></a>
+
+## Components
+
+A Coinvent system will be made up of the following components.
+A component can be "manual", which means a human being provides the result (using a web interface).
+
+### User Portal (Web App)
+An interface through which the user drives the system. This will be a web-app,
+i.e. a browser-based ajax app.
+
+A default user interface (UI) will be built on established toolkits, including Bootstrap, jQuery, and underscore.js.
+
+As the project progresses other domain-specific UIs may be developed -- e.g. a music viewer & player, 
+or a child-friendly UI if we cover the fictional-beasts domain. 
+The architecture setup deliberately keeps the UI separate, accessing the processing components via the APIs, so that other UIs can be built and by anyone.
+
+Default implementation: To be developed.
+
+### /blend Concept Blender: Given a Blend Diagram in Progress, compute the Blend Concept
+
+Default implementation: HETS
+
+As well as producing blends, this component also outputs proof obligations.
+
+The Blender does not have to compute consistency. This is the job of the Concept Scorer.
+
+The HETS API is currently still in development, and improvements are needed
+before it fits all requirements. Specific open issues are logged here: <https://github.com/coinvent/coinvent/issues?labels=HETS&page=1&state=open>
+
+### /base Given 2 Concepts, compute a common base Concept
+
+This component finds a common base theory, and mappings to the input concepts. That is,
+it fills in the bottom half of the blend diagram. 
+The common base is not always unique -- there may be a choice of several.
+
+A common base and mappings defines an analogy between the concepts. This component does not itself calculate the blend. However if a push-out based /blend component is used (as we envisage), then the base and mappings do uniquely determine the blend concept.
+
+Default implementation: HDTP, which works via anti-unification.
+
+Required work: HDTP currently uses a custom Prolog-based format. To plug into Coinvent (or HETS without Coinvent), a translation layer will be developed so that HDTP can take in OWL or CASL.
+
+Note: HDTP will remain stateless. It will not itself manage sessions or run a web-server.
+
+### /weaken Amalgam Finder: Given an inconsistent Blend Diagram, weaken the inputs
+
+Initial implementation: manual
+
+Since the colimit operation (and blending in general) can generate inconsistent blends, it may be necessary to weaken the input theories until a consistent blend is found. 
+
+The Amalgams team will lead on this, exploring the generalization operation for amalgams described in [4], and developing a stand-alone Theory Weakener (TW).
+
+The TW will not be capable of computing colimits itself; therefore it requires a feedback loop with HETS.
+
+In case the colimit is inconsistent, the TW analyzes the input theories and the inconsistencies
+in the blend and weakens the theories based on this information by removing sentences from the
+input theories. This removal will be based on heuristics known from amalgam reasoning [4]. The whole procedure is repeated until a consistent colimit is found.
+
+For the implementation of the TW, we are currently investigating using an 
+Answer Set Programming (ASP) approach, calling on online ASP solvers. This allows us to (i) rapidly implement prototypes, 
+(ii) make use of the highly optimized search problem algorithms that drive modern ASP solvers [2], and (iii) use the advantages of online ASP solvers like oclingo [1] that will re-use partial solutions of earlier weakenings. Towards this, a weakening operation is modeled as sequence of theory transitions, based on atomic operations that each affect the different types of sentences (eg. SubClassOf , EquivalentTo, ObjectProperty, etc. for OWL) within theories. Perceiving the theory weakening as a sequence of theory transitions also allows us to exploit the iterative problem solving capabilities of modern ASP solvers and to re-use coding strategies known from other kinds
+of state transition based problems that are typically modeled in ASP [2].
+
+### /model Example Finder: Given a Concept, find examples / models
+
+Default implementation: Manual
+
+This is a key part of creative blending, especially around evaluating a concept. 
+It is noticeable that when people learn and evaluate concepts, they often do so via examples.
+
+The meaning of "example" is domain specific.
+
+In mathematical theories, an example is a model, which is itself a theory. 
+E.g. in the complex numbers case-study (c.f. https://github.com/coinvent/coinvent/tree/master/HETS/complex_numbers), 
+an example is the refined theory where `i^2 = -1` has been added to provide a constructive formula for the existential
+axiom `\forall vectors x,y, \exists vector z, x*y = z` (note: in the .dol file, this existential axiom is 
+implicit in * being a total function).
+ 
+In musical theories, an example is a piece of music conforming to the theory.
+ 
+Automated implementations will also be domain specific, and may not be possible in all domains.
+
+### /consistency Concept Correctness: Is it consistent?
+
+Blending can lead to inconsistent concepts. HETS has support for using various theorem provers to check for consistency. However detecting inconsistency is not always
+easy. In the complex numbers example, it has been found to require manually guided
+proofs.
+
+### /quality Concept Scorer: How good is a Concept?
+
+A key part of creativity is judging the quality of the outputs; discarding
+low-value concepts, and selecting valuable ones. How to do this is one of the research questions this project will explore. HR has automatic scores for detecting interesting concepts, which it would be interesting to incorporate.
+
+Default implementation: Manual
+
+### /file Concept Store: Store Concepts and Blend Diagrams
+
+Must provide save and load over http.
+
+Note that most of the other components do *not* depend on a dedicated storage component. They can work with concepts stored on *any* server, as long as the format is correct and the concept can be identified by url. The User Interface does require a file storage component to store blend diagrams as they're modified.
+
+Default implementation: 
+
+ - File-system backed. By adding git to the file-system we can provide integration with Ontohub.
+
+
+### /job: Provide meta-data on slow tasks
+
+As discussed in the [architecture section](#architecture), some of the system tasks are not suitable for
+a fast blocking API. These tasks will create jobs, which run on the server until complete.
+The /job component provides an API for fetching information on the state of the job queue and a specific job. This allows the web-portal (or other user interfaces) to see the state of a blend, and a way to
+report on any errors.
+
+<a name="architecture"></a>
+
+## Architecture
+
+### Independent components, linked via http APIs
+
+Requirements:  
+
+1. The components of the system may be developed in different languages.
+2. The system should be easy to maintain and extend.
+3. The system should support both interactive use, and repeatable scripted use.
+
+Requirements (1) and (2) above suggest a loose coupling between components. The use of http-based APIs is an established way of achieving this. In particular, http-based APIs with a REST-like setup (i.e. the url follows a simple readable structure) and using JSON to encode data are now becoming the standard for modern software development. 
+
+JSON will provide a wrapper for API-level information. JSON is not part of the file format for Blend Diagrams. Blend Diagrams are written in DOL + OWL or CASL, and sent within a JSON packet as JSON strings.
+
+An added benefit of this architecture is that it provides flexibility regarding the hardware infrastructure. The components of the Coinvent system may be run either on a single server, or across multiple servers.
+
+#### Supporting Alternative Component Implementations
+
+To provide flexibility, especially across varied domains, the architecture is organised into separate
+components. This document describes default implementations for each component.
+However any component can be provided by an alternative implementation. Any system which fits the API for a Coinvent component slot, can fill that slot.
+
+We envisage certain components will indeed have multiple implementations: HETS and HR3 are both candidates for the /blend and /consistency slots. The /model slot will benefit from domain-specific implementations (e.g. a music generator).
+
+##### Component Setup
+
+With the architecture supporting different implementations for components, the system
+requires a setup describing which implementations to call.
+
+Each component has a default implementation, which will be specified in a config file.
+
+The Social Creativity strand of the Coinvent project requires that different setups
+can be run and interact. In order to support this from within one server, we allow
+that a Blend Diagram in Progress can carry meta-data about which component implementations to call (if different from the defaults). This meta-data might include implementation-specific configuration parameters.
+
+
+#### Scripting the system
+
+Requirement (3) relates to research users, who need to run repeatable concept development sessions. This requirement is met in this architecture by scripts which drive the API. Such scripts would most naturally be developed in javascript, perhaps using a test-runner. Indeed, the test scripts we develop as part of software QA will provide templates for scriptable use.
+
+Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent.
+
+#### Software Wrapped as a Server
+
+"Calculation" software such as HDTP will be incorporated into this framework using a server which "wraps" the low-level software. E.g. the other components connect to the HDTP-server over http, and the server manages calling HDTP itself.
+
+
+#### Top-level Stateful, Low-level Stateless
+
+Calculation software will be stateless. This is simpler, and avoids tying the
+low-level components to the bigger system.
+
+There's the question of: paging through results.
+E.g. HDTP can produce multiple outputs for some inputs.
+If we have one mapping & we want a 2nd or a 3rd -- how do we do that?   
+
+This will be handled via input flags, and just repeating
+the calculation asking for more outputs (i.e. iterative deepening).
+
+The overall system will be stateful, because being stateful is the
+most natural way to support several required features:
+
+ - Slow tasks, where a job is started, runs, finishes later.
+ - Interactive UI, where the user has a fixed reference point to view
+a developing blend.
+
+The state would be handled at the top level. The components
+(HDTP, HETS-as-a-colimit-calculator, etc) are used in a stateless manner.
+
+
+### Manual / Interactive Mode
+
+The goal of the Coinvent system is to be semi-automatic. 
+Certain components -- such as evaluating musical quality -- are best handled manually, at least
+in this project. There are also components, such as consistency checking, where a fully-automatic solution is desirable, but for mathematically difficult theories, this may not be possible.
+We therefore support a manual / interactive mode for each component.
+
+This works as part of the actor model. Certain actors correspond to systems, e.g. the "hets" user
+connects to the HETS system. Other actors correspond to people. For these actors, the UI
+will show a list of open job requests sent to them, and an interface for responding to a job.
+The user is then free to call on any outside tools they wish (e.g. working via another theorem prover)
+in order to complete the job.
+
+These responses will be stored, so that sessions can be re-played.
+
+### Actor / Queue Pattern
+
+Requirements:  
+
+1. The components of the system call on each other to perform tasks...
+2. ...but these tasks may be slow to complete. Since tasks may require human input (eg. a proof in an interactive theorem prover like Isabelle), a task
+could even take days.
+
+This means a standard call/response would timeout. We therefore adopt an actor / queue based pattern (see <https://en.wikipedia.org/wiki/Actor_model>). 
+
+Each top-level component is an actor, which can send and receive messages to other actors. Each API request is marked as either *fast* or *slow*:
+
+ - Fast messages get an immediate result within the http response.
+ - Slow messages send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
+
+
+### System Stack Diagram
+
+<!--
+Coinvent EcoSystem
+[Default User Interface]
+[AJAX][jQuery][underscore templates]
+[Web browser]
+[http: JSON format REST API]
+[Java web-service wrapper]
+[HDTP][Files][HETS server^1]
+[SWI Prolog^2][Git^3][Theorem Provers]
+[OS: Linux (Ubuntu)]
+1: The HETS server provides an http API. This is lower-level than the Coinvent API.
+2: HDTP might be re-written by Martin Möhrmann to use a different backend.
+3: Git integration provides OntoHub integration without a hard dependency.   
+-->
+
+<div id="diadraw"><div class="dia panel panel-primary"><table class="dia"><tbody><tr><td class="default" colspan="3">Default User Interface</td></tr><tr><td class="ajax" colspan="1">AJAX</td><td class="jquery" colspan="1">jQuery</td><td class="underscore" colspan="1">underscore templates</td></tr><tr><td class="web" colspan="3">Web browser</td></tr><tr><td class="http" colspan="3">http:  JSON format REST API</td></tr><tr><td class="java" colspan="3">Java web-service wrapper</td></tr><tr><td class="hdtp" colspan="1">HDTP</td><td class="files" colspan="1">Files</td><td class="hets" colspan="HETS server^1">HETS server<sup>1</sup></td></tr><tr><td class="swi" colspan="SWI Prolog^2">SWI Prolog<sup>2</sup></td><td class="git" colspan="Git^3">Git<sup>3</sup></td><td class="theorem" colspan="1">Theorem Provers</td></tr><tr><td class="os" colspan="3">OS:  Linux <small>(Ubuntu)</small></td></tr></tbody></table><ul><li>1:  The HETS server provides an http API. This is lower-level than the Coinvent API.</li><li>2:  HDTP might be re-written by Martin Möhrmann to use a different backend.</li><li>3:  Git integration provides OntoHub integration without a hard dependency.</li></ul></div></div>
+
+
+
 <a name='languages'></a>
 
 ## Languages / File Formats
@@ -187,204 +424,6 @@ JSON is the best choice here, because it's a universal standard.
 Low-level components (e.g. HDTP) will not take in JSON. That would be done by a
 web-service wrapper, which then calls HDTP.
 
-<a name='components'></a>
-
-## Components
-
-A Coinvent system will be made up of the following components.
-A component can be "manual", which means a human being provides the result (using a web interface).
-
-### User Portal (Web App)
-An interface through which the user drives the system. This will be a web-app,
-i.e. a browser-based ajax app.
-
-It will build on established toolkits, including Bootstrap, jQuery, and underscore.js.
-
-Default implementation: To be developed.
-
-### Blender: Given a Blend Diagram in Progress, compute the Blend Concept
-
-Default implementation: HETS
-
-As well as producing blends, this component also outputs proof obligations.
-
-The Blender does not have to compute consistency. This is the job of the Concept Scorer.
-
-The HETS API is currently still in development, and improvements are needed
-before it fits all requirements. Specific open issues are logged here: <https://github.com/coinvent/coinvent/issues?labels=HETS&page=1&state=open>
-
-### Base Finder: Given 2 Concepts, compute a common base Concept
-
-Default implementation: HDTP
-
-Required work: HDTP currently uses a custom Prolog-based format. To plug into Coinvent (or HETS without Coinvent), a translation layer will be developed so that HDTP can take in OWL or CASL.
-
-Note: HDTP will remain stateless. It will not itself manage sessions or run a web-server.
-
-### Amalgam Finder: Given an inconsistent Blend Diagram, weaken the inputs
-
-Initial implementation: manual
-
-Since the colimit operation (and blending in general) can generate inconsistent blends, it may be necessary to weaken the input theories until a consistent blend is found. 
-
-The Amalgams team will lead on this, exploring the generalization operation for amalgams described in [4], and developing a stand-alone Theory Weakener (TW).
-
-The TW will not be capable of computing colimits itself; therefore it requires a feedback loop with HETS.
-
-In case the colimit is inconsistent, the TW analyzes the input theories and the inconsistencies
-in the blend and weakens the theories based on this information by removing sentences from the
-input theories. This removal will be based on heuristics known from amalgam reasoning [4]. The whole procedure is repeated until a consistent colimit is found.
-
-For the implementation of the TW, we are currently investigating using an 
-Answer Set Programming (ASP) approach, calling on online ASP solvers. This allows us to (i) rapidly implement prototypes, 
-(ii) make use of the highly optimized search problem algorithms that drive modern ASP solvers [2], and (iii) use the advantages of online ASP solvers like oclingo [1] that will re-use partial solutions of earlier weakenings. Towards this, a weakening operation is modeled as sequence of theory transitions, based on atomic operations that each affect the different types of sentences (eg. SubClassOf , EquivalentTo, ObjectProperty, etc. for OWL) within theories. Perceiving the theory weakening as a sequence of theory transitions also allows us to exploit the iterative problem solving capabilities of modern ASP solvers and to re-use coding strategies known from other kinds
-of state transition based problems that are typically modeled in ASP [2].
-
-### Example Finder: Given a Concept, find examples / models
-
-Default implementation: Manual
-
-This is a key part of creative blending, especially around evaluating a concept. 
-It is noticeable that when people learn and evaluate concepts, they often do so via examples.
-
-The meaning of "example" is domain specific.
-
-In mathematical theories, an example is a model, which is itself a theory. 
-E.g. in the complex numbers case-study (c.f. https://github.com/coinvent/coinvent/tree/master/HETS/complex_numbers), 
-an example is the refined theory where `i^2 = -1` has been added to provide a constructive formula for the existential
-axiom `\forall vectors x,y, \exists vector z, x*y = z` (note: in the .dol file, this existential axiom is 
-implicit in * being a total function).
- 
-In musical theories, an example is a piece of music conforming to the theory.
- 
-Automated implementations will also be domain specific, and may not be possible in all domains.
-
-### Concept Correctness: Is it consistent?
-
-Blending can lead to inconsistent concepts. HETS has support for using various theorem provers to check for consistency. However detecting inconsistency is not always
-easy. In the complex numbers example, it has been found to require manually guided
-proofs.
-
-### Concept Scorer: How good is a Concept?
-
-A key part of creativity is judging the quality of the outputs; discarding
-low-value concepts, and selecting valuable ones. How to do this is one of the research questions this project will explore. HR has automatic scores for detecting interesting concepts, which it would be interesting to incorporate.
-
-Default implementation: Manual
-
-### Concept Store: Store Concepts and Blend Diagrams
-
-Must provide save and load over http.
-
-Note that most of the other components do *not* depend on a dedicated storage component. They can work with concepts stored on *any* server, as long as the format is correct and the concept can be identified by url. The User Interface does require a file storage component to store blend diagrams as they're modified.
-
-Default implementation: 
-
- - File-system backed. By adding git to the file-system we can provide integration with Ontohub.
-
-<a name="architecture"></a>
-
-## Architecture
-
-### Independent components, linked via http APIs
-
-Requirements:  
-
-1. The components of the system may be developed in different languages.
-2. The system should be easy to maintain and extend.
-3. The system should support both interactive use, and repeatable scripted use.
-
-Requirements (1) and (2) above suggest a loose coupling between components. The use of http-based APIs is an established way of achieving this. In particular, http-based APIs with a REST-like setup (i.e. the url follows a simple readable structure) and using JSON to encode data are now becoming the standard for modern software development. 
-
-JSON will provide a wrapper for API-level information. JSON is not part of the file format for Blend Diagrams. Blend Diagrams are written in DOL + OWL or CASL, and sent within a JSON packet as JSON strings.
-
-An added benefit of this architecture is that it provides flexibility regarding the hardware infrastructure. The components of the Coinvent system may be run either on a single server, or across multiple servers.
-
-#### Component Setup
-
-With the architecture supporting different implementations for components, the system
-requires a setup describing which implementations to call.
-
-Each component has a default implementation, which will be specified in a config file.
-
-The Social Creativity strand of the Coinvent project requires that different setups
-can be run and interact. In order to support this from within one server, we allow
-that a Blend Diagram in Progress can carry meta-data about which component implementations to call (if different from the defaults). This meta-data might include implementation-specific configuration parameters.
-
-
-#### Scripting the system
-
-Requirement (3) relates to research users, who need to run repeatable concept development sessions. This requirement is met in this architecture by scripts which drive the API. Such scripts would most naturally be developed in javascript, perhaps using a test-runner. Indeed, the test scripts we develop as part of software QA will provide templates for scriptable use.
-
-Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent.
-
-#### Software Wrapped as a Server
-
-"Calculation" software such as HDTP will be incorporated into this framework using a server which "wraps" the low-level software. E.g. the other components connect to the HDTP-server over http, and the server manages calling HDTP itself.
-
-
-#### Top-level Stateful, Low-level Stateless
-
-Calculation software will be stateless. This is simpler, and avoids tying the
-low-level components to the bigger system.
-
-There's the question of: paging through results.
-E.g. HDTP can produce multiple outputs for some inputs.
-If we have one mapping & we want a 2nd or a 3rd -- how do we do that?   
-
-This will be handled via input flags, and just repeating
-the calculation asking for more outputs (i.e. iterative deepening).
-
-The overall system will be stateful, because being stateful is the
-most natural way to support several required features:
-
- - Slow tasks, where a job is started, runs, finishes later.
- - Interactive UI, where the user has a fixed reference point to view
-a developing blend.
-
-The state would be handled at the top level. The components
-(HDTP, HETS-as-a-colimit-calculator, etc) are used in a stateless manner.
-
-
-### Manual / Interactive Mode
-
-TODO describe how each component can be manual.
-
-
-### Actor / Queue Pattern
-
-Requirements:  
-
-1. The components of the system call on each other to perform tasks...
-2. ...but these tasks may be slow to complete. Since tasks may require human input (eg. a proof in an interactive theorem prover like Isabelle), a task
-could even take days.
-
-This means a standard call/response would timeout. We therefore adopt an actor / queue based pattern (see <https://en.wikipedia.org/wiki/Actor_model>). 
-
-Each top-level component is an actor, which can send and receive messages to other actors. Each API request is marked as either *fast* or *slow*:
-
- - Fast messages get an immediate result within the http response.
- - Slow messages send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
-
-
-### System Stack Diagram
-
-<!--
-Coinvent EcoSystem
-[Default User Interface]
-[AJAX][jQuery][underscore templates]
-[Web browser]
-[http: JSON format REST API]
-[Java web-service wrapper]
-[HDTP][Files][HETS server^1]
-[SWI Prolog^2][Git^3][Theorem Provers]
-[OS: Linux (Ubuntu)]
-1: The HETS server provides an http API. This is lower-level than the Coinvent API.
-2: HDTP might be re-written by Martin Möhrmann to use a different backend.
-3: Git integration provides OntoHub integration without a hard dependency.   
--->
-
-<div id="diadraw"><div class="dia panel panel-primary"><table class="dia"><tbody><tr><td class="default" colspan="3">Default User Interface</td></tr><tr><td class="ajax" colspan="1">AJAX</td><td class="jquery" colspan="1">jQuery</td><td class="underscore" colspan="1">underscore templates</td></tr><tr><td class="web" colspan="3">Web browser</td></tr><tr><td class="http" colspan="3">http:  JSON format REST API</td></tr><tr><td class="java" colspan="3">Java web-service wrapper</td></tr><tr><td class="hdtp" colspan="1">HDTP</td><td class="files" colspan="1">Files</td><td class="hets" colspan="HETS server^1">HETS server<sup>1</sup></td></tr><tr><td class="swi" colspan="SWI Prolog^2">SWI Prolog<sup>2</sup></td><td class="git" colspan="Git^3">Git<sup>3</sup></td><td class="theorem" colspan="1">Theorem Provers</td></tr><tr><td class="os" colspan="3">OS:  Linux <small>(Ubuntu)</small></td></tr></tbody></table><ul><li>1:  The HETS server provides an http API. This is lower-level than the Coinvent API.</li><li>2:  HDTP might be re-written by Martin Möhrmann to use a different backend.</li><li>3:  Git integration provides OntoHub integration without a hard dependency.</li></ul></div></div>
 
 
 <a name='open'></a>
@@ -499,10 +538,10 @@ on another server -- are supported via CORS. This means they just work, although
 
 ## Component APIs
 
-### /blender: Given a Blend Diagram in Progress, compute the Blend Concept
+### /blend: Given a Blend Diagram in Progress, compute the Blend Concept
 
 Default implementation: HETS   
-Default end point: http://coinvent.soda.sh:8400/blender/hets
+Default end point: http://coinvent.soda.sh:8400/blend/hets
 
 Parameters:
 
