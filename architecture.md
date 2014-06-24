@@ -90,6 +90,8 @@ Crucially we must support blend diagrams which are "works in progress". The high
 5. ...Which may lead to changes in either the input concepts, such as logical weakenings to remove the conflict. This process of evaluate-modify could be iterated several times.
 6. Evaluate the blend for value, perhaps by generating examples/models and evaluating them.
 7. ...This evaluation may lead to modifications, and so the whole process is iterative.
+??Till: Note that any proof of an inconsistency of the blend can give you hints which axioms to look at (namely, the axioms used in the inconsistency proof, cf. Pellet's “explain” function).
+We should prepare for more complex models, where the global workflow is enriched with vision and debugging techniques, changing the input spaces if necessary, etc.??
 
 Hence we talk of a Blend Diagram *in Progress* to allow that blends may be developed step-by-step and iteratively.
 
@@ -99,7 +101,7 @@ A `Blend Diagram` consists of:
 
 1. A Blended Concept
 2. A set of Input Concepts (typically 2)
-3. Optionally, weakenings of the Input Concepts. E.g. a mapping Concept1 -> WeakerConcept1, by dropping symbols or sentences.
+3. Optionally, weakenings of the Input Concepts. E.g. a mapping Concept1 <- WeakerConcept1, by dropping symbols or sentences.
 4. A Base Concept, which is a common base for all the Input Concepts. If there are weakenings, then the Base is a base for the weakened concepts (not the originals).
 5. Mappings from the Base Concept to each of the (weakened) Input Concepts.
 6. Mappings from each of the (weakened) Input Concepts to the Blended Concept.
@@ -177,8 +179,6 @@ of state transition based problems that are typically modeled in ASP [2].
 
 ### /model Example Finder: Given a Concept, find examples / models
 
-Default implementation: Manual
-
 This is a key part of creative blending, especially around evaluating a concept. 
 It is noticeable that when people learn and evaluate concepts, they often do so via examples.
 
@@ -192,7 +192,9 @@ implicit in * being a total function).
  
 In musical theories, an example is a piece of music conforming to the theory.
  
-Automated implementations will also be domain specific, and may not be possible in all domains.
+The initial implementation will be manual. Automated implementations will often be domain specific (e.g. we may use a Hidden-Markov-Model based music generator), and may not be possible in all domains.
+For relatively simple theories (e.g. small models to finite first-order theories), model-finders such as MACE can be used, possibly via HETS.
+
 
 ### /consistency Concept Correctness: Is it consistent?
 
@@ -267,7 +269,9 @@ that a Blend Diagram in Progress can carry meta-data about which component imple
 
 Requirement (3) relates to research users, who need to run repeatable concept development sessions. This requirement is met in this architecture by scripts which drive the API. Such scripts would most naturally be developed in javascript, perhaps using a test-runner. Indeed, the test scripts we develop as part of software QA will provide templates for scriptable use.
 
-Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent.
+Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent. HETS
+has some support for this (call `hets -I` and enter "help"), 
+although the HETS API does not expose it.
 
 #### Software Wrapped as a Server
 
@@ -364,7 +368,7 @@ A couple of formats for concepts will be supported, with the DOL language used t
 
 ### Connecting concepts: DOL (modified)
 DOL (Distributed Ontology, Modeling and Specification Language) is a language for describing how ontologies connect. 
-DOL is currently in development by Till Mossakowski's group. It is used by the HETS system. This integration with HETS makes it a good choice for Coinvent.
+DOL is currently in development by the OntolOp group. It is used by the HETS system. This integration with HETS makes it a good choice for Coinvent.
 
 DOL is both larger than we need, and does not provide a couple of features we require. So we specify a modified version of DOL. We will work with the DOL team aiming to
 converge on a true subset of DOL.
@@ -379,7 +383,7 @@ Briefly, the supported symbols are:
  - `ontology` Start defining a Concept.
  - `end` Finish defining a Concept. 
  - `view` Specify a mapping between Concepts, e.g. `view MyView : A to B =`
- - `with` Start of a symbol mapping within a combine statement.
+ - `with` Introduces a symbol mapping to rename symbols from a theory. A typical use in Coinvent would be as part of a combine statement.
  - `combine` Compute the colimit, e.g. `ontology B = combine I1, I2`
  - `hide` Used in a mapping to drop a symbol.
  - `=`
@@ -387,6 +391,7 @@ Briefly, the supported symbols are:
  - `,` List separator.
  - `|->` Part of a mapping, e.g. `zero |-> 0`
  - `%predicate(value)%` An annotation on a sentence. 
+ - `%(label)%` A line label.
  - `%%` Starts a comment
  - `%implied` Marks a proof obligation (i.e. a statement which is required to be true, but has not been proved)
 
@@ -395,9 +400,9 @@ There are some features Coinvent needs which DOL does not yet provide (see the p
 
 1. Dropping symbols from a Concept: `hide` can be used when defining a mapping to drop sentences as well as symbols.
 
-2. Marking inconsistent sentences: by the annotation `%inconsistent%`
+2. Marking inconsistent sentences: by the annotation `%inconsistent`
 
-3. Marking relative importance of sentences: by the annotation `%importance(X)%`, where X is a number in the range [0,1]. How this is interpreted is tool dependent. It may be interpreted as a probability that the sentence holds.
+3. Marking relative importance of sentences: by the annotation `%importance(X)%`, where X is a number in the range [0,1]. The is interpreted by the /weaken component. How this is interpreted is not fixed, but it may be interpreted as a probability that the sentence holds.
 
 4. Evaluating Concepts. That is, adding metadata which describes how good a concept is. Format TBD.
  
@@ -473,7 +478,7 @@ solutions. In ICCBR (2010).
 
 ## Common
 
-This document uses JSDoc to describe input and output types, e.g. `{?string}` would mark an optional string.
+This document uses JSDoc to describe input and output types, e.g. `{?string}` would mark an optional string. For describing urls, $variable is used to mark a variable within a url.
 
 ### Url structure
 
@@ -500,7 +505,8 @@ http://coinvent.soda.sh:8400/file/alice/houseboat.omn
 
 ### Common Inputs
 
-`Concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text.
+`Concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text. A DOL file may contain more than one concept. To reference a concept within a file, we 
+follow the DOL / MMT / Ontohub convention and write file_uri?ontology_name.
 
 `Mapping` type: Mappings are provided either as:   
  1. JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"   
@@ -602,7 +608,7 @@ Parameters:
 Response-cargo: A weakened blend diagram
 
 Open question: What information should be passed to /weaken to guide it? 
-For example, it might take in line-numbers marking sets of inconsistent sentences.
+For example, it might take in line-numbers or DOL labels marking sets of inconsistent sentences.
 
 	
 ### /model: Given a Concept, find examples
@@ -679,14 +685,16 @@ Must provide save and load over http.
 Note that most of the other components do *not* depend on the /file component. They
 can work with concepts stored on any server (and identified by uri). The User Interface requires it to store blend diagrams as they're modified.
 
-Default implementation: file-system based, with git support   
+Default implementation: file-system based, with git support (allowing for Ontohub integration via git). We might also develop a direct-to-Ontohub implementation)   
 Default end point: http://coinvent.soda.sh:8400/file/$user_name
 
 Load Parameters: 
 
- - Use the path (i.e. the slug) to specify a file.   
+ - Use the path (i.e. the slug) to specify a file, using the convention `/files/$user_name/$project/$path_to/$file`, where `$project` and `$path_to` are optional.
  E.g. `http://coinvent.soda.sh:8400/files/alice/stuff/alices_boat.dol`
  would fetch the file stored at `$base_dir/alice/stuff/alices_boat.dol`
+
+Note that Ontohub uses the convention: `/$repository/$path_to/$file`. The convention here is different but compatible.
 
 Response: the file  
   
@@ -932,12 +940,15 @@ Priority: Low. This is an accessible domain for proving the technology. However 
 <!-- Adapted from http://ccg.doc.gold.ac.uk/research/coinvent/internal/?page_id=356 -->
 	
 Collecting technical terms in use across the Coinvent project.
+Some of the terms marked as equivalent here do have
+different meanings in certain domains, but are used equivalently
+within the Coinvent space.
 
  - ABox = assertions about an individual — describes an instance. See TBox
  - ASP = Answer Set Programming, a class of automated reasoning systems for "hard"
  boolean satisifiability searches.
  - Base = A common shared starting theory.
- - Blend = Any theory created by merging two parent theories. Might be a colimit (but needn't be).
+ - Blend = Any theory created by merging two or more input theories. Might be a colimit (but needn't be).
  - Blendoid = a Theory created by blending
  - Cadence = sequence (progression) of chords which concludes a section of music. E.g. fifth to root, D, G in key of G.
  - Colimit = Pushout. A category-theory term which can be applied to blending. The least-specific specialisation which combines two theories with a common base.
@@ -957,7 +968,8 @@ Collecting technical terms in use across the Coinvent project.
  - Sentence = A statement in a Theory. E.g. an axiom.
  - Signature = the set of symbols used in a theory.
  - Sort = Type = Class. E.g. “Person” or “Boat”
- - Symbol = Term. Anything used in a Sentence. E.g. “x” or “+” or “Chord”
- - TBox = assertions about a domain (T for terminology).
+ - Symbol = Token = Word: Anything used in a Sentence. E.g. “x” or “+” or “Chord”
+ - TBox = assertions about a domain in general, rather than individuals (T for terminology). See ABox.
+ - Term: Either a symbol, e.g. "x", or a compund of several symbols, e.g. "f(x)".
  - Theory = a set of symbols (the signature) and sentences.
  

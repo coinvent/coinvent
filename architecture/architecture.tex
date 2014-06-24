@@ -277,7 +277,7 @@ that a Blend Diagram in Progress can carry meta-data about which component imple
 
 Requirement (3) relates to research users, who need to run repeatable concept development sessions. This requirement is met in this architecture by scripts which drive the API. Such scripts would most naturally be developed in javascript, perhaps using a test-runner. Indeed, the test scripts we develop as part of software QA will provide templates for scriptable use.
 
-Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent.
+Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent. HETS has some support for proof scripts although the API is not ready for external use.
 
 \paragraph{Software Wrapped as a Server}
 
@@ -424,6 +424,7 @@ Briefly, the supported symbols are:
 \item[-]`,` List separator.
 \item[-]`|->` Part of a mapping, e.g. `zero |-> 0`
 \item[-] `\%predicate(value)\%` An annotation on a sentence. 
+\item[-] `\%(label)\%` A line label.
 \item[-] `\%\%` Starts a comment
 \item[-] `\%implied` Marks a proof obligation (i.e. a statement which is required to be true, but has not been proved)
 \end{itemize}
@@ -432,8 +433,8 @@ Briefly, the supported symbols are:
 There are some features Coinvent needs which DOL does not yet provide (see the project's [GitHub issue tracker](\url{https://github.com/coinvent/coinvent/issues?labels=DOL+\%2F+file-formats})). Where possible, we fit these within the current DOL specification by specifying non-standard annotations.
 \begin{enumerate}
 \item Dropping symbols from a Concept: `hide` can be used when defining a mapping to drop sentences as well as symbols.
-\item Marking inconsistent sentences: by the annotation `\%inconsistent\%`
-\item Marking relative importance of sentences: by the annotation `\%importance(X)\%`, where X is a number in the range [0,1]. How this is interpreted is tool dependent. It may be interpreted as a probability that the sentence holds.
+\item Marking inconsistent sentences: by the annotation `\%inconsistent`
+\item Marking relative importance of sentences: by the annotation `\%importance(X)\%`, where X is a number in the range [0,1]. This will be interpreted by the /weaken component. How this is interpreted is tool dependent. It may be interpreted as a probability that the sentence holds.
 \item Evaluating Concepts. That is, adding metadata which describes how good a concept is. Format TBD.
  \end{enumerate}
 \subsection{Mathematics: CASL}
@@ -538,7 +539,8 @@ E.g. the user Alice's houseboat file could be
 
 \subsection{Common Inputs}
 
-`Concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text.
+`Concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text. A DOL file may contain more than one concept. ??This means that here we need an URI for an ontology in a file. We follow the MMT convention to write file_uri?ontology_name.
+Ontohub also supports this.
 
 `Mapping` type: Mappings are provided either as: 
 \begin{enumerate}  
@@ -641,7 +643,7 @@ Parameters:
 Response-cargo: A weakened blend diagram
 
 Open question: What information should be passed to /weaken to guide it? 
-For example, it might take in line-numbers marking sets of inconsistent sentences.
+For example, it might take in DOL labels (%(label)%) or line-numbers marking sets of inconsistent sentences.
 \end{verbatim}
 \subsection{/model: Given a Concept, find examples}
 \begin{verbatim}
