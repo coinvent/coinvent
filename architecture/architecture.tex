@@ -1,27 +1,10 @@
-
-
-
-%% - [Overview](#overview)
-%% - [A Typical Coinvent Session](#typical)
-%% - [The Blend Diagram in Progress](#bdip)
-%% - [Components](#components)
-%% - [Architecture](#architecture)
-%% - [Languages / File Formats](#languages)
-%% - [Open Questions & Risks](#open)
-%% - [References](#references)
-%% - [Appendix 1: Component APIs](#appendix1)
-%% - [Appendix 2: Requirements / User-Stories](#appendix2)
-%% - [Appendix 3: Definitions / Glossary](#appendix3)
-
-%% <a name='overview'></a>
-
 \section{Overview}\label{sec:overview}
 
 This document presents the archictectural design for the integrated Coinvent system. \mbox{}\\
 Please first read:
 \begin{enumerate}
-\item{The Glossary (appendix3)}
-\item{The requirements / user-stories (appendix2) which motivate this design.}
+\item{The Glossary (\S\ref{sec:appendix3})}
+\item{The requirements / user-stories (\S\ref{sec:appendix2}) which motivate this design.}
 \end{enumerate}
 
 \section{A Typical Coinvent Session}\label{sec:typical}
@@ -33,43 +16,12 @@ In a typical session, the user browses and selects two concepts from the
 rich background of domain concepts. A blended concept is then developed, which
 may be automatic or interactive. Examples of the concept are generated (again, either
 automatically or interactively, depending on the capability of the automatic software). Finally, the concept's quality is evaluated based on the examples.
-
 This is illustrated in the UML sequence diagram shown in Figure \ref{fig:sequence-diagram}.
 \begin{figure}[!ht]
 \includegraphics[width=0.9\textwidth]{sequence-diagram.png}
 \label{fig:sequence-diagram}
 \caption{UML sequence diagram}
 \end{figure}
-%% <img src='sequence-diagram.png' style='width:90%;'>
-%% <!-- title Coinvent: Typical Session
-
-%% Participant User
-%% Participant WebApp
-
-%% /file->WebApp: List
-%% User->WebApp: Select 2 Concepts
-%% /file->WebApp: Load
-%% loop 
-%%    WebApp->/base: Compute Common Base...
-%%    /base->WebApp: Base Concept + mappings
-%%    WebApp->/blend: Compute Blend...
-%%    /blend->WebApp: Blend Concept
-%%    User->WebApp: OK
-%%    WebApp->/consistency: Evaluate consistency...
-%%    /job->WebApp: ...status...
-%%    /consistency->WebApp: Inconsistent!
-%%    WebApp->/weaken: Solve inconsistency...
-%%    /weaken->WebApp: 2 Weaker Concepts
-%% end
-%% User->WebApp: OK
-%% WebApp->/model: Create example...
-%% /model->WebApp: Examples of Concept
-%% WebApp->/quality: Concept and Examples...
-%% /quality->WebApp: Quality score
-%% WebApp->/file: Save -->
-
-
-%% <a name='bdip'></a>
 
 \section{Core Object: The Blend Diagram in Progress}\label{sec:bdip}
 
@@ -80,8 +32,7 @@ The object type at the heart of Coinvent is the Blend Diagram. The specification
 \caption{Flowchart diagram for blending}
 \label{fig:flowchart}
 \end{figure}
-%% <img src='BlendDiagram.png' style='width:90%;'>
-%% <!-- source: BlendDiagram.xml and http://draw.io -->
+
 
 Crucially we must support blend diagrams which are "works in progress". The high-level process of developing a new blended concept is:
 \begin{enumerate}
@@ -92,8 +43,10 @@ Crucially we must support blend diagrams which are "works in progress". The high
 \item ...Which may lead to changes in either the input concepts, such as logical weakenings to remove the conflict. This process of evaluate-modify could be iterated several times.
 \item Evaluate the blend for value, perhaps by generating examples/models and evaluating them.
 \item ...This evaluation may lead to modifications, and so the whole process is iterative.
+??Till: Note that any proof of an inconsistency of the blend can give you hints which axioms to look at (namely, the axioms used in the inconsistency proof, cf. Pellet's ``explain'' function).
+We should prepare for more complex models, where the global workflow is enriched with vision and debugging techniques, changing the input spaces if necessary, etc.??
 \end{enumerate}
-Hence we talk of a Blend Diagram {\em in Progress} to allow that blends may be developed step-by-step and iteratively.
+Hence we talk of a Blend Diagram *in Progress* to allow that blends may be developed step-by-step and iteratively.
 
 Concepts are defined in CASL or OWL. Mappings between concepts are defined in DOL. Metadata is also defined in DOL. The Blend Diagram may be a single file, or several linked files, using DOL's support for urls.
 
@@ -101,18 +54,18 @@ A `Blend Diagram` consists of:
 \begin{enumerate}
 \item A Blended Concept
 \item A set of Input Concepts (typically 2)
-\item Optionally, weakenings of the Input Concepts. E.g. a mapping Concept1 -> WeakerConcept1, by dropping symbols or sentences.
+\item Optionally, weakenings of the Input Concepts. E.g. a mapping Concept1 <- WeakerConcept1, by dropping symbols or sentences.
 \item A Base Concept, which is a common base for all the Input Concepts. If there are weakenings, then the Base is a base for the weakened concepts (not the originals).
 \item Mappings from the Base Concept to each of the (weakened) Input Concepts.
 \item Mappings from each of the (weakened) Input Concepts to the Blended Concept.
 \item Optional metadata about each of the Concepts, such as evaluation scores,  proof obligations, or relationship to other Concepts.
 \item Optional metadata about the system setup, such as preferred component setup.
 \end{enumerate}
-
 The Blended Concept {\em may} be a colimit, but it does not have to be.
 The Base Concept {\em may} be found via anti-unification, but it does not have to be.
 
 A `Blend Diagram in Progress` is simply a Blend Diagram where any part may be missing or incomplete, and Concepts do not have to be consistent. 
+
 
 \section{Components}\label{sec:components}
 
@@ -155,8 +108,8 @@ Default implementation: HDTP, which works via anti-unification.
 Required work: HDTP currently uses a custom Prolog-based format. To plug into Coinvent (or HETS without Coinvent), a translation layer will be developed so that HDTP can take in OWL or CASL.
 
 Note: HDTP will remain stateless. It will not itself manage sessions or run a web-server.
-
 \subsection{Weaken: Amalgam Finder: Given an inconsistent Blend Diagram, weaken the inputs}
+
 
 Initial implementation: manual
 
@@ -177,8 +130,6 @@ of state transition based problems that are typically modeled in ASP [2].
 
 \subsection{Model: Example Finder: Given a Concept, find examples / models}
 
-Default implementation: Manual
-
 This is a key part of creative blending, especially around evaluating a concept. 
 It is noticeable that when people learn and evaluate concepts, they often do so via examples.
 
@@ -192,7 +143,9 @@ implicit in * being a total function).
  
 In musical theories, an example is a piece of music conforming to the theory.
  
-Automated implementations will also be domain specific, and may not be possible in all domains.
+The initial implementation will be manual. Automated implementations will often be domain specific (e.g. we may use a Hidden-Markov-Model based music generator), and may not be possible in all domains.
+For relatively simple theories (e.g. small models to finite first-order theories), model-finders such as MACE can be used, possibly via HETS.
+
 
 \subsection{Consistency: Concept Correctness: Is it consistent?}
 
@@ -202,6 +155,7 @@ proofs.
 
 \subsection{Quality: Concept Scorer: How good is a Concept?}
 
+
 A key part of creativity is judging the quality of the outputs; discarding
 low-value concepts, and selecting valuable ones. How to do this is one of the research questions this project will explore. HR has automatic scores for detecting interesting concepts, which it would be interesting to incorporate.
 
@@ -209,22 +163,22 @@ Default implementation: Manual
 
 \subsection{File: Concept Store: Store Concepts and Blend Diagrams}
 
+
 Must provide save and load over http.
 
-Note that most of the other components do *not* depend on a dedicated storage component. They can work with concepts stored on *any* server, as long as the format is correct and the concept can be identified by url. The User Interface does require a file storage component to store blend diagrams as they're modified.
+Note that most of the other components do {\em not} depend on a dedicated storage component. They can work with concepts stored on {\em any} server, as long as the format is correct and the concept can be identified by url. The User Interface does require a file storage component to store blend diagrams as they're modified.
 
 Default implementation: 
 
  - File-system backed. By adding git to the file-system we can provide integration with Ontohub.
 
-
 \subsection{Job: Provide meta-data on slow tasks}
 
-As discussed in the [architecture section](\S\ref{sec:architecture}), some of the system tasks are not suitable for
+
+As discussed in \S\ref{sec:architecture}, some of the system tasks are not suitable for
 a fast blocking API. These tasks will create jobs, which run on the server until complete.
 The /job component provides an API for fetching information on the state of the job queue and a specific job. This allows the web-portal (or other user interfaces) to see the state of a blend, and a way to
 report on any errors.
-
 
 \section{Architecture}\label{sec:architecture}
 
@@ -261,12 +215,13 @@ The Social Creativity strand of the Coinvent project requires that different set
 can be run and interact. In order to support this from within one server, we allow
 that a Blend Diagram in Progress can carry meta-data about which component implementations to call (if different from the defaults). This meta-data might include implementation-specific configuration parameters.
 
-
 \paragraph{Scripting the system}
 
 Requirement (3) relates to research users, who need to run repeatable concept development sessions. This requirement is met in this architecture by scripts which drive the API. Such scripts would most naturally be developed in javascript, perhaps using a test-runner. Indeed, the test scripts we develop as part of software QA will provide templates for scriptable use.
 
-Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent. HETS has some support for proof scripts although the API is not ready for external use.
+Where steps involve systems such as the interactive theorem prover Isabelle, it is an open question how we script such systems within Coinvent. HETS
+has some support for this (call `hets -I` and enter "help"), 
+although the HETS API does not expose it.
 
 \paragraph{Software Wrapped as a Server}
 
@@ -313,20 +268,23 @@ These responses will be stored, so that sessions can be re-played.
 
 \subsection{Actor / Queue Pattern}
 
+
 Requirements:  
 \begin{enumerate}
 \item The components of the system call on each other to perform tasks...
-\item ...but these tasks may be slow to complete. Since tasks may require human input (eg. a proof in an interactive theorem prover like Isabelle), a task could even take days.
+\item ...but these tasks may be slow to complete. Since tasks may require human input (eg. a proof in an interactive theorem prover like Isabelle), a task
+could even take days.
 \end{enumerate}
 This means a standard call/response would timeout. We therefore adopt an actor / queue based pattern (see \url{https://en.wikipedia.org/wiki/Actor_model}). 
 
-Each top-level component is an actor, which can send and receive messages to other actors. Each API request is marked as either {\em fast} or {\em slow}:
+Each top-level component is an actor, which can send and receive messages to other actors. Each API request is marked as either *fast* or *slow*:
 \begin{enumerate}
  \item Fast messages get an immediate result within the http response.
  \item Slow messages send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
 \end{enumerate}
 
 \subsection{System Stack Diagram}
+
 \begin{figure*}[!h]
 \begin{center}
 \begin{tabular}{|c|c|c|}
@@ -355,32 +313,11 @@ SWI Prolog$^2$&Git$^3$&Theorem Provers\\
 \end{itemize}
 \end{footnotesize}
 \end{figure*}
-%% <!--
-%% Coinvent EcoSystem
-%% [Default User Interface]
-%% [AJAX][jQuery][underscore templates]
-%% [Web browser]
-%% [http: JSON format REST API]
-%% [Java web-service wrapper]
-%% [HDTP][Files][HETS server^1]
-%% [SWI Prolog^2][Git^3][Theorem Provers]
-%% [OS: Linux (Ubuntu)]
-%% 1: The HETS server provides an http API. This is lower-level than the Coinvent API.
-%% 2: HDTP might be re-written by Martin Möhrmann to use a different backend.
-%% 3: Git integration provides OntoHub integration without a hard dependency.   
-%% -->
-
-%% <div id="diadraw"><div class="dia panel panel-primary"><table class="dia"><tbody><tr><td class="default" colspan="3">Default User Interface</td></tr><tr><td class="ajax" colspan="1">AJAX</td><td class="jquery" colspan="1">jQuery</td><td class="underscore" colspan="1">underscore templates</td></tr><tr><td class="web" colspan="3">Web browser</td></tr><tr><td class="http" colspan="3">http:  JSON format REST API</td></tr><tr><td class="java" colspan="3">Java web-service wrapper</td></tr><tr><td class="hdtp" colspan="1">HDTP</td><td class="files" colspan="1">Files</td><td class="hets" colspan="HETS server^1">HETS server<sup>1</sup></td></tr><tr><td class="swi" colspan="SWI Prolog^2">SWI Prolog<sup>2</sup></td><td class="git" colspan="Git^3">Git<sup>3</sup></td><td class="theorem" colspan="1">Theorem Provers</td></tr><tr><td class="os" colspan="3">OS:  Linux <small>(Ubuntu)</small></td></tr></tbody></table><ul><li>1:  The HETS server provides an http API. This is lower-level than the Coinvent API.</li><li>2:  HDTP might be re-written by Martin Möhrmann to use a different backend.</li><li>3:  Git integration provides OntoHub integration without a hard dependency.</li></ul></div></div>
-
-
-
-
 
 \section{Languages / File Formats}\label{sec:languages}
 
 Coinvent will focus on human-readable text-file formats. 
 A couple of formats for concepts will be supported, with the DOL language used to describe the connections between concepts.
-
 \subsection{3 Levels of languages: software, meta-logic, domain-logic}
 \begin{enumerate}
 \item The outer language (json) is used to connect software components. E.g. specifying software inputs and callbacks, reporting on job-status, etc.
@@ -388,14 +325,14 @@ A couple of formats for concepts will be supported, with the DOL language used t
 \item The domain-logics (OWL, CASL) are used to describe actual concepts.
 \end{enumerate}
 
+
 \subsection{Connecting concepts: DOL (modified)}
 DOL (Distributed Ontology, Modeling and Specification Language) is a language for describing how ontologies connect. 
-DOL is currently in development by Till Mossakowski's group. It is used by the HETS system. This integration with HETS makes it a good choice for Coinvent.
+DOL is currently in development by the OntolOp group. It is used by the HETS system. This integration with HETS makes it a good choice for Coinvent.
 
 DOL is both larger than we need, and does not provide a couple of features we require. So we specify a modified version of DOL. We will work with the DOL team aiming to
-converge on a true subset of DOL.
+converge on a true subset of DOL.\paragraph{DOL subset: Supported Language Terms}
 
-\paragraph{DOL subset: Supported Language Terms}
 
 Coinvent does not need all the features of DOL, and so we specify a reduced subset of DOL which should be used. Sticking to a smaller set reduces the learning curve for new Coinvent users.
 
@@ -403,15 +340,15 @@ Briefly, the supported symbols are:
 \begin{itemize}
 \item[-] `logic` Specify the Concept language, e.g. `logic OWL`
 \item[-] `ontology` Start defining a Concept.
-\item[-]`end` Finish defining a Concept. 
-\item[-]`view` Specify a mapping between Concepts, e.g. `view MyView : A to B =`
-\item[-]`with` Start of a symbol mapping within a combine statement.
-\item[-]`combine` Compute the colimit, e.g. `ontology B = combine I1, I2`
-\item[-]`hide` Used in a mapping to drop a symbol.
-\item[-]`=`
-\item[-]`:`
-\item[-]`,` List separator.
-\item[-]`|->` Part of a mapping, e.g. `zero |-> 0`
+\item[-] `end` Finish defining a Concept. 
+\item[-] `view` Specify a mapping between Concepts, e.g. `view MyView : A to B =`
+\item[-] `with` Introduces a symbol mapping to rename symbols from a theory. A typical use in Coinvent would be as part of a combine statement.
+\item[-] `combine` Compute the colimit, e.g. `ontology B = combine I1, I2`
+\item[-] `hide` Used in a mapping to drop a symbol.
+\item[-] `=`
+\item[-] `:`
+\item[-] `,` List separator.
+\item[-] `|->` Part of a mapping, e.g. `zero |-> 0`
 \item[-] `\%predicate(value)\%` An annotation on a sentence. 
 \item[-] `\%(label)\%` A line label.
 \item[-] `\%\%` Starts a comment
@@ -423,9 +360,9 @@ There are some features Coinvent needs which DOL does not yet provide (see the p
 \begin{enumerate}
 \item Dropping symbols from a Concept: `hide` can be used when defining a mapping to drop sentences as well as symbols.
 \item Marking inconsistent sentences: by the annotation `\%inconsistent`
-\item Marking relative importance of sentences: by the annotation `\%importance(X)\%`, where X is a number in the range [0,1]. This will be interpreted by the /weaken component. How this is interpreted is tool dependent. It may be interpreted as a probability that the sentence holds.
+\item Marking relative importance of sentences: by the annotation `\%importance(X)\%`, where X is a number in the range [0,1]. The is interpreted by the /weaken component. How this is interpreted is not fixed, but it may be interpreted as a probability that the sentence holds.
 \item Evaluating Concepts. That is, adding metadata which describes how good a concept is. Format TBD.
- \end{enumerate}
+\end{enumerate}
 \subsection{Mathematics: CASL}
 
 CASL is the first order logic language used by HETS. We will adopt it as the language Coinvent should use for mathematical concepts.
@@ -453,9 +390,6 @@ Low-level components (e.g. HDTP) will not take in JSON. That would be done by a
 web-service wrapper, which then calls HDTP.
 
 
-
-
-
 \section{Open Questions and Risks}\label{sec:open}
 
 Many development questions remain open at this stage in the project. Notable open questions are:
@@ -475,8 +409,6 @@ Higher risk components are /model and /weaken. How these functions can be implem
 To mitigate these risks, the system design allows for components to be fulfilled by manual interactive input. This means work on automated solutions to /model and /weaken is not a blocker for use of the system.
 
 \subsection{References}\label{sec:references}
-
-
 
 \begin{itemize}
 \item[-] CASL: [user manual](\url{http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_user_manual})
@@ -501,7 +433,7 @@ solutions. In ICCBR (2010).
 
 \subsection{Common}
 
-This document uses JSDoc to describe input and output types, e.g. `{?string}` would mark an optional string.
+This document uses JSDoc to describe input and output types, e.g. `{?string}` would mark an optional string. For describing urls, \$variable is used to mark a variable within a url.
 
 \subsection{Url structure}
 
@@ -514,9 +446,9 @@ Other implementations are possible, and may not follow the pattern.
 	\url{http://server:port/component/actor}
 
 This means we can have multiple different instances of a component, e.g.
-http://coinvent.soda.sh:8400/blender/hets and http://coinvent.soda.sh:8400/blender/hr3
+\url{http://coinvent.soda.sh:8400/blender/hets and http://coinvent.soda.sh:8400/blender/hr3}
 
-The actor may refer to a piece of software (e.g. hets), or to a user, which allows that any component function can be fulfilled manually by a human being. E.g. http://coinvent.soda.sh:8400/blender/alice
+The actor may refer to a piece of software (e.g. hets), or to a user, which allows that any component function can be fulfilled manually by a human being. E.g. \url{http://coinvent.soda.sh:8400/blender/alice}
 
 This structure anticipates multi-agent setups, which will be wanted for the 
 investigation of social aspects later in the project.
@@ -528,11 +460,11 @@ E.g. the user Alice's houseboat file could be
 
 \subsection{Common Inputs}
 
-`Concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text. A DOL file may contain more than one concept. ??This means that here we need an URI for an ontology in a file. We follow the MMT convention to write file_uri?ontology_name.
-Ontohub also supports this.
+`Concept` type: Concepts can be provided as the source text itself, or as a uri for a file which contains the source text. A DOL file may contain more than one concept. To reference a concept within a file, we 
+follow the DOL / MMT / Ontohub convention and write file\_uri?ontology\_name.
 
-`Mapping` type: Mappings are provided either as: 
-\begin{enumerate}  
+`Mapping` type: Mappings are provided either as:   
+\begin{enumerate}
 \item JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"   
 \item DOL fragments, using only the inner part of the DOL mapping, e.g. "sun |-> nucleus, planet |-> electron".
 \end{enumerate}
@@ -548,7 +480,7 @@ All inputs are of course sent URL encoded.
 
 With the exception of files, all outputs are in JSON and have a common envelope.
 
-\subsubsection{Envelope}
+\subsection{Envelope}
 
 Each response has the same top level structure:
 \begin{verbatim}
@@ -560,7 +492,7 @@ Each response has the same top level structure:
 		"cursor": {uri} the next page in a series -- usually null				
 	}
 \end{verbatim}
-Authentication: none
+\subsection{Authentication: none}
 
 No authentication is required at this stage in the project.
 
@@ -618,6 +550,7 @@ Response-cargo:
 
 \end{verbatim}
 \subsection{/weaken: Given an inconsistent blend diagram in progress, weaken the concepts}
+
 \begin{verbatim}
 This is the key method for Amalgams.
 
@@ -632,8 +565,9 @@ Parameters:
 Response-cargo: A weakened blend diagram
 
 Open question: What information should be passed to /weaken to guide it? 
-For example, it might take in DOL labels (%(label)%) or line-numbers marking sets of inconsistent sentences.
-\end{verbatim}
+For example, it might take in line-numbers or DOL labels marking sets of inconsistent sentences.
+\end{verbatim}  
+	
 \subsection{/model: Given a Concept, find examples}
 \begin{verbatim}
 Default implementation: Manual   
@@ -708,14 +642,16 @@ Must provide save and load over http.
 Note that most of the other components do *not* depend on the /file component. They
 can work with concepts stored on any server (and identified by uri). The User Interface requires it to store blend diagrams as they're modified.
 
-Default implementation: file-system based, with git support   
+Default implementation: file-system based, with git support (allowing for Ontohub integration via git). We might also develop a direct-to-Ontohub implementation)   
 Default end point: http://coinvent.soda.sh:8400/file/$user_name
 
 Load Parameters: 
 
- - Use the path (i.e. the slug) to specify a file.   
+ - Use the path (i.e. the slug) to specify a file, using the convention `/files/$user_name/$project/$path_to/$file`, where `$project` and `$path_to` are optional.
  E.g. `http://coinvent.soda.sh:8400/files/alice/stuff/alices_boat.dol`
  would fetch the file stored at `$base_dir/alice/stuff/alices_boat.dol`
+
+Note that Ontohub uses the convention: `/$repository/$path_to/$file`. The convention here is different but compatible.
 
 Response: the file  
   
@@ -737,7 +673,7 @@ Delete Parameters:
  - Use http DELETE or the parameter=value pair `action=delete`
 
 Response: just the envelope, indicating success or failure 
- \end{verbatim}
+\end{verbatim} 
 \subsection{/job: List open tasks}
 \begin{verbatim}
 Default implementation: Coinvent Integration+UI module      
@@ -783,33 +719,33 @@ This may optionally provide more information about the job, such as a progress u
 \end{verbatim}
 
 
-\section{User-Stories}
+\section{User-Stories} \label{sec:appendix2}
 
 This appendix presents the motivating requirements for the integrated Coinvent system. It does so via the agile method of user-stories: requirements are driven by example use-cases of who needs it and why.
 
 \subsection{As a Coinvent Researcher...}
 
-\subsubsection{User: Logic researcher}    
+\subsubsection{User: Logic researcher}
 Task: Explore creating and using blends   
 Needs:
-
- - Specify concepts.
- - Create blends.
- - Evaluate blends (this is domain specific -- see specific domains below).
- - Reliably replay a "session" of concept blending plus associated concept development (such as theorem proving or example music generation).
-
+\begin{itemize}
+\item Specify concepts.
+\item Create blends.
+\item Evaluate blends (this is domain specific -- see specific domains below).
+\item Reliably replay a "session" of concept blending plus associated concept development (such as theorem proving or example music generation).
+\end{itemize}
 Success criteria: The software supports research, leading to papers on blending which extend the state of research.   
 Priority: High.
 
 
-\subsubsection{User: Social creativity researcher}    
+\subsubsection{User: Social creativity researcher}
 Task: Explore multiple users/agents creating and using blends      
 Needs:
-
- - As for Logic Researcher, plus...
- - Agent-based system to model and explore social interactions.
- - Setup different starting models for agents.
-
+\begin{itemize}
+ \item As for Logic Researcher, plus...
+ \item Agent-based system to model and explore social interactions.
+ \item Setup different starting models for agents.
+\end{itemize}
 Priority: This is a key strand of the project plan. For Year 2/3.
 
 \subsection{As a non-Coinvent developer...}
@@ -821,16 +757,16 @@ use Coinvent to build things.
 Task: Explore concept blending.   
 Needs: Same as for a Coinvent Logic Researcher, plus a user-friendly UI and documentation.
 
-\subsubsection{User: A developer}  
+\subsubsection{User: A developer}
 
 Task: Making a creativity tool for a domain of their choice (e.g. one of the domains considered below).      
 Needs: 
-
- - The system must be flexible enough to support:
-   - Modified back-end components.
-   - Other user interfaces, built on top of the API. 
- - Enough documentation to support 3rd party developers, including a Hello-World example project.      
-
+\begin{itemize}
+ \item The system must be flexible enough to support:
+ \item Modified back-end components.
+ \item Other user interfaces, built on top of the API. 
+ \item Enough documentation to support 3rd party developers, including a Hello-World example project.      
+\end{itemize}
 Success criteria: Developers from outside the project produce projects (which may be just proof-of-concept scratch projects) using Coinvent.   
 Priority: For Year 3.
 
@@ -843,15 +779,15 @@ Task: Explore the blending of mathematical concepts.
 Use-case: Define concepts. Pick 2 concepts as input, and get back a blended concept. Further develop the blend to resolve "quality issues" such as.
 Further develop the blended concept to create interesting outputs -- possibly models / examples.   
 Requirements: 
-
-1. A format which can define mathematical concepts.
-2. Specify two theories, and blend them to produce a new concept.
-2. Weaken input concepts (to remove inconsistency) and strengthen output blends (to reach "interesting" results). 
-3. Given a concept, check it for consistency.
-4. Given a concept, produce examples / a model.
-5. Given a concept, identify the unresolved questions in the blend (for complex numbers, the missing formula x.y=?).
-6. Solve the unresolved questions in the blend, adding axioms and resolving any proof obligations.
-
+\begin{enumerate}
+\item A format which can define mathematical concepts.
+\item Specify two theories, and blend them to produce a new concept.
+\item Weaken input concepts (to remove inconsistency) and strengthen output blends (to reach "interesting" results). 
+\item Given a concept, check it for consistency.
+\item Given a concept, produce examples / a model.
+\item Given a concept, identify the unresolved questions in the blend (for complex numbers, the missing formula x.y=?).
+\item Solve the unresolved questions in the blend, adding axioms and resolving any proof obligations.
+\end{enumerate}
 Note that some steps may have to be manual or semi-automated, and so it is a requirement that the
 system supports interactive reasoning.
 
@@ -859,35 +795,35 @@ Success criteria: It works.
 Priority: High. This is a project deliverable.
  
  
-\paragraph{User: Non-mathematical Analyst (e.g. someone who'd normally use Excel)}    
+\paragraph{User: Non-mathematical Analyst (e.g. someone who'd normally use Excel)}  
 Task: Quantitative analysis of data   
 Wants: To meaningfully analyse some data using bayesian mathematical models.   
 Specific use-case: Interpret Twitter conversational data on a topic, in terms of types of person and types of conversation.   
 Needs:
-
- - A friendly UI.
- - To create a model by blending pre-defined models.
- - To understand what they've made without understanding the source code -- i.e. a clear natural language summary of the model.
- - To apply the model to the data...
- - ...And get back results they can understand (e.g. pie-charts and time-series charts with meaningful labels).
-
+\begin{itemize}
+ \item A friendly UI.
+ \item To create a model by blending pre-defined models.
+ \item To understand what they've made without understanding the source code -- i.e. a clear natural language summary of the model.
+ \item To apply the model to the data...
+ \item ...And get back results they can understand (e.g. pie-charts and time-series charts with meaningful labels).
+\end{itemize}
 Success criteria: It works and is adopted for use by a researcher or analyst outside the project.   
 Priority: Medium. This is an achievable valuable goal within the important mathematics thread.
 
 
-\subsubsection{Domain: Music}
+\subsection{Domain: Music}
 
 \paragraph{User: Coinvent Researcher}
 Task: Explore the blending of musical idioms      
 Use-case: Define idioms. Pick 2 musical idioms as input, and get back a blended idiom. Given an idiom, evaluate it, by creating examples and subjectively assessing them.   
 Requirements: 
-
-1. A format which can define musical idioms. Open question: What levels of structure does this have to capture?
-2. Optional? The ability to statistically analyse a body of example music as part of fleshing out a musical idiom (e.g. creating an HMM for use in generation).
-3. Blend idioms to produce new idioms. This requires support for weakening or otherwise resolving clashes, as fully-fledged idioms are likely to be logically inconsistent.
-4. Given an idiom, produce example music.
-4. Optional: Support for evaluating music / idioms.
-
+\begin{enumerate}
+\item A format which can define musical idioms. Open question: What levels of structure does this have to capture?
+\item Optional? The ability to statistically analyse a body of example music as part of fleshing out a musical idiom (e.g. creating an HMM for use in generation).
+\item Blend idioms to produce new idioms. This requires support for weakening or otherwise resolving clashes, as fully-fledged idioms are likely to be logically inconsistent.
+\item Given an idiom, produce example music.
+\item Optional: Support for evaluating music / idioms.
+\end{enumerate}
 Success criteria: It works.       
 Priority: High. This is the basis for all music-domain work.
  
@@ -897,7 +833,7 @@ Use-case: Pick 2 musical idioms as input, and get back a newly-created high-qual
 Success criteria: A group is identified who adopt Coinvent-based software as part of their music listening software. Or a Coinvent-created piece of music gains small-scale public success.   
 Priority: Low. This is a very hard task and may not be achieved within this project.
  
-\paragraph{User: An avant-garde composer}   
+\paragraph{User: An avant-garde composer}
 Task: Create music to use as inspiration / source material   
 Use-case: Pick 2 musical idioms as input, and get back a newly-created *low-quality* piece of music.   
 Success criteria: A composer collaborates with the project and uses Coinvent to create a piece of music they then perform.      
@@ -906,24 +842,24 @@ Priority: For Year 2/3. This is an achievable goal for this project.
 
 \subsubsection{Other Domains}
 
-\paragraph{Domain: Fictional beasts}   
+\paragraph{Domain: Fictional beasts}
 User: A child    
 Task: Create a fictional beast
 Use-case: Pick two input beasts (using a simple user-friendly GUI), and get back a fictional blended beast with a mini-story about how it behaves.  
 Wants: To play around creating fun new animals and interacting with them.
 Needs:
-
- - A very friendly UI.
- - An ontology of animals behind it.
- - To specify two animals to blend.
- - To get a pictorial view of the blend.
- - To see some behaviour, e.g. robot cat chases mutant mice, stops to drink some milk, short-circuits.
-
+\begin{itemize}
+ \item A very friendly UI.
+ \item An ontology of animals behind it.
+ \item To specify two animals to blend.
+ \item To get a pictorial view of the blend.
+ \item To see some behaviour, e.g. robot cat chases mutant mice, stops to drink some milk, short-circuits.
+\end{itemize}
 Success criteria: Adopted for use by a school, or distributed publicly as an app.         
 Priority: Medium. For Year 2. This is an achievable goal for this project.
 
 
-\paragraph{Domain: Mechanical engineering.   }
+\paragraph{Domain: Mechanical engineering.}
 
 User: A mechnical engineer.   
 Task: Create a new product, and streamline the 3D modelling, requirements checking, and safety testing by leaning on an existing database.   
@@ -935,10 +871,10 @@ Priority: Low. This lacks a sponsor within the project.
 User: A poet   
 Task: Create poetry fragments to use as inspiration / source material   
 Use-case: 
-
-1. Pick 2 concepts as input, and get back a newly-created metaphor and sentences illustrating it.   
-2. Pick a concept and a property, and get back a 2nd concept which when blended with the first provides a metaphor for the desired property. 
-
+\begin{enumerate}
+\item Pick 2 concepts as input, and get back a newly-created metaphor and sentences illustrating it.   
+\item Pick a concept and a property, and get back a 2nd concept which when blended with the first provides a metaphor for the desired property. 
+\end{enumerate}
 Success criteria: A poet collaborates with the project and uses Coinvent to create a piece of poetry they then publish.  
 Priority: Medium. This is an achievable goal for this project. This is an accessible domain for technology testing, and it fits with the research interests of Goldsmiths group.
 
@@ -955,12 +891,11 @@ Success criteria: Some new and tasty recipes.
 Priority: Low. This is an accessible domain for proving the technology. However there is so much cooking material online, that a new resource would not be very valuable.   
 
 
-	
-\section{Definitions / Glossary}
-
-
-	
+\section{Definitions / Glossary} \label{sec:appendix3}	
 Collecting technical terms in use across the Coinvent project.
+Some of the terms marked as equivalent here do have
+different meanings in certain domains, but are used equivalently
+within the Coinvent space.
 \begin{description}
  \item[ABox]{assertions about an individual -- describes an instance. See TBox}
  \item[ASP]{Answer Set Programming, a class of automated reasoning systems for "hard"
