@@ -1,0 +1,113 @@
+\documentclass{my-blue-book}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{diagrams}
+\renewcommand{\harvardurl}[1]{\textbf{url}: \url{#1}}
+\newcommand{\nat}{\mathcal{N}}
+\newcommand{\real}{\mathcal{R}}
+\newcommand{\complex}{\mathcal{C}}
+\newcommand{\quaternion}{\mathcal{H}}
+\renewcommand{\real}{\mathcal{R}}
+\newcommand{\dottriangle}{$.\,\raise1ex\hbox{.}\,.$}                   
+\DeclareMathOperator{\plusR}{+_{\real}}
+\DeclareMathOperator{\timesR}{\times_{\real}}
+\DeclareMathOperator{\plusF}{+_F}
+\DeclareMathOperator{\minusF}{-_F}
+\DeclareMathOperator{\minusR}{-_{\real}}
+\DeclareMathOperator{\timesF}{\times_{F}}
+\DeclareMathOperator{\invF}{^{-1_F}}
+\DeclareMathOperator{\invR}{^{-1_{\real}}}
+\newcommand{\minus}[1]{-{#1}}
+\newcommand{\origin}{\mathbf{0}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\oneF}{1_F}
+\newcommand{\zeroF}{0_F}
+\newcommand{\FnotZero}{F_{\neq 0}}
+\newcommand{\mapsTo}{\rightarrow}
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\modulus}[1]{\lvert#1\rvert}
+\newcommand{\realTwo}{\real \times \real}
+\newcommand{\foleq}{\mbox{$FOL^=$}\xspace}
+\newcommand{\vecU}{\mathbf{u}}
+\newcommand{\vecV}{\mathbf{v}}
+\newcommand{\iprod}[2]{\langle {#1}, {#2} \rangle}
+\DeclareRobustCommand{\VAN}[3]{#2}
+\NoteNumber{X}
+\title{Data Structure Blending}
+\author{Ewen Maclean}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+As part of the Coinvent project, I have been investigating the possibility of using the concept of blending in the domain of data structures. Specifically I have been investigating recursively data structures, and determining whether it is possible to use the underlying categorical notions of blending to ``invent'' a theory which corresponds to an interesting new data structure.
+
+\section{S}
+
+Let us consider the simple example of blending a list with a pair of similar type. Below is the CASL specifications for these constructs. 
+\begin{verbatim}
+spec Pair  = 
+     sort S
+     free type Pair ::= pair(first:S,second:S)
+end
+
+spec List =
+     sort S
+     free type List  ::=
+	  Null | cons(head:S,tail:List)
+end
+\end{verbatim}
+\noindent In order to find a blend of these two data structures, we need first to define a ``Generic'' space between them. The HDTP software is technically capable of this, but currently does not cope with CASL syntax, so we predict what the possible computed Generic spaces and signature morphisms will be here.
+
+\subsubsection{List of pairs blend}
+
+We define a generic space, and associated morphism to be
+\begin{verbatim}
+spec Gen  = 
+     sort S
+end
+
+view I1: Gen to Pair = 
+    S |-> Pair
+
+view I2: Gen to List =
+    S |-> S
+\end{verbatim}
+\noindent Using these signature morphisms, HETS can compute a colimit which defines a new datatype. This is equivalent to writing a specification for a list pairs:
+\begin{verbatim}
+spec Blend = 
+    sort S
+    free type Pair ::= pair(first:S,second:S)
+    free type List ::= cons(head:Pair,tail:List)
+end
+\end{verbatim}
+
+\subsection{Binary Tree Blend - na{\"\i}ve attempt}
+
+In the previous section we successfully introduced the notion of pair to the linked list by creating a pair in the head element. Now what if we were to introduce this notion to the recursive element? If we do this naively by associating the type {\tt S} to a List type as follows:
+\begin{verbatim}
+spec Gen  = 
+     sort S
+end
+
+view I1: Gen to Pair = 
+    S |-> Pair
+
+view I2: Gen to List =
+    S |-> List
+\end{verbatim}
+we generate an inconsistent theory which is detected by HETS. The inconsistency comes because the second argument of the List type is recursive and the second argument of the Pair type is not and yet the constructors of both types must exist.
+
+\subsection{Binary Tree Blend -- deconstruction attempt}
+
+In order to try and ``invent'' the concept of a binary tree, let us deconstruct the definition of {\tt List} and introduce a ``dummy'' mutual recursion with a type alias:
+
+
+
+
+
+\end{document}
+
+

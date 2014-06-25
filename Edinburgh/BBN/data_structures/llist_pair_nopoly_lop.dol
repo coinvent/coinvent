@@ -1,0 +1,36 @@
+logic CASL
+
+spec Pair  = 
+     sort S
+     free type Pair ::= pair(first:S,second:S)
+end
+
+spec Linked_list =
+     sort S
+     free type List  ::=
+	  Null | cons(head:S,tail:List);
+   
+end
+
+spec Gen  = 
+     sort S
+end
+
+spec Blend = 
+sort S
+    free type Pair ::= pair(first:S,second:S)
+    free type List ::= cons(head:Pair,tail:List)
+end
+
+view I1: Gen to Pair = 
+     S |-> Pair
+
+view I2: Gen to Linked_list = 
+     S |-> List
+
+
+spec Colimit = 
+     combine I1,I2 
+
+end
+

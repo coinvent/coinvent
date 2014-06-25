@@ -1,0 +1,43 @@
+logic CASL
+
+spec Pair  = 
+     sort S
+     free type Pair ::= pair(first:S,second:S)
+end
+
+spec Linked_list =
+     sort S
+     free types List  ::=
+	  Null | cons(first:S,second:List2);
+     List2 ::= List
+     ops
+        append __ __: List * List -> List;
+        rev __: List -> List;
+        
+    forall x,y,z:List
+      . rev (append x y) = append (rev y) (rev x)
+      . append x (append y z) = append (append x y) z
+      . rev (rev x) = x
+end
+
+spec Gen  = 
+     sort S1
+     sort S2
+end
+
+view I1: Gen to Pair = 
+     S1 |-> Pair,
+     S2 |-> S
+
+view I2: Gen to Linked_list = 
+     S1 |-> List2,
+     S2 |-> List
+
+
+spec Colimit = 
+     combine I1,I2 with
+     S2 |-> Tree,
+     S |-> Element,
+S1 |-> LRPair
+end
+
