@@ -3,7 +3,7 @@
 
 Authors: Daniel Winterstein, Ewen Maclean, Mihai Codescu.
 Status: Final Draft, due for delivery in June.   
-Version: 0.9.3    
+Version: 1.0   
 
 - [Overview](#overview)
 - [A Typical Coinvent Session](#typical)
@@ -139,7 +139,7 @@ Default implementation: HETS
 
 As well as producing blends, this component also outputs proof obligations.
 
-The Blender does not have to compute consistency. This is the job of the Concept Scorer.
+The Blender does not have to compute consistency. This is the job of the Concept Correctness component.
 
 The HETS API is currently still in development, and improvements are needed
 before it fits all requirements. Specific open issues are logged here: <https://github.com/coinvent/coinvent/issues?labels=HETS&page=1&state=open>
