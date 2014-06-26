@@ -1,7 +1,7 @@
 
 # Coinvent Architecture
 
-Author: Daniel, with input from Ewen and Mihai, and feedback from    
+Authors: Daniel Winterstein, Ewen Maclean, Mihai Codescu.
 Status: Final Draft, due for delivery in June.   
 Version: 0.9.3    
 
