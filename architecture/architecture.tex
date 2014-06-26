@@ -1,3 +1,15 @@
+\documentclass[10pt]{article}
+\usepackage{graphicx,url,appendix,multirow}
+\author{Daniel Winterstein, Ewen Maclean, and Mihai Codescu}
+\title{Coinvent Architecture}
+\date{\today}
+\addtolength{\textwidth}{4cm}
+\addtolength{\textheight}{6cm}
+\addtolength{\hoffset}{-2cm}
+\addtolength{\voffset}{-3cm}
+\begin{document}
+\maketitle
+
 \section{Overview}\label{sec:overview}
 
 This document presents the archictectural design for the integrated Coinvent system. \mbox{}\\
@@ -277,10 +289,10 @@ could even take days.
 \end{enumerate}
 This means a standard call/response would timeout. We therefore adopt an actor / queue based pattern (see \url{https://en.wikipedia.org/wiki/Actor_model}). 
 
-Each top-level component is an actor, which can send and receive messages to other actors. Each API request is marked as either *fast* or *slow*:
+Each top-level component is an actor, which can send and receive messages to other actors. Each API request is either fast or slow:
 \begin{enumerate}
- \item Fast messages get an immediate result within the http response.
- \item Slow messages send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
+ \item Fast requests get an immediate result within the http response.
+ \item Slow requests send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
 \end{enumerate}
 
 \subsection{System Stack Diagram}
@@ -348,7 +360,7 @@ Briefly, the supported symbols are:
 \item[-] `=`
 \item[-] `:`
 \item[-] `,` List separator.
-\item[-] `|->` Part of a mapping, e.g. `zero |-> 0`
+\item[-] $\mapsto$ Part of a mapping, e.g. zero $\mapsto 0$
 \item[-] `\%predicate(value)\%` An annotation on a sentence. 
 \item[-] `\%(label)\%` A line label.
 \item[-] `\%\%` Starts a comment
@@ -356,7 +368,7 @@ Briefly, the supported symbols are:
 \end{itemize}
 
 \paragraph{DOL: Extra Conventions and Language Terms}
-There are some features Coinvent needs which DOL does not yet provide (see the project's [GitHub issue tracker](\url{https://github.com/coinvent/coinvent/issues?labels=DOL+\%2F+file-formats})). Where possible, we fit these within the current DOL specification by specifying non-standard annotations.
+There are some features Coinvent needs which DOL does not yet provide (see the project's GitHub issue tracker, \url{https://github.com/coinvent/coinvent/issues?labels=DOL+\%2F+file-formats}). Where possible, we fit these within the current DOL specification by specifying non-standard annotations.
 \begin{enumerate}
 \item Dropping symbols from a Concept: `hide` can be used when defining a mapping to drop sentences as well as symbols.
 \item Marking inconsistent sentences: by the annotation `\%inconsistent`
@@ -466,7 +478,7 @@ follow the DOL / MMT / Ontohub convention and write file\_uri?ontology\_name.
 `Mapping` type: Mappings are provided either as:   
 \begin{enumerate}
 \item JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"   
-\item DOL fragments, using only the inner part of the DOL mapping, e.g. "sun |-> nucleus, planet |-> electron".
+\item DOL fragments, using only the inner part of the DOL mapping, e.g. "sun $\mapsto$ nucleus, planet $\mapsto$ electron".
 \end{enumerate}
 `BlendDiagram` type: A packet of data comprising the Concepts and Mappings for a blend diagram in progress. The component Concepts of a BlendDiagram use the names `base`, `blend`, `input1`, `input2`, and the Mappings `base\_input1`, `base\_input2`, `input1\_blend`, `input2\_blend`. If weakenings are used, then these Concepts are names `weakinput1`, `weakinput2`, and `weakbase`, with corresponding Mappings. Can be provided as the source text itself,  
 or as a uri for a file containing the BlendDiagram. Can be in JSON or in DOL, identified in the case of a uri by a .json or .dol file-ending.
@@ -666,7 +678,6 @@ Response: the file
 A save (or a delete) triggers a git commit and push. 
 Distributed git repositories cany be linked together, and in particular OntoHub
 uses git-based storage. This allows for connection with OntoHub.
-
  
 Delete Parameters:
 
@@ -926,4 +937,5 @@ within the Coinvent space.
  \item[Theory]{a set of symbols (the signature) and sentences.}
  \end{description}
 \end{appendices}
+\end{document}
 
