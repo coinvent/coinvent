@@ -6,3 +6,5 @@
 *.ear
 *.dvi
 *.aux
+*.log
+*.ps
