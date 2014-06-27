@@ -6,18 +6,9 @@ spec Pair  =
 end
 
 spec Linked_list =
-     sort S
+     sorts S1,S2
      free types List  ::=
-	  Null | cons(first:S,second:List2);
-     List2 ::= List
-     ops
-        append __ __: List * List -> List;
-        rev __: List -> List;
-        
-    forall x,y,z:List
-      . rev (append x y) = append (rev y) (rev x)
-      . append x (append y z) = append (append x y) z
-      . rev (rev x) = x
+	  nil | cons(head:? S1,tail:? S2)
 end
 
 spec Gen  = 
@@ -30,14 +21,25 @@ view I1: Gen to Pair =
      S2 |-> S
 
 view I2: Gen to Linked_list = 
-     S1 |-> List2,
+     S1 |-> S2,
      S2 |-> List
 
 
-spec Colimit = 
-     combine I1,I2 with
-     S2 |-> Tree,
-     S |-> Element,
-S1 |-> LRPair
-end
 
+spec Colimit1 = 
+     combine I1,I2
+     with gn_S11 |-> Data,
+          gn_S12 |-> Pair,
+          S2 |-> Tree,
+          head |-> node_data,
+          tail |-> leaves,
+          cons |-> tree_cons,
+          first |-> left,
+          second |-> right
+
+spec Blend = 
+    sort Data
+    free types
+       Tree ::= nil | tree_cons(data:?Data,leaves:?Pair);
+       Pair ::= pair(left:Tree,right:Tree) 
+end

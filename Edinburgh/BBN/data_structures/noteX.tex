@@ -1,8 +1,8 @@
-\documentclass{my-blue-book}
+\documentclass{blue-book}
 \usepackage{natbib}
 \usepackage{hyperref}
 \usepackage{graphicx}
-\usepackage{diagrams}
+%\usepackage{diagrams}
 \renewcommand{\harvardurl}[1]{\textbf{url}: \url{#1}}
 \newcommand{\nat}{\mathcal{N}}
 \newcommand{\real}{\mathcal{R}}
@@ -10,14 +10,7 @@
 \newcommand{\quaternion}{\mathcal{H}}
 \renewcommand{\real}{\mathcal{R}}
 \newcommand{\dottriangle}{$.\,\raise1ex\hbox{.}\,.$}                   
-\DeclareMathOperator{\plusR}{+_{\real}}
-\DeclareMathOperator{\timesR}{\times_{\real}}
-\DeclareMathOperator{\plusF}{+_F}
-\DeclareMathOperator{\minusF}{-_F}
-\DeclareMathOperator{\minusR}{-_{\real}}
-\DeclareMathOperator{\timesF}{\times_{F}}
-\DeclareMathOperator{\invF}{^{-1_F}}
-\DeclareMathOperator{\invR}{^{-1_{\real}}}
+
 \newcommand{\minus}[1]{-{#1}}
 \newcommand{\origin}{\mathbf{0}}
 \newcommand{\one}{\mathbf{1}}
@@ -44,7 +37,9 @@
 
 As part of the Coinvent project, I have been investigating the possibility of using the concept of blending in the domain of data structures. Specifically I have been investigating recursively data structures, and determining whether it is possible to use the underlying categorical notions of blending to ``invent'' a theory which corresponds to an interesting new data structure.
 
-\section{S}
+This note presents various attempts to reconstruct a binary tree with data at the nodes from the concept of a linked list and a like-typed pair, using the machinery of colimit calculation in HETS.
+
+\section{Blend}
 
 Let us consider the simple example of blending a list with a pair of similar type. Below is the CASL specifications for these constructs. 
 \begin{verbatim}
@@ -56,12 +51,12 @@ end
 spec List =
      sort S
      free type List  ::=
-	  Null | cons(head:S,tail:List)
+	  Nil | cons(head:?S,tail:?List)
 end
 \end{verbatim}
 \noindent In order to find a blend of these two data structures, we need first to define a ``Generic'' space between them. The HDTP software is technically capable of this, but currently does not cope with CASL syntax, so we predict what the possible computed Generic spaces and signature morphisms will be here.
 
-\subsubsection{List of pairs blend}
+\subsection{List of pairs blend}
 
 We define a generic space, and associated morphism to be
 \begin{verbatim}
@@ -80,7 +75,7 @@ view I2: Gen to List =
 spec Blend = 
     sort S
     free type Pair ::= pair(first:S,second:S)
-    free type List ::= cons(head:Pair,tail:List)
+    free type List ::= cons(head:?Pair,tail:?List)
 end
 \end{verbatim}
 
@@ -100,14 +95,101 @@ view I2: Gen to List =
 \end{verbatim}
 we generate an inconsistent theory which is detected by HETS. The inconsistency comes because the second argument of the List type is recursive and the second argument of the Pair type is not and yet the constructors of both types must exist.
 
-\subsection{Binary Tree Blend -- deconstruction attempt}
+\subsection{Binary Tree Blend -- free type deconstruction attempt}
 
 In order to try and ``invent'' the concept of a binary tree, let us deconstruct the definition of {\tt List} and introduce a ``dummy'' mutual recursion with a type alias:
+\begin{verbatim}
+spec List =
+     sort S
+     free types List  ::=
+	  nil | cons(first:?S,second:?List2);
+     List2 ::= List
+\end{verbatim}
+\noindent which allows us more freedom in defining a signature morphism. If we now define a generic space to be
+\begin{verbatim}
+spec Gen  = 
+     sort S1
+     sort S2
+end
+\end{verbatim}
+we can associate one sort with the List, and one explicitly with the recursive element of the list in the signature morphism. If type {\tt S1} becomes assosciated with the tail of the List, and also the {\tt Pair} type, then we create a pair of recursive calls, similar to a binary tree with data at the nodes. If associate S2 with a List type and also the type {\tt S} from the definition of {\tt Pair}:
+\begin{verbatim}
+view I1: Gen to Pair = 
+     S1 |-> Pair,
+     S2 |-> S
 
+view I2: Gen to Linked_list = 
+     S1 |-> List2,
+     S2 |-> List
+\end{verbatim}
+then we yield a theory which we can equivalently write as:
+\begin{verbatim}
+spec Blend = 
+    sort S
+    free types
+       Tree ::= nil | tree_cons(data:?S,leaves:?Pair);
+       Pair ::= List 
+    free type
+       Pair ::= pair(left:Tree,right:Tree)
+end
+\end{verbatim}
+\noindent which looks similar to a binary tree with data at the nodes,
+but unfortunately the mutual recursion is not in place, and the
+totality of the destructor functions {\tt first} and {\tt second} is
+violated with the existence of the {\tt List} constant. 
 
+\subsection{Binary Tree Blend again}
 
+In order to generate a blend which is consistent and represents correctly a binary tree, let us change slightly our specification of linked list:
+\begin{verbatim}
+spec Linked_list =
+     sorts S
+     free types List  ::=
+	  nil | cons(head:? S,tail:? List2);
+     List2 ::= list(List)
+end
+\end{verbatim}
+and perform the same blend. This gives an equivalent to this theory:
+\begin{verbatim}
+spec Blend = 
+    sort S,Tree,Pair
+    free type Pair ::= pair(left:Tree,right:Tree)
+    free types
+       Tree ::= nil | tree_cons(data:?S,leaves:?Pair);
+       Pair ::= list(Tree)
+end
+\end{verbatim}
+\noindent unfortunately although this is technically consistent, the only model for which it is consistent is that where S is the empty type\footnote{The explanation of freely generated types up to isomorphism is a technical detail of CASL which I don't yet fully understand}.
 
+\subsection{Binary Tree Blend.... and finally}
 
+This time let us relax the notion of List by removing the recursive type:
+\begin{verbatim}
+spec Linked_list =
+     sorts S1,S2
+     free types List  ::=
+	  nil | cons(head:? S1,tail:? S2)
+end
+\end{verbatim}
+using the same definition of Pair and the same definition of the Generic space, now we use the morphisms:
+\begin{verbatim}
+view I1: Gen to Pair = 
+     S1 |-> Pair,
+     S2 |-> S
+
+view I2: Gen to Linked_list = 
+     S1 |-> S2,
+     S2 |-> List
+\end{verbatim}
+\noindent and generate the theory we want:
+\begin{verbatim}
+spec Blend = 
+    sort Data,Tree,Pair
+    free type
+       Tree ::= nil | tree_cons(data:?Data,leaves:?Pair);
+       Pair ::= pair(left:Tree,right:Tree) 
+end
+\end{verbatim}
 \end{document}
 
 
