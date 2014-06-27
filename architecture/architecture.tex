@@ -1,6 +1,6 @@
 \section{Overview}\label{sec:overview}
 
-This document presents the archictectural design for the integrated Coinvent system. \mbox{}\\
+This document presents the architectural design for the integrated Coinvent system. \mbox{}\\
 Please first read:
 \begin{enumerate}
 \item{The Glossary (\S\ref{sec:appendix3})}
@@ -67,7 +67,7 @@ A `Blend Diagram in Progress` is simply a Blend Diagram where any part may be mi
 
 \section{Components}\label{sec:components}
 
-A Coinvent system will be made up of the following components.
+A Coinvent system will be made up of the following components, as already shown in the UML sequence diagram in Figure \ref{fig:sequence-diagram}.
 A component can be "manual", which means a human being provides the result (using a web interface).
 
 \subsection{User Portal (Web App)}\label{sec:userportal}
@@ -88,7 +88,7 @@ Default implementation: HETS
 
 As well as producing blends, this component also outputs proof obligations.
 
-The Blender does not have to compute consistency. This is the job of the Concept Scorer.
+The Blender does not have to compute consistency. This is the job of the Concept Correctness component.
 
 The HETS API is currently still in development, and improvements are needed
 before it fits all requirements. Specific open issues are logged here: \url{https://github.com/coinvent/coinvent/issues?labels=HETS&page=1&state=open}
