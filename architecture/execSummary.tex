@@ -2,5 +2,21 @@
 \thispagestyle{empty}
 \addtolength{\parskip}{\baselineskip}
 
-Here goes the executive summary - 1-4 pages per each deliverable.
-It should briefly describe the problem and key findings.
+The Coinvent software will produce novel ideas through unfamiliar combinations of familiar ideas - a difficult computational task. We aim to develop a computationally feasible, cognitively-inspired formal model of concept creation, drawing on Fauconnier and Turner's theory of conceptual blending, and grounding it on a sound mathematical theory of concepts. 
+
+The software must support different domains and different types of user. The key target domains are mathematics and music, but it should be applicable
+to a wide range of domains beyond those.
+
+We have mapped out different use cases, and analysed the requirements that stem from them.
+By exploring examples in different domains, we have concluded that a high level of flexibility and user control will be required. This design allows for that accordingly. A mathematical case-study where the complex numbers are invented was particularly informative in developing the requirements; this case-study 
+has been submitted to the C3GI workshop for publication.
+
+The use-cases have emphasised the importance of the model-generation and evaluation components as key parts of the system, alongside the concept blending engine.
+
+We propose a modular system design, which supports the flexibility necessary to cover the varying domains. The modular design is also a good basis for coordinating the work of the distributed teams involved in the project. 
+
+Recent trends in software development have seen the growth of a RESTful variant of the model-view-controller pattern, where a json-over-http API provides a clear
+separation between data, operations, and user-interface. We adopt that pattern here, adding an agent/queue model to support potentially slow computations.
+
+We are fortunate to be building on existing tools which will provide building blocks for several components.
+

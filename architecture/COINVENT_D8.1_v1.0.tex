@@ -14,7 +14,7 @@
 \title{D8.1\\[2mm]
 Initial specification of the system}
 \shorttitle{D8.1 Initial specification of the system}
-\coreauthors{Daniel Winterstein}	
+\coreauthors{Daniel Winterstein, Ewen Maclean, Mihai Codescu}	
 \reviewers{name}
 
 % DOCUMENT STATUS INFORMATION
@@ -25,12 +25,13 @@ Initial specification of the system}
 
 % SYNOPSIS & KEYWORDS
 \synopsis{\strut				%!
-This deliverable... Please be concise and check that abstract
-and keywords fit the title page. Fusce tristique. Morbi
-dignissim scelerisque ligula. Nulla facilisi. Etiam eu purus.
-Proin pretium bibendum sem. Integer diam leo, ultrices eu,
-posuere id, nonummy eget, libero.\\
-Keyword list: \textbf{keyword 1}, \textbf{keyword 2},...
+This deliverable presents a specification and architectural plan for the Coinvent system, motivated
+by use cases and a description of a typical user session. The architecture described is flexible, modular, 
+and suitable for distributed computing. Analysing target examples has shown that interactive and iterative concept 
+development should be supported. The system design uses RESTful http web services to compose building 
+blocks. Where possible, the building blocks use technology already developed by the Coinvent group (HETS, 
+HDTP, DOL, and HR). \\
+Keyword list: \textbf{specification}, \textbf{system architecture}
 }
 
 \coverpages			% creates the first two pages
@@ -66,7 +67,10 @@ Keyword list: \textbf{keyword 1}, \textbf{keyword 2},...
 %% Here we introduce this section.
 
 %% \subsection{Use numbered subsections for even smaller pieces}
+
+
 \include{architecture}
+
 
 \bibliographystyle{acm}
 \bibliography{LP_D8.1}

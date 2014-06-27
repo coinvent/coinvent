@@ -18,7 +18,7 @@ may be automatic or interactive. Examples of the concept are generated (again, e
 automatically or interactively, depending on the capability of the automatic software). Finally, the concept's quality is evaluated based on the examples.
 This is illustrated in the UML sequence diagram shown in Figure \ref{fig:sequence-diagram}.
 \begin{figure}[!ht]
-\includegraphics[width=0.9\textwidth]{sequence-diagram.png}
+\includegraphics[width=0.9\textwidth]{sequence-diagram.eps}
 \label{fig:sequence-diagram}
 \caption{UML sequence diagram}
 \end{figure}
@@ -28,7 +28,7 @@ This is illustrated in the UML sequence diagram shown in Figure \ref{fig:sequenc
 The object type at the heart of Coinvent is the Blend Diagram. The specification below is intentionally broad to support several use-cases. The Blend Diagram is illustrated in the flowchart diagram shown in Figure \ref{fig:flowchart}.
 
 \begin{figure}[!ht]
-\includegraphics[width=0.9\textwidth]{BlendDiagram.png}
+\includegraphics[width=0.9\textwidth]{BlendDiagram.eps}
 \caption{Flowchart diagram for blending}
 \label{fig:flowchart}
 \end{figure}
@@ -43,10 +43,8 @@ Crucially we must support blend diagrams which are "works in progress". The high
 \item ...Which may lead to changes in either the input concepts, such as logical weakenings to remove the conflict. This process of evaluate-modify could be iterated several times.
 \item Evaluate the blend for value, perhaps by generating examples/models and evaluating them.
 \item ...This evaluation may lead to modifications, and so the whole process is iterative.
-??Till: Note that any proof of an inconsistency of the blend can give you hints which axioms to look at (namely, the axioms used in the inconsistency proof, cf. Pellet's ``explain'' function).
-We should prepare for more complex models, where the global workflow is enriched with vision and debugging techniques, changing the input spaces if necessary, etc.??
 \end{enumerate}
-Hence we talk of a Blend Diagram *in Progress* to allow that blends may be developed step-by-step and iteratively.
+Hence we talk of a Blend Diagram in Progress to allow that blends may be developed step-by-step and iteratively.
 
 Concepts are defined in CASL or OWL. Mappings between concepts are defined in DOL. Metadata is also defined in DOL. The Blend Diagram may be a single file, or several linked files, using DOL's support for urls.
 
@@ -153,6 +151,8 @@ Blending can lead to inconsistent concepts. HETS has support for using various t
 easy. In the complex numbers example, it has been found to require manually guided
 proofs.
 
+Any proof of an inconsistency of the blend can give hints about which axioms to look at (namely, the axioms used in the inconsistency proof). This component should therefore provide feedback where possible, to enable a workflow enriched with vision and debugging techniques.
+
 \subsection{Quality: Concept Scorer: How good is a Concept?}
 
 
@@ -233,11 +233,11 @@ although the HETS API does not expose it.
 Calculation software will be stateless. This is simpler, and avoids tying the
 low-level components to the bigger system.
 
-There's the question of: paging through results.
+In places it is necessary to page through results.
 E.g. HDTP can produce multiple outputs for some inputs.
-If we have one mapping and we want a 2nd or a 3rd -- how do we do that?   
+The first call would return one result, then a mechanism is required to access the 2nd or a 3rd result.
 
-This will be handled via input flags, and just repeating
+This will be handled via input flags, and simply repeating
 the calculation asking for more outputs (i.e. iterative deepening).
 
 The overall system will be stateful, because being stateful is the
@@ -277,10 +277,10 @@ could even take days.
 \end{enumerate}
 This means a standard call/response would timeout. We therefore adopt an actor / queue based pattern (see \url{https://en.wikipedia.org/wiki/Actor_model}). 
 
-Each top-level component is an actor, which can send and receive messages to other actors. Each API request is marked as either *fast* or *slow*:
+Each top-level component is an actor, which can send and receive messages to other actors. Each API request is either fast or slow:
 \begin{enumerate}
- \item Fast messages get an immediate result within the http response.
- \item Slow messages send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
+ \item Fast requests get an immediate result within the http response.
+ \item Slow requests send an immediate receipt response with a job-id (using http code 202 "accepted for processing"), followed later by a result (which may indicate failure). This later message is either pushed via a callback, or pulled by polling.
 \end{enumerate}
 
 \subsection{System Stack Diagram}
@@ -348,7 +348,7 @@ Briefly, the supported symbols are:
 \item[-] `=`
 \item[-] `:`
 \item[-] `,` List separator.
-\item[-] `|->` Part of a mapping, e.g. `zero |-> 0`
+\item[-] $\mapsto$ Part of a mapping, e.g. zero $\mapsto 0$
 \item[-] `\%predicate(value)\%` An annotation on a sentence. 
 \item[-] `\%(label)\%` A line label.
 \item[-] `\%\%` Starts a comment
@@ -356,7 +356,7 @@ Briefly, the supported symbols are:
 \end{itemize}
 
 \paragraph{DOL: Extra Conventions and Language Terms}
-There are some features Coinvent needs which DOL does not yet provide (see the project's [GitHub issue tracker](\url{https://github.com/coinvent/coinvent/issues?labels=DOL+\%2F+file-formats})). Where possible, we fit these within the current DOL specification by specifying non-standard annotations.
+There are some features Coinvent needs which DOL does not yet provide (see the project's GitHub issue tracker, \url{https://github.com/coinvent/coinvent/issues?labels=DOL+\%2F+file-formats}). Where possible, we fit these within the current DOL specification by specifying non-standard annotations.
 \begin{enumerate}
 \item Dropping symbols from a Concept: `hide` can be used when defining a mapping to drop sentences as well as symbols.
 \item Marking inconsistent sentences: by the annotation `\%inconsistent`
@@ -402,7 +402,7 @@ Many development questions remain open at this stage in the project. Notable ope
 
 \subsection{Software development risks and mitigation}
 
-Much of the Coinvent system builds upon existing components (HETS, HDTP, DOL), or can use standard software and approaches (the UI). These components therefore have a relatively low risk. That said, all the base components require some development to meet the needs of this project.
+Much of the Coinvent system builds upon existing components (HETS, HDTP, DOL), or can use standard software and approaches (the UI). These components therefore have a relatively low risk. Though note that all the base components require some development to meet the needs of this project.
 
 Higher risk components are /model and /weaken. How these functions can be implemented is a research topic. The problems are deep, and no readily adaptable solution exists. The team do have relevant expertise in techniques to tackle these tasks, but, as with any open-ended research task, there is a high level of technical risk.
 
@@ -411,12 +411,12 @@ To mitigate these risks, the system design allows for components to be fulfilled
 \subsection{References}\label{sec:references}
 
 \begin{itemize}
-\item[-] CASL: [user manual](\url{http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_user_manual})
-and [reference manual](\url{http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_reference_manual})
-\item[-] DOL: <\url{https://github.com/tillmo/DOL}>
-\item[-] HDTP: <\url{http://link.springer.com/chapter/10.1007\%2F978-3-642-54516-0_7}>
-\item[-] HETS: <\url{http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/hets}>
-\item[-] OWL Manchester Syntax: <\url{http://www.w3.org/TR/owl2-manchester-syntax}>
+\item[-] CASL: user manual \url{http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_user_manual},
+and reference manual \url{http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_reference_manual}
+\item[-] DOL: \url{https://github.com/tillmo/DOL}
+\item[-] HDTP: \url{http://link.springer.com/chapter/10.1007\%2F978-3-642-54516-0_7}
+\item[-] HETS: \url{http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/hets}
+\item[-] OWL Manchester Syntax: \url{http://www.w3.org/TR/owl2-manchester-syntax}
 \item[-] ASP:
 \begin{enumerate}
 	\item M.Gebser et al, Engineering an Incremental ASP Solver. In International Converence on Logic Programming (2008), no. 1.
@@ -466,7 +466,7 @@ follow the DOL / MMT / Ontohub convention and write file\_uri?ontology\_name.
 `Mapping` type: Mappings are provided either as:   
 \begin{enumerate}
 \item JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"   
-\item DOL fragments, using only the inner part of the DOL mapping, e.g. "sun |-> nucleus, planet |-> electron".
+\item DOL fragments, using only the inner part of the DOL mapping, e.g. "sun $\mapsto$ nucleus, planet $\mapsto$ electron".
 \end{enumerate}
 `BlendDiagram` type: A packet of data comprising the Concepts and Mappings for a blend diagram in progress. The component Concepts of a BlendDiagram use the names `base`, `blend`, `input1`, `input2`, and the Mappings `base\_input1`, `base\_input2`, `input1\_blend`, `input2\_blend`. If weakenings are used, then these Concepts are names `weakinput1`, `weakinput2`, and `weakbase`, with corresponding Mappings. Can be provided as the source text itself,  
 or as a uri for a file containing the BlendDiagram. Can be in JSON or in DOL, identified in the case of a uri by a .json or .dol file-ending.
@@ -639,7 +639,7 @@ Response-cargo:
 \begin{verbatim}
 Must provide save and load over http.
 
-Note that most of the other components do *not* depend on the /file component. They
+Note that most of the other components do not depend on the /file component. They
 can work with concepts stored on any server (and identified by uri). The User Interface requires it to store blend diagrams as they're modified.
 
 Default implementation: file-system based, with git support (allowing for Ontohub integration via git). We might also develop a direct-to-Ontohub implementation)   
@@ -666,7 +666,6 @@ Response: the file
 A save (or a delete) triggers a git commit and push. 
 Distributed git repositories cany be linked together, and in particular OntoHub
 uses git-based storage. This allows for connection with OntoHub.
-
  
 Delete Parameters:
 
@@ -795,7 +794,7 @@ Success criteria: It works.
 Priority: High. This is a project deliverable.
  
  
-\paragraph{User: Non-mathematical Analyst (e.g. someone who'd normally use Excel)}  
+\paragraph{User: Non-mathematical Analyst (e.g. someone who would normally use Excel)}  
 Task: Quantitative analysis of data   
 Wants: To meaningfully analyse some data using bayesian mathematical models.   
 Specific use-case: Interpret Twitter conversational data on a topic, in terms of types of person and types of conversation.   
@@ -835,7 +834,7 @@ Priority: Low. This is a very hard task and may not be achieved within this proj
  
 \paragraph{User: An avant-garde composer}
 Task: Create music to use as inspiration / source material   
-Use-case: Pick 2 musical idioms as input, and get back a newly-created *low-quality* piece of music.   
+Use-case: Pick 2 musical idioms as input, and get back a newly-created low-quality piece of music.   
 Success criteria: A composer collaborates with the project and uses Coinvent to create a piece of music they then perform.      
 Priority: For Year 2/3. This is an achievable goal for this project.
 
