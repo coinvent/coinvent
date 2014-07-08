@@ -95,7 +95,7 @@ ontology Base2 =
 end
 
     
-interpretation boat_habitable : Base2 to Boat =
+view base_to_boat : Base2 to Boat =
     Artifact  |-> Artifact,
     Capability |-> Capability,
     has_function |-> has_function,
@@ -105,7 +105,7 @@ interpretation boat_habitable : Base2 to Boat =
     Object |-> Boat, 
     Site |-> BodyOfWater 
 
-interpretation house_floating : Base2 to House = 
+view base_to_house : Base2 to House = 
     Artifact  |-> Artifact,
     Capability |-> Capability,
     has_function |-> has_function,
@@ -117,7 +117,7 @@ interpretation house_floating : Base2 to House =
     
  
 ontology house_boat = 
-    combine boat_habitable, house_floating
+    combine base_to_boat, base_to_house
     with Object |-> HouseBoat, Site |-> BodyOfWater, Agent |-> Person
 
  

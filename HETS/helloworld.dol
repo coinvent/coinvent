@@ -42,7 +42,7 @@ end
 %% of the base ontology into the two ontologies
 %% that we want to blend
 
-interpretation I1 : Base to Hello =
+view I1 : Base to Hello =
   Greeting |-> Hello
 
 %% this is done by 
@@ -55,7 +55,7 @@ interpretation I1 : Base to Hello =
 
 %% same for Base to World
 
-interpretation I2 : Base to World = 
+view I2 : Base to World = 
  Greeting |-> World
 
 %% As a result, we have a diagram consisting of

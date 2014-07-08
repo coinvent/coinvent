@@ -2,7 +2,7 @@ package org.coinvent.data;
 
 public class DataLayerFactory {
 
-	public static IDataLayer get() {
+	public static FileDataLayer get() {
 		return new FileDataLayer();
 	}
 }

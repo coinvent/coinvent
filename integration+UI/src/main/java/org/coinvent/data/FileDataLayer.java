@@ -9,6 +9,11 @@ import org.coinvent.web.FileServlet;
 import winterwell.utils.io.FileUtils;
 import winterwell.utils.web.XStreamUtils;
 
+/**
+ * A crude save-to-file data layer.
+ * @author daniel
+ *
+ */
 public class FileDataLayer implements IDataLayer {
 
 	File base = FileServlet.BASE;

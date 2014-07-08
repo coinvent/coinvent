@@ -31,7 +31,8 @@ public class Job implements IJob {
 	public Id getId() {
 		// hash the request setup & contents
 		Desc desc = new Desc(opName, Job.class);
-		desc.setTag(actor.getName());
+		desc.setTag("coinvent");
+		desc.put("actor", actor.id);
 		// NB: full slug
 		desc.put("slug", request.getSlug());		
 		Map<String, Object> pmap = request.getParameterMap();
@@ -39,7 +40,7 @@ public class Job implements IJob {
 			desc.put(k, pmap.get(k));
 		}
 		
-		return new Id(actor.toString()+"__"+desc.getId(), "@coinvent");
+		return new Id(actor, KKind.Job, desc.getId());
 	}
 
 	public Id getActor() {

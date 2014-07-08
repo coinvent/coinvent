@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.coinvent.data.DataLayerFactory;
+import org.coinvent.data.Id;
+import org.coinvent.data.KKind;
 import org.coinvent.data.User;
-
 
 import winterwell.utils.StrUtils;
 import winterwell.utils.io.FileUtils;
@@ -45,7 +46,7 @@ public abstract class AServlet {
 		opName = bits[0];		
 		// actor
 		actorName = bits[1];
-		actor = DataLayerFactory.get().getUser(new Id(actorName,"coinvent"));
+		actor = DataLayerFactory.get().getUser(new Id(KKind.User, actorName));
 		// slug (after actor and op)
 		StringBuilder sb = new StringBuilder();
 		for(int i=2; i<bits.length; i++) {

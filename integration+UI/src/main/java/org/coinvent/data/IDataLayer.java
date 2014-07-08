@@ -3,7 +3,11 @@ package org.coinvent.data;
 import java.util.List;
 
 
-
+/**
+ * All data-layer access is mediated via this interface
+ * @author daniel
+ *
+ */
 public interface IDataLayer {
 
 	User getUser(Id user);
