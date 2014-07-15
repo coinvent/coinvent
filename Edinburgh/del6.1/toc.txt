@@ -1,0 +1,42 @@
+Table of Contents
+=================
+
+1. Introduction.
+
+2. Examples from Literature.
+  Alexander
+  Goguen
+  Fauconnier + Turner
+
+  One end: Famous big mathematical examples:
+    - complexes
+    - quaternions
+    - case study - power series as a blend (Where mathematics comes from)
+    - Analogies in Mathematics (Andre Weal)
+    - Lakatos
+
+3. Implemented Problems
+ - Complex Numbers + Quaternions
+
+-  Data structures
+     failed stuff
+     working stuff
+     Alan's example of append constructor
+
+- issues
+
+4. Formalised problems (not implemented)
+
+   Projectile motion
+   Symmetry
+   Danny's PhD
+
+- issues
+
+5. Investigated but not implemented problems
+   - Alison's analogy stuff
+   - Lakatos proof and refutations
+
+- issues
+
+6. Conclusion
