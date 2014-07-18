@@ -36,7 +36,7 @@ spec Field =
 
 spec VectorSpace = 
      sort Real
-     free type Vec ::= pair(real:Real;complex:Real)
+     type Vec ::= pair(real:Real;complex:Real)
      preds 
           __ >= __, __ > __: Real * Real;
 
@@ -121,7 +121,7 @@ end
 
 spec Complex_Field = 
      sort Real
-     free type Complex ::= pair(real:Real,complex:Real)
+     type Complex ::= pair(real:Real,complex:Real)
      preds 
 	   __ >= __, __ > __:Real * Real;
 	   __ gte __, __ gt __: Complex * Complex;
