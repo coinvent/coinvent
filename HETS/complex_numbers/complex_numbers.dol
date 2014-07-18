@@ -2,9 +2,13 @@ logic CASL
 
 %%% ordered field
 
+spec Pair =
+  sort Real
+  free type Pair ::= pair(real:Real;complex:Real)
+
 spec Field =
      sort Real
-     preds 
+     preds
           __ >= __, __ > __: Real * Real;
 
 	  ops
@@ -15,9 +19,9 @@ spec Field =
      	  0:Real;
 	  1:Real;
 
-		     
+
      forall x,y,z,v:Real
-	    . x+0=x	%f_plus_ident%		
+	    . x+0=x	%f_plus_ident%
      	    . x+y=y+x   %f_com_plus%
 	    . x+(y+z) = (x+y)+z  %f_assoc_plus%
 	    . x + (-x) = 0    %f_plus_inv%
@@ -29,15 +33,13 @@ spec Field =
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %f_order_+%
 	    . (x>0) /\ (y>0) => (x*y)>0  %f_order_*%
  end
-				    
-	     	   
+
+
 
 %%%% This is a vector space with a norm
 
-spec VectorSpace = 
-     sort Real
-     type Vec ::= pair(real:Real;complex:Real)
-     preds 
+spec VectorSpace = Pair with Pair |-> Vec then
+     preds
           __ >= __, __ > __: Real * Real;
 
 	   ops
@@ -56,18 +58,18 @@ spec VectorSpace =
 	  %%% introducing 2-d vectors
 	  basis_real:Vec;
 	  basis_complex:Vec;
-	  
+
 
  forall x,y,z,v:Real;
 	a,b,c,d:Vec
-     	    . x+0=x  %vf_plus_ident%			
+     	    . x+0=x  %vf_plus_ident%
      	    . x+y=y+x %vf_com_plus%
 	    . x+(y+z) = (x+y)+z %vf_assoc_plus%
 	    . x + (-x) = 0 %vf_plus_inv%
 	    . x*y = y*x %vf_times_ident%
 	    . (x*y)*z=x*(y*z) %vf_assoc_times%
 	    . x*1 = x %vf_times_ident%
-	    . (not (x=0)) => x*(times_inv x) = 1 %vf_times_inv% 
+	    . (not (x=0)) => x*(times_inv x) = 1 %vf_times_inv%
 	    . x*(y+z) = (x*y)+(x*z) %vf_dist%
 	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %vf_order_+%
 	    . (x>0) /\ (y>0) => (x*y)>0 %vf_order_*%
@@ -87,31 +89,31 @@ spec VectorSpace =
 	    . (exists s,t:Real. a = ((s vti basis_real) vpl (t vti basis_complex))) %comp_vec%
 end
 
-spec Gen = 
+spec Gen =
      sort Generic
      ops
      __ plus __:Generic * Generic -> Generic;
      zero:Generic;
      minus __:Generic -> Generic
-	   
+
 	forall x,y,z:Generic
-     	       . x plus  zero=x	 %gen_plus_ident%		
+     	       . x plus  zero=x	 %gen_plus_ident%
      	       . x plus y=y plus x %gen_com_plus%
 	       . x plus (y plus z) = (x plus y) plus z %gen_assoc_plus%
 	       . x plus (minus x) = zero %gen_plus_inv%
 end
 
 
-view I1: Gen to Field = 
+view I1: Gen to Field =
 		__ plus __ |-> __ + __, zero |-> 0, minus __ |-> - __
 
-view I2: Gen to VectorSpace = 
+view I2: Gen to VectorSpace =
 	       __ plus __ |-> __ vpl __,zero |-> vzero, minus __ |-> vmi __
 
 
 spec Colimit =
-     combine I1,I2  
-	     with 
+     combine I1,I2
+	     with
 	     gn_n2 |-> gt, gn_n4:Real*Real |-> gte,
              gn_n4:Real |-> one,
              gn_n6 |-> co_times:Real * Real -> Real,
@@ -119,10 +121,8 @@ spec Colimit =
 end
 
 
-spec Complex_Field = 
-     sort Real
-     type Complex ::= pair(real:Real,complex:Real)
-     preds 
+spec Complex_Field = Pair with Pair |-> Complex then
+     preds
 	   __ >= __, __ > __:Real * Real;
 	   __ gte __, __ gt __: Complex * Complex;
      ops
@@ -147,7 +147,7 @@ spec Complex_Field =
 
      forall x,y,z,v:Real;
 	    a,b:Complex
-	    . x+0=x	%c_plus_ident%		
+	    . x+0=x	%c_plus_ident%
      	    . x+y=y+x   %c_com_plus%
 	    . x+(y+z) = (x+y)+z  %c_assoc_plus%
 	    . x + (-x) = 0    %c_plus_inv%
