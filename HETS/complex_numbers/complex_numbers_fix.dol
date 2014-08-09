@@ -1,0 +1,197 @@
+logic CASL
+
+%%% ordered field
+
+spec Pair =
+  sort Real
+  free type Pair ::= pair(real:Real;complex:Real)
+
+spec Field =
+     sort Real
+
+	  ops
+	  __ + __:Real * Real -> Real;
+	  __ * __:Real * Real -> Real;
+	  - __: Real -> Real;
+	 
+     	  0:Real;
+	  
+     sort NonZeroReal = {x:Real. not (x = 0)}
+          ops times_inv __: NonZeroReal -> NonZeroReal;
+          1:NonZeroReal;
+     
+     forall x,y,z,v:Real;
+       a:NonZeroReal
+	    . x+0=x	%f_plus_ident%
+     	    . x+y=y+x   %f_com_plus%
+	    . x+(y+z) = (x+y)+z  %f_assoc_plus%
+	    . x + (-x) = 0    %f_plus_inv%
+	    . x*y = y*x  %f_com_times%
+	    . (x*y)*z=x*(y*z) %f_assoc_times%
+	    . a*(times_inv a) = 1 %f_times_inv%
+	    . a*1 = a %f_times_ident$
+ 	    . x*(y+z) = (x*y)+(x*z) %f_dist_times%
+end
+
+spec Ordered_field = 
+      Field 
+    then
+      preds 
+      __ >= __, __ > __: Real * Real;
+    forall x,y,z,v: Real
+       . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %f_order_+%
+       . (x>0) /\ (y>0) => (x*y)>0  %f_order_*%
+       . (a >= 0) => ((a > 0) \/ (a = 0)) %gt_gte%  
+end
+
+spec VectorSpace = 
+     Pair with Pair |-> Vec then
+     
+     sort Real
+     preds
+          __ >= __, __ > __: Real * Real;
+	  ops
+	  __ + __:Real * Real -> Real;
+	  __ * __:Real * Real -> Real;
+	  - __: Real -> Real;
+     	  0:Real;
+	  __ vpl __:Vec * Vec -> Vec;
+	  __ vti __:Real * Vec -> Vec;
+	  vmi __:Vec -> Vec;
+	  vec_norm __:Vec->Real;
+	  vzero:Vec
+	  %%% introducing 2-d vectors
+	  basis_real:Vec;
+	  basis_complex:Vec;
+	  sort NonZeroReal = {x:Real. not (x = 0)}
+               ops times_inv __: NonZeroReal -> NonZeroReal;
+          1:NonZeroReal;
+     
+     forall a,b,c,e:Real;
+	x,y,z,v:Vec;
+           d:NonZeroReal
+	    . a+0=a	%f_plus_ident%
+     	    . a+b=b+a   %f_com_plus%
+	    . a+(b+c) = (a+b)+c  %f_assoc_plus%
+	    . a + (-a) = 0    %f_plus_inv%
+	    . a*b = b*a  %f_com_times%
+	    . (a*b)*c=a*(b*c) %f_assoc_times%
+	    . d*(times_inv d) = 1 %f_times_inv%
+	    . d*1 = d %f_times_ident$
+ 	    . a*(b+c) = (a*b)+(a*c) %f_dist_times%
+	    . vzero = pair (0,0) %vzero_def%
+	    . (pair(a,b) vpl pair (c,d)) = pair(a+c,b+d) %vplus_def%
+	    . vmi pair(a,b) = pair(-a,-b) %vminus_def%
+	    . (a vti (x vpl y)) = (a vti x) vpl (a vti y) %scalar_vecplus%
+	    . ((a+b) vti x) = (a vti x) vpl (b vti x) %scalarplus_vec%
+	    . (a vti (b vti x)) = (a * b) vti x %scalar_times_vec%
+	    . (1 vti x) = x %scalar_vec_times_ident%
+	    . x vpl vzero = x
+	    . x vpl (y vpl z) = (x vpl y) vpl z
+	    . x vpl y = y vpl x
+	    . x vpl (vmi x) = vzero
+	    . (vec_norm x) >= 0 %vec_norm_non_neg%
+	    . (vec_norm x > 0 <=> (not (x = vzero))) %vec_norm_zero%
+	    . (vec_norm (a vti x)) = (a * a)*(vec_norm x) %norms%
+	    . ((vec_norm x) + (vec_norm y)) >= vec_norm (x vpl y) %norm_plus%
+	      %%% forcing linear independence
+	    . (((a vti basis_real) vpl (b vti basis_complex)) = vzero) <=> (a = 0) /\ (b = 0) %li1%
+	    . (exists e,f:Real. x = ((e vti basis_real) vpl (f vti basis_complex))) %comp_vec%
+	      . ((a >=b) /\ (c >= e)) => (a+c) >= (b+e) %f_order_+%
+	      . (a>0) /\ (b>0) => (a*b)>0  %f_order_*%
+              . (a >= 0) => ((a > 0) \/ (a = 0)) %gt_gte%
+end
+
+
+spec Gen =
+     sort Generic
+     ops
+     __ plus __:Generic * Generic -> Generic;
+     zero:Generic;
+     minus __:Generic -> Generic
+
+	forall x,y,z:Generic
+     	       . x plus  zero=x	 %gen_plus_ident%
+     	       . x plus y=y plus x %gen_com_plus%
+	       . x plus (y plus z) = (x plus y) plus z %gen_assoc_plus%
+	       . x plus (minus x) = zero %gen_plus_inv%
+end
+
+ 
+view I1: Gen to Field =
+		__ plus __ |-> __ + __, zero |-> 0, minus __ |-> - __
+
+view I2: Gen to VectorSpace =
+	       __ plus __ |-> __ vpl __,zero |-> vzero, minus __ |-> vmi __
+
+spec Colimit = 
+    combine I1,I2 with
+    gn_NonZeroReal1 |-> NonZeroComplex,
+    gn_NonZeroReal4 |-> NonZeroReal,
+    gn_n4 |-> r_ident,
+    gn_n6 |-> times: Real * Real -> Real,
+    gn_times_inv17 __ |-> rtimes_inv __ 
+end
+
+spec Complex_Field = 
+     Ordered_field 
+     then
+     Pair with Pair |-> Complex then
+     ops
+        __ prod __: Complex * Complex -> Complex;
+        ctimes_inv __: Complex -> Complex;
+        __ cpl __:Complex * Complex -> Complex;
+        __ cti __:Real * Complex -> Complex;
+        cmi __:Complex -> Complex;
+        complex_norm __:Complex -> Real;
+        complex_zero:Complex;
+        basis_real:Complex;
+        basis_complex:Complex;
+      
+     sort NonZeroComplex = {x:Complex. not (x = complex_zero)}
+      ops ctimes_inv __: NonZeroComplex -> NonZeroComplex;
+          c_ident:NonZeroComplex;
+
+     forall x,y,z,v:Real;
+     	    a,b:Complex;
+     	    c:NonZeroComplex;
+     	    d:NonZeroReal
+     	    . (pair(x,y) cpl pair (z,v)) = pair((x+z),(y+v)) %cplus_def$
+     	    . complex_zero = pair(0,0) %czero_def%
+     	    . cmi pair(x,y) = pair(-x,-y) %cminus_def%
+     	    . x cti pair(y,z) = pair(x*y,x*z) %cti_def%
+     	    . basis_real = pair(1,0) %creal_def%
+     	    . c_ident = basis_real %cident%
+     	    . basis_complex = pair(0,1) %ccomplex_def%
+     	    . (pair(x,y) prod pair(z,v)) = pair(((x*z)+(-(y*v))),((x*v)+(y*z))) %ctimes_def%
+            . (c = pair(x,y) /\ d = (complex_norm c)) => (ctimes_inv c) = ((times_inv d) cti (pair(x,(- y)))) %ctimes_inv_def%
+     	    . complex_norm (pair(x,y)) = ((x*x) + (y*y)) %norm_def%
+     	      %%%% properties we want to be true about complex numbers
+     	    . complex_norm (a prod b) = (complex_norm a) * (complex_norm b) %implied
+     end
+
+
+view I3: Colimit to Complex_Field =
+     Generic |-> Complex,
+     Real |-> Real,
+     NonZeroComplex |-> NonZeroComplex,
+     NonZeroReal |-> NonZeroReal,
+     0 |-> 0,
+     1 |-> c_ident,
+     __ * __ |-> __ prod __,
+     __ + __ |-> __ + __,
+     __ vpl __ |-> __ cpl __,
+     __ vti __ |-> __ cti __,
+     basis_complex |-> basis_complex,
+     basis_real |-> basis_real,
+     complex |-> complex,
+     r_ident |-> 1,
+     times: Real * Real -> Real |-> __ * __,
+     rtimes_inv __ |-> times_inv __,
+     real |-> real,
+     times_inv __ |-> ctimes_inv __,
+     vec_norm __ |-> complex_norm __,
+     vmi __ |-> cmi __,
+     zero |-> complex_zero,
+     __ > __ |-> __ > __,
+     __ >= __ |-> __ >= __
