@@ -11,144 +11,39 @@ spec Link =
 end
 %% The Time schema is as in Marco's spec.
 spec Time =
-    sort Time
-    pred __<__ : Time * Time
+    sorts Time
+    preds __<__ : Time * Time
 end
 
-%% This schema represents the commonsense knowledge, that if two trajectors move in the opposite direction, they will meet at a certain meetingLocation at a certain meetingTime. Goguen (2006) uses a similar approach. Explicitly representing this is a bit of cheating, but I found no other simple solution. In fact, it would be great to have a sophisitcated formalization of continuous movement. Continuos movement should be an extension of the Source-Path-Goal image schema. MeetingSpace inherits structure from Time (denoted by "= Time then")
+%% This schema represents the commonsense knowledge, that if two trajectors move in the opposite direction, they will meet at a certain meetingLocation at a certain meetingTime. Goguen (2006) uses a similar approach. Explicitly representing this is a bit of cheating, but I found no other simple solution. In fact, it would be great to have a sophisitcated formalization of continuous movement. Continuos movement should be an extension of the startLoc-Path-endLoc image schema. MeetingSpace inherits structure from Time (denoted by "= Time then")
 
-spec MeetingSpace = Time
-then
-    sorts Trajector 
-          Location
-    ops source: Trajector -> Location
-        goal: Trajector -> Location
-        start: Trajector -> Time
-        stop : Trajector -> Time
-        position: Trajector * Time -> Location
-        meetingLoc : Location
-        meetingTime : Time
-    
-    forall m1,m2 : Trajector 
-        . (source(m1) = goal(m2) /\ goal(m2) = source(m1) /\ 
-           start(m1) = start(m2))
-           => (position(m1,meetingTime) = meetingLoc /\ 
-               position(m2,meetingTime) = meetingLoc)
-end
 
-%% This is the main Source-Path-Goal (SPG) image schema. It inherits structure from Link, Time and MeetingSpace. The translation from Link to SPG that Marco mentions is formalized using the "with" keyword, in the obvious manner. 
+%% This is the main SOURCE-PATH-GOAL (SPG) image schema. It inherits structure from Link, Time and MeetingSpace. The translation from Link to SPG that Marco mentions is formalized using the "with" keyword, in the obvious manner. 
 spec SPG = Link with 
                 sort Link |-> Path, Entity |-> Location, 
                 pred linked |-> endpoint 
            and Time
-           and MeetingSpace
 then 
     sorts Trajector
     
     preds on : Location * Path
-    ops source : Trajector -> Location
-        goal : Trajector -> Location
-        start : Trajector -> Time
-        stop : Trajector -> Time
+    ops startLoc : Trajector -> Location
+        endLoc : Trajector -> Location
+        startTime : Trajector -> Time
+        endTime : Trajector -> Time
         position: Trajector * Time -> Location
     
     forall p: Path, m: Trajector, t: Time
-    . endpoint(source(m),p)
-    . endpoint(goal(m),p)
-    . not (source(m) = goal(m))
-    . start(m) < stop(m)
-    . position(m,start(m)) = source(m)
-    . position(m,stop(m)) = goal(m)
-    . (start(m) < t /\ t < stop(m)) => on(position(m,t),p)
+    . endpoint(startLoc(m),p) /\  endpoint(endLoc(m),p)
+    . not (startLoc(m) = endLoc(m))
+    . startTime(m) < endTime(m)
+    . position(m,startTime(m)) = startLoc(m) /\ position(m,endTime(m)) = endLoc(m)
+    . (startTime(m) < t /\ t < endTime(m)) => on(position(m,t),p)
 end
 
-%% G0 is the least specific generalization of SPG. Because inheritance in CASL relies on the order in which specs are defined, we have to put this first. 
-spec G0 = SPG 
-then 
-    ops foot,summit : Location
-        trail : Path
-        sunrise,sunset : Time
-        
-    . endpoint(foot,trail)
-    . endpoint(summit, trail)
-    . not (foot = summit)
-    forall m : Trajector 
-    . start(m) = sunrise
-    . stop(m) = sunset
-end
+%% I1 and I2 are particularizations of SPG, where we have the additional sorts Day and TimeOf Day, as well as some new operators. Note that In I1 the startLoc is the foot and the endLoc is the summit, while in I2 this is vice versa. 
 
-%% G is more specific than G0. The out-commented lines are inherited and do not need to be specified manually. I left them as comments, because in our ``toolchain setting'' we start with G and generalize to G0. Hence, it would be more intuitive to specify G first, and then tell HETS which part of the structure to ``forget''. However, this is currently not possible in HETS. 
-spec G = G0
-then
-    sort Day
-    sort TimeOfDay
-    
-    ops %% foot,summit : Location
-        %% trail: Path
-        d: Day
-        sunrise, sunset : TimeOfDay
-        time: Day * TimeOfDay -> Time
-    
-    %% . endpoint(foot,trail)
-    %% . endpoint(summit,trail)
-    %% . not (foot = summit)
-    %% forall m : Trajector
-    %% . start(m) = time(d,sunrise)
-    %% . stop(m) = time(d,sunset)
-end
-
-%% I10 is the following specialization of G0. Again, I left the out-commented lines which will be inherited from G0. 
-spec I10 = G0
-then
-    ops %% foot,summit : Location
-        %% trail : Path
-        monk : Trajector
-        %% sunrise,sunset : Time
-    
-    %% . endpoint(foot,trail)
-    %% . endpoint(summit,trail)
-    %% . not (foot = summit)
-    . source(monk) = foot
-    . goal(monk) = summit
-    %% . start(monk) = sunrise
-    %% . stop(monk) = sunset
-end
-
-%% I20 is analogous to I10; note however that here we have the source summit and the goal foot, while in I10 this is vice versa.
-spec I20 = G0
-then 
-    ops %% foot,summit : Location
-        %% trail : Path
-        monk : Trajector
-        %% sunrise,sunset : Time
-    
-    %% . endpoint(foot,trail)
-    %% . endpoint(summit,trail)
-    %% . not (foot = summit)
-    . source(monk) = summit
-    . goal(monk) = foot
-    %% . start(monk) = sunrise
-    %% . stop(monk) = sunset
-end
-
-%% These views define the (total) morphisms from G0 to I10 and I20. These are the inputs for the blend. 
-view G0ToI10 : G0 to I10
-view G0ToI20 : G0 to I20
-
-%% We also need to specify morphisms from the MeetingSpace to I10, I20. This is similar to Goguen (2006)'s approach. 
-view MeetToI10 : MeetingSpace to I10
-view MeetToI20 : MeetingSpace to I20
-
-%% Finally we can do the blend, by combining all four morphisms. The axiom states, that in the blend there exists a time and a place where they meet. The keyword "%implied" denotes that this axiom should emerge from the theory. When running hets and right-clicking on the bend, there will be a proof goal available so that the axiom can be verified. 
-spec Blend =
-     combine G0ToI10,G0ToI20,MeetToI10,MeetToI20
-then 
-    forall m1,m2 : Trajector . exists t: Time, l: Location 
-		. position(m1,t) = l /\ position(m2,t) = l %implied
-end
-
-%% I1 is a specialization of G. It is also more special than I10. However, note that in terms of our ``toolchain temporal order'' I1 is there first and I10 is derived from it, however, since generalizing is not possible with hets, we have to state is this way.
-spec I1 = G and I10
+spec I1 = SPG
 then 
     sort Day
     sort TimeOfDay
@@ -160,18 +55,13 @@ then
         sunrise,sunset:TimeOfDay;
         time: Day * TimeOfDay -> Time
     
-    . endpoint(foot,trail)
-    . endpoint(summit,trail)
-    . not (foot = summit)
-    . source(monk) = foot
-    . goal(monk) = summit
-    . start(monk) = time(d1,sunrise)
-    . stop(monk) = time(d1,sunset)
-
+    . endpoint(foot,trail) /\ endpoint(summit,trail)
+    %% . not (foot = summit)
+    . startLoc(monk) = foot /\ endLoc(monk) = summit
+    . startTime(monk) = time(d1,sunrise) /\ endTime(monk) = time(d1,sunset)
 end
 
-%% I2 is similar to I1. Again, note that here the source is the foot and the goal is the summit, while in I1 this is vice versa. 
-spec I2 = G and I20
+spec I2 = SPG
 then 
     sort Day
     sort TimeOfDay
@@ -183,15 +73,116 @@ then
         sunrise,sunset:TimeOfDay;
         time: Day * TimeOfDay -> Time
     
-    . endpoint(foot,trail)
-    . endpoint(summit,trail)
-    . not (foot = summit)
-    . source(monk) = foot
-    . goal(monk) = summit
-    . start(monk) = time(d2,sunrise)
-    . stop(monk) = time(d2,sunset)
+    . endpoint(foot,trail) /\ endpoint(summit,trail)
+    %% . not (foot = summit)
+    . startLoc(monk) = foot /\ endLoc(monk) = summit
+    . startTime(monk) = time(d2,sunrise) /\ endTime(monk) = time(d2,sunset)
 end
 
+spec G = SPG
+then 
+    sorts Day
+	      TimeOfDay
+    
+    ops foot,summit : Location
+        trail: Path
+        d: Day
+        sunrise, sunset : TimeOfDay
+        time: Day * TimeOfDay -> Time
+    
+    . endpoint(foot,trail) /\ endpoint(summit,trail)
+    %% . not (foot = summit)
+    forall m : Trajector
+    . startTime(m) = time(d,sunrise) /\ endTime(m) = time(d,sunset)
+end
+
+%% Blending I1, I2 and G requires a generalization, where Day is neglected and TimeOfDay becomes just Time. Also, d is mapped to d1, d2, respectively. Towards this we generalize I1, I2 and G. 
+
+
+%% I10 is the following specialization of G0. Again, I left the out-commented lines which will be inherited from G0. 
+spec I10 = SPG
+then
+    ops 
+		foot,summit : Location
+        trail : Path
+        monk : Trajector
+        sunrise,sunset : Time
+    
+    . endpoint(foot,trail) /\ endpoint(summit,trail)
+    %% . not (foot = summit)
+    . startLoc(monk) = foot /\ endLoc(monk) = summit
+    . startTime(monk) = sunrise /\ endTime(monk) = sunset
+end
+
+%% I20 is analogous to I10; note however that here we have the startLoc summit and the endLoc foot, while in I10 this is vice versa.
+spec I20 = SPG
+then 
+    ops 
+		foot,summit : Location
+        trail : Path
+        monk : Trajector
+        sunrise,sunset : Time
+    
+    . endpoint(foot,trail) /\ endpoint(summit,trail)
+    %% . not (foot = summit)
+    . startLoc(monk) = summit /\ endLoc(monk) = foot
+    . startTime(monk) = sunrise /\ endTime(monk) = sunset
+end
+
+%% G0i is the pullback of the diagram I0i -> Ii <- G. It happens that G01=G02 in the case of the buddhist monks riddle.
+spec G0 = SPG 
+then 
+    ops foot,summit : Location
+        trail : Path
+        sunrise,sunset : Time
+        
+    . endpoint(foot,trail) /\ endpoint(summit, trail)
+    %% . not (foot = summit)
+    forall m : Trajector 
+    . startTime(m) = sunrise /\ endTime(m) = sunset
+end
+
+%% These views define the (total) morphisms from G0 to I10 and I20. These are the inputs for the blend. 
+view G0ToI10 : G0 to I10
+view G0ToI20 : G0 to I20
+
+
+%% Finally we can do the composition part of the blend, by combining both morphisms. 
+spec Blend_composition =
+     combine G0ToI10,G0ToI20
+%% then 
+    %% forall m1,m2 : Trajector . exists t: Time, l: Location 
+		%% . position(m1,t) = l /\ position(m2,t) = l %implied
+end
+
+%% Running the blend involves completion. In the case of the riddle, we complete it by adding the backgound knowledge that two trajectors that approach each other will necessarily meet at some point. This is described in the following MeetingSpace theory: 
+
+spec MeetingPoint = Time
+then
+    sorts Trajector 
+          Location
+    ops startLoc: Trajector -> Location
+        endLoc: Trajector -> Location
+        startTime: Trajector -> Time
+        endTime : Trajector -> Time
+        position: Trajector * Time -> Location
+    
+    forall m1,m2 : Trajector 
+        . (startLoc(m1) = endLoc(m2) /\ endLoc(m2) = startLoc(m1) /\ 
+           startTime(m1) = startTime(m2))
+           => ( exists meetingLoc : Location, meetingTime : Time 
+				. position(m1,meetingTime) = meetingLoc /\ position(m2,meetingTime) = meetingLoc)
+end
+
+%% Now the composed blend is completed with the background knowledge. 
+spec Blend_completion = Blend_composition and MeetingPoint end
+
+%% The elaboration of the blend involves its mental simulation. We can not really perform the simulation in casl, but we can prove predefined axioms. The following axiom states, that in the blend there exists a time and a place where they meet. The keyword "%implied" denotes that this axiom should emerge from the theory. When running hets and right-clicking on the blend, the axiom is displayed as a proof goal so that it can be verified. 
+spec Blend_elaboration = Blend_completion
+then
+    forall m1,m2 : Trajector . exists t: Time, l: Location 
+		. position(m1,t) = l /\ position(m2,t) = l %implied
+end
 
 
 
