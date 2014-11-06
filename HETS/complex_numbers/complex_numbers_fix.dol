@@ -41,7 +41,7 @@ spec Ordered_field =
     forall x,y,z,v: Real
        . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %f_order_+%
        . (x>0) /\ (y>0) => (x*y)>0  %f_order_*%
-       . (a >= 0) => ((a > 0) \/ (a = 0)) %gt_gte%  
+       . (x >= 0) => ((x > 0) \/ (x = 0)) %gt_gte%  
 end
 
 spec VectorSpace = 

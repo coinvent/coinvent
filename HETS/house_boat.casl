@@ -9,10 +9,10 @@ spec House =
       house: House;
       plot: Plot;
       person: Person;
-      forall h: House; pl:Plot; pe: Person
-         . is_located_on(h,pl)
-	 . is_inhabited_by(pe,h)
-	 . servesasResidence(h)
+      
+         . is_located_on(house,plot)
+	 . is_inhabited_by(person,house)
+	 . servesasResidence(house)
 end
 
 spec Boat =
@@ -24,10 +24,10 @@ spec Boat =
       boat: Boat;
       bodyofwater: BodyofWater;
       person: Person;
-      forall b: Boat; bow:BodyofWater; pe: Person
-         . is_located_on(b,bow)
-	 . is_navigated_by(pe,b)
- 	 . meansofTransportation(b) 
+      
+         . is_located_on(boat,bodyofwater)
+	 . is_navigated_by(person,boat)
+ 	 . meansofTransportation(boat) 
 end
 
 spec Base = 
@@ -62,7 +62,7 @@ interpretation house_floating: Base to House =
 
 ontology house_boat = 
     combine boat_habitable, house_floating
-    with Artifact |-> HouseBoat, Agent |-> Person, Location |-> BodyofWater
+    with Artifact |-> HouseBoat, Agent |-> Person, Location |-> BodyofWater, house |-> houseboat, plot |-> bodyofwater
    
 
 

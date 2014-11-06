@@ -2,52 +2,59 @@ logic CASL
 
 %%% ordered field
 
+spec Pair =
+  sort Real
+  free type Pair ::= pair(real:Real;complex:Real)
+
 spec Field =
      sort Real
-     preds 
-          __ >= __, __ > __: Real * Real;
 
 	  ops
 	  __ + __:Real * Real -> Real;
 	  __ * __:Real * Real -> Real;
 	  - __: Real -> Real;
-	  times_inv __: Real ->? Real;
+	 
      	  0:Real;
-	  1:Real;
-
-		     
-     forall x,y,z,v:Real
-	    . x+0=x	%f_plus_ident%		
+	  
+     sort NonZeroReal = {x:Real. not (x = 0)}
+          ops times_inv __: NonZeroReal -> NonZeroReal;
+          1:NonZeroReal;
+     
+     forall x,y,z,v:Real;
+       a:NonZeroReal
+	    . x+0=x	%f_plus_ident%
      	    . x+y=y+x   %f_com_plus%
 	    . x+(y+z) = (x+y)+z  %f_assoc_plus%
 	    . x + (-x) = 0    %f_plus_inv%
 	    . x*y = y*x  %f_com_times%
 	    . (x*y)*z=x*(y*z) %f_assoc_times%
-	    . (not (x=0)) => x*(times_inv x) = 1 %f_times_inv%
-	    . (not (x=0)) => x*1 = x %f_times_ident$
+	    . a*(times_inv a) = 1 %f_times_inv%
+	    . a*1 = a %f_times_ident$
  	    . x*(y+z) = (x*y)+(x*z) %f_dist_times%
-	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %f_order_+%
-	    . (x>0) /\ (y>0) => (x*y)>0  %f_order_*%
- end
-				    
-	     	   
+end
 
-%%%% This is a vector space with a norm
+spec Ordered_field = 
+      Field 
+    then
+      preds 
+      __ >= __, __ > __: Real * Real;
+    forall x,y,z,v: Real
+       . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %f_order_+%
+       . (x>0) /\ (y>0) => (x*y)>0  %f_order_*%
+       . (x >= 0) => ((x > 0) \/ (x = 0)) %gt_gte%  
+end
 
 spec VectorSpace = 
+     Pair with Pair |-> Vec then
+     
      sort Real
-     free type Vec ::= pair(real:Real;complex:Real)
-     preds 
+     preds
           __ >= __, __ > __: Real * Real;
-
-	   ops
-	   __ + __:Real * Real -> Real;
-	   __ * __:Real * Real -> Real;
+	  ops
+	  __ + __:Real * Real -> Real;
+	  __ * __:Real * Real -> Real;
 	  - __: Real -> Real;
-	  times_inv __: Real ->? Real;
      	  0:Real;
-	  1:Real;
-	  field_norm __:Real -> Real;
 	  __ vpl __:Vec * Vec -> Vec;
 	  __ vti __:Real * Vec -> Vec;
 	  vmi __:Vec -> Vec;
@@ -56,65 +63,72 @@ spec VectorSpace =
 	  %%% introducing 2-d vectors
 	  basis_real:Vec;
 	  basis_complex:Vec;
-	  
-
- forall x,y,z,v:Real;
-	a,b,c,d:Vec
-     	    . x+0=x  %vf_plus_ident%			
-     	    . x+y=y+x %vf_com_plus%
-	    . x+(y+z) = (x+y)+z %vf_assoc_plus%
-	    . x + (-x) = 0 %vf_plus_inv%
-	    . x*y = y*x %vf_times_ident%
-	    . (x*y)*z=x*(y*z) %vf_assoc_times%
-	    . x*1 = x %vf_times_ident%
-	    . (not (x=0)) => x*(times_inv x) = 1 %vf_times_inv% 
-	    . x*(y+z) = (x*y)+(x*z) %vf_dist%
-	    . ((x >=y) /\ (z >= v)) => (x+z) >= (y+v) %vf_order_+%
-	    . (x>0) /\ (y>0) => (x*y)>0 %vf_order_*%
+	  sort NonZeroReal = {x:Real. not (x = 0)}
+               ops times_inv __: NonZeroReal -> NonZeroReal;
+          1:NonZeroReal;
+     
+     forall a,b,c,e:Real;
+	x,y,z,v:Vec;
+           d:NonZeroReal
+	    . a+0=a	%f_plus_ident%
+     	    . a+b=b+a   %f_com_plus%
+	    . a+(b+c) = (a+b)+c  %f_assoc_plus%
+	    . a + (-a) = 0    %f_plus_inv%
+	    . a*b = b*a  %f_com_times%
+	    . (a*b)*c=a*(b*c) %f_assoc_times%
+	    . d*(times_inv d) = 1 %f_times_inv%
+	    . d*1 = d %f_times_ident$
+ 	    . a*(b+c) = (a*b)+(a*c) %f_dist_times%
 	    . vzero = pair (0,0) %vzero_def%
-	    . (pair(x,y) vpl pair (z,v)) = pair(x+z,y+v) %vplus_def%
-	    . vmi pair(x,y) = pair(-x,-y) %vminus_def%
-	    . (x vti (a vpl b)) = (x vti a) vpl (x vti b) %scalar_vecplus%
-	    . ((x+y) vti a) = (x vti a) vpl (y vti a) %scalarplus_vec%
-	    . (x vti (y vti a)) = (x * y) vti a %scalar_times_vec%
-	    . (1 vti a) = a %scalar_vec_times_ident%
-	    . (vec_norm a) >= 0 %vec_norm_non_neg%
-	    . (vec_norm a > 0 <=> (not (a = vzero))) %vec_norm_zero%
-	    . (vec_norm (x vti a)) = (field_norm x)*(vec_norm a) %norms%
-	    . ((vec_norm a) + (vec_norm b)) >= vec_norm (a vpl b) %norm_plus%
+	    . (pair(a,b) vpl pair (c,d)) = pair(a+c,b+d) %vplus_def%
+	    . vmi pair(a,b) = pair(-a,-b) %vminus_def%
+	    . (a vti (x vpl y)) = (a vti x) vpl (a vti y) %scalar_vecplus%
+	    . ((a+b) vti x) = (a vti x) vpl (b vti x) %scalarplus_vec%
+	    . (a vti (b vti x)) = (a * b) vti x %scalar_times_vec%
+	    . (1 vti x) = x %scalar_vec_times_ident%
+	    . x vpl vzero = x
+	    . x vpl (y vpl z) = (x vpl y) vpl z
+	    . x vpl y = y vpl x
+	    . x vpl (vmi x) = vzero
+	    . (vec_norm x) >= 0 %vec_norm_non_neg%
+	    . (vec_norm x > 0 <=> (not (x = vzero))) %vec_norm_zero%
+	    . (vec_norm (a vti x)) = (a * a)*(vec_norm x) %norms%
+	    . ((vec_norm x) + (vec_norm y)) >= vec_norm (x vpl y) %norm_plus%
 	      %%% forcing linear independence
-	    . (((x vti basis_real) vpl (y vti basis_complex)) = vzero) <=> (x = 0) /\ (y = 0) %li1%
-	    . (exists s,t:Real. a = ((s vti basis_real) vpl (t vti basis_complex))) %comp_vec%
+	    . (((a vti basis_real) vpl (b vti basis_complex)) = vzero) <=> (a = 0) /\ (b = 0) %li1%
+	    . (exists e,f:Real. x = ((e vti basis_real) vpl (f vti basis_complex))) %comp_vec%
+	      . ((a >=b) /\ (c >= e)) => (a+c) >= (b+e) %f_order_+%
+	      . (a>0) /\ (b>0) => (a*b)>0  %f_order_*%
+              . (a >= 0) => ((a > 0) \/ (a = 0)) %gt_gte%
 end
 
-spec Gen = 
+
+spec Gen =
      sort Generic
      ops
      __ plus __:Generic * Generic -> Generic;
      zero:Generic;
      minus __:Generic -> Generic
-	   
+
 	forall x,y,z:Generic
-     	       . x plus  zero=x	 %gen_plus_ident%		
+     	       . x plus  zero=x	 %gen_plus_ident%
      	       . x plus y=y plus x %gen_com_plus%
 	       . x plus (y plus z) = (x plus y) plus z %gen_assoc_plus%
 	       . x plus (minus x) = zero %gen_plus_inv%
 end
 
-
-view I1: Gen to Field = 
+ 
+view I1: Gen to Field =
 		__ plus __ |-> __ + __, zero |-> 0, minus __ |-> - __
 
-view I2: Gen to VectorSpace = 
+view I2: Gen to VectorSpace =
 	       __ plus __ |-> __ vpl __,zero |-> vzero, minus __ |-> vmi __
 
-
-spec Colimit =
-     combine I1,I2  
-	     with 
-	     gn_n2 |-> gt, gn_n4:Real*Real |-> gte,
-             gn_n4:Real |-> one,
-             gn_n6 |-> co_times:Real * Real -> Real,
-             gn_times_inv18 __ |-> co_times_inv __
+spec Colimit = 
+    combine I1,I2 with
+    gn_NonZeroReal1 |-> NonZeroComplex,
+    gn_NonZeroReal4 |-> NonZeroReal,
+    gn_n4 |-> r_ident,
+    gn_n6 |-> times: Real * Real -> Real,
+    gn_times_inv17 __ |-> rtimes_inv __ 
 end
-
