@@ -560,7 +560,8 @@ Parameters:
  - base: {concept}
  - base_input1: {mapping} from base to input1
  - base_input2: {mapping} from base to input1
-  
+ - cursor: {?url} For requesting follow-on results.
+   
 Response-cargo: 
 	
 	{

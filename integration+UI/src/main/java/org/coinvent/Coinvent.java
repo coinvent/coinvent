@@ -1,20 +1,22 @@
-package org.coinvent.web;
+package org.coinvent;
 
 import java.io.File;
 import java.util.logging.Level;
 
 import javax.servlet.http.HttpServlet;
 
+import org.coinvent.web.DynamicHttpServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.winterwell.utils.containers.SharedStatic;
+import com.winterwell.utils.io.ArgsParser;
 
 import winterwell.utils.Printer;
 import winterwell.utils.Utils;
-import winterwell.utils.io.ArgsParser;
 import winterwell.utils.reporting.Log;
+import winterwell.utils.web.WebUtils;
 import winterwell.web.app.FileServlet;
 import winterwell.web.app.JettyLauncher;
 
@@ -23,25 +25,34 @@ import winterwell.web.app.JettyLauncher;
  * @author Daniel
  *
  */
-public class ServerMain {
+public class Coinvent {
 
-	private ServerConfig config;
+	private CoinventConfig config;
 	private JettyLauncher jl;
 
-	public ServerMain(ServerConfig config) {
+	public Coinvent(CoinventConfig config) {
 		this.config = config;		
+	}
+	
+	public static Coinvent app;
+	
+	public CoinventConfig getConfig() {
+		return config;
 	}
 
 	public static void main(String[] args) {
 		// Load config, if we have any
-		ServerConfig config = new ServerConfig();
+		CoinventConfig config = new CoinventConfig();
 		File props = new File("src/main/config/ServerConfig.properties");		
 		config = ArgsParser.parse(config, args, props, null);
-		SharedStatic.put(ServerConfig.class, config);
+		SharedStatic.put(CoinventConfig.class, config);
 		
 		// Run it!
-		ServerMain sm = new ServerMain(config);
-		sm.run();
+		app = new Coinvent(config);
+		app.run();
+		
+		// Open test view?
+		WebUtils.display(WebUtils.URI("http://localhost:"+config.port+"/static/test/welcome.html"));
 	}
 
 	public void run() {

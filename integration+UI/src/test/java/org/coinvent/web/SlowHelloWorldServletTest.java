@@ -2,6 +2,8 @@ package org.coinvent.web;
 
 import java.util.Map;
 
+import org.coinvent.CoinventConfig;
+import org.coinvent.Coinvent;
 import org.eclipse.jetty.util.ajax.JSON;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -14,14 +16,14 @@ import winterwell.web.FakeBrowser;
 
 public class SlowHelloWorldServletTest {
 
-	private static ServerMain server;
+	private static Coinvent server;
 
 	@BeforeClass
 	public static void setup() {
 		// Spin up a web server
-		ServerConfig config = new ServerConfig();
+		CoinventConfig config = new CoinventConfig();
 		config.port = 9447;
-		server = new ServerMain(config);
+		server = new Coinvent(config);
 		server.run();
 	}
 	

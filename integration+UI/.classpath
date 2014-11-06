@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="src" path="src/build/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-continuation.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-http.jar"/>
@@ -12,9 +13,11 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-util.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-websocket.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/owlapi-distribution-3.5.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/gson-forked"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.utils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.web"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/gson"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.bob"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

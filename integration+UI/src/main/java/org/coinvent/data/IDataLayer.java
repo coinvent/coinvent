@@ -10,6 +10,11 @@ import java.util.List;
  */
 public interface IDataLayer {
 
+	/**
+	 * 
+	 * @param user
+	 * @return null if they do not exist.
+	 */
 	User getUser(Id user);
 
 	List<Id> getConcepts(Id user);

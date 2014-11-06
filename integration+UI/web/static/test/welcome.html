@@ -5,25 +5,18 @@
 	<!-- Scripts -->
 	<script src="/static/code/lib/underscore-min.js"></script>
 	<script src="/static/code/lib/jquery.js"></script>
-	<script src="/static/code/lib/less.js"></script>
 	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	<script src="/static/code/lib/SJTest.js"></script>
 	<script src="/static/code/base/Templates.js"></script>
-	<script src="/static/code/widgets/vanilla.js"></script>
-
-	<!-- Load Templates -->
-	<script>
-	loadTemplates('/static/code/widgets/vanilla-templates.html', function() {
-		$(".loading").removeClass("loading");
-		$('#main').html( templates.VanillaEditor() );
-		wireup();
-	});
-	</script>
 </head>
 <body>
 
-<div id='main' class='loading'>
-	Loading...
+<div id='main container' class='loading'>
+	<h1>Hello!</h1>	
+	<ul>
+		<li><a href='CoinventClientTests.html'>Tests</a></li>
+		<li><a href='../ManualEditor.html'>Editor</a></li>
+	</ul>
 </div>
 
 </body>

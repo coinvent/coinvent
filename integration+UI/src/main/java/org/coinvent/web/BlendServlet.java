@@ -16,6 +16,7 @@ import org.coinvent.data.Mapping;
 
 import com.winterwell.utils.threads.Actor;
 import com.winterwell.utils.threads.ATask.QStatus;
+import com.winterwell.utils.web.WebUtils2;
 
 import winterwell.utils.Key;
 import winterwell.utils.TodoException;
@@ -23,7 +24,6 @@ import winterwell.utils.Utils;
 import winterwell.utils.containers.ArrayMap;
 import winterwell.utils.time.Dt;
 import winterwell.utils.time.TUnit;
-import winterwell.utils.web.WebUtils2;
 import winterwell.web.FakeBrowser;
 import winterwell.web.WebEx;
 import winterwell.web.ajax.JsonResponse;
@@ -52,14 +52,15 @@ Response-cargo:
  * @author daniel
  *
  */
-public class BlenderServlet extends AServlet {
+public class BlendServlet extends AServlet {
 
-	private static final Key<String> LANG = new AField("lang");
-	private static final AField<Concept> INPUT1 = new ConceptField("input1");
-	private static final AField<Concept> INPUT2 = new ConceptField("input2");
-	private static final AField<Concept> BASE = new ConceptField("base");
-	private static final AField<Mapping> BASE_INPUT1 = new MappingField("base_input1");
-	private static final AField<Mapping> BASE_INPUT2 = new MappingField("base_input2");
+	static final Key<String> LANG = new AField("lang");
+	static final AField<Concept> INPUT1 = new ConceptField("input1");
+	static final AField<Concept> INPUT2 = new ConceptField("input2");
+	static final AField<Concept> BASE = new ConceptField("base");
+	static final AField<Mapping> BASE_INPUT1 = new MappingField("base_input1");
+	static final AField<Mapping> BASE_INPUT2 = new MappingField("base_input2");
+	private static final String COMPONENT = "blend";
 	
 	private JsonResponse jr;
 	private FileDataLayer dataLayer = (FileDataLayer) DataLayerFactory.get();
@@ -89,7 +90,7 @@ public class BlenderServlet extends AServlet {
 
 	JsonResponse doSlow(WebRequest req) {
 		// ...make a job 
-		IJob job = new Job(actor, opName, req);
+		IJob job = new Job(actor, COMPONENT, req);
 		
 		// ...use history?
 		Id jid = job.getId();
@@ -113,7 +114,7 @@ public class BlenderServlet extends AServlet {
 		// wait for it
 		jr = new JsonResponse(req, new ArrayMap(
 				"actor", actorName,
-				"op", opName,
+				"component", COMPONENT,
 				"id", job.getId(),
 				"status", job.getStatus()
 				));

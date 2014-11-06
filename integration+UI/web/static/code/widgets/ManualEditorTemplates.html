@@ -13,42 +13,113 @@
 
 <template id='ManualEditor'>
 	<%= templates.ManualActionBar() %>		
-
-	<%= templates.ManualTheoryEditor({posn:'Blend'}) %>		
-	
-	<%= templates.ManualMappingEditor({sourceposn:'Theory A', targetposn:'Blend'}) %>
-	<%= templates.ManualMappingEditor({sourceposn:'Theory B', targetposn:'Blend'}) %>
-	
-	<%= templates.ManualTheoryEditor({posn:'Theory A'}) %>
-	
-	<%= templates.ManualTheoryEditor({posn:'Theory B'}) %>
-
-	<%= templates.ManualMappingEditor({sourceposn:'Base', targetposn:'Theory A'}) %>
-	<%= templates.ManualMappingEditor({sourceposn:'Base', targetposn:'Theory B'}) %>
-	
+	<div class='container'>
+		<div class='row'><div class='col-md-12'>
+		<%= templates.ManualTheoryEditor({posn:'Blend'}) %>		
+		</div></div><!-- ./row -->
+		<div class='row'>
+			<div class='col-md-1'></div>
+			<div class='col-md-4'>
+	<%= templates.ManualMappingEditor({sourceposn:'A', targetposn:'Blend'}) %>
+			</div>
+			<div class='col-md-2'></div>
+			<div class='col-md-4'>
+	<%= templates.ManualMappingEditor({sourceposn:'B', targetposn:'Blend'}) %>
+			</div>
+			<div class='col-md-1'></div>
+		</div><!-- ./row -->		
+		<div class='row'>
+			<div class='col-md-6'>
+				<%= templates.ManualTheoryEditor({posn:'A'}) %>
+			</div>
+			
+			<div class='col-md-6'>
+				<%= templates.ManualTheoryEditor({posn:'B'}) %>
+			</div>
+		</div><!-- ./row -->
+		<div class='row'>
+		<div class='col-md-1'></div>
+			<div class='col-md-4'>
+	<%= templates.ManualMappingEditor({sourceposn:'Base', targetposn:'A'}) %>
+				</div>
+			<div class='col-md-2'></div>
+			<div class='col-md-4'>
+	<%= templates.ManualMappingEditor({sourceposn:'Base', targetposn:'B'}) %>
+			</div>
+			<div class='col-md-1'></div>
+		</div><!-- ./row -->
+		
+	<div class='row'><div class='col-md-12'>
 	<%= templates.ManualTheoryEditor({posn:'Base'}) %>
+	</div></div>
+	
+	</div><!-- ./container -->
 	
 	<%= templates.ManualIssues({}) %>
 	
 </template>
 
 <template id='ManualActionBar'>
+
+<div id='LoadModal' class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Load <span class='name'></span></h4>
+      </div>
+      <div class="modal-body">
+        <form role="form">
+        	Theory URL: <input name='url' type='text' class='form-control' placeholder="pathToFile e.g. winterstein/mytheory.dol">
+        	<!-- upload then use? <input type='file' class='form-control'>  -->
+        </form>
+        <div class="AlertHolder"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="Load btn btn-primary">Load</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 	<div class='ActionBar'>
-		<button>Find Base (anti-unify)</button>
-		<button>Find Blend</button>
-		<button>Check Blend for Consistency</button>
-		<button>Score Blend</button>
+		<button onclick=''>Load Blend-Diagram</button>
+		<button id='FindBase'>Find Base (anti-unify)</button>
+		<button id='FindBlend'>Find Blend</button>
+		<button id='CheckBlend'>Check Blend for Consistency</button>
+		<button id='ScoreBlend'>Score Blend</button>
 	</div>
 </template>
 
 <template id='ManualTheoryEditor'>
-	<div class='Theory'><h3><%= posn %></h3>
-	<%= posn==='Theory A' || posn==='Theory B'? templates.ManualTheoryEditorDropBits() : '' %>	
-	<textarea></textarea>
-	</div>
+<div class="Theory panel panel-default" id='ManualTheoryEditor-<%= posn %>'>
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= posn %>: 
+    	<%= templates.TheoryNameEditor(context) %>
+		<%= templates.TheoryLoader(context) %>
+    </h3>
+    <small>url: <span data-bind='url'><%= context.url? url : ''%></span></small>
+  </div>
+  <div class="panel-body">
+	<%= posn==='A' || posn==='B'? templates.ManualTheoryEditorDropBits() : '' %>
+		
+	<textarea class="form-control"></textarea>
+	</div></div><!-- ./Theory -->
+</template>
+
+<template id='TheoryLoader'>
+	<button data-target='<%= posn %>' 
+			onclick="var target=$(this).data('target'); $('#LoadModal .modal-title .name').text(target); $('#LoadModal').data('loadTarget', target); $('#LoadModal').modal();">load</button>	
+</template>
+
+<template id='TheoryNameEditor'>
+	<input data-bind='' type='text' name='TheoryName' />
 </template>
 
 <template id='ManualTheoryEditorDropBits'>
+</template>
+<!-- 
 	<div><h4>Modify by Dropping</h4>
 		<ul>
 			<li>Symbol <select></select></li>
@@ -58,9 +129,10 @@
 		</ul>
 	</div>
 </template>
-
+ -->
+ 
 <template id='ManualMappingEditor'>
-	<div class='Mapping'><h3><%= sourceposn %> &rightarrow; <%= targetposn %></h3>
+	<div class='Mapping panel panel-default' id='ManualMappingEditor-<%= sourceposn %>-<%= targetposn %>'><h3><%= sourceposn %> &rightarrow; <%= targetposn %></h3>
 		<h4>Rename</h4>
 		<ul>
 			<li><select></select> &rightarrow; <input type='text'></li>

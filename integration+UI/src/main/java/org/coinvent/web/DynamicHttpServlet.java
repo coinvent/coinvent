@@ -10,10 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.winterwell.utils.io.FileUtils;
+import com.winterwell.utils.web.WebUtils2;
+
 import winterwell.utils.StrUtils;
-import winterwell.utils.io.FileUtils;
 import winterwell.utils.reporting.Log;
-import winterwell.utils.web.WebUtils2;
 import winterwell.web.WebEx;
 import winterwell.web.app.FileServlet;
 import winterwell.web.app.WebRequest;
@@ -74,6 +75,10 @@ public class DynamicHttpServlet extends HttpServlet {
 			AServlet servlet = getServlet(path);
 			// process
 			WebRequest webRequest = new WebRequest(servlet, req, resp);
+			
+			// Support cross-browser requests for all servlets!
+			WebUtils2.CORS(webRequest, true);
+
 			servlet.doPost(webRequest);
 			
 			// Error handling
@@ -83,7 +88,7 @@ public class DynamicHttpServlet extends HttpServlet {
 				Log.w("404", path);				
 				// Do we have a special 404 page?
 				file = specialStaticFiles.get(SPECIAL_STATIC_ERROR_404);
-				if (file.exists()) {
+				if (file!=null && file.exists()) {
 					FileServlet.serveFile(file, new WebRequest(null, req, resp));
 					return;
 				}
@@ -103,6 +108,8 @@ public class DynamicHttpServlet extends HttpServlet {
 		} else {
 			code = 500;
 			msg = e.toString();
+			// probably a bug -- log it
+			Log.e("http:"+code, e);
 		}
 		WebUtils2.sendError(code, msg, resp);
 	}

@@ -16,4 +16,8 @@ public interface IJob {
 
 	Id getActor();
 
+	/**
+	 * @return e.g. "blend"
+	 */
+	String getComponent();
 }
