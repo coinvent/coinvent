@@ -62,14 +62,15 @@ spec PhrygianCadence =
     final:Chord
     . hasNote(prefinal,1)
     . hasNote(prefinal,5)
-    . hasNote(prefinal,9)
+    . hasNote(prefinal,x)
+    . hasNote(prefinal,8)
     . hasNote(final,0)
     . hasNote(final,4)
     . hasNote(final,7)
     . root(final) = 0
     . root(prefinal) = 1
     . bass(final) = 0
-    . bass(prefinal) = 9
+    . bass(prefinal) = x
     . third(final) = 4
     . third(prefinal) = 5
 end
@@ -113,6 +114,7 @@ spec WeakenedPerfectCadence =
     final:Chord
     . hasNote(prefinal,x1)
     . hasNote(prefinal,5)
+    . hasNote(prefinal,8)
     . hasNote(final,0)
     . hasNote(final,4)
     . hasNote(final,7)
