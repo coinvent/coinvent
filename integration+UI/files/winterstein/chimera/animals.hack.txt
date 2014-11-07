@@ -1,0 +1,5 @@
+
+zebra	eats	grass.
+zebra	habitat	grasslands.
+
+octopus	habitat	sea.
