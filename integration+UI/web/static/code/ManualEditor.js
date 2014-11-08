@@ -4,8 +4,6 @@ var BD;
 function ManualEditor() {
 	this.setModel(new BlendDiagram());
 	this.client = new CoinventClient();
-	this.client.baseEngine = 'winterstein';
-	this.client.blendEngine = 'winterstein';
 }
 
 ManualEditor.prototype.setModel = function(bd) {
@@ -180,4 +178,17 @@ ManualEditor.prototype.wireup = function() {
 		
 	});/* ./ready */
 	
-};
+	// Settings
+	$('input[name=baseEngine]').val(this.client.baseEngine);
+	$('input[name=blendEngine]').val(this.client.blendEngine);
+	$('input[name=baseEngine]').change(function(v) {
+		editor.client.baseEngine = $(this).val();
+		toastr.info("Base Engine is now: "+editor.client.baseEngine);
+	});
+	$('input[name=blendEngine]').change(function(v) {
+		console.log(v, this, $(this).val());
+		editor.client.blendEngine = $(this).val();
+		toastr.info("Blend Engine is now: "+editor.client.blendEngine);
+	});
+	
+}; /* ./wireup */

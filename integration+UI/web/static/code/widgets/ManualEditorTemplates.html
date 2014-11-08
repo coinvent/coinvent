@@ -57,6 +57,7 @@
 	
 	<%= templates.ManualIssues({}) %>
 	
+	<%= templates.CoinventSettings({}) %>
 </template>
 
 <template id='ManualActionBar'>
@@ -142,5 +143,13 @@
 
 <template id='ManualIssues'>
 	<div class='Theory'><h3>Issues</h3>
+	</div>
+</template>
+
+
+<template id='CoinventSettings'>
+	<div class='CoinventSettings'><h3>Settings</h3>
+		Base: <input name='baseEngine'><br> 		
+		Blend: <input name='blendEngine'> 		
 	</div>
 </template>
