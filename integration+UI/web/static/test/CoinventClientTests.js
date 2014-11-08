@@ -54,6 +54,13 @@ SJTest.run({name:'CoinventClientTests',
 			.then(function(r){
 				console.log(r);
 				assert(r);
+				window.blendResponse = r;
+				var blend = new BlendDiagram(r.cargo);
+				assert(blend.input1);
+				assert(blend.input2);
+				assert(blend.blend);
+				assert(blend.blend.text);
+				window.blend = blend;
 				test.setStatus("pass");
 		}).fail(function(r) {
 			console.log(r);

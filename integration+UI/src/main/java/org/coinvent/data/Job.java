@@ -18,18 +18,25 @@ public class Job implements IJob {
 	String component;
 	Map<String, Object> pmap;
 	String slug;
+	private BlendDiagram diagram;
+	
+	@Override
+	public void setResult(Object jobj) {
+		this.result = jobj;
+	}
 	
 	@Override
 	public String getComponent() {
 		return component;
 	}
 
-	public Job(User actor, String component, WebRequest req) {
+	public Job(User actor, String component, BlendDiagram diagram, WebRequest req) {
 		Utils.check4null(actor, component, req);
 		this.pmap = req.getParameterMap();
 		this.slug = req.getSlug();
 		this.actor = actor.getId();
 		this.component = component;
+		this.diagram = diagram;
 	}
 	
 	@Override

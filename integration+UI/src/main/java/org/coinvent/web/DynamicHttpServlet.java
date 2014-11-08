@@ -66,6 +66,7 @@ public class DynamicHttpServlet extends HttpServlet {
 		// Special-case static file? E.g. robots
 		File file = specialStaticFiles.get(path);
 		if (file!=null) {
+			Log.d("req", path);
 			FileServlet.serveFile(file, new WebRequest(null, req, resp));
 			return;
 		}
@@ -75,6 +76,7 @@ public class DynamicHttpServlet extends HttpServlet {
 			AServlet servlet = getServlet(path);
 			// process
 			WebRequest webRequest = new WebRequest(servlet, req, resp);
+			Log.d("req", webRequest);	
 			
 			// Support cross-browser requests for all servlets!
 			WebUtils2.CORS(webRequest, true);
@@ -97,6 +99,12 @@ public class DynamicHttpServlet extends HttpServlet {
 		} catch (Throwable e) {
 			processError(e, resp);			
 		} 
+	}
+	
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		super.doPost(req, resp);
 	}
 
 	private void processError(Throwable e, HttpServletResponse resp) {

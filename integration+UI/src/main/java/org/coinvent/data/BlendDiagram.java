@@ -10,6 +10,9 @@ public class BlendDiagram {
 	
 	public BlendDiagram() {
 	}
+	/**
+	 * owl (Manchester format) | casl | rdfs (Turtle triple format)
+	 */
 	public String format;
 	/**
 	 * The (normally computed) shared base for input1 and input2

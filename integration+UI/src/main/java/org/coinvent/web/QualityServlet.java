@@ -43,7 +43,7 @@ public class QualityServlet extends AServlet {
 		String metric = (String) req.get(new AField("metric"));
 		if (metric==null && ! AgentRegistry.recognise(actorName)) metric = "opinion";
 		
-		Job job = new Job(actor, component, req);
+		Job job = new Job(actor, component, bd, req);
 		IJob stored = dataLayer.getJob(job.getId());
 		
 		// It's a new request

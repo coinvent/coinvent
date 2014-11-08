@@ -3,6 +3,8 @@ package org.coinvent.web;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.coinvent.data.BlendDiagram;
+import org.coinvent.data.Concept;
 import org.coinvent.data.DataLayerFactory;
 import org.coinvent.data.FileDataLayer;
 import org.coinvent.data.IDataLayer;
@@ -10,6 +12,7 @@ import org.coinvent.data.IJob;
 import org.coinvent.data.Id;
 import org.coinvent.data.Job;
 import org.coinvent.data.KKind;
+import org.coinvent.data.Mapping;
 import org.coinvent.data.User;
 
 import com.winterwell.utils.io.FileUtils;
@@ -33,7 +36,7 @@ public abstract class AServlet {
 	JsonResponse doSlow(WebRequest req) {
 		assert actor != null;
 		// ...make a job 
-		IJob job = new Job(actor, component, req);
+		IJob job = new Job(actor, component, bd, req);
 		
 		// ...use history?
 		Id jid = job.getId();
@@ -48,6 +51,9 @@ public abstract class AServlet {
 			if (job.getStatus()==QStatus.DONE) {
 				Object r = oldJob.getResult();
 				jr = new JsonResponse(req, r);
+				jr.put("actor", actorName);
+				jr.put("component", component);
+				jr.put("status", job.getStatus());
 				return jr;			
 			}
 		} else {
@@ -56,12 +62,11 @@ public abstract class AServlet {
 		}
 				
 		// wait for it
-		jr = new JsonResponse(req, new ArrayMap(
-				"actor", actorName,
-				"component", component,
-				"id", job.getId(),
-				"status", job.getStatus()
-				));
+		jr = new JsonResponse(req);
+		jr.put("actor", actorName);
+		jr.put("component", component);
+		jr.put("status", job.getStatus());
+		
 		return jr;
 	}
 	
@@ -79,6 +84,7 @@ public abstract class AServlet {
 	protected String type;
 	protected IDataLayer dataLayer;
 	protected String defaultActorName;
+	protected BlendDiagram bd;
 	
 	/**
 	 * Call this to setup slug, actor, actorName
@@ -115,7 +121,21 @@ public abstract class AServlet {
 		String path = req.getRequestPath();
 		type = FileUtils.getType(path);		
 		
-		
+		// Blend Diagram (if present)
+		String lang = req.get(BlendServlet.LANG);
+		Concept input1 = req.get(BlendServlet.INPUT1);
+		Concept input2 = req.get(BlendServlet.INPUT2);
+		Concept base = req.get(BlendServlet.BASE);
+		Mapping base_input1 = req.get(BlendServlet.BASE_INPUT1);
+		Mapping base_input2 = req.get(BlendServlet.BASE_INPUT2);
+
+		bd = new BlendDiagram();
+		bd.input1 = input1;
+		bd.input2 = input2;
+		bd.format = lang;
+		bd.base = base;
+		bd.base_input1 = base_input1;
+		bd.base_input2 = base_input2;
 	}
 
 	public void doGet(WebRequest webRequest) throws Exception {

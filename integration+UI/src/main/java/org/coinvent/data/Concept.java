@@ -1,6 +1,11 @@
 package org.coinvent.data;
 
+import java.io.File;
+
 import org.coinvent.Coinvent;
+import org.coinvent.web.FileServlet;
+
+import com.winterwell.utils.io.FileUtils;
 
 import winterwell.utils.StrUtils;
 import winterwell.utils.web.WebUtils;
@@ -10,26 +15,28 @@ public class Concept {
 
 	public Id oxid;
 	public Id xid;
-	public String lang;
-	public String iri;
-	private String contents;
+	public String format;
+	public String url;
+	private String text;
 
-	public String getContents() {
-		if (contents==null) {
-			if (iri==null) return null;
-			if (WebUtils.RELATIVE_URL_REGEX.matcher(iri).matches()) {
+	public String getText() {
+		if (text==null) {
+			if (url==null) return null;
+			if (WebUtils.RELATIVE_URL_REGEX.matcher(url).matches()) {
 				// lookup the file
-				
+				File f = new File(FileServlet.BASE, url);
+				text = FileUtils.read(f);
+			} else {
+				FakeBrowser fb = new FakeBrowser();
+				text = fb.getPage(url);
 			}
-			FakeBrowser fb = new FakeBrowser();
-			contents = fb.getPage(iri);
 		}
-		return contents;
+		return text;
 	}
 	@Override
 	public String toString() {
-		return "Concept [xid=" + xid + ", lang=" + lang + ", iri=" + iri
-				+ ", contents=" + contents + "]";
+		return "Concept [xid=" + xid + ", lang=" + format + ", iri=" + url
+				+ ", contents=" + text + "]";
 	}
 
 	public Concept() {		
@@ -51,7 +58,7 @@ public class Concept {
 	}
 	
 	public void setContents(String contents) {
-		this.contents = contents;
+		this.text = contents;
 	}
 
 }

@@ -739,7 +739,30 @@ Response-cargo:
 			] 
 	}
 
-#### /job/$user_name/$job_id: Show / delete job details
+#### /job/$user_name/$job_id: Provide result
+
+Set the results of a job. Example use-case: providing the output from a manual job.
+
+Default implementation: Coinvent Integration+UI module      
+Default end point: http://coinvent.soda.sh:8400/job/$user_name
+
+ - Use the path (i.e. the slug) to specify a file.   
+ E.g. `http://coinvent.soda.sh:8400/job/alice/1234`
+ would fetch details on job id 1234, assigned to Alice.
+If a job-id is not specified, this endpoint will list jobs (see above).
+ - action: put Use this, or the http method PUT, to set the results of a job.
+ - result: The JSON-encoded result of the job. Subsequent requests for this job's output will return this as the cargo.
+
+Response-cargo: 
+	
+	{
+		job: {
+			id: {string},
+			status: open|closed
+			} 
+	}
+
+#### /job/$user_name/$job_id: Show details / delete job
 
 Default implementation: Coinvent Integration+UI module      
 Default end point: http://coinvent.soda.sh:8400/job/$user_name

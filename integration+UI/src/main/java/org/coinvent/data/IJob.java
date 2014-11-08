@@ -20,4 +20,6 @@ public interface IJob {
 	 * @return e.g. "blend"
 	 */
 	String getComponent();
+
+	void setResult(Object jobj);
 }

@@ -8,8 +8,11 @@ function CoinventClient(server) {
 	this.server = server || '/';
 	if (this.server.charAt(this.server.length-1)!='/') this.server += '/';
 	this.baseEngine = 'default';
-	this.blendEngine = 'default';
+	this.blendEngine = 'default';	
 }
+
+// TODO enum
+//CoinventClient.STATUS = 
 
 /** common basis for posts */
 CoinventClient.prototype.postBlendDiagram = function(op, engine, blendDiagram) {
@@ -87,30 +90,40 @@ CoinventClient.prototype.val = function(concept) {
 }
 
 
-function BlendDiagram() {
+/**
+ * @param jsonObject {object?} Optional source for properties. 
+ */
+function BlendDiagram(jsonObject) {
 	this.format = 'owl';
 	/** {Concept} */
-	this.base = new Concept();
+	this.base = new Concept(jsonObject? jsonObject.base : null);
 	/** {Concept} */
-	this.blend = new Concept();
+	this.blend = new Concept(jsonObject? jsonObject.blend : null);
 	/** {Concept} */
-	this.input1 = new Concept();
+	this.input1 = new Concept(jsonObject? jsonObject.input1 : null);
 	/** {Concept} */
-	this.input2 = new Concept();
+	this.input2 = new Concept(jsonObject? jsonObject.input2 : null);
 
 	/** {object} */
-	this.base_input1={};
-	this.base_input2={};
-	this.input1_blend={};
-	this.input2_blend={};
+	this.base_input1=jsonObject? jsonObject.base_input1 || {} : {};
+	this.base_input2=jsonObject? jsonObject.base_input2 || {} : {};
+	this.input1_blend=jsonObject? jsonObject.input1_blend || {} : {};
+	this.input2_blend=jsonObject? jsonObject.input2_blend || {} : {};
 //	If weakenings are used, then these Concepts are names weakinput1, weakinput2, and weakbase, 
 }
 
 function Concept(text) {
-	this.format = 'owl';
-	this.text = text;
-	/** {string} */
-	this.url = null;
+	if (match(text,String)) {
+		this.format = 'owl';
+		this.text = text;
+		/** {string} */
+		this.url = null;
+	} else if (text) {
+		this.format = text.format;
+		this.text = text.text;
+		/** {string} */
+		this.url = text.url;
+	}
 }
 
 

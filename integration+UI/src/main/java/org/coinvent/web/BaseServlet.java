@@ -59,34 +59,18 @@ public class BaseServlet extends AServlet {
 	public void doPost(WebRequest req) throws Exception {
 		Printer.out(req);
 		init(req);						
-		
-		String lang = req.get(BlendServlet.LANG);
-		Concept input1 = req.getRequired(BlendServlet.INPUT1);
-		Concept input2 = req.getRequired(BlendServlet.INPUT2);
-		Concept base = req.get(BlendServlet.BASE);
-		Mapping base_input1 = req.get(BlendServlet.BASE_INPUT1);
-		Mapping base_input2 = req.get(BlendServlet.BASE_INPUT2);
-
-		BlendDiagram bd = new BlendDiagram();
-		bd.input1 = input1;
-		bd.input2 = input2;
-		bd.format = lang;
-		bd.base = base;
-		bd.base_input1 = base_input1;
-		bd.base_input2 = base_input2;
-		
+				
 		// A fast method? HETS?
 		if (AgentRegistry.recognise(actorName)) {
 			IBaseActor codeActor = AgentRegistry.getActor(IBaseActor.class, actorName);
 			
 			BlendDiagram based = codeActor.doBase(bd);			
 			
-			JsonResponse jr = new JsonResponse(req, new ArrayMap(
-					"actor", actorName,
-					"component", component,
-					"status", QStatus.DONE,
-					JsonResponse.JSON_CARGO, based
-					));
+			JsonResponse jr = new JsonResponse(req, based);
+			jr.put("actor", actorName);
+			jr.put("component", component);
+			jr.put("status", QStatus.DONE);
+			
 			WebUtils2.sendJson(jr, req);
 			return;
 		}

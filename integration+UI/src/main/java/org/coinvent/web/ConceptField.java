@@ -23,12 +23,12 @@ public class ConceptField extends AField<Concept> {
 		// Is it a url?
 		if (WebUtils.URL_REGEX.matcher(v).matches()) {
 			Concept concept = new Concept();
-			concept.iri = v;
+			concept.url = v;
 			return concept;
 		}
 		if (WebUtils.RELATIVE_URL_REGEX.matcher(v).matches()) {
 			Concept concept = new Concept();
-			concept.iri = Coinvent.app.getConfig().baseUrl+v;
+			concept.url = Coinvent.app.getConfig().baseUrl+"/file/"+v;
 			return concept;
 		}
 		// treat as the thing itself
@@ -38,8 +38,8 @@ public class ConceptField extends AField<Concept> {
 	
 	@Override
 	public String toString(Concept c) {
-		if (c.iri!=null) return c.iri;
-		return c.getContents();
+		if (c.url!=null) return c.url;
+		return c.getText();
 	}
 
 }

@@ -95,11 +95,11 @@
 <template id='ManualTheoryEditor'>
 <div class="Theory panel panel-default" id='ManualTheoryEditor-<%= posn %>'>
   <div class="panel-heading">
-    <h3 class="panel-title"><%= posn %>: 
-    	<%= templates.TheoryNameEditor(context) %>
+    <h3 class="panel-title"><%= posn %>:
+    	<small>url: <span data-bind='url'><%= context.url? url : ''%></span></small> 
+    	<!-- %= templates.TheoryNameEditor(context) % -->
 		<%= templates.TheoryLoader(context) %>
     </h3>
-    <small>url: <span data-bind='url'><%= context.url? url : ''%></span></small>
   </div>
   <div class="panel-body">
 	<%= posn==='A' || posn==='B'? templates.ManualTheoryEditorDropBits() : '' %>

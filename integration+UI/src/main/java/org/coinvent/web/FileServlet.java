@@ -40,9 +40,7 @@ public class FileServlet extends AServlet {
 			return;
 		}
 
-		// NB: This does defend against using .. in the file name to try and access deeper files.
-		String sslug = FileUtils.safeFilename(actorName+"/"+slug+"."+type, true);
-		File f = new File(BASE, sslug);		
+		File f = getFile(actorName, slug, type);		
 
 		// Save?
 		if ("PUT".equals(req.getRequest().getMethod()) || req.actionIs("save")) {
@@ -52,6 +50,13 @@ public class FileServlet extends AServlet {
 		
 		// Send it (or a 404)
 		winterwell.web.app.FileServlet.serveFile(f, req);
+	}
+
+	public static File getFile(String _actorName, String _slug, String _type) {
+		// NB: This does defend against using .. in the file name to try and access deeper files.
+		String sslug = FileUtils.safeFilename(_actorName+"/"+_slug+"."+_type, true);
+		File f = new File(BASE, sslug);
+		return f;
 	}
 
 }

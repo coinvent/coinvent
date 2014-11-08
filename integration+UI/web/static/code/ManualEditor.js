@@ -2,10 +2,25 @@
 var BD;
 
 function ManualEditor() {
-	this.model = new BlendDiagram();
-	BD = this.model;
+	this.setModel(new BlendDiagram());
 	this.client = new CoinventClient();
+	this.client.baseEngine = 'winterstein';
+	this.client.blendEngine = 'winterstein';
 }
+
+ManualEditor.prototype.setModel = function(bd) {
+	if ( ! match(bd, BlendDiagram)) {
+		bd = new BlendDiagram(bd);
+	}
+	this.model = bd;
+	BD = this.model;
+
+	this.setConcept('A', this.model.input1);
+	this.setConcept('B', this.model.input2);
+	this.setConcept('Base', this.model.base);
+	this.setConcept('Blend', this.model.blend);
+	// TODO mappings
+};
 
 ManualEditor.prototype.setConcept = function(targetName, concept) {
 	assertMatch(concept, Concept);
@@ -31,20 +46,38 @@ ManualEditor.prototype.setConcept = function(targetName, concept) {
 
 ManualEditor.prototype.wireup = function() {
 	var editor = this;
-
-	this.setConcept('A', this.model.input1);
-	this.setConcept('B', this.model.input2);
-	this.setConcept('Base', this.model.base);
-	this.setConcept('Blend', this.model.blend);
 	
 	// Base Button	
 	$('button#FindBase').click(function() {
 		editor.client.base(editor.model)
 		.then(function(result){
 			console.log("Yeh", result);
+			toastr.info(JSON.stringify(result));
+			if (result.status === 'WAITING') {
+				return;
+			}
+			editor.setModel(result.cargo);
 		})
 		.fail(function(err){
 			console.log(err);
+			toastr.error(JSON.stringify(err));
+		});
+	}); // ./FindBase.click()
+	
+	// Blend Button	
+	$('button#FindBlend').click(function() {
+		editor.client.blend(editor.model)
+		.then(function(result){
+			console.log("Yeh", result);			
+			toastr.info(JSON.stringify(result));
+			if (result.status === 'WAITING') {
+				return;
+			}
+			editor.setModel(result.cargo);
+		})
+		.fail(function(err){			
+			console.log(err);
+			toastr.error(JSON.stringify(err));
 		});
 	}); // ./FindBase.click()
 	
@@ -65,9 +98,11 @@ ManualEditor.prototype.wireup = function() {
 			editor.setConcept(target, concept);
 			// close
 			$('#LoadModal').modal('hide');
+			toastr.info("Loaded: "+target+" = "+url);
 		})
 		.fail(function(err){
 			console.log("fail", err);
+			toastr.error(JSON.stringify(err));
 			$('#LoadModal AlertHolder').html('<div class="alert alert-danger" role="alert">'+JSON.stringify(err)+'</div>');
 		});		
 	}); // ./button.Load.click()

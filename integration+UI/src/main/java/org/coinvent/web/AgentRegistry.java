@@ -38,6 +38,9 @@ public class AgentRegistry {
 			if (klass==IBaseActor.class) {
 				return (Role) topActor.getBaseActor();
 			}
+			if (klass==IBlendActor.class) {
+				return (Role) topActor.getBlendActor();
+			}
 			return null;
 		} catch(Exception ex) {
 			throw Utils.runtime(ex);

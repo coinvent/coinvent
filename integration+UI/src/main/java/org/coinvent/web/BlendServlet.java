@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.coinvent.data.BlendDiagram;
 import org.coinvent.data.Concept;
 import org.coinvent.data.DataLayerFactory;
 import org.coinvent.data.FileDataLayer;
@@ -14,6 +15,7 @@ import org.coinvent.data.Id;
 import org.coinvent.data.Job;
 import org.coinvent.data.Mapping;
 
+import com.google.gson.Gson;
 import com.winterwell.utils.threads.Actor;
 import com.winterwell.utils.threads.ATask.QStatus;
 import com.winterwell.utils.web.WebUtils2;
@@ -73,16 +75,19 @@ public class BlendServlet extends AServlet {
 	public void doPost(WebRequest req) throws Exception {
 		init(req);						
 		
-		String lang = req.get(LANG);
-		Concept input1 = req.getRequired(INPUT1);
-		Concept input2 = req.getRequired(INPUT2);
-		Concept base = req.get(BASE);
-		Mapping base_input1 = req.get(BASE_INPUT1);
-		Mapping base_input2 = req.get(BASE_INPUT2);
-		
 		// A fast method? HETS?
 		if (AgentRegistry.recognise(actorName)) {
-			throw new TodoException("Call out to "+actorName);
+			IBlendActor codeActor = AgentRegistry.getActor(IBlendActor.class, actorName);
+			
+			BlendDiagram based = codeActor.doBlend(bd);			
+			
+			JsonResponse jr = new JsonResponse(req, based);
+			jr.put("actor", actorName);
+			jr.put("component", component);
+			jr.put("status", QStatus.DONE);
+					
+			WebUtils2.sendJson(jr, req);
+			return;
 		}
 		
 		// Interactive/manual
@@ -92,38 +97,6 @@ public class BlendServlet extends AServlet {
 		WebUtils2.sendJson(jr, req);
 	}
 
-	JsonResponse doSlow(WebRequest req) {
-		// ...make a job 
-		IJob job = new Job(actor, COMPONENT, req);
-		
-		// ...use history?
-		Id jid = job.getId();
-		IJob oldJob = DataLayerFactory.get().getJob(jid);
-		if (oldJob!=null 
-				&& oldJob.getStatus()!=QStatus.ERROR 
-				&& oldJob.getStatus()!=QStatus.CANCELLED) {
-			job = oldJob;
-			
-			// Done?
-			if (job.getStatus()==QStatus.DONE) {
-				Object r = oldJob.getResult();
-				jr = new JsonResponse(req, r);
-				return jr;			
-			}
-		} else {
-			// Save this new job
-			job = DataLayerFactory.get().saveJob(job);			
-		}
-				
-		// wait for it
-		jr = new JsonResponse(req, new ArrayMap(
-				"actor", actorName,
-				"component", COMPONENT,
-				"id", job.getId(),
-				"status", job.getStatus()
-				));
-		return jr;
-	}
 
 }
 
