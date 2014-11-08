@@ -2,48 +2,43 @@ logic CASL
 
 spec List =
      sort S
-     sort Nat
      free type List  ::=
-		       Null | Cons(first:S,second:List)
+		       Null | Cons(S,List)
      ops 
-        length __: List -> Nat;
      	reverse __: List -> List;
 	append __ __: List * List -> List
-
-     forall x:S; y: List 
+      
+     forall h:S; y,x: List 
         . reverse Null = Null
-        . reverse Cons(x,y) = append (reverse y) (Cons(x,Null))
-         
+        . reverse Cons(h,y) = append (reverse y) (Cons(h,Null))
+        . append Null x = x
+	. append Cons(h,x) y = Cons(h,append x y)
 end
 
 spec Gen  =
      sort S
      free type T ::=
-	N | C(ff:S,ss:T) 
+	N | C(S,T) 
 end
 
 spec Fatlist = 
      sort S
      free type Fatlist ::=
-	Nil | Cons(first:S,second:Fatlist)
-       | Append(f:Fatlist,s:Fatlist) 
+	Nil | Cons(S,Fatlist)
+       | Append(Fatlist,Fatlist) 
 
 
 view I1: Gen to List = 
      S |-> S,
      T |-> List,
      N |-> Null,
-     C |-> Cons,
-     ff |-> first,
-     ss |-> second
+     C |-> Cons
 
 view I2: Gen to Fatlist = 
      S |-> S,
      T |-> Fatlist,
      N |-> Nil,
-     C |-> Cons,
-     ff |-> first,
-     ss |-> second
+     C |-> Cons
 
 spec Colimit = 
      combine I1,I2 

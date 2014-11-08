@@ -13,7 +13,7 @@ function CoinventClient(server) {
 
 /** common basis for posts */
 CoinventClient.prototype.postBlendDiagram = function(op, engine, blendDiagram) {
-	assertMatch(op,string, engine,string, blendDiagram,BlendDiagram);
+	assertMatch(op,String, engine,String, blendDiagram,BlendDiagram);
 	var data = {
 			lang: blendDiagram.format,
 			input1: this.val(blendDiagram.input1),
@@ -44,7 +44,7 @@ CoinventClient.prototype.base = function(blendDiagram) {
  * @param blendDiagram {BlendDiagram}
  */
 CoinventClient.prototype.blend = function(blendDiagram) {
-	return this.postBlendDiagram('blend', this.baseEngine, blendDiagram);
+	return this.postBlendDiagram('blend', this.blendEngine, blendDiagram);
 };
 
 

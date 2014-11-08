@@ -133,6 +133,16 @@ spec Colimit =
     gn_times_inv17 __ |-> rtimes_inv __ 
 end
 
+%[view I3: Colimit to Colimit2 = ]%
+%[    Real |-> Real]%
+    
+%[view I4: Ordered_field to Colimit2 = ]%
+%[    Real |-> Real]%
+
+%[spec Colimit2 =]%
+%[    combine I3, I4]%
+%[end]%
+
 spec Complex_Field = 
      Ordered_field 
      then

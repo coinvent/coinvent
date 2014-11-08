@@ -171,7 +171,7 @@ public class PublishCoinvent extends BuildTask {
 		}
 
 		// Copy up the code
-		File puppetStringsDir = BuildCreoleSite.getCreoleDir();
+		File puppetStringsDir = FileUtils.getWorkingDirectory();
 
 		// NB The libs dir MUST be soft-linked manually on the server
 		// Egan rsyncs it's lib dir across the cluster, so it's enough to update egan

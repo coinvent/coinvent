@@ -1,0 +1,68 @@
+logic CASL
+
+spec House =
+   sorts Plot, Person, House
+   preds is_inhabited_by:  Person * House
+	 is_located_on: House * Plot
+         servesasResidence: House
+   ops
+      house: House;
+      plot: Plot;
+      person: Person;
+      
+         . is_located_on(house,plot)
+	 . is_inhabited_by(person,house)
+	 . servesasResidence(house)
+end
+
+spec Boat =
+   sorts BodyofWater, Person, Boat
+   preds is_navigated_by:  Person * Boat
+	 is_located_on: Boat * BodyofWater
+         meansofTransportation: Boat
+   ops
+      boat: Boat;
+      bodyofwater: BodyofWater;
+      person: Person;
+      
+         . is_located_on(boat,bodyofwater)
+	 . is_navigated_by(person,boat)
+ 	 . meansofTransportation(boat) 
+end
+
+spec Base = 
+   sort Artifact
+   sort Location
+   sort Agent
+   preds
+         is_located_on: Artifact * Location
+   ops 
+     artifact: Artifact
+     agent: Agent
+     location: Location
+end
+
+interpretation boat_habitable: Base to Boat =
+   Artifact |-> Boat,
+   Location |-> BodyofWater,
+   Agent |-> Person,
+   is_located_on |-> is_located_on,
+   artifact |-> boat,
+   agent |-> person,
+   location |-> bodyofwater
+
+interpretation house_floating: Base to House =
+   Artifact |-> House,
+   Location |-> Plot,
+   Agent |-> Person,
+   is_located_on |-> is_located_on,
+   artifact |-> house,
+   agent |-> person,
+   location |-> plot
+
+ontology house_boat = 
+    combine boat_habitable, house_floating
+    with Artifact |-> HouseBoat, Agent |-> Person, Location |-> BodyofWater, house |-> houseboat, plot |-> bodyofwater
+   
+
+

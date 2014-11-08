@@ -40,7 +40,7 @@ public class QualityServlet extends AServlet {
 		Concept concept = req.getRequired(CONCEPT);
 		List<Concept> models = req.get(MODELS);
 		
-		String metric = req.get(new AField("metric"));
+		String metric = (String) req.get(new AField("metric"));
 		if (metric==null && ! AgentRegistry.recognise(actorName)) metric = "opinion";
 		
 		Job job = new Job(actor, component, req);

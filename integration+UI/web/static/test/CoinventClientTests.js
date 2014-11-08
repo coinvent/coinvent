@@ -39,6 +39,29 @@ SJTest.run({name:'CoinventClientTests',
 		});
 		test.setStatus("waiting");
 		return f;
+	},
+
+	/** Compute a blend from 2 concepts */
+	blendTest: function(test) {
+		var concept1 = "/file/test/fish.dol";
+		var concept2 = "/file/test/human.dol";
+		var bd = new BlendDiagram();
+		bd.input1 = concept1;
+		bd.input2 = concept2;
+		var cc = new CoinventClient();
+		
+		var f = cc.blend(bd)
+			.then(function(r){
+				console.log(r);
+				assert(r);
+				test.setStatus("pass");
+		}).fail(function(r) {
+			console.log(r);
+			test.setStatus("fail");
+			test.details = r.statusText;
+		});
+		test.setStatus("waiting");
+		return f;
 	}
 
 });

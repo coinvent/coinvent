@@ -65,6 +65,10 @@ public class BlendServlet extends AServlet {
 	private JsonResponse jr;
 	private FileDataLayer dataLayer = (FileDataLayer) DataLayerFactory.get();
 
+	public BlendServlet() {
+		defaultActorName = "dumb";
+	}
+	
 	@Override
 	public void doPost(WebRequest req) throws Exception {
 		init(req);						
