@@ -1,5 +1,6 @@
 package org.coinvent.web;
 
+import org.coinvent.actor.IBaseActor;
 import org.coinvent.data.BlendDiagram;
 import org.coinvent.data.Concept;
 import org.coinvent.data.DataLayerFactory;

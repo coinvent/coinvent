@@ -1,24 +1,24 @@
-package org.coinvent.dumb;
+package org.coinvent.impl.dumb;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
+import org.coinvent.actor.ACoinvent;
+import org.coinvent.actor.IBaseActor;
+import org.coinvent.actor.IBlendActor;
+import org.coinvent.actor.ICoinvent;
 import org.coinvent.data.BlendDiagram;
 import org.coinvent.data.Concept;
-import org.coinvent.web.IBaseActor;
-import org.coinvent.web.IBlendActor;
-import org.coinvent.web.ICoinvent;
+import org.coinvent.data.ProofResults;
+import org.coinvent.data.Score;
+import org.coinvent.data.Sentence;
 
 import winterwell.utils.StrUtils;
 import winterwell.web.fields.MissingFieldException;
 
-public class DumbActor implements ICoinvent, IBaseActor, IBlendActor {
-
-	@Override
-	public IBaseActor getBaseActor() {
-		return this;
-	}
+public class DumbActor extends ACoinvent {
 	
 	@Override
 	public BlendDiagram doBase(BlendDiagram bd) {
@@ -63,8 +63,27 @@ public class DumbActor implements ICoinvent, IBaseActor, IBlendActor {
 	}
 
 	@Override
-	public IBlendActor getBlendActor() {
-		return this;
+	public ProofResults doTestConsistency(Concept concept, Sentence goal) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object doGenerateModel(Concept concept) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Score doScore(Concept concept, List<Concept> models, String metric) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BlendDiagram doWeaken(BlendDiagram diagram) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

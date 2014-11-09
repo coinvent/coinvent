@@ -5,3 +5,7 @@
 .Mapping {
 	
 }
+
+.chimera-img img {
+	padding:0px; margin:0px; width:200px; height:200px;
+}

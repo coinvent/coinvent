@@ -1,4 +1,4 @@
-package org.coinvent.conceptnet;
+package org.coinvent.impl.conceptnet;
 
 import java.util.ArrayList;
 import java.util.Arrays;

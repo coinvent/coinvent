@@ -1,6 +1,9 @@
 package org.coinvent.web;
 
 import org.coinvent.Coinvent;
+import org.coinvent.actor.IBaseActor;
+import org.coinvent.actor.IBlendActor;
+import org.coinvent.actor.ICoinvent;
 
 import winterwell.utils.Utils;
 

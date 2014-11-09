@@ -4,6 +4,11 @@ import com.winterwell.utils.ReflectionUtils;
 
 public class BlendDiagram {
 	
+	/**
+	 * Optional: url for this object itself, e.g. as a DOL file.
+	 */
+	public String url;
+	
 	public BlendDiagram(BlendDiagram bd) {
 		ReflectionUtils.shallowCopy(bd, this);
 	}

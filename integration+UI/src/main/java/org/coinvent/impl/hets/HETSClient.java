@@ -1,4 +1,4 @@
-package org.coinvent.hets;
+package org.coinvent.impl.hets;
 
 import java.io.File;
 import java.util.HashMap;

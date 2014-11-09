@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.coinvent.actor.IBlendActor;
 import org.coinvent.data.BlendDiagram;
 import org.coinvent.data.Concept;
 import org.coinvent.data.DataLayerFactory;

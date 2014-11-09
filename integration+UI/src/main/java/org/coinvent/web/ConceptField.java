@@ -1,5 +1,7 @@
 package org.coinvent.web;
 
+import java.net.URI;
+
 import org.coinvent.Coinvent;
 import org.coinvent.data.Concept;
 
@@ -23,12 +25,13 @@ public class ConceptField extends AField<Concept> {
 		// Is it a url?
 		if (WebUtils.URL_REGEX.matcher(v).matches()) {
 			Concept concept = new Concept();
-			concept.url = v;
+			concept.setUrl(v);
 			return concept;
 		}
 		if (WebUtils.RELATIVE_URL_REGEX.matcher(v).matches()) {
 			Concept concept = new Concept();
-			concept.url = Coinvent.app.getConfig().baseUrl+"/file/"+v;
+			URI url = WebUtils.resolveUri(Coinvent.app.getConfig().baseUrl, v);
+			concept.setUrl(url.toString());
 			return concept;
 		}
 		// treat as the thing itself
@@ -38,7 +41,7 @@ public class ConceptField extends AField<Concept> {
 	
 	@Override
 	public String toString(Concept c) {
-		if (c.url!=null) return c.url;
+		if (c.getUrl()!=null) return c.getUrl();
 		return c.getText();
 	}
 

@@ -179,16 +179,20 @@ ManualEditor.prototype.wireup = function() {
 	});/* ./ready */
 	
 	// Settings
-	$('input[name=baseEngine]').val(this.client.baseEngine);
-	$('input[name=blendEngine]').val(this.client.blendEngine);
-	$('input[name=baseEngine]').change(function(v) {
-		editor.client.baseEngine = $(this).val();
-		toastr.info("Base Engine is now: "+editor.client.baseEngine);
-	});
-	$('input[name=blendEngine]').change(function(v) {
-		console.log(v, this, $(this).val());
-		editor.client.blendEngine = $(this).val();
-		toastr.info("Blend Engine is now: "+editor.client.blendEngine);
+	$('input.engine').each(function(){
+		assert(editor);
+		var name = $(this).attr('name');
+		var op = name.substring(0, name.length - 6);
+		assert(op);
+		$(this).val(editor.client.engines[op] || 'default');
+		$(this).change(function(v) {
+			assert(editor);
+			assert(op);
+			assertMatch(editor.client, CoinventClient);
+			console.log('editor.client',editor.client);
+			editor.client.engines[op] = $(this).val();
+			toastr.info(op+" engine is now: "+editor.client.engines[op]);
+		});
 	});
 	
 }; /* ./wireup */

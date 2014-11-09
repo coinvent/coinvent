@@ -1,4 +1,4 @@
-package org.coinvent.web;
+package org.coinvent.actor;
 
 import org.coinvent.data.BlendDiagram;
 

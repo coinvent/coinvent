@@ -7,16 +7,20 @@ function CoinventClient(server) {
 	*/
 	this.server = server || '/';
 	if (this.server.charAt(this.server.length-1)!='/') this.server += '/';
-	this.baseEngine = 'default';
-	this.blendEngine = 'default';	
+	/**
+	 * op-to-actor_name, e.g. engines.blend = 'hets'.
+	 * Blanks will be filled in with "default".
+	 */
+	this.engines = {};
 }
 
 // TODO enum
 //CoinventClient.STATUS = 
 
 /** common basis for posts */
-CoinventClient.prototype.postBlendDiagram = function(op, engine, blendDiagram) {
-	assertMatch(op,String, engine,String, blendDiagram,BlendDiagram);
+CoinventClient.prototype.postBlendDiagram = function(op, blendDiagram) {
+	assertMatch(op,String, blendDiagram,BlendDiagram);
+	var engine = this.engines[op] || 'default';
 	var data = {
 			lang: blendDiagram.format,
 			input1: this.val(blendDiagram.input1),
@@ -33,12 +37,28 @@ CoinventClient.prototype.postBlendDiagram = function(op, engine, blendDiagram) {
 	});
 };
 
+/** common basis for posts */
+CoinventClient.prototype.postConcept = function(op, concept) {
+	assertMatch(op,String, engine,String, concept,Concept);
+	var data = {
+			lang: blendDiagram.format,
+			concept: this.val(concept),
+			//cursor: {?url} For requesting follow-on results.
+		};
+	var engine = engines[op] || 'default';
+	return $.ajax({
+		url: this.server+op+'/'+engine,
+		type:'POST',
+		data: data
+	});
+};
+
 /**
  * Given 2 Concepts, compute a common base Concept
  * @param blendDiagram {BlendDiagram}
  */
 CoinventClient.prototype.base = function(blendDiagram) {
-	return this.postBlendDiagram('base', this.baseEngine, blendDiagram);
+	return this.postBlendDiagram('base', blendDiagram);
 };
 
 
@@ -47,9 +67,30 @@ CoinventClient.prototype.base = function(blendDiagram) {
  * @param blendDiagram {BlendDiagram}
  */
 CoinventClient.prototype.blend = function(blendDiagram) {
-	return this.postBlendDiagram('blend', this.blendEngine, blendDiagram);
+	return this.postBlendDiagram('blend', blendDiagram);
 };
 
+/**
+ */
+CoinventClient.prototype.model = function(concept) {
+	return this.postConcept('model', concept);
+};
+
+/**
+ */
+CoinventClient.prototype.consistency = function(concept) {
+	return this.postConcept('consistency', concept);
+};
+/**
+ */
+CoinventClient.prototype.quality = function(concept) {
+	return this.postConcept('quality', concept);
+};
+/**
+ */
+CoinventClient.prototype.weaken = function(blendDiagram) {
+	return this.postConcept('weaken', blendDiagram);
+};
 
 /**
  * @param pathToFile e.g. "winterstein/mytheory.dol"
@@ -69,6 +110,34 @@ CoinventClient.prototype.file_save = function(pathToFile, text) {
 		data: text
 	});
 }
+
+/**
+ * List the jobs for this actor
+ */
+CoinventClient.prototype.job_list = function(actor) {
+	return $.ajax({
+		url: this.server+'job/'+actor
+	});
+};
+/**
+ * Information on a job.
+ */
+CoinventClient.prototype.job_details = function(actor, jobId) {
+	return $.ajax({
+		url: this.server+'job/'+actor+'/'+jobId
+	});
+};
+/**
+ * Save the result of a job
+ */
+CoinventClient.prototype.job_put = function(actor, jobId, result) {
+	return $.ajax({		
+		url: this.server+'job/'+actor+'/'+jobId+'?action=put',
+		type:'POST',
+		data: result
+	});
+}
+
 
 function isURL(u) {
 	if ( ! u || ! match(u, String)) return false;

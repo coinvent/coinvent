@@ -16,7 +16,10 @@ public class Concept {
 	public Id oxid;
 	public Id xid;
 	public String format;
-	public String url;
+	private String url;
+	public String getUrl() {
+		return url;
+	}
 	private String text;
 
 	public String getText() {
@@ -59,6 +62,11 @@ public class Concept {
 	
 	public void setContents(String contents) {
 		this.text = contents;
+	}
+	public void setUrl(String url) {
+		assert ! url.matches(".*file/+file.*") : url;
+		assert url.contains("file") : url;
+		this.url = url;
 	}
 
 }

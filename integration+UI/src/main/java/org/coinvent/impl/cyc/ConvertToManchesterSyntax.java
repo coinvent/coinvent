@@ -1,4 +1,4 @@
-package org.coinvent.cyc;
+package org.coinvent.impl.cyc;
 
 import java.io.File;
 import java.util.Set;
