@@ -12,25 +12,24 @@ Symbols then
 
     ops
         third: Chord -> Note
-        bass: Chord -> Note
+        bassrel: Chord -> Note
         root: Chord -> Note
-   
 end
 
 
 %[spec Dom7_chord = ]%
 %[  Chord then]%
-%[  sort Dom7_chord = {c: Chord. hasNote(x,c) /\ hasNote(0,c) /\ hasNote(4,c) /\ hasNote(7,c) /\ third = 4 /\ bass = 0}]%
+%[  sort Dom7_chord = {c: Chord. hasNote(x,c) /\ hasNote(0,c) /\ hasNote(4,c) /\ hasNote(7,c) /\ third = 4 /\ bassrel = 0}]%
 %[end]%
                             
 %[spec Maj_chord =]%
 %[  Chord then]%
-%[  sort Maj_chord = {c: Chord. hasNote(4,c) /\ hasNote(0,c) /\ hasNote(7,c) /\ third = 4 /\ bass = 0}]%
+%[  sort Maj_chord = {c: Chord. hasNote(4,c) /\ hasNote(0,c) /\ hasNote(7,c) /\ third = 4 /\ bassrel = 0}]%
 %[end]%
 
 %[spec Sixth_chord_2ndinv =]%
 %[  Chord then]%
-%[  sort Sixth_chord_2ndinv = {c: Chord. hasNote(4,c) /\ hasNote(0,c) /\ hasNote(9,c) /\ third = 4 /\ bass = 9}]%
+%[  sort Sixth_chord_2ndinv = {c: Chord. hasNote(4,c) /\ hasNote(0,c) /\ hasNote(9,c) /\ third = 4 /\ bassrel = 9}]%
 %[end]%
 
 
@@ -48,8 +47,8 @@ spec PerfectCadence =
     . hasNote(final,7)
     . root(final) = 0
     . root(prefinal) = 7
-    . bass(final) = 0
-    . bass(prefinal) = 7
+    . bassrel(final) = 0
+    . bassrel(prefinal) = 0
     . third(final) = 4
     . third(prefinal) = x1
 end
@@ -69,8 +68,8 @@ spec PhrygianCadence =
     . hasNote(final,7)
     . root(final) = 0
     . root(prefinal) = 1
-    . bass(final) = 0
-    . bass(prefinal) = x
+    . bassrel(final) = 0
+    . bassrel(prefinal) = 9
     . third(final) = 4
     . third(prefinal) = 5
 end
@@ -86,14 +85,14 @@ spec GenericCadence =
     . hasNote(final,7)
     . root(final) = 0
     . third(final) = 4
-    . bass(final) = 0
+    . bassrel(final) = 0
 end  
 
 interpretation GenerictoPhrygian: GenericCadence to PhrygianCadence = 
    prefinal |-> prefinal,
    final |-> final,
    hasNote |-> hasNote,
-   bass |-> bass,
+   bassrel |-> bassrel,
    third |-> third,
    root |-> root 
   
@@ -101,7 +100,7 @@ interpretation GenerictoPerfect: GenericCadence to PerfectCadence =
    prefinal |-> prefinal,
    final |-> final,
    hasNote |-> hasNote,
-   bass |-> bass,
+   bassrel |-> bassrel,
    third |-> third,
    root |-> root 
 
@@ -119,7 +118,8 @@ spec WeakenedPerfectCadence =
     . hasNote(final,4)
     . hasNote(final,7)
     . root(final) = 0
-    . bass(final) = 0
+    . bassrel(final) = 0
+    . bassrel(prefinal) = 0
     . third(final) = 4
 end
 
@@ -135,7 +135,7 @@ spec WeakenedPhrygianCadence =
     . hasNote(final,7)
     . root(final) = 0
     . root(prefinal) = 1
-    . bass(final) = 0
+    . bassrel(final) = 0
     . third(final) = 4
     . third(prefinal) = 5
 end
@@ -144,7 +144,7 @@ interpretation GenerictoWPhrygian: GenericCadence to WeakenedPhrygianCadence =
    prefinal |-> prefinal,
    final |-> final,
    hasNote |-> hasNote,
-   bass |-> bass,
+   bassrel |-> bassrel,
    third |-> third,
    root |-> root 
   
@@ -152,7 +152,7 @@ interpretation GenerictoWPerfect: GenericCadence to WeakenedPerfectCadence =
    prefinal |-> prefinal,
    final |-> final,
    hasNote |-> hasNote,
-   bass |-> bass,
+   bassrel |-> bassrel,
    third |-> third,
    root |-> root 
 
@@ -173,8 +173,8 @@ spec TritoneCadence =
     . hasNote(final,7)
     . root(final) = 0
     . root(prefinal) = 1
-    . bass(final) = 0
-    . bass(prefinal) = 1
+    . bassrel(final) = 0
+    . bassrel(prefinal) = 0
     . third(final) = 4
     . third(prefinal) = 5
 end
