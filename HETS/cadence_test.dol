@@ -14,6 +14,8 @@ Symbols then
         third: Chord -> Note
         bassrel: Chord -> Note
         root: Chord -> Note
+    forall c:Chord,n:Note.
+       bassrel(c)=n => hasNote(c,n)
 end
 
 
