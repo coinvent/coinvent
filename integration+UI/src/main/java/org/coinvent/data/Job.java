@@ -6,41 +6,61 @@ import java.util.Map;
 import com.winterwell.depot.Desc;
 import com.winterwell.utils.threads.ATask.QStatus;
 
-
+import winterwell.utils.StrUtils;
+import winterwell.utils.Utils;
 import winterwell.web.app.WebRequest;
 
 public class Job implements IJob {
 
-	WebRequest request;
 	Object result;
 	Id actor;
 	QStatus status = QStatus.WAITING;
-	String opName;
-
-	public Job(User actor, String opName, WebRequest req) {
-		this.request = req;
-		this.actor = actor.getId();
-		this.opName = opName;
+	String component;
+	Map<String, Object> pmap;
+	String slug;
+	private BlendDiagram diagram;
+	
+	@Override
+	public void setResult(Object jobj) {
+		this.result = jobj;
+	}
+	
+	@Override
+	public String getComponent() {
+		return component;
 	}
 
+	public Job(User actor, String component, BlendDiagram diagram, WebRequest req) {
+		Utils.check4null(actor, component, req);
+		this.pmap = req.getParameterMap();
+		this.slug = req.getSlug();
+		this.actor = actor.getId();
+		this.component = component;
+		this.diagram = diagram;
+	}
+	
 	@Override
 	public Object getResult() {
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		return "Job["+getId().toString()+"]";
+	}
 
 	public Id getId() {
 		// hash the request setup & contents
-		Desc desc = new Desc(opName, Job.class);
+		Desc desc = new Desc(component, Job.class);
 		desc.setTag("coinvent");
 		desc.put("actor", actor.id);
 		// NB: full slug
-		desc.put("slug", request.getSlug());		
-		Map<String, Object> pmap = request.getParameterMap();
+		desc.put("slug", slug);		
 		for(String k : pmap.keySet()) {
 			desc.put(k, pmap.get(k));
 		}
 		
-		return new Id(actor, KKind.Job, desc.getId());
+		return new Id(actor, KKind.Job, StrUtils.md5(desc.getId()));
 	}
 
 	public Id getActor() {

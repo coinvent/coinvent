@@ -1,0 +1,15 @@
+ontology Human =
+
+	Class: Human
+	
+	Class: Woman
+		SubClassOf: Human
+		 
+end
+
+ontology Fish = 
+
+	Class: Fish
+	
+end
+

@@ -1,0 +1,153 @@
+
+<template id='ChimeraWorkspace'>
+
+	<div class='theories'>
+		<h3>Theory Files</h3>
+		<ul id='TheoryList'>
+			<li><form id='AddTheoryForm'><input type='text' name='theoryurl' /> <button>add</button></form></li>			
+		</ul>
+	</div>
+	
+</template>
+
+
+<template id='ChimeraEditor'>
+	<div class='container'>
+		<div class='row'><div class='col-md-12'>			
+			<%= templates.ChimeraModelView() %>		
+		</div></div><!-- ./row -->
+		<div class='row'><div class='col-md-12'>
+			<div><button class="btn btn-primary center-block">Model</button></div>
+			<%= templates.ChimeraBlendView() %>		
+		</div></div><!-- ./row -->
+		<div class='row'>
+			<div class='col-md-12'>
+				<button id='BlendButton' class="btn btn-primary center-block">&#x21b1; Blend &#x21b0;</button>
+			</div>
+		</div>
+		<div class='row'>
+			<div class='col-md-6'>
+				<%= templates.ChimeraTheoryEditor({posn:'A'}) %>
+			</div>
+			
+			<div class='col-md-6'>
+				<%= templates.ChimeraTheoryEditor({posn:'B'}) %>
+			</div>
+		</div><!-- ./row -->	
+	</div><!-- ./container -->
+</template>
+
+<template id='ChimeraModelView'>
+<div class="Theory panel panel-default" id='ChimeraModelView'>
+  <div class="panel-heading">
+    <h3 class="panel-title">Example Individual</h3>
+  </div>
+  <div class="panel-body">
+  	TODO generate some instance facts: name, personality, likes
+  </div><!-- ./panel-body -->
+</div>
+</template>
+
+<template id='ChimeraBlendView'>
+<div class="Theory panel panel-default" id='ChimeraBlendView'>
+  <div class="panel-heading">
+    <h3 class="panel-title" id='BlendSpecies'>Blended Animal</h3>    
+  </div>
+  <div class="panel-body">
+  	<div class='chimera-img center-block'><img class='animal-head' src=''><img class='animal-body' src=''></div>
+  	TODO facts
+  </div><!-- ./panel-body -->
+</div>
+</template>
+
+<template id='ChimeraTheoryEditor'>
+<div class="Theory panel panel-default" id='ChimeraTheoryEditor-<%= posn %>'>
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= posn %></h3>
+  </div>
+  <div class="panel-body">
+	<div id="carousel-<%= posn %>" class="carousel slide" data-ride="carousel" data-interval="false">
+	  <!-- Indicators -->
+	  <ol class="carousel-indicators">
+	  	<script>
+	  		for(var i=0; i<animals.length; i++) {
+				print('<li data-target="#carousel-'+posn+'" data-slide-to="'+i+'" class="'+(i==0? 'active' : '')+'"></li>\n');	  			
+	  		}
+	  	</script>
+	  </ol>
+
+	  <!-- Wrapper for slides -->
+	  <div class="carousel-inner" role="listbox">
+	  	<script>
+	  	for(var i=0; i<animals.length; i++) {
+	  		var animal = animals[i];
+	    	print('<div data-animal="'+animal.name+'" class="item'+(i==0? ' active' : '')+'"><img src="'+animal.img+'" alt="'+animal.name+'">');
+	    	print('<div class="carousel-caption">'+animal.name+'</div></div>\n');
+	    }
+	    </script>
+	  </div><!-- ./carousel-inner -->
+
+	  <!-- Controls -->
+	  <a class="left carousel-control" href="#carousel-<%= posn %>" role="button" data-slide="prev">
+	    <span class="glyphicon glyphicon-chevron-left"></span>
+	    <span class="sr-only">Previous</span>
+	  </a>
+	  <a class="right carousel-control" href="#carousel-<%= posn %>" role="button" data-slide="next">
+	    <span class="glyphicon glyphicon-chevron-right"></span>
+	    <span class="sr-only">Next</span>
+	  </a>
+	</div>
+  </div><!-- ./carousel -->
+</div><!-- ./Theory -->
+</template>
+
+<template id='TheoryLoader'>
+	<button data-target='<%= posn %>' 
+			onclick="var target=$(this).data('target'); $('#LoadModal .modal-title .name').text(target); $('#LoadModal').data('loadTarget', target); $('#LoadModal').modal();">load</button>	
+</template>
+
+<template id='TheoryNameEditor'>
+	<input data-bind='' type='text' name='TheoryName' />
+</template>
+
+<template id='ChimeraTheoryEditorDropBits'>
+</template>
+<!-- 
+	<div><h4>Modify by Dropping</h4>
+		<ul>
+			<li>Symbol <select></select></li>
+		</ul>
+		<ul>
+			<li>Sentence <select></select></li>
+		</ul>
+	</div>
+</template>
+ -->
+ 
+<template id='ChimeraMappingEditor'>
+	<div class='Mapping panel panel-default' id='ChimeraMappingEditor-<%= sourceposn %>-<%= targetposn %>'><h3><%= sourceposn %> &rightarrow; <%= targetposn %></h3>
+		<h4>Rename</h4>
+		<ul>
+			<li><select></select> &rightarrow; <input type='text'></li>
+		</ul>
+	</div>
+</template>
+
+<template id='ChimeraIssues'>
+	<div class='Theory'><h3>Issues</h3>
+	</div>
+</template>
+
+
+<template id='CoinventSettings'>
+	<div class='CoinventSettings'><h3>Settings</h3>
+		<form>
+			<div >Base: <input class='engine' name='baseEngine'></div>
+			<div >Blend: <input class='engine' name='blendEngine'></div> 		 		
+			<div >Consistency: <input class='engine' name='consistencyEngine'></div> 		 		
+			<div >Weaken: <input class='engine' name='weakenEngine'></div> 		 		
+			<div >Model: <input class='engine' name='modelEngine'></div> 		 		
+			<div >Quality: <input class='engine' name='qualityEngine'></div>
+		</form>
+	</div>
+</template>

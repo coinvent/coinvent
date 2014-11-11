@@ -57,12 +57,21 @@ function ATest(testName, testFn) {
 ATest._idCnt = 0;
 
 // NB: Object.defineProperty doesn't work on IE7
+/**
+ * @returns {string} queue|skip|running...|waiting|pass|fail
+ */
 ATest.prototype.getStatus = function() {return this._status;};
+/**
+ * @param s {string} Must be one of: queue|skip|running...|waiting|pass|fail <br>
+ * You can use setStatus('waiting') within a test function to defer pass/fail. <br>
+ * You can then use setStatus('fail') within a test function to explicitly fail the test.
+ */
 ATest.prototype.setStatus	= function(s) {
-		this._status = s;
-		// Logging status provides a hook for the PhantomJS runner to watch
-		console.log(SJTest.LOGTAG+':'+this._status, this.name, this.details || this.stack || '');
-	};
+	assert('|queue|skip|running...|waiting|pass|fail|'.indexOf(s) != -1, s);
+	this._status = s;
+	// Logging status provides a hook for the PhantomJS runner to watch
+	console.log(SJTest.LOGTAG+':'+this._status, this.name, this.details || this.stack || '');
+};
 /**
  * @param waitForThis
  *            {?function} see SJTest.runTest()
@@ -78,21 +87,30 @@ ATest.prototype.run = function(waitForThis, timeout) {
 		this.setStatus('running...');
 		console.log(SJTest.LOGTAG, this.name, this.getStatus());
 		
-		// Run test!
+		// Run the Test!
 		// NB: Pass in the ATest for reflection, though almost all tests will ignore it.
+		// The ATest is one way of doing async tests: E.g.
+		// function MyTest(test) {test.setStatus('waiting');
+		//   $.get('myurl').done(function(){test.setStatus('pass');}); 	
+		// }
 		this.details = this.fn(this);
-		
+				
 		// wait for async test?
+		var atest = this;
 		if ( ! waitForThis) {
-			this.setStatus('pass');
-			return;
+			if (this._status === 'waiting') {
+				waitForThis = function(){return atest._status==='pass' || atest._status==='fail';};
+			} else {
+				// All done -- no need to wait
+				this.setStatus('pass');
+				return;
+			}
 		}
 		
-		// waitFor?			
-		var atest = this;
-		var testDoneFn = function(yes) {				
-			atest.setStatus('pass');
-//			SJTest.passed.push(atest);
+		// waitFor?					
+		var testDoneFn = function(yes) {		
+			// Passed (unless it failed itself)
+			if (atest._status !== 'fail') atest.setStatus('pass');
 			if (yes !== true) atest.details = yes;
 			assert(match(SJTest._displayTest, Function));
 			if (SJTest._displayTable) SJTest._displayTest(atest); 
@@ -102,13 +120,12 @@ ATest.prototype.run = function(waitForThis, timeout) {
 			//console.log("TIMEOUT ATest.this", atest);				
 			atest.error = new Error("Timeout");
 			atest.setStatus('fail');
-			//SJTest.failed.push(atest);
 			assert(match(SJTest._displayTest, Function));
 			if (SJTest._displayTable) SJTest._displayTest(atest);
 		};
 		
 		SJTest.waitFor(waitForThis, testDoneFn, 
-			timeout || 5000, timeoutFn);
+			timeout || 10000, timeoutFn);
 	} catch(error) {
 		this.error = error;
 		if (error && error.stack) this.stack = error.stack;
@@ -140,7 +157,7 @@ ATest.prototype.toString = function() {
 var SJTest = SJTest || {};
 
 /** What version of SJTest is this? */
-SJTest.version = '0.3.0';
+SJTest.version = '0.3.1';
 
 /**
  * If true, isDone() will return false.
@@ -163,12 +180,20 @@ SJTest.LOGTAG = 'SJTest';
 
 /**
  * {Boolean} If off (the default), then SJTest will do nothing! Which lets you include tests in production code.
- * Set by the url parameter SJTest=1, or it can be explicitly set in javascript.
+ * Set by the url parameter SJTest=(on|a url), or it can be explicitly set in javascript. 
+ * A javascript setting takes precedence over a url parameter.
+ * <p>
  * NB: Even when off, SJTest will still define some functions, e.g. assertMatch() & isa().
  */
 if (SJTest.on===undefined) {
 	var locn = ""+window.location;
-	SJTest.on = locn.indexOf("SJTest=1")!=-1 || locn.indexOf("SJTest=true")!=-1 || locn.indexOf("SJTest=on")!=-1;
+	var queryParser = /[?&]SJTest=([^&]+)?/;
+	var m = locn.match(queryParser);
+	if (m && m[1] && m[1]!=='false' && m[1]!=='off') {
+		SJTest.on = true;
+	} else {
+		SJTest.on = false;
+	}
 }
 
 /** true by default: Expose SJTest.assert() as a global function
@@ -230,7 +255,9 @@ SJTest.isDone = function() {
 	// Any running tests?
 	for(var i=0; i<SJTest.tests.length; i++) {
 		var test = SJTest.tests[i];
-		if (test.getStatus()==='running...') return false;
+		if (test.getStatus()!=='pass' && test.getStatus()!=='fail' && test.getStatus()!=='skip') {
+			return false;
+		}
 	}
 	//console.log("isDone! ", SJTest.tests.length);
 	return true;
@@ -247,8 +274,7 @@ SJTest.isDone = function() {
  *            will be reported as the test-details). Throw an error if
  *            the test fails.
  * @param timeout
- *            {?Number} max milliseconds to allow. Default to 5000 (5
- *            seconds)
+ *            {?Number} max milliseconds to allow. Default to 10000 (10 seconds)
  */
 SJTest.runTest = function(testName, testFn, waitForThis, timeout) {
 	if ( ! SJTest.on) {
@@ -351,7 +377,7 @@ SJTest.display = function() {
 	for(var i=0; i<SJTest.tests.length; i++) {
 		var test = SJTest.tests[i];
 		SJTest._displayTest(test);				
-	}		
+	}	
 }; // display()
 	
 /** @ignore */ 
@@ -371,7 +397,7 @@ SJTest._displayTest = function(test) {
 		//console.log('make it', trid);
 	} //else console.log('got it',trid);
 	if (SJTest.styling) {
-		var col = test.getStatus()==='pass'? '#9f9' : test.getStatus()==='skip'? '#ccf' : test.getStatus()==='running...'? '#fff' : '#f99';			
+		var col = test.getStatus()==='pass'? '#9f9' : test.getStatus()==='skip'? '#ccf' : test.getStatus()==='running...'||test.getStatus()==='waiting'? '#ff9' : '#f99';			
 		tr.css({border:'1px solid #333', 'background-color':col});
 	}
 			
@@ -597,18 +623,23 @@ SJTest.runScript = function(url, after) {
  * use if an attacker could place a script onto the same domain, or abuse
  * one of yours.
  */
-SJTest.runScriptFromUrl = function() {			
-	var script = SJTest._scriptFromUrl;
-	console.log(SJTest.LOGTAG, "runScriptFromUrl: "+script);
+SJTest.runScriptFromUrl = function() {
+	// Is there a script in the url?
+	var locn = ""+window.location;
+	var queryParser = /[?&]SJTest=([^&]+)?/;
+	var m = locn.match(queryParser);
+	if ( ! m) return;	
+	var script = m[1];	
 	if ( ! script) return;
 	if ( ! SJTest.on) {
 		 // Not on!
 		console.log(SJTest.LOGTAG, "NOT on, so not running script "+script);
 		return;
 	}			
+	console.log(SJTest.LOGTAG, "runScriptFromUrl: "+script);
 	// Security check: must be a relative url
 	if (script.indexOf('//') != -1) {
-		console.warn(SJTest.LOGTAG, "For security, you cannot run cross-domain test scripts.");
+		console.warn(SJTest.LOGTAG, "NOT running. For security, you cannot run cross-domain test scripts.");
 		return;
 	}
 	SJTest.runScript(script);
@@ -616,18 +647,26 @@ SJTest.runScriptFromUrl = function() {
 
 /**
  * Waitfor, adapted from http://blog.jeffscudder.com/2012/07/waitfor-javascript.html
-@param condition {function} return true when ready. Errors are ignored.
-@param callback {function} Called once condition is true.
+ * This does *not* block, but calls the callback when ready and any then/done/fail deferred functions.
+ * <p>
+ * Note: Why no blocking? Blocking is problematic given that normal javascript is single-threaded with switching.
+ * Usually you're waiting on an ajax request. Blocking would deny the ajax handler a chance to run. So you would
+ * block forever. 
+ * 
+@param condition {Function} return true when ready. Errors are ignored.
+@param callback {?Function} Called once condition is true.
 @param timeout {?Number} Max time in milliseconds. If unset: wait indefinitely.
-@param onTimeout {?function} Called if timeout occurs.
+@param onTimeout {?Function} Called if timeout occurs.
 
-@returns TODO a promise, so you can do waitFor(X).then(Y)
+@returns A jQuery deferred object (IF jQuery is present), so you can do waitFor(X).then(Y). null if no jQuery.
  * 
  */
-SJTest.waitFor = function(condition, callback, timeout, onTimeout) {
-	SJTest.assertMatch(condition, Function, callback, Function, timeout, "?Number", onTimeout, "?Function");
-	SJTest.waitFor.waitingFor.push([condition, callback, timeout? new Date().getTime()+timeout : false, onTimeout]);
+SJTest.waitFor = function(condition, callback, timeout, onTimeout) {	
+	SJTest.assertMatch(condition, Function, callback, "?Function", timeout, "?Number", onTimeout, "?Function");
+	var deferred = window.jQuery? new jQuery.Deferred() : null;
+	SJTest.waitFor.waitingFor.push([condition, callback, timeout? new Date().getTime()+timeout : false, onTimeout, deferred]);
 	SJTest.waitFor.check();
+	return deferred;
 };
 
 SJTest.waitFor.waitingFor = [];
@@ -636,6 +675,9 @@ SJTest.waitFor.waitingFor = [];
  */
 SJTest.waitFor.period = 50;
 
+/**
+ * Check all the things we're waiting on. Schedule another check a bit later if we're still waiting.
+ */
 SJTest.waitFor.check = function() {
 	var stillWaitingFor = [];
 	for (var i = 0; i < SJTest.waitFor.waitingFor.length; i++) {
@@ -645,13 +687,18 @@ SJTest.waitFor.check = function() {
 			condMet = row[0]();
 		} catch (e) {}
 		if (condMet) {
-			row[1](condMet);
+			// Done! ...Callback
+			if (row[1]) row[1](condMet);
+			// ...Deferred
+			if (row[4]) row[4].resolve();
 			continue;
 		}
 		if (row[2] && new Date().getTime() > row[2]) {
 			// time out!
 			console.log("waitFor timeout "+row[0]);
-			if (row[3]) row[3]();				
+			if (row[3]) row[3]();
+			// deferred fail
+			if (row[4]) row[4].reject();
 			continue;
 		}
 		stillWaitingFor.push(SJTest.waitFor.waitingFor[i]);
@@ -911,15 +958,17 @@ SJTest4Phantom._doThemAll = function() {
 	assert(SJTest.phantomjsTopLevel, SJTest);
 	var page = require('webpage').create();
 	// echo console messages
-	page.onConsoleMessage = function(m){
-		console.log(m); // ?? filter by LOGTAG
-		var mcode = m.substr(0, 'SJTest:pass'.length);
-		if (mcode==='SJTest:pass') {
-			SJTest4Phantom.passed.push(m);
-		} else if (mcode==='SJTest:fail') {
-			SJTest4Phantom.failed.push(m);
-		} else if (mcode==='SJTest:skip') {
-			SJTest4Phantom.skipped.push(m);
+	page.onConsoleMessage = function(msg){
+		console.log(msg); // filter by LOGTAG
+		var m = msg.match(/SJTest:(\S+) (.+)/);
+		if ( ! m) return;
+		var mcode=m[1], testName=m[2];
+		if (mcode==='pass') {
+			SJTest4Phantom.passed.push(testName);
+		} else if (mcode==='fail') {
+			SJTest4Phantom.failed.push(testName);
+		} else if (mcode==='skip') {
+			SJTest4Phantom.skipped.push(testName);
 		}
 	};
 
@@ -945,7 +994,7 @@ SJTest4Phantom.goPhantom = function() {
 		console.warn("SJTest OFF: Did not recognise script "+args[0]);		
 	}
 	if (args.length === 1) {
-		console.log('SJTest version 0.1 by Daniel Winterstein');
+		console.log('SJTest version '+SJTest.version+' by Daniel Winterstein');
 	    console.log('Usage: phantomjs SJTest.js MyTestFile1.html MyTestFile2.html ...');
 	    phantom.exit();
 	    return;

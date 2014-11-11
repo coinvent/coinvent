@@ -1,8 +1,12 @@
 package org.coinvent.web;
 
+import java.net.URI;
+
+import org.coinvent.Coinvent;
 import org.coinvent.data.Concept;
 
 import winterwell.utils.Key;
+import winterwell.utils.web.WebUtils;
 import winterwell.web.fields.AField;
 
 /**
@@ -18,14 +22,27 @@ public class ConceptField extends AField<Concept> {
 	
 	@Override
 	public Concept fromString(String v) throws Exception {
-		// TODO Auto-generated method stub
-		return super.fromString(v);
+		// Is it a url?
+		if (WebUtils.URL_REGEX.matcher(v).matches()) {
+			Concept concept = new Concept();
+			concept.setUrl(v);
+			return concept;
+		}
+		if (WebUtils.RELATIVE_URL_REGEX.matcher(v).matches()) {
+			Concept concept = new Concept();
+			URI url = WebUtils.resolveUri(Coinvent.app.getConfig().baseUrl, v);
+			concept.setUrl(url.toString());
+			return concept;
+		}
+		// treat as the thing itself
+		Concept concept = new Concept(v);
+		return concept;
 	}
 	
 	@Override
 	public String toString(Concept c) {
-		if (c.iri!=null) return c.iri;
-		return c.contents;
+		if (c.getUrl()!=null) return c.getUrl();
+		return c.getText();
 	}
 
 }

@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.coinvent.actor.IBlendActor;
+import org.coinvent.data.BlendDiagram;
 import org.coinvent.data.Concept;
 import org.coinvent.data.DataLayerFactory;
 import org.coinvent.data.FileDataLayer;
@@ -14,8 +16,10 @@ import org.coinvent.data.Id;
 import org.coinvent.data.Job;
 import org.coinvent.data.Mapping;
 
+import com.google.gson.Gson;
 import com.winterwell.utils.threads.Actor;
 import com.winterwell.utils.threads.ATask.QStatus;
+import com.winterwell.utils.web.WebUtils2;
 
 import winterwell.utils.Key;
 import winterwell.utils.TodoException;
@@ -23,7 +27,6 @@ import winterwell.utils.Utils;
 import winterwell.utils.containers.ArrayMap;
 import winterwell.utils.time.Dt;
 import winterwell.utils.time.TUnit;
-import winterwell.utils.web.WebUtils2;
 import winterwell.web.FakeBrowser;
 import winterwell.web.WebEx;
 import winterwell.web.ajax.JsonResponse;
@@ -52,32 +55,40 @@ Response-cargo:
  * @author daniel
  *
  */
-public class BlenderServlet extends AServlet {
+public class BlendServlet extends AServlet {
 
-	private static final Key<String> LANG = new AField("lang");
-	private static final AField<Concept> INPUT1 = new ConceptField("input1");
-	private static final AField<Concept> INPUT2 = new ConceptField("input2");
-	private static final AField<Concept> BASE = new ConceptField("base");
-	private static final AField<Mapping> BASE_INPUT1 = new MappingField("base_input1");
-	private static final AField<Mapping> BASE_INPUT2 = new MappingField("base_input2");
+	static final Key<String> LANG = new AField("lang");
+	static final AField<Concept> INPUT1 = new ConceptField("input1");
+	static final AField<Concept> INPUT2 = new ConceptField("input2");
+	static final AField<Concept> BASE = new ConceptField("base");
+	static final AField<Mapping> BASE_INPUT1 = new MappingField("base_input1");
+	static final AField<Mapping> BASE_INPUT2 = new MappingField("base_input2");
+	private static final String COMPONENT = "blend";
 	
 	private JsonResponse jr;
 	private FileDataLayer dataLayer = (FileDataLayer) DataLayerFactory.get();
 
+	public BlendServlet() {
+		defaultActorName = "dumb";
+	}
+	
 	@Override
 	public void doPost(WebRequest req) throws Exception {
 		init(req);						
 		
-		String lang = req.get(LANG);
-		Concept input1 = req.getRequired(INPUT1);
-		Concept input2 = req.getRequired(INPUT2);
-		Concept base = req.get(BASE);
-		Mapping base_input1 = req.get(BASE_INPUT1);
-		Mapping base_input2 = req.get(BASE_INPUT2);
-		
 		// A fast method? HETS?
 		if (AgentRegistry.recognise(actorName)) {
-			throw new TodoException("Call out to "+actorName);
+			IBlendActor codeActor = AgentRegistry.getActor(IBlendActor.class, actorName);
+			
+			BlendDiagram based = codeActor.doBlend(bd);			
+			
+			JsonResponse jr = new JsonResponse(req, based);
+			jr.put("actor", actorName);
+			jr.put("component", component);
+			jr.put("status", QStatus.DONE);
+					
+			WebUtils2.sendJson(jr, req);
+			return;
 		}
 		
 		// Interactive/manual
@@ -87,38 +98,6 @@ public class BlenderServlet extends AServlet {
 		WebUtils2.sendJson(jr, req);
 	}
 
-	JsonResponse doSlow(WebRequest req) {
-		// ...make a job 
-		IJob job = new Job(actor, opName, req);
-		
-		// ...use history?
-		Id jid = job.getId();
-		IJob oldJob = DataLayerFactory.get().getJob(jid);
-		if (oldJob!=null 
-				&& oldJob.getStatus()!=QStatus.ERROR 
-				&& oldJob.getStatus()!=QStatus.CANCELLED) {
-			job = oldJob;
-			
-			// Done?
-			if (job.getStatus()==QStatus.DONE) {
-				Object r = oldJob.getResult();
-				jr = new JsonResponse(req, r);
-				return jr;			
-			}
-		} else {
-			// Save this new job
-			job = DataLayerFactory.get().saveJob(job);			
-		}
-				
-		// wait for it
-		jr = new JsonResponse(req, new ArrayMap(
-				"actor", actorName,
-				"op", opName,
-				"id", job.getId(),
-				"status", job.getStatus()
-				));
-		return jr;
-	}
 
 }
 

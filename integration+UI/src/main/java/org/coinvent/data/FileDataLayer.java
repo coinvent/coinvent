@@ -6,7 +6,8 @@ import java.util.List;
 
 import org.coinvent.web.FileServlet;
 
-import winterwell.utils.io.FileUtils;
+import com.winterwell.utils.io.FileUtils;
+
 import winterwell.utils.web.XStreamUtils;
 
 /**
@@ -20,11 +21,17 @@ public class FileDataLayer implements IDataLayer {
 	
 	@Override
 	public User getUser(Id user) {
-		File f = new File(base, user.getName()+"/user.xml");
+		File f = new File(base, s(user.getName())+"/user.xml");
 		if (f.isFile()) {
 			return FileUtils.load(f);
-		}
+		}		
 		return null;
+	}
+
+	String s(Object id) {
+		String s = id.toString();
+		s = FileUtils.safeFilename(s);
+		return s;
 	}
 
 	@Override
@@ -39,9 +46,16 @@ public class FileDataLayer implements IDataLayer {
 	}
 
 	@Override
-	public List<Id> getUserJobs(Id user) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Id> getUserJobs(Id user) {		
+		File f = getFile(new Id(user, KKind.Job, "dummy"));
+		List<File> fs = FileUtils.find(f.getParentFile(), ".+");
+		List<Id> list = new ArrayList();
+		for (File file : fs) {
+			if (file.isDirectory()) continue;
+			Id id = new Id(user, KKind.Job, file.getName());
+			list.add(id);
+		}		
+		return list;
 	}
 
 	@Override
@@ -66,14 +80,16 @@ public class FileDataLayer implements IDataLayer {
 	}
 
 	private File getFile(Id xid) {
-		return new File(base, xid.getParent().getName()
+		assert xid != null;
+		return new File(base, s(xid.getParent().getName())
 							+"/_"+xid.getKind().toString()
-							+"/"+xid.getName());
+							+"/"+s(xid.getName()));
 	}
 
 	@Override
 	public User getCreateUser(Id xid) {
-		File f = new File(base, xid.getName()+"/user.xml");
+		assert xid.getName() != null : xid;
+		File f = new File(base, s(xid.getName())+"/user.xml");
 		if (f.isFile()) return FileUtils.load(f);
 		User u = new User(xid);
 		f.getParentFile().mkdirs();
@@ -86,7 +102,7 @@ public class FileDataLayer implements IDataLayer {
 		Id concept = Concept.getId(user.getId(), conceptName);
 		String[] bits = concept.getName().split("__");
 		assert bits[0].equals(user.getId().getName()) : concept;
-		File f = new File(base, user.getId().getName()+"/"+bits[1]);
+		File f = new File(base, s(user.getId().getName())+"/"+bits[1]);
 		if (f.isFile()) return FileUtils.load(f);
 		Concept u = new Concept(user, concept);
 		f.getParentFile().mkdirs();
@@ -96,7 +112,7 @@ public class FileDataLayer implements IDataLayer {
 
 	@Override
 	public IJob saveJob(IJob job) {
-		File f = new File(base, job.getActor()+"/_jobs/"+job.getId());
+		File f = getFile(job.getId());
 		f.getParentFile().mkdirs();
 		FileUtils.save(job, f);
 		return job;

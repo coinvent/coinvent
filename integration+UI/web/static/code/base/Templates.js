@@ -121,7 +121,8 @@ templateSrc is optional. If set, MyUrlForTemplateHtml will be loaded via loadTem
 				return tFn(_templateContext(data));
 			} catch (err) {
 				// The error caught while processing templates is not informative, so let's create one that is.
-				reportError(new TemplateError(name, err));
+				if (window.reportError) reportError(new TemplateError(name, err));
+				else console.error(new TemplateError(name, err));
 			}
 		};
 	}
