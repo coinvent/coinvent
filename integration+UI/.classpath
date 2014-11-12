@@ -13,7 +13,6 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-util.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-websocket.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/servlet-api-3.0.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/owlapi-distribution-3.5.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.utils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.web"/>
