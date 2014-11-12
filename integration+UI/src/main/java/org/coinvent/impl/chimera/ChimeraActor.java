@@ -51,8 +51,8 @@ public class ChimeraActor extends ACoinvent {
 
 	@Override
 	public BlendDiagram doBlend(BlendDiagram bd) {
-		String animal1 = bd.input1.getName();
-		String animal2 = bd.input2.getName();
+		String animal1 = getAnimal(bd.input1);
+		String animal2 = getAnimal(bd.input2);
 		String chimera = animal1+'-'+animal2;
 		Mapping map1 = new Mapping(new ArrayMap(animal1, chimera));
 		Mapping map2 = new Mapping(new ArrayMap(animal2, chimera));
@@ -68,6 +68,13 @@ public class ChimeraActor extends ACoinvent {
 		return blended;
 	}
 
+	private String getText(Concept input2) {
+		return input2.getText();
+	}
+	private String getAnimal(Concept input1) {
+		int i = input1.getUrl().indexOf('?');
+		return input1.getUrl().substring(i+1);
+	}
 	private Concept applyMap(Mapping map, Concept concept) {
 		String[] lines = StrUtils.splitLines(concept.getText());
 		for (int i = 0; i < lines.length; i++) {

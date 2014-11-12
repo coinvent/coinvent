@@ -1,13 +1,15 @@
 
 .chimera-img .animal-head {
-	width:200px; height:150px; border:solid red 1px; 
+	/*display: inline;*/
+	width:250px; height:300px;
 	background-position: 0px 0px;
 }
 
 
 .chimera-img .animal-body {
-	width:200px; height:150px; border:solid blue 1px; 
-	background-position: -100px 0px;
+	/*display: inline;*/
+	width:250px; height:300px;
+	background-position: -250px 0px;
 }
 
 .item img {

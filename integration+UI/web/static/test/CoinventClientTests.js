@@ -69,6 +69,29 @@ SJTest.run({name:'CoinventClientTests',
 		});
 		test.setStatus("waiting");
 		return f;
+	},
+
+
+	/** Compute a model for an animal */
+	modelTest: function(test) {
+		var concept = new Concept("/file/chimera/animals.ttl?meerkat");
+		var cc = new CoinventClient();
+		
+		var f = cc.model(cc)
+			.then(function(r){
+				console.log(r);
+				assert(r);
+				window.modelResponse = r;
+				var model = new Concept(r.cargo);
+				window.model = model;
+				test.setStatus("pass");
+		}).fail(function(r) {
+			console.log(r);
+			test.setStatus("fail");
+			test.details = r.statusText;
+		});
+		test.setStatus("waiting");
+		return f;
 	}
 
 });

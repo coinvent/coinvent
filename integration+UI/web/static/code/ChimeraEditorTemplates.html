@@ -24,7 +24,7 @@
 		</div><!-- ./row -->	
 		<div class='row'>
 			<div class='col-md-12'>
-				<button id='BlendButton' class="btn btn-primary center-block">&#x21b1; Blend &#x21b0;</button>
+				<button id='BlendButton' class="btn btn-primary center-block">&#10551; Blend &#10550;</button>
 			</div>
 		</div>
 		<div class='row'><div class='col-md-12'>
@@ -42,7 +42,7 @@
 </template>
 
 <template id='ChimeraModelView'>
-<div class="Theory panel panel-default" id='ChimeraModelView'>
+<div class="panel panel-default" id='ChimeraModelView'>
   <div class="panel-heading">
     <h3 class="panel-title">Example Individual</h3>
   </div>
@@ -58,19 +58,17 @@
     <h3 class="panel-title" id='BlendSpecies'>Blended Animal</h3>    
   </div>
   <div class="panel-body">
-  	<div class='chimera-img center-block'>
-  		<div class='animal-head'></div><div class='animal-body'></div>
-  	</div>
-  	TODO facts
+  	<div class='container'>
+	  	<div class='chimera-img center-block'>
+	  		<table><tr><td><div class='animal-head'></div></td><td><div class='animal-body'></div></td></tr></table>
+	  	</div>
+	</div>
   </div><!-- ./panel-body -->
 </div>
 </template>
 
 <template id='ChimeraTheoryEditor'>
 <div class="Theory panel panel-default" id='ChimeraTheoryEditor-<%= posn %>'>
-  <div class="panel-heading">
-    <h3 class="panel-title"><%= posn %></h3>
-  </div>
   <div class="panel-body">
 	<div id="carousel-<%= posn %>" class="carousel slide" data-ride="carousel" data-interval="false">
 	  <!-- Indicators -->
@@ -88,7 +86,7 @@
 	  	for(var i=0; i<animals.length; i++) {
 	  		var animal = animals[i];
 	    	print('<div data-animal="'+animal.name+'" class="item'+(i==0? ' active' : '')+'"><img src="'+animal.img+'" alt="'+animal.name+'">');
-	    	print('<div class="carousel-caption">'+animal.name+'</div></div>\n');
+	    	print('<div class="carousel-caption"><h3>'+animal.name+'</h3></div></div>\n');
 	    }
 	    </script>
 	  </div><!-- ./carousel-inner -->
@@ -105,55 +103,4 @@
 	</div>
   </div><!-- ./carousel -->
 </div><!-- ./Theory -->
-</template>
-
-<template id='TheoryLoader'>
-	<button data-target='<%= posn %>' 
-			onclick="var target=$(this).data('target'); $('#LoadModal .modal-title .name').text(target); $('#LoadModal').data('loadTarget', target); $('#LoadModal').modal();">load</button>	
-</template>
-
-<template id='TheoryNameEditor'>
-	<input data-bind='' type='text' name='TheoryName' />
-</template>
-
-<template id='ChimeraTheoryEditorDropBits'>
-</template>
-<!-- 
-	<div><h4>Modify by Dropping</h4>
-		<ul>
-			<li>Symbol <select></select></li>
-		</ul>
-		<ul>
-			<li>Sentence <select></select></li>
-		</ul>
-	</div>
-</template>
- -->
- 
-<template id='ChimeraMappingEditor'>
-	<div class='Mapping panel panel-default' id='ChimeraMappingEditor-<%= sourceposn %>-<%= targetposn %>'><h3><%= sourceposn %> &rightarrow; <%= targetposn %></h3>
-		<h4>Rename</h4>
-		<ul>
-			<li><select></select> &rightarrow; <input type='text'></li>
-		</ul>
-	</div>
-</template>
-
-<template id='ChimeraIssues'>
-	<div class='Theory'><h3>Issues</h3>
-	</div>
-</template>
-
-
-<template id='CoinventSettings'>
-	<div class='CoinventSettings'><h3>Settings</h3>
-		<form>
-			<div >Base: <input class='engine' name='baseEngine'></div>
-			<div >Blend: <input class='engine' name='blendEngine'></div> 		 		
-			<div >Consistency: <input class='engine' name='consistencyEngine'></div> 		 		
-			<div >Weaken: <input class='engine' name='weakenEngine'></div> 		 		
-			<div >Model: <input class='engine' name='modelEngine'></div> 		 		
-			<div >Quality: <input class='engine' name='qualityEngine'></div>
-		</form>
-	</div>
 </template>

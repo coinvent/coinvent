@@ -3,7 +3,7 @@
 * @param server {string?} The url for the server
 */
 function CoinventClient(server) {
-	/** The url for the server -- always ends with a '/'.
+	/** {string} The url for the server -- always ends with a '/'.
 	*/
 	this.server = server || '/';
 	if (this.server.charAt(this.server.length-1)!='/') this.server += '/';
@@ -12,6 +12,12 @@ function CoinventClient(server) {
 	 * Blanks will be filled in with "default".
 	 */
 	this.engines = {};
+
+	/**
+	* {boolean} If true, where BlendDiagrams are passed into a function, they will be modified by the
+	* result on success. The default (false) is that the user handles what to do with the ajax response.
+	*/
+	this.editInPlace = false;
 }
 
 // TODO enum
@@ -30,11 +36,23 @@ CoinventClient.prototype.postBlendDiagram = function(op, blendDiagram) {
 			base_input2: blendDiagram.base_input2
 			//cursor: {?url} For requesting follow-on results.
 		};
-	return $.ajax({
+	var xhr = $.ajax({
 		url: this.server+op+'/'+engine,
 		type:'POST',
 		data: data
 	});
+	if (this.editInPlace) {
+		xhr.then(function(r) {
+			var newBD = new BlendDiagram(r.cargo);
+			var old = JSON.stringify(blendDiagram);
+			$.map(newBD, function( value, key ) {
+				blendDiagram[key] = value;
+				return key;
+			});
+			console.log("mod", old, blendDiagram);
+		});
+	}
+	return xhr;
 };
 
 /** common basis for posts */
