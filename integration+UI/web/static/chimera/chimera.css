@@ -11,7 +11,13 @@
 	width:250px; height:300px;
 	background-position: -250px 0px;
 }
-
+.chimera-desc {
+	width:50%;
+	font-size: 125%;
+}
+.ModelText {
+	font-size: 125%;
+}
 .item img {
 	width:200px;
 }

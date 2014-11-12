@@ -8,8 +8,9 @@ function CoinventClient(server) {
 	this.server = server || '/';
 	if (this.server.charAt(this.server.length-1)!='/') this.server += '/';
 	/**
-	 * op-to-actor_name, e.g. engines.blend = 'hets'.
+	 * op-to-actor_name, e.g. engines.blend = 'hets'.	 
 	 * Blanks will be filled in with "default".
+	 * Can be set to a String instead, in which case one value is used for all operations.
 	 */
 	this.engines = {};
 
@@ -26,7 +27,7 @@ function CoinventClient(server) {
 /** common basis for posts */
 CoinventClient.prototype.postBlendDiagram = function(op, blendDiagram) {
 	assertMatch(op,String, blendDiagram,BlendDiagram);
-	var engine = this.engines[op] || 'default';
+	var engine = match(this.engines,String)? this.engines : this.engines[op] || 'default';
 	var data = {
 			lang: blendDiagram.format,
 			input1: this.val(blendDiagram.input1),
@@ -57,13 +58,13 @@ CoinventClient.prototype.postBlendDiagram = function(op, blendDiagram) {
 
 /** common basis for posts */
 CoinventClient.prototype.postConcept = function(op, concept) {
-	assertMatch(op,String, engine,String, concept,Concept);
+	assertMatch(op,String, concept,Concept);
 	var data = {
-			lang: blendDiagram.format,
+			lang: concept.format,
 			concept: this.val(concept),
 			//cursor: {?url} For requesting follow-on results.
 		};
-	var engine = engines[op] || 'default';
+	var engine = match(this.engines,String)? this.engines : this.engines[op] || 'default';
 	return $.ajax({
 		url: this.server+op+'/'+engine,
 		type:'POST',

@@ -4,7 +4,9 @@ import org.coinvent.Coinvent;
 import org.coinvent.actor.IBaseActor;
 import org.coinvent.actor.IBlendActor;
 import org.coinvent.actor.ICoinvent;
+import org.coinvent.actor.IModelActor;
 
+import winterwell.utils.TodoException;
 import winterwell.utils.Utils;
 
 /**
@@ -44,7 +46,10 @@ public class AgentRegistry {
 			if (klass==IBlendActor.class) {
 				return (Role) topActor.getBlendActor();
 			}
-			return null;
+			if (klass==IModelActor.class) {
+				return (Role) topActor.getModelActor();
+			}
+			throw new TodoException(klass);
 		} catch(Exception ex) {
 			throw Utils.runtime(ex);
 		}

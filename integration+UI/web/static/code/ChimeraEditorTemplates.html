@@ -41,13 +41,16 @@
 	</div><!-- ./container -->
 </template>
 
+<!-- context: {Concept} model or null -->
 <template id='ChimeraModelView'>
 <div class="panel panel-default" id='ChimeraModelView'>
   <div class="panel-heading">
     <h3 class="panel-title">Example Individual</h3>
   </div>
   <div class="panel-body">
-  	TODO generate some instance facts: name, personality, likes
+  	<p class='ModelText'>
+  		<%= context.text? context.text : "" %>
+  	</p>
   </div><!-- ./panel-body -->
 </div>
 </template>
@@ -55,12 +58,14 @@
 <template id='ChimeraBlendView'>
 <div class="Theory panel panel-default" id='ChimeraBlendView'>
   <div class="panel-heading">
-    <h3 class="panel-title" id='BlendSpecies'>Blended Animal</h3>    
+    <h3 class="panel-title chimera-name" id='BlendSpecies'>Blended Animal</h3>    
   </div>
   <div class="panel-body">
   	<div class='container'>
-	  	<div class='chimera-img center-block'>
+	  	<div class='chimera-img pull-left'>
 	  		<table><tr><td><div class='animal-head'></div></td><td><div class='animal-body'></div></td></tr></table>
+	  	</div>	  	
+	  	<div class='chimera-desc pull-left'>
 	  	</div>
 	</div>
   </div><!-- ./panel-body -->

@@ -15,6 +15,7 @@ import winterwell.web.fields.AField;
  *
  */
 public class ConceptField extends AField<Concept> {
+	private static final long serialVersionUID = 1L;
 
 	public ConceptField(String name) {
 		super(name);
