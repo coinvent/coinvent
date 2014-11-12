@@ -1,0 +1,36 @@
+Class: Artifact 
+Class: Capability
+ObjectProperty: has_function
+    Range: Capability 
+ObjectProperty: executes 
+    Range: Capability
+
+ObjectProperty: is_located_on 
+ObjectProperty: contains 
+
+Class: Person
+Class: BodyOfWater
+
+ObjectProperty: is_navigated_by
+    Domain: Boat
+    Range: Person
+
+Class: MeansOfTransportation
+    SubClassOf: Capability
+
+Class: ArtifactThatExecutesTransportationFunction
+    EquivalentTo: Artifact that executes some MeansOfTransportation
+    SubClassOf: contains some owl:Thing    
+       
+Class: Floating
+    SubClassOf: Capability
+
+Class: ArtifactThatExecutesFloatingFunction
+    EquivalentTo: Artifact that executes some Floating
+    SubClassOf: is_located_on some BodyOfWater    
+
+Class: Boat
+    SubClassOf: Artifact
+        that has_function some MeansOfTransportation
+        and has_function some Floating
+        and is_navigated_by some Person

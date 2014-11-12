@@ -20,9 +20,17 @@ public class Job implements IJob {
 	String slug;
 	private BlendDiagram diagram;
 	
+	public BlendDiagram getDiagram() {
+		return diagram;
+	}
+	
 	@Override
 	public void setResult(Object jobj) {
 		this.result = jobj;
+	}
+	
+	public void setStatus(QStatus status) {
+		this.status = status;
 	}
 	
 	@Override

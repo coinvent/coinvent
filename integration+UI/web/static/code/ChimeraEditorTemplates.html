@@ -13,18 +13,6 @@
 
 <template id='ChimeraEditor'>
 	<div class='container'>
-		<div class='row'><div class='col-md-12'>			
-			<%= templates.ChimeraModelView() %>		
-		</div></div><!-- ./row -->
-		<div class='row'><div class='col-md-12'>
-			<div><button class="btn btn-primary center-block">Model</button></div>
-			<%= templates.ChimeraBlendView() %>		
-		</div></div><!-- ./row -->
-		<div class='row'>
-			<div class='col-md-12'>
-				<button id='BlendButton' class="btn btn-primary center-block">&#x21b1; Blend &#x21b0;</button>
-			</div>
-		</div>
 		<div class='row'>
 			<div class='col-md-6'>
 				<%= templates.ChimeraTheoryEditor({posn:'A'}) %>
@@ -34,6 +22,22 @@
 				<%= templates.ChimeraTheoryEditor({posn:'B'}) %>
 			</div>
 		</div><!-- ./row -->	
+		<div class='row'>
+			<div class='col-md-12'>
+				<button id='BlendButton' class="btn btn-primary center-block">&#x21b1; Blend &#x21b0;</button>
+			</div>
+		</div>
+		<div class='row'><div class='col-md-12'>
+			<%= templates.ChimeraBlendView() %>		
+		</div></div><!-- ./row -->
+		<div class='row'>
+			<div class='col-md-12'>
+				<button id='ModelButton' class="btn btn-primary center-block">Model</button>
+			</div>
+		</div>
+		<div class='row'><div class='col-md-12'>			
+			<%= templates.ChimeraModelView() %>		
+		</div></div><!-- ./row -->
 	</div><!-- ./container -->
 </template>
 
@@ -54,7 +58,9 @@
     <h3 class="panel-title" id='BlendSpecies'>Blended Animal</h3>    
   </div>
   <div class="panel-body">
-  	<div class='chimera-img center-block'><img class='animal-head' src=''><img class='animal-body' src=''></div>
+  	<div class='chimera-img center-block'>
+  		<div class='animal-head'></div><div class='animal-body'></div>
+  	</div>
   	TODO facts
   </div><!-- ./panel-body -->
 </div>

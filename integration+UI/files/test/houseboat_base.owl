@@ -1,0 +1,10 @@
+Class: Artifact 
+Class: Capability
+ObjectProperty: has_function
+    Range: Capability 
+ObjectProperty: executes 
+    Range: Capability
+ObjectProperty: is_located_on 
+Class: Agent
+Class: Object 
+Class: Site

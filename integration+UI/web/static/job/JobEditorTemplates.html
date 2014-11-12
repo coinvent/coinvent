@@ -1,0 +1,71 @@
+
+
+<template id='JobEditor'>
+	<div class='container'>
+		<div>User-Name: <input type="text" name="uname" id="uname-input" class="form-control" value=""></div>
+		<div class='row'>
+			<div class='col-md-4'>			
+				<%= templates.JobList() %>		
+			</div>
+			<div class='col-md-8' id='OneJobEditorWrapper'>			
+				<%= templates.OneJobEditor() %>
+			</div>			
+		</div><!-- ./row -->
+	</div><!-- ./container -->
+</template>
+
+<template id='JobList'>
+<div class='JobList'>
+Set actor name to load jobs
+</div>
+</template>
+
+<!-- context: [jobs] -->
+<template id='JobListList'>
+<div class='JobListList'>
+	<ol>
+	<script>
+		if ( ! context.length) {
+			print("No Jobs!");
+		}
+		for(var i=0; i<context.length; i++) {
+			var job = context[i];
+			print(templates.OneJobListing(job));
+		}
+	</script>
+	</ol>
+</div>
+</template>
+
+<template id='OneJobListing'>
+<li class='OneJobListing'>
+	<a href='#' data-id='<%= context.id %>'><%= context.id %></a> <%= context.status %>
+</li>
+</template>
+
+<template id='OneJobEditor'>
+<div class="OneJobEditor">
+	<form action="#" onsubmit="JobEditor.saveJob(this);" role="form">
+		<div class="JobSpec">
+			ID:	<input name="id" readonly class="form-control" value="<%= context.id %>" />
+		</div>
+		<div class="JobInput form-group">
+			<label>Job Spec (json)</label>
+			<pre><%= context.job %></pre>
+		</div>
+		<div class="JobResult form-group">
+			<label for="input-result">Result</label>
+			<textarea id="input-result" name="input-result" class="form-control"><%= context.result %></textarea>
+		</div>
+		<div class="form-group">
+			<label for="input-status">Job Status</label>
+			<select name="input-status" id="input-status" class="form-control">
+				<option value="WAITING">Waiting</option>
+				<option value="DONE">Done</option>
+				<option value="ERROR">Error</option>
+			</select>
+		</div>		
+		<button type="button" class="SaveJob btn btn-sm btn-default">Save</button>
+	</form>
+</div>
+</template>

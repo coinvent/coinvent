@@ -39,12 +39,15 @@ ChimeraEditor.prototype.wireup = function() {
 		// blend
 		editor.client.blend(editor.model)
 			.then(function(r){
-				toastr.info(JSON.stringify(r.cargo.blend));			
-				$('.chimera-img img.animal-head').attr('src', $('#ChimeraTheoryEditor-A div.active img').attr('src'));	
-				$('.chimera-img img.animal-body').attr('src', $('#ChimeraTheoryEditor-B div.active img').attr('src'));	
+				var bsrc = $('#ChimeraTheoryEditor-B div.active img').attr('src');
+				var asrc = $('#ChimeraTheoryEditor-A div.active img').attr('src');
+				toastr.info("Blended!");
+				console.log(r.cargo);			
+				$('.chimera-img .animal-head').css('background-image', "url('"+asrc+"')");	
+				$('.chimera-img .animal-body').css('background-image', "url('"+bsrc+"')");	
 			})
 			.fail(function(e){
-				toastr.warn(e);
+				toastr.warning(e);
 			});
 	});
 }; /* ./wireup */

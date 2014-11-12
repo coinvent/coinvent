@@ -93,19 +93,21 @@ CoinventClient.prototype.weaken = function(blendDiagram) {
 };
 
 /**
- * @param pathToFile e.g. "winterstein/mytheory.dol"
+ * @param pathToFile e.g. "project-foo/mytheory.dol"
  */
-CoinventClient.prototype.file_load = function(pathToFile) {
+CoinventClient.prototype.file_load = function(actor, pathToFile) {
+	assertMatch(actor, String, pathToFile, String);
 	return $.ajax({
-		url: this.server+'file/'+pathToFile
+		url: this.server+'file/'+actor+'/'+pathToFile
 	});
 }
 /**
  * @param pathToFile e.g. "winterstein/mytheory.dol"
  */
-CoinventClient.prototype.file_save = function(pathToFile, text) {
+CoinventClient.prototype.file_save = function(actor, pathToFile, text) {
+	assertMatch(actor, String, pathToFile, String, text, String);
 	return $.ajax({
-		url: this.server+'file/'+pathToFile+"?action=save",
+		url: this.server+'file/'+actor+'/'+pathToFile+"?action=save",
 		type:'POST',
 		data: text
 	});
@@ -123,6 +125,7 @@ CoinventClient.prototype.job_list = function(actor) {
  * Information on a job.
  */
 CoinventClient.prototype.job_details = function(actor, jobId) {
+	assertMatch(actor, String, jobId,String);
 	return $.ajax({
 		url: this.server+'job/'+actor+'/'+jobId
 	});
@@ -131,10 +134,11 @@ CoinventClient.prototype.job_details = function(actor, jobId) {
  * Save the result of a job
  */
 CoinventClient.prototype.job_put = function(actor, jobId, result) {
+	assertMatch(actor, String, jobId,String, result,String);
 	return $.ajax({		
 		url: this.server+'job/'+actor+'/'+jobId+'?action=put',
 		type:'POST',
-		data: result
+		data: {result:JSON.stringify(result)}
 	});
 }
 

@@ -1,0 +1,56 @@
+<org.coinvent.data.Job><result class="org.coinvent.data.BlendDiagram"><format>owl</format><base><oxid><id>User::unknown</id></oxid><xid><id>Concept::unknown::3956e9af5f71d0e453b1b502bc676544</id></xid><text>Class: Artifact &#xd;
+Class: Capability&#xd;
+ObjectProperty: has_function&#xd;
+    Range: Capability &#xd;
+ObjectProperty: executes &#xd;
+    Range: Capability&#xd;
+ObjectProperty: is_located_on &#xd;
+Class: Agent&#xd;
+Class: Object &#xd;
+Class: Site</text></base><blend><oxid><id>User::unknown</id></oxid><xid><id>Concept::unknown::d169c5a62240c0e4c7fea49faf528bf0</id></xid><text>ObjectProperty: has_function
+                Range: Capability
+ObjectProperty: executes
+                Range: Capability
+ObjectProperty: is_navigated_by
+                Domain: HouseBoat
+ObjectProperty: is_navigated_by
+                Range: Person
+Class: MeansOfTransportation
+       SubClassOf: Capability
+Class: ArtifactThatExecutesTransportationFunction
+       EquivalentTo: Artifact and executes some MeansOfTransportation
+Class: ArtifactThatExecutesTransportationFunction
+       SubClassOf: contains some Thing
+Class: Floating
+       SubClassOf: Capability
+Class: ArtifactThatExecutesFloatingFunction
+       EquivalentTo: Artifact and executes some Floating
+Class: ArtifactThatExecutesFloatingFunction
+       SubClassOf: is_located_on some BodyOfWater
+Class: HouseBoat
+       SubClassOf: Artifact and has_function some MeansOfTransportation
+                   and has_function some Floating
+                   and is_navigated_by some Person
+ObjectProperty: is_inhabited_by
+                Domain: HouseBoat
+ObjectProperty: is_inhabited_by
+                Range: Person
+Class: ServeAsResidence
+       SubClassOf: Capability
+Class: ArtifactThatExecutesResidenceFunction
+       EquivalentTo: Artifact and executes some ServeAsResidence
+Class: ArtifactThatExecutesResidenceFunction
+       SubClassOf: is_inhabited_by some Person
+Class: HouseBoat
+       SubClassOf: Artifact and is_located_on some BodyOfWater
+                   and has_function some ServeAsResidence
+</text></blend><input1__blend><map class="tree-map"><entry><S>House</S><S>HouseBoat</S></entry><entry><S>Plot</S><S>BodyOfWater</S></entry></map></input1__blend><input2__blend><map class="tree-map"><entry><S>Boat</S><S>HouseBoat</S></entry></map></input2__blend><input1><url>http://localhost:8200/file/test/house.owl</url></input1><input2><url>http://localhost:8200/file/test/boat.owl</url></input2></result><actor><id>User::oracle</id></actor><status>DONE</status><component>blend</component><pmap><entry><S>base_input2[Site]</S><S-array><S>BodyOfWater</S></S-array></entry><entry><S>input2</S><S-array><S>http://localhost:8200/file/test/boat.owl</S></S-array></entry><entry><S>input1</S><S-array><S>http://localhost:8200/file/test/house.owl</S></S-array></entry><entry><S>base_input1[Object]</S><S-array><S>House</S></S-array></entry><entry><S>base_input1[Agent]</S><S-array><S>Person</S></S-array></entry><entry><S>base_input2[Agent]</S><S-array><S>Person</S></S-array></entry><entry><S>lang</S><S-array><S>owl</S></S-array></entry><entry><S>base_input1[Site]</S><S-array><S>Plot</S></S-array></entry><entry><S>base</S><S-array><S>Class: Artifact &#xd;
+Class: Capability&#xd;
+ObjectProperty: has_function&#xd;
+    Range: Capability &#xd;
+ObjectProperty: executes &#xd;
+    Range: Capability&#xd;
+ObjectProperty: is_located_on &#xd;
+Class: Agent&#xd;
+Class: Object &#xd;
+Class: Site</S></S-array></entry><entry><S>base_input2[Object]</S><S-array><S>Boat</S></S-array></entry></pmap><slug>blend/oracle</slug><diagram><format>owl</format><base reference="../../result/base"/><input1 reference="../../result/input1"/><input2 reference="../../result/input2"/></diagram></org.coinvent.data.Job>

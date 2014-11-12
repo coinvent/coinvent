@@ -1,0 +1,27 @@
+Class: Artifact
+Class: Capability
+ObjectProperty: has_function
+    Range: Capability
+ObjectProperty: executes
+    Range: Capability
+
+ObjectProperty: is_located_on
+
+Class: Person
+Class: Plot
+
+ObjectProperty: is_inhabited_by
+    Domain: House
+    Range:  Person
+
+Class: ServeAsResidence
+    SubClassOf: Capability
+
+Class: ArtifactThatExecutesResidenceFunction
+    EquivalentTo: Artifact that executes some ServeAsResidence
+    SubClassOf: is_inhabited_by some Person
+
+Class: House
+    SubClassOf: Artifact
+        that is_located_on some Plot
+        and has_function some ServeAsResidence

@@ -26,7 +26,9 @@ import com.winterwell.utils.io.FileUtils;
 public class ConvertToManchesterSyntax {
 
 	public static void main(String[] args) throws OWLOntologyStorageException, OWLOntologyCreationException {
-		File file = new File("/home/daniel/winterwell/coinvent/cyc/opencyc-latest.owl");
+		File file = new File(
+//				"/home/daniel/winterwell/coinvent/cyc/opencyc-latest.owl"
+				"/home/daniel/winterwell/coinvent/integration+UI/files/chimera/Meerkat.rdf");
 		assert file.exists();
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		
@@ -41,17 +43,17 @@ public class ConvertToManchesterSyntax {
 	        manSyntaxFormat.copyPrefixesFrom(format.asPrefixOWLOntologyFormat());
 	    }
 
-//		File file2 = FileUtils.changeType(file, "man.owl");
-//		IRI iri = IRI.create(file2);
-//		manager.saveOntology(ontology, manSyntaxFormat, iri);
-//	    System.out.println("Manchester syntax: --- saved in Manchester.owl");
+		File file2 = FileUtils.changeType(file, "man.owl");
+		IRI iri = IRI.create(file2);
+		manager.saveOntology(ontology, manSyntaxFormat, iri);
+	    System.out.println("Manchester syntax: --- saved in man.owl");
 		
-		OWLDataFactory factory = ontology.getOWLOntologyManager().getOWLDataFactory();
-		IRI iri = IRI.create("http://sw.opencyc.org/concept/Mx4rvVjfU5wpEbGdrcN5Y29ycA");
-		OWLClass klass = factory.getOWLClass(iri);
-		Set<OWLClassAxiom> axioms = ontology.getAxioms(klass);
-		for (OWLClassAxiom owlClassAxiom : axioms) {
-			System.out.println(owlClassAxiom);
-		}
+//		OWLDataFactory factory = ontology.getOWLOntologyManager().getOWLDataFactory();
+//		IRI iri = IRI.create("http://sw.opencyc.org/concept/Mx4rvVjfU5wpEbGdrcN5Y29ycA");
+//		OWLClass klass = factory.getOWLClass(iri);
+//		Set<OWLClassAxiom> axioms = ontology.getAxioms(klass);
+//		for (OWLClassAxiom owlClassAxiom : axioms) {
+//			System.out.println(owlClassAxiom);
+//		}
 	}
 }

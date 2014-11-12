@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html><head>
+	<!-- Bootstrap -->
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+	
+	 <!-- BEGIN MANDATORY STYLE -->
+    <link href="/static/assets/css/icons/icons.min.css" rel="stylesheet">
+    <link href="/static/assets/css/plugins.min.css" rel="stylesheet">
+    <link href="/static/assets/css/style.min.css" rel="stylesheet">
+    <link href="/static/assets/css/coinvent.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+    <!-- END  MANDATORY STYLE -->
+    		
+	<!-- Scripts -->
+	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="/static/code/lib/less.js"></script>
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	<script src="/static/code/lib/SJTest.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	<script src="/static/code/base/Templates.js"></script>
+	<script src="/static/code/CoinventClient.js"></script>
+	<script src="/static/job/JobEditor.js"></script>
+
+	<!-- Load Templates -->
+	<script>
+	loadTemplates('/static/PagePartsTemplates.html', function() {		
+		$('#topnav').html( templates.PageTopNav() );
+		$('#sidenav').html( templates.PageSideNav() );
+	});
+	loadTemplates('/static/job/JobEditorTemplates.html', function() {
+		$(".loading").removeClass("loading");
+		$('#main').html( templates.JobEditor() );
+		var ed = new JobEditor();
+		ed.wireup();
+	});
+	
+	</script>
+</head>
+<body>
+
+<div id='topnav'></div>
+<div id="wrapper">
+	<div id='NO-sidenav'></div>
+
+ <!-- BEGIN MAIN CONTENT -->
+   <div id="main-content">
+       <div class="row">
+           <div id='main' class="col-lg-12 loading">
+               <h1>Blank Page <small>Blank Page</small></h1>
+               <br><br><br>
+               Loading...
+           </div>
+       </div>
+   </div>
+   <!-- END MAIN CONTENT -->
+
+</div><!-- ./wrapper -->
+</body>
+</html>

@@ -17,6 +17,8 @@ import winterwell.web.FakeBrowser;
 
 /**
  * Status: emailed Qs to Christian and Mihai.
+ * We can now do push-outs! Hooray.
+ * TODO BlendDIagram <-> DOL IO
  * 
  * Big Q: Use the restful API, or the console mode?
  * 

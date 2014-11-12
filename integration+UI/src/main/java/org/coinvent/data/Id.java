@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.Serializable;
 
 import org.eclipse.jetty.util.ajax.JSON;
-
+/**
+ * @testedby IdTest
+ * @author daniel
+ *
+ */
 public class Id implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -36,12 +39,12 @@ public class Id implements Serializable {
 
 	public Id(KKind type, String name) {
 		assert type==KKind.User : type;
-		this.id = JSON.toString(new Object[]{type, name});
+		this.id = type+"::"+name;
 	}
 	
 	public Id(Id parent, KKind type, String name) {
 		assert type!=KKind.User : type;
-		this.id = JSON.toString(new Object[]{parent.toString(), type, name});
+		this.id = type+"::"+parent.getName()+"::"+name;
 	}
 
 	public Id(String id) {
@@ -56,18 +59,18 @@ public class Id implements Serializable {
 	}
 
 	public String getName() {
-		Object[] arr = (Object[]) JSON.parse(id);
+		Object[] arr = id.split("::");
 		return (String) arr[arr.length-1];
 	}
 
 	public Id getParent() {
-		Object[] arr = (Object[]) JSON.parse(id);
-		return arr.length==2? null : new Id((String)arr[0]);
+		Object[] arr = id.split("::");
+		return arr.length==2? null : new Id((String)arr[1]);
 	}
 
 	public KKind getKind() {
-		Object[] arr = (Object[]) JSON.parse(id);
-		return KKind.valueOf((String)arr[1]);
+		Object[] arr = id.split("::");
+		return KKind.valueOf((String)arr[0]);
 	}
 	
 }

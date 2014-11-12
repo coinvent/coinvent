@@ -15,7 +15,10 @@
 	<%= templates.ManualActionBar() %>		
 	<div class='container'>
 		<div class='row'><div class='col-md-12'>
-		<%= templates.ManualTheoryEditor({posn:'Blend'}) %>		
+			<%= templates.ManualModelEditor() %>		
+		</div></div><!-- ./row -->
+		<div class='row'><div class='col-md-12'>
+			<%= templates.ManualTheoryEditor({posn:'Blend'}) %>		
 		</div></div><!-- ./row -->
 		<div class='row'>
 			<div class='col-md-1'></div>
@@ -55,8 +58,6 @@
 	
 	</div><!-- ./container -->
 	
-	<%= templates.ManualIssues({}) %>
-	
 	<%= templates.CoinventSettings({}) %>
 </template>
 
@@ -70,7 +71,7 @@
         <h4 class="modal-title">Load <span class='name'></span></h4>
       </div>
       <div class="modal-body">
-        <form role="form">
+        <form role="form" onsubmit="$('button.Load').click(); return false;">
         	Theory URL: <input name='url' type='text' class='form-control' placeholder="pathToFile e.g. winterstein/mytheory.dol">
         	<!-- upload then use? <input type='file' class='form-control'>  -->
         </form>
@@ -84,12 +85,12 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-	<div class='ActionBar'>
-		<button onclick=''>Load Blend-Diagram</button>
-		<button id='FindBase'>Find Base (anti-unify)</button>
-		<button id='FindBlend'>Find Blend</button>
-		<button id='CheckBlend'>Check Blend for Consistency</button>
-		<button id='ScoreBlend'>Score Blend</button>
+	<div class='ActionBar container center-block'>
+		<!-- <button onclick=''>Load Blend-Diagram</button> -->
+		<button type="button" class="btn btn-default" id='FindBase'>Find Base (anti-unify)</button>
+		<button type="button" class="btn btn-default" id='FindBlend'>Find Blend</button>
+		<!-- <button id='CheckBlend'>Check Blend for Consistency</button> -->
+		<!-- <button id='ScoreBlend'>Score Blend</button> -->
 	</div>
 </template>
 
@@ -97,9 +98,9 @@
 <div class="Theory panel panel-default" id='ManualTheoryEditor-<%= posn %>'>
   <div class="panel-heading">
     <h3 class="panel-title"><%= posn %>:
-    	<small>url: <span data-bind='url'><%= context.url? url : ''%></span></small> 
+    	<span data-bind='url'><%= context.url? url : ''%></span>
     	<!-- %= templates.TheoryNameEditor(context) % -->
-		<%= templates.TheoryLoader(context) %>
+		<%= posn!='Blend'? templates.TheoryLoader(context) : '' %>
     </h3>
   </div>
   <div class="panel-body">
@@ -107,6 +108,16 @@
 		
 	<textarea class="form-control"></textarea>
 	</div></div><!-- ./Theory -->
+</template>
+
+<template id='ManualModelEditor'>
+<div id='ManualModelEditor' class="ManualModelEditor panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Models</h3>
+  </div>
+  <div class="panel-body">
+  </div>
+</div><!-- ./Model -->
 </template>
 
 <template id='TheoryLoader'>
@@ -134,28 +145,22 @@
  
 <template id='ManualMappingEditor'>
 	<div class='Mapping panel panel-default' id='ManualMappingEditor-<%= sourceposn %>-<%= targetposn %>'><h3><%= sourceposn %> &rightarrow; <%= targetposn %></h3>
-		<h4>Rename</h4>
 		<ul>
-			<li><select></select> &rightarrow; <input type='text'></li>
 		</ul>
 	</div>
 </template>
 
-<template id='ManualIssues'>
-	<div class='Theory'><h3>Issues</h3>
-	</div>
-</template>
-
-
 <template id='CoinventSettings'>
 	<div class='CoinventSettings'><h3>Settings</h3>
 		<form>
-			<div >Base: <input class='engine' name='baseEngine'></div>
-			<div >Blend: <input class='engine' name='blendEngine'></div> 		 		
-			<div >Consistency: <input class='engine' name='consistencyEngine'></div> 		 		
-			<div >Weaken: <input class='engine' name='weakenEngine'></div> 		 		
-			<div >Model: <input class='engine' name='modelEngine'></div> 		 		
-			<div >Quality: <input class='engine' name='qualityEngine'></div>
+			<table>
+			<tr><td>Base:</td><td><input class='engine' name='baseEngine'></td></tr>
+			<tr><td>Blend:</td><td><input class='engine' name='blendEngine'></td></tr>
+			<tr><td>Consistency:</td><td><input class='engine' name='consistencyEngine'></td></tr>
+			<tr><td>Weaken:</td><td><input class='engine' name='weakenEngine'></td></tr>		 		
+			<tr><td>Model:</td><td><input class='engine' name='modelEngine'></td></tr>
+			<tr><td>Quality:</td><td><input class='engine' name='qualityEngine'></td></tr>
+			</table>
 		</form>
 	</div>
 </template>

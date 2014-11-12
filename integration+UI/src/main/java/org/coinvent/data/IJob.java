@@ -22,4 +22,6 @@ public interface IJob {
 	String getComponent();
 
 	void setResult(Object jobj);
+
+	void setStatus(QStatus status);
 }

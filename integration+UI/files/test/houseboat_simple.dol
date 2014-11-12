@@ -1,0 +1,129 @@
+logic OWL
+
+%% Simple version of houseboat.dol
+
+ontology House =
+
+%% A house is something that is located on some plot and is designed to serve as a residence. 
+%% This is weaker than one would need for a definition, since a house is really permanently located at a plot (in contrast to a mobile home) 
+
+    Class: Artifact
+    Class: Capability
+    ObjectProperty: has_function
+        Range: Capability
+    ObjectProperty: executes
+        Range: Capability
+
+    ObjectProperty: is_located_on
+    
+    Class: Person
+    Class: Plot
+
+    ObjectProperty: is_inhabited_by
+        Domain: House
+        Range:  Person
+    
+    Class: ServeAsResidence
+        SubClassOf: Capability
+    
+    Class: ArtifactThatExecutesResidenceFunction
+        EquivalentTo: Artifact that executes some ServeAsResidence
+        SubClassOf: is_inhabited_by some Person
+
+    Class: House
+        SubClassOf: Artifact
+            that is_located_on some Plot
+            and has_function some ServeAsResidence
+
+end
+
+
+ontology Boat =
+
+%% A boat is designed as a kind of transportation device that can float. 
+    Class: Artifact 
+    Class: Capability
+    ObjectProperty: has_function
+        Range: Capability 
+    ObjectProperty: executes 
+        Range: Capability
+
+    ObjectProperty: is_located_on 
+    ObjectProperty: contains 
+
+    Class: Person
+    Class: BodyOfWater
+
+    ObjectProperty: is_navigated_by
+        Domain: Boat
+        Range: Person
+
+    Class: MeansOfTransportation
+        SubClassOf: Capability
+   
+    Class: ArtifactThatExecutesTransportationFunction
+        EquivalentTo: Artifact that executes some MeansOfTransportation
+        SubClassOf: contains some owl:Thing    
+           
+    Class: Floating
+        SubClassOf: Capability
+   
+    Class: ArtifactThatExecutesFloatingFunction
+        EquivalentTo: Artifact that executes some Floating
+        SubClassOf: is_located_on some BodyOfWater    
+    
+    Class: Boat
+        SubClassOf: Artifact
+            that has_function some MeansOfTransportation
+            and has_function some Floating
+            and is_navigated_by some Person
+
+end 
+
+
+ontology Base2 = 
+    Class: Artifact 
+    Class: Capability
+    ObjectProperty: has_function
+        Range: Capability 
+    ObjectProperty: executes 
+        Range: Capability
+    ObjectProperty: is_located_on 
+    Class: Agent
+    Class: Object 
+    Class: Site
+end
+
+    
+view base_to_boat : Base2 to Boat =
+    Artifact  |-> Artifact,
+    Capability |-> Capability,
+    has_function |-> has_function,
+    executes |-> executes,
+    is_located_on |-> is_located_on,
+    Agent |-> Person,  
+    Object |-> Boat, 
+    Site |-> BodyOfWater 
+
+view base_to_house : Base2 to House = 
+    Artifact  |-> Artifact,
+    Capability |-> Capability,
+    has_function |-> has_function,
+    executes |-> executes,
+    is_located_on |-> is_located_on,
+    Agent |-> Person,   
+    Object |-> House, 
+    Site |-> Plot
+    
+ 
+ontology house_boat = 
+    combine base_to_boat, base_to_house
+    with Object |-> HouseBoat, Site |-> BodyOfWater, Agent |-> Person
+
+ 
+ 
+ 
+ 
+
+
+    

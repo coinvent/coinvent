@@ -13,6 +13,10 @@ import winterwell.web.FakeBrowser;
 
 public class Concept {
 
+	public String getName() {
+		return name;
+	}
+	String name;
 	public Id oxid;
 	public Id xid;
 	public String format;

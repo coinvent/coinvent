@@ -1,0 +1,37 @@
+ObjectProperty: has_function
+                Range: Capability
+ObjectProperty: executes
+                Range: Capability
+ObjectProperty: is_navigated_by
+                Domain: HouseBoat
+ObjectProperty: is_navigated_by
+                Range: Person
+Class: MeansOfTransportation
+       SubClassOf: Capability
+Class: ArtifactThatExecutesTransportationFunction
+       EquivalentTo: Artifact and executes some MeansOfTransportation
+Class: ArtifactThatExecutesTransportationFunction
+       SubClassOf: contains some Thing
+Class: Floating
+       SubClassOf: Capability
+Class: ArtifactThatExecutesFloatingFunction
+       EquivalentTo: Artifact and executes some Floating
+Class: ArtifactThatExecutesFloatingFunction
+       SubClassOf: is_located_on some BodyOfWater
+Class: HouseBoat
+       SubClassOf: Artifact and has_function some MeansOfTransportation
+                   and has_function some Floating
+                   and is_navigated_by some Person
+ObjectProperty: is_inhabited_by
+                Domain: HouseBoat
+ObjectProperty: is_inhabited_by
+                Range: Person
+Class: ServeAsResidence
+       SubClassOf: Capability
+Class: ArtifactThatExecutesResidenceFunction
+       EquivalentTo: Artifact and executes some ServeAsResidence
+Class: ArtifactThatExecutesResidenceFunction
+       SubClassOf: is_inhabited_by some Person
+Class: HouseBoat
+       SubClassOf: Artifact and is_located_on some BodyOfWater
+                   and has_function some ServeAsResidence

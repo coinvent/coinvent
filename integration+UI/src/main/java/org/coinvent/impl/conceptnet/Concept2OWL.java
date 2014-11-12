@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.eclipse.jetty.util.ajax.JSON;
 
+import winterwell.utils.Printer;
 import winterwell.utils.containers.ArrayMap;
 import winterwell.utils.containers.Containers;
 import winterwell.web.FakeBrowser;
@@ -31,20 +32,20 @@ public class Concept2OWL {
 //	.setDebug(true)
 	;
 	
-	private double minWeight = 1.5;
+	private double minWeight = 1.0;
 	
 	public static void main(String[] args) {
-		String term = "eagle";
+		String term = "zebra";
 //		String json = new FakeBrowser().getPage("http://conceptnet5.media.mit.edu/data/5.1/c/en/"+term);
 //		Map map = (Map) JSON.parse(json);
 //		Object edges = map.get("edges");
 
 		Concept2OWL concept = new Concept2OWL(term);
 		List parts = concept.getX_rel_This("PartOf", 10);
-		System.out.println(parts);
+		Printer.out("PartOf", parts);
 		
 		List partsb = concept.getThis_rel_X("HasA", 10);
-		System.out.println(partsb);
+		Printer.out("HasA", partsb);
 		
 		List parts2 = concept.getThis_rel_X("HasProperty", 10);
 		System.out.println(parts2);
@@ -62,7 +63,7 @@ public class Concept2OWL {
 		System.out.println(cap);
 		
 		List loc = concept.getThis_rel_X("AtLocation", 3);
-		System.out.println(loc);
+		Printer.out("AtLocation", loc);
 		
 		// PartOf
 		

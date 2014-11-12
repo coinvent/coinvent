@@ -17,6 +17,10 @@ ManualEditor.prototype.setModel = function(bd) {
 	this.setConcept('B', this.model.input2);
 	this.setConcept('Base', this.model.base);
 	this.setConcept('Blend', this.model.blend);
+	this.setMapping('Base', 'A', this.model.base_input1);
+	this.setMapping('Base', 'B', this.model.base_input2);
+	this.setMapping('A', 'Blend', this.model.input1_blend);
+	this.setMapping('B', 'Blend', this.model.input2_blend);
 	// TODO mappings
 };
 
@@ -42,19 +46,40 @@ ManualEditor.prototype.setConcept = function(targetName, concept) {
 	jsPlumb.repaintEverything();	
 };
 
+
+ManualEditor.prototype.setMapping = function(fromName, toName, mapping) {
+	assertMatch(fromName, String, toName, String);
+	// Adjust the view (yes it would be nice if they auto-adjusted)
+	$ed = $('#ManualMappingEditor-'+fromName+'-'+toName);
+	$ul = $('ul', $ed);
+	assert($ed);
+	$ed.data('mapping',mapping);
+	var keys = _.keys(mapping);
+	for(var i=0; i<keys.length; i++) {
+		$ul.append("<li>"+keys[i]+" &rightarrow; "+mapping[keys[i]]+"</li>");
+	}
+//	var rows = Math.max(4, Math.min(20, theory.trim().split(/\n/g).length))
+//	$('textarea', $ed).attr('rows', rows);
+	jsPlumb.repaintEverything();	
+};
+
 ManualEditor.prototype.wireup = function() {
 	var editor = this;
 	
 	// Base Button	
 	$('button#FindBase').click(function() {
-		editor.client.base(editor.model)
+		var model = new BlendDiagram(editor.model);
+		model.base = null; model.base_input1 = null; model.base_input2 = null;
+		editor.client.base(model)
 		.then(function(result){
-			console.log("Yeh", result);
-			toastr.info(JSON.stringify(result));
+			console.log("Yeh base", result);
 			if (result.status === 'WAITING') {
+				toastr.info("Find-base job posted. Waiting on "+editor.client.engines['base']+"...");
 				return;
+			} else if (result.status === 'DONE') {
+				toastr.info("Common base found by "+editor.client.engines['base']);
+				editor.setModel(result.cargo);
 			}
-			editor.setModel(result.cargo);
 		})
 		.fail(function(err){
 			console.log(err);
@@ -66,12 +91,14 @@ ManualEditor.prototype.wireup = function() {
 	$('button#FindBlend').click(function() {
 		editor.client.blend(editor.model)
 		.then(function(result){
-			console.log("Yeh", result);			
-			toastr.info(JSON.stringify(result));
+			console.log("Yeh blend", result);			
 			if (result.status === 'WAITING') {
+				toastr.info("Find-blend job posted. Waiting on "+editor.client.engines['blend']+"...");
 				return;
+			} else if (result.status === 'DONE') {
+				toastr.info("Blend found by "+editor.client.engines['blend']);
+				editor.setModel(result.cargo);
 			}
-			editor.setModel(result.cargo);
 		})
 		.fail(function(err){			
 			console.log(err);
@@ -87,7 +114,7 @@ ManualEditor.prototype.wireup = function() {
 		var target = modal.data('loadTarget');
 		console.log('target', target);
 		// do the load
-		editor.client.file_load(url)
+		$.ajax({url:url})
 		.then(function(theory){
 			console.log('loaded',target,theory);
 			// Adjust the model
@@ -121,31 +148,51 @@ ManualEditor.prototype.wireup = function() {
 	jsPlumb.ready(function() {
 		jsPlumb.setContainer($("body"));
 		
+		// this is the paint style for the connecting lines..
+		var paintStyle = {strokeStyle:"#669",lineWidth:4};
+		var endpointStyle = {fillStyle:"#669", radius:5 };
+
 		// Top
+		jsPlumb.connect({
+			    source: $('#ManualTheoryEditor-Blend'),			
+			    target: $('#ManualModelEditor'),
+			    anchors: [ "Top", "Bottom" ],
+			    connector:[ "Flowchart" ],
+			    paintStyle:paintStyle,
+			    endpointStyle:endpointStyle
+		});
 		jsPlumb.connect({
 			    source: $('#ManualMappingEditor-A-Blend'),
 			    target: $('#ManualTheoryEditor-Blend'),
 			    anchors: [ "Top", [0.25, 1, 0, 1] ],
-			    connector:[ "Flowchart" ]
+			    connector:[ "Flowchart" ],
+				paintStyle:paintStyle,
+			    endpointStyle:endpointStyle
 		});
 		jsPlumb.connect({
 		    source: $('#ManualMappingEditor-B-Blend'),
 		    target: $('#ManualTheoryEditor-Blend'),
 		    anchors: [ "Top", [0.75, 1, 0, 1] ],
-		    connector:[ "Flowchart" ]
+		    connector:[ "Flowchart" ],
+			    paintStyle:paintStyle,
+			    endpointStyle:endpointStyle		    
 		});
 		
 		jsPlumb.connect({
 		    target: $('#ManualMappingEditor-A-Blend'),
 		    source: $('#ManualTheoryEditor-A'),
 		    anchors: [ "Top", "Bottom" ],
-		    connector:[ "Flowchart" ]
+		    connector:[ "Flowchart" ],
+			    paintStyle:paintStyle,
+			    endpointStyle:endpointStyle		    
 		});
 		jsPlumb.connect({
 		    target: $('#ManualMappingEditor-B-Blend'),
 		    source: $('#ManualTheoryEditor-B'),
 		    anchors: [ "Top", "Bottom" ],
-		    connector:[ "Flowchart" ]
+		    connector:[ "Flowchart" ],
+			    paintStyle:paintStyle,
+			    endpointStyle:endpointStyle		    
 		});
 		
 		
@@ -154,26 +201,34 @@ ManualEditor.prototype.wireup = function() {
 		    source: $('#ManualMappingEditor-Base-A'),
 		    target: $('#ManualTheoryEditor-A'),
 		    anchors: [ "Top", "Bottom" ],
-		    connector:[ "Flowchart" ]
+		    connector:[ "Flowchart" ],
+			    paintStyle:paintStyle,
+			    endpointStyle:endpointStyle
 		});	
 		jsPlumb.connect({
 		    source: $('#ManualMappingEditor-Base-B'),
 		    target: $('#ManualTheoryEditor-B'),
 		    anchors: [ "Top", "Bottom" ],
-		    connector:[ "Flowchart" ]
+		    connector:[ "Flowchart" ],
+			    paintStyle:paintStyle,
+			    endpointStyle:endpointStyle		    
 		});	
 
 		jsPlumb.connect({
 		    target: $('#ManualMappingEditor-Base-A'),
 		    source: $('#ManualTheoryEditor-Base'),
 		    anchors: [ "Top", "Bottom" ],
-		    connector:[ "Flowchart" ]
+		    connector:[ "Flowchart" ],
+		    endpointStyle:endpointStyle,
+		    paintStyle:paintStyle
 		});	
 		jsPlumb.connect({
 		    target: $('#ManualMappingEditor-Base-B'),
 		    source: $('#ManualTheoryEditor-Base'),
 		    anchors: [ "Top", "Bottom" ],
-		    connector:[ "Flowchart" ]
+		    connector:[ "Flowchart" ],
+			    paintStyle:paintStyle,
+			    endpointStyle:endpointStyle		    
 		});	
 		
 	});/* ./ready */

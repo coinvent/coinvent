@@ -8,7 +8,7 @@ SJTest.run({name:'CoinventClientTests',
 	/** Check a file exists */
 	fileLoadTest: function(test) {
 		var cc = new CoinventClient();
-		var f = cc.file_load('test/mermaid.dol')
+		var f = cc.file_load('test', 'mermaid.dol')
 			.then(function(r){
 				console.log(r, test);
 				assert(r);
