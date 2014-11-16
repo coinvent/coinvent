@@ -72,7 +72,7 @@
       </div>
       <div class="modal-body">
         <form role="form" onsubmit="$('button.Load').click(); return false;">
-        	Theory URL: <input name='url' type='text' class='form-control' placeholder="pathToFile e.g. winterstein/mytheory.dol">
+        	Theory URL: <input name='url' type='text' class='form-control' placeholder="pathToFile e.g. /file/winterstein/mytheory.dol">
         	<!-- upload then use? <input type='file' class='form-control'>  -->
         </form>
         <div class="AlertHolder"></div>
@@ -106,7 +106,7 @@
   <div class="panel-body">
 	<%= posn==='A' || posn==='B'? templates.ManualTheoryEditorDropBits() : '' %>
 		
-	<textarea class="form-control"></textarea>
+	<textarea class="form-control" rows='8'></textarea>
 	</div></div><!-- ./Theory -->
 </template>
 

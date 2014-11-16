@@ -74,14 +74,14 @@ SJTest.run({name:'CoinventClientTests',
 
 	/** Compute a model for an animal */
 	modelTest: function(test) {
-		var concept = new Concept("/file/chimera/animals.ttl?meerkat");
+		var concept = new Concept("/file/chimera/animals.csv?meerkat");
 		var cc = new CoinventClient();
-		
-		var f = cc.model(cc)
+		// model needs a specific actor
+		cc.engines.model = 'chimera';
+		var f = cc.model(concept)
 			.then(function(r){
 				console.log(r);
 				assert(r);
-				window.modelResponse = r;
 				var model = new Concept(r.cargo);
 				window.model = model;
 				test.setStatus("pass");

@@ -249,5 +249,14 @@ ManualEditor.prototype.wireup = function() {
 			toastr.info(op+" engine is now: "+editor.client.engines[op]);
 		});
 	});
+
+
+	// BUGGER -- no local copy
+	if ( ! window.toastr) {
+		window.toastr = {};
+		window.toastr.info = function(m){console.log(m);};
+		window.toastr.warning = function(m){console.log(m);};
+		window.toastr.error = function(m){console.log(m);};
+	}
 	
 }; /* ./wireup */

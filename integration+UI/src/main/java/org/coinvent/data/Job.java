@@ -13,13 +13,18 @@ import winterwell.web.app.WebRequest;
 public class Job implements IJob {
 
 	Object result;
-	Id actor;
+	final Id actor;
 	QStatus status = QStatus.WAITING;
-	String component;
-	Map<String, Object> pmap;
-	String slug;
+	final String component;
+	final Map<String, Object> pmap;
+	final String url;
+	@Deprecated
 	private BlendDiagram diagram;
 	
+	/**
+	 * @deprecated Better to work from the parameters -- the resulting system is much more general.  
+	 * @return
+	 */
 	public BlendDiagram getDiagram() {
 		return diagram;
 	}
@@ -41,7 +46,7 @@ public class Job implements IJob {
 	public Job(User actor, String component, BlendDiagram diagram, WebRequest req) {
 		Utils.check4null(actor, component, req);
 		this.pmap = req.getParameterMap();
-		this.slug = req.getSlug();
+		this.url = req.getRequestUrl();
 		this.actor = actor.getId();
 		this.component = component;
 		this.diagram = diagram;
@@ -63,7 +68,8 @@ public class Job implements IJob {
 		desc.setTag("coinvent");
 		desc.put("actor", actor.id);
 		// NB: full slug
-		desc.put("slug", slug);		
+		desc.put("url", url);
+		// copy in all the parameters
 		for(String k : pmap.keySet()) {
 			desc.put(k, pmap.get(k));
 		}

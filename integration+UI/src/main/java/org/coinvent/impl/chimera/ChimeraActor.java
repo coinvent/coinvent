@@ -31,16 +31,13 @@ import winterwell.utils.Utils;
 import winterwell.utils.containers.ArrayMap;
 import winterwell.utils.containers.Pair;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.ResIterator;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.util.FileManager;
 import com.winterwell.utils.io.CSVReader;
+import com.winterwell.utils.io.CSVWriter;
 import com.winterwell.utils.io.FileUtils;
 
 /**
  * Hack class to do Mouse-Fish, Octo-Zebra, etc.
+ * Uses files/chimera/animals.csv for its facts
  * @author daniel
  *
  */
@@ -57,9 +54,13 @@ public class ChimeraActor extends ACoinvent {
 
 	@Override
 	public BlendDiagram doBlend(BlendDiagram bd) {
+		// NB weaken will lose the name info for one of the animals, so grab it now.
 		String animal1 = getAnimal(bd.input1);
 		String animal2 = getAnimal(bd.input2);
 		String chimera = animal1+'-'+animal2;
+		
+		bd = doWeaken(bd);
+		
 		Mapping map1 = new Mapping(new ArrayMap(animal1, chimera));
 		Mapping map2 = new Mapping(new ArrayMap(animal2, chimera));
 		Concept input1b = applyMap(map1, bd.input1);
@@ -71,7 +72,6 @@ public class ChimeraActor extends ACoinvent {
 			if (line.contains(chimera)) blend.add(line);
 		}
 
-		// TODO handle conflicts
 		String csv = StrUtils.join(blend, "\n");
 		CSVReader csvr = new CSVReader(new StringReader(csv), ',', '"', '#');
 		Map<String,String> verb2value = new HashMap();
@@ -79,19 +79,15 @@ public class ChimeraActor extends ACoinvent {
 			if (triple.length<3) continue;
 			String verb = triple[1];
 			String value = triple[2];
-			String old = verb2value.put(verb, value);
-			if (old!=null) {
-				if (Utils.getRandomChoice(0.5)) {
-					verb2value.put(verb, old);
-				}
-			}
+			verb2value.put(verb, value);			
 		}
+		// name the beast
 		verb2value.put("name", StrUtils.toTitleCase(animal1)+'-'+StrUtils.toTitleCase(animal2));
 		
 		BlendDiagram blended = new BlendDiagram(bd);
 		blended.input1_blend = map1;
 		blended.input2_blend = map2;
-		// HACK send back json instead of .csv
+		// HACK send back the concept in json 'cos that's a bit easier to use in the browser
 		blended.blend = new Concept(JSON.toString(verb2value));
 		return blended;
 	}
@@ -99,8 +95,18 @@ public class ChimeraActor extends ACoinvent {
 	private String getText(Concept input2) {
 		return input2.getText();
 	}
+	
+	/**
+	 * Assumes the file?conceptname url format (as suggested by DOL)
+	 * @param input1
+	 * @return name of animal from input1 url
+	 */
 	private String getAnimal(Concept input1) {
 		int i = input1.getUrl().indexOf('?');
+		if (i==-1) {
+			// oh dear -- look for X name Y ??
+			throw new TodoException(input1);
+		}
 		return input1.getUrl().substring(i+1);
 	}
 	private Concept applyMap(Mapping map, Concept concept) {
@@ -145,14 +151,24 @@ public class ChimeraActor extends ACoinvent {
 
 	private String getName(Concept concept) {
 		// HACK role with the json hack from blend
-		Map jobj = (Map) JSON.parse(concept.getText());
-		String name = (String) jobj.get("name");
-		if (name!=null) return name;
-//		CSVReader csvr = new CSVReader(new StringReader(concept.getText()), ',', '"', '#');
-//		for (String[] line : csvr) {
-//			if (line.length<3) continue;
-//			if (line[1].equals("name")) return line[2];
-//		}
+		try {
+			Map jobj = (Map) JSON.parse(concept.getText());
+			String name = (String) jobj.get("name");
+			if (name!=null) return name;
+		} catch(Exception ex) {
+			// oh well
+			System.out.println(ex);
+		}
+		try {
+			CSVReader csvr = new CSVReader(new StringReader(concept.getText()), ',', '"', '#');
+			for (String[] line : csvr) {
+				if (line.length<3) continue;
+				if (line[1].equals("name")) return line[2];
+			}
+		} catch(Exception ex) {
+			// oh well
+			System.out.println(ex);
+		}
 		return "";
 	}
 	@Override
@@ -161,12 +177,52 @@ public class ChimeraActor extends ACoinvent {
 		return null;
 	}
 
+	/**
+	 * This performs a dumb algorithm: assume same-verb (aka predicate) => conflict.
+	 * So where we have conflict, pick a line at random to discard. 
+	 */
 	@Override
-	public BlendDiagram doWeaken(BlendDiagram diagram) {
+	public BlendDiagram doWeaken(BlendDiagram bd) {
 		// Randomly drop conflicting sentences
-		BlendDiagram weakened = new BlendDiagram(diagram);
-		Set<Pair<Integer>> confictSetLines = new HashSet();
-		return null;
+		BlendDiagram weakened = new BlendDiagram(bd);
+				
+		String animal1 = getAnimal(bd.input1);
+		String animal2 = getAnimal(bd.input2);
+		// Remove conflicts
+		// ...collect verbs
+		CSVReader csvr1 = new CSVReader(new StringReader(bd.input1.getText()), ',', '"', '#');
+		Map<String,String[]> verb2row1 = new HashMap();
+		for (String[] triple : csvr1) {
+			if (triple.length<3) continue;
+			if ( ! animal1.equals(triple[0])) continue;
+			String verb = triple[1];
+			verb2row1.put(verb, triple);
+		}
+		CSVReader csvr2 = new CSVReader(new StringReader(bd.input2.getText()), ',', '"', '#');
+		Map<String,String[]> verb2row2 = new HashMap();
+		for (String[] triple : csvr2) {
+			if (triple.length<3) continue;
+			if ( ! animal2.equals(triple[0])) continue;
+			String verb = triple[1];
+			verb2row2.put(verb, triple);
+		}
+		
+		// same verb in both concepts? pick one to keep
+		for (Object verb : verb2row1.keySet().toArray()) {
+			if ( ! verb2row2.containsKey(verb)) continue;
+			if (Utils.getRandomChoice(0.5)) {
+				verb2row1.remove(verb);				
+			} else {
+				verb2row2.remove(verb);				
+			}
+		}
+		// weaker now
+		String c1 = CSVWriter.writeToString(verb2row1.values());
+		weakened.input1 = new Concept(c1);
+		String c2 = CSVWriter.writeToString(verb2row2.values());
+		weakened.input2 = new Concept(c2);
+		
+		return weakened;
 	}
 
 	

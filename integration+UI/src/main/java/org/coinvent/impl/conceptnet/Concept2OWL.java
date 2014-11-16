@@ -15,7 +15,7 @@ import winterwell.web.FakeBrowser;
 /**
  * Can we convert a concept into a simple OWL class? 
  * 
- * Exploration of ConceptNet: depressingly low quality :(
+ * Exploration of ConceptNet: it's depressingly low quality :(
  * 
  * @author daniel
  *

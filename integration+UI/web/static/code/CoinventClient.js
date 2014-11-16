@@ -1,3 +1,68 @@
+/* 	file: CoinventClient.js 
+	author: Daniel Winterstein 
+	depends on: jQuery, SJTest.js
+*/
+/* ----------------- DATA TYPES -------------- */
+
+
+/**
+ * @param jsonObject {object|BlendDiagram?} Optional source for properties (will perform a copy). 
+ */
+function BlendDiagram(jsonObject) {
+	this.format = 'owl';
+	/** {Concept} */
+	this.base = new Concept(jsonObject? jsonObject.base : null);
+	/** {Concept} */
+	this.blend = new Concept(jsonObject? jsonObject.blend : null);
+	/** {Concept} */
+	this.input1 = new Concept(jsonObject? jsonObject.input1 : null);
+	/** {Concept} */
+	this.input2 = new Concept(jsonObject? jsonObject.input2 : null);
+
+	/** {object} */
+	this.base_input1=jsonObject? jsonObject.base_input1 || {} : {};
+	this.base_input2=jsonObject? jsonObject.base_input2 || {} : {};
+	this.input1_blend=jsonObject? jsonObject.input1_blend || {} : {};
+	this.input2_blend=jsonObject? jsonObject.input2_blend || {} : {};
+//	If weakenings are used, then these Concepts are names weakinput1, weakinput2, and weakbase, 
+}
+
+function Concept(text) {
+	if (match(text,String)) {
+		this.format = 'owl';
+		this.text = text;
+		/** {string} */
+		this.url = null;
+	} else if (text) {
+		this.format = text.format;
+		this.text = text.text;
+		/** {string} */
+		this.url = text.url;
+	}
+	/** {String[]?} Names for the symbols used in this Concept. */
+	this.symbols = null;
+	/** {String?} url for an image illustrating this Concept. */
+	this.img = null;
+	/** {Issue[]} */
+	this.issues = [];
+}
+
+/** TODO an Issue is a proof-obligation, or even an inconsistency -- something calling for action. */
+function Issue(text, sentences) {
+	/** {String} */
+	this.text = text;
+	/** {Sentence[]?} */
+	this.sentences = sentences;
+}
+
+/** TODO represent a slice of a text, e.g. one line */
+function Sentence(base) {
+	this.base = base;
+}
+
+
+/* -------------------- COINVENT CLIENT ----------------------*/
+
 
 /**
 * @param server {string?} The url for the server
@@ -181,51 +246,6 @@ CoinventClient.prototype.val = function(concept) {
 	return concept.url || concept.text;
 }
 
-
-/**
- * @param jsonObject {object?} Optional source for properties. 
- */
-function BlendDiagram(jsonObject) {
-	this.format = 'owl';
-	/** {Concept} */
-	this.base = new Concept(jsonObject? jsonObject.base : null);
-	/** {Concept} */
-	this.blend = new Concept(jsonObject? jsonObject.blend : null);
-	/** {Concept} */
-	this.input1 = new Concept(jsonObject? jsonObject.input1 : null);
-	/** {Concept} */
-	this.input2 = new Concept(jsonObject? jsonObject.input2 : null);
-
-	/** {object} */
-	this.base_input1=jsonObject? jsonObject.base_input1 || {} : {};
-	this.base_input2=jsonObject? jsonObject.base_input2 || {} : {};
-	this.input1_blend=jsonObject? jsonObject.input1_blend || {} : {};
-	this.input2_blend=jsonObject? jsonObject.input2_blend || {} : {};
-//	If weakenings are used, then these Concepts are names weakinput1, weakinput2, and weakbase, 
-}
-
-function Concept(text) {
-	if (match(text,String)) {
-		this.format = 'owl';
-		this.text = text;
-		/** {string} */
-		this.url = null;
-	} else if (text) {
-		this.format = text.format;
-		this.text = text.text;
-		/** {string} */
-		this.url = text.url;
-	}
-}
-
-
-/**
- * @returns string[] The (relative names) of the symbols used
- */
-Concept.prototype.symbols = function() {
-	// TODO
-	return ['sun','planet'];
-};
 
 
 // helpful error logging
