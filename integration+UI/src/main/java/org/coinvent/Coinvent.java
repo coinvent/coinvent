@@ -15,7 +15,11 @@ import com.winterwell.utils.io.ArgsParser;
 
 import winterwell.utils.Printer;
 import winterwell.utils.Utils;
+import winterwell.utils.gui.GuiUtils;
 import winterwell.utils.reporting.Log;
+import winterwell.utils.reporting.LogFile;
+import winterwell.utils.time.Dt;
+import winterwell.utils.time.TUnit;
 import winterwell.utils.web.WebUtils;
 import winterwell.web.app.FileServlet;
 import winterwell.web.app.JettyLauncher;
@@ -34,6 +38,8 @@ public class Coinvent {
 		this.config = config;		
 	}
 	
+	static LogFile logFile;
+	
 	public static Coinvent app;
 	
 	public CoinventConfig getConfig() {
@@ -47,12 +53,22 @@ public class Coinvent {
 		config = ArgsParser.parse(config, args, props, null);
 		SharedStatic.put(CoinventConfig.class, config);
 		
+		// Log file - if not already set by run()
+		assert logFile==null;
+		logFile = new LogFile(new File(config.webAppDir, "coinvent.log"));
+		// keep 14 days of log files
+		logFile.setLogRotation(new Dt(24, TUnit.HOUR), 14);
+
+		
 		// Run it!
 		app = new Coinvent(config);
 		app.run();
 		
 		// Open test view?
-		WebUtils.display(WebUtils.URI("http://localhost:"+config.port+"/static/test/welcome.html"));
+		if (GuiUtils.isInteractive()) {
+			Log.i("init", "Open links in local browser...");
+			WebUtils.display(WebUtils.URI("http://localhost:"+config.port+"/static/test/welcome.html"));
+		}
 	}
 
 	public void run() {

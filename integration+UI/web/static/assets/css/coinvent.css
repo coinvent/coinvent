@@ -9,3 +9,9 @@
 .chimera-img img {
 	padding:0px; margin:0px; width:200px; height:200px;
 }
+
+.buynow {
+	background-color:white;
+	padding:30px;
+	border: solid #33a 3px;
+}

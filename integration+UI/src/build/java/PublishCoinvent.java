@@ -48,14 +48,6 @@ import winterwell.utils.web.XStreamUtils;
  */
 public class PublishCoinvent extends BuildTask {
 
-	/**
-	 * Server used as a staging machine for sending updates acrossd the cluster.
-	 * E.g. "egan"
-	 * MUST be a hostname, not an IP address.
-	 * TODO: Switch to huxley and remove the hardcoded huxley tests!
-	 */
-	public static final String DEFAULT_PUSHOUT_HOSTNAME = "haldeman";
-
 	protected String branch;
 
 	/**
@@ -78,7 +70,7 @@ public class PublishCoinvent extends BuildTask {
 	};
 
 	protected File remoteWebAppDir;
-	protected String remoteUserHost;
+	protected final String remoteUserHost;
 	protected boolean rebootJetty = true;
 
 
@@ -95,18 +87,9 @@ public class PublishCoinvent extends BuildTask {
 		this.rebootJetty = rebootJetty;
 	}
 
-	/**
-	 * @param siteName the project slug
-	 * @param remoteUserHost user@host specification for the production server. Can be null in which case will use "winterwell@winterwell.com"
-	 * @param remoteWebAppDir Can be null in which case will use "/home/winterwell/"+siteName
-	 */
-	public PublishCoinvent(String remoteUserHost, File remoteWebAppDir) {
+	public PublishCoinvent() {
+		remoteUserHost = "winterwell@coinvent.soda.sh";
 		this.siteName = "coinvent";
-		this.remoteUserHost = remoteUserHost;
-		if (this.remoteUserHost == null) {
-			this.remoteUserHost = "winterwell@winterwell.com";
-		}
-		this.remoteWebAppDir = remoteWebAppDir;
 		if (remoteWebAppDir==null) {
 			this.remoteWebAppDir = new File("/home/winterwell/"+siteName);
 		}
@@ -169,10 +152,20 @@ public class PublishCoinvent extends BuildTask {
 				Log.report("publish","No jmx passwords file?!", Level.WARNING);
 			}
 		}
+		{	// scripts
+			Log.report("publish","Uploading "+siteName+" scripts...", Level.INFO);
+			RSyncTask rsync2 = new RSyncTask(
+					new File(localWebAppDir, "script").getAbsolutePath(),
+					remoteUserHost+":"+remoteWebAppDir+"/script/",
+					false);
+			rsync2.run();
+		}
+		
+		// SOME files
+		doUploadSomeFiles();
 
 		// Copy up the code
-		File puppetStringsDir = FileUtils.getWorkingDirectory();
-
+		
 		// NB The libs dir MUST be soft-linked manually on the server
 		// Egan rsyncs it's lib dir across the cluster, so it's enough to update egan
 		// This is ONLY a hack for sending jars en masse to dev.soda.sh
@@ -204,8 +197,8 @@ public class PublishCoinvent extends BuildTask {
 				}
 				if (!found) {
 					// This was in the lib directory, but not in the classpath
-					Log.w("publish", "Deleteing apparently unwanted file " + jar.getAbsolutePath());
-					FileUtils.delete(jar);
+					Log.w("publish", "?? Delete apparently unwanted file " + jar.getAbsolutePath());
+//					FileUtils.delete(jar);
 				}
 			}
 
@@ -215,15 +208,6 @@ public class PublishCoinvent extends BuildTask {
 			System.out.println(task.getOutput());
 		}
 
-		{   // Upload Creole's core classes
-			Log.report("publish","Uploading Creole classes...", Level.INFO);
-			// This copies the classes directory into remote WEB-INF/classes
-			// BuildCreole has already copied classes from projects like winterwell.utils into here
-			File puppetStringsClassesDir = new File(puppetStringsDir, "web/WEB-INF/classes");
-			RSyncTask task = new RSyncTask(puppetStringsClassesDir.getAbsolutePath(), remoteWebInf, true);
-			task.run();
-		}
-
 		{	// Upload this application's classes
 			Log.report("publish","Uploading "+siteName+" classes...", Level.INFO);
 			RSyncTask rsync2 = new RSyncTask(
@@ -231,28 +215,6 @@ public class PublishCoinvent extends BuildTask {
 					remoteWebInf,
 					false);
 			rsync2.run();
-		}
-
-		String[] templates = {
-				"templates/simplepage.html",
-				"templates/simplepage.min.html",
-				"templates/login.html",
-				"templates/login.min.html"
-		};
-
-		updateTemplates(code, templates);
-
-		{	// The ignored exceptions file, and the skip-patches file
-			File ie = new File(localWebAppDir, "ignored-exceptions.txt");
-			if (ie.exists()) {
-				SCPTask task = new SCPTask(ie, remoteUserHost, remoteWebAppDir.getAbsolutePath());
-				task.run();
-			}
-			File sp = new File(localWebAppDir, "skip-patches.txt");
-			if (sp.exists()) {
-				SCPTask task = new SCPTask(sp, remoteUserHost, remoteWebAppDir.getAbsolutePath());
-				task.run();
-			}
 		}
 
 		{	// RSync static resources: css, javascript whatnot -- All of web/static
@@ -272,73 +234,22 @@ public class PublishCoinvent extends BuildTask {
 			rsyncCode.close();
 		}
 
-		if (rebootJetty ) {	// Reboot Jetty
-			Log.i("publish", "Rebooting Jetty...");
-			RemoteTask reboot = new RemoteTask(remoteUserHost,"/etc/init.d/"+siteName+"-jetty restart");
-			reboot.run();
-		}
+//		if (rebootJetty ) {	// Reboot Jetty
+//			Log.i("publish", "Rebooting Jetty...");
+//			RemoteTask reboot = new RemoteTask(remoteUserHost, remoteWebAppDir+"/script/"+siteName+".sh");
+//			reboot.run();
+//		}
 		System.out.println("\n*** Upgraded: "+remoteUserHost+" (no pushout) ***\n");
 		// Done
 
 	}
 
-	/**
-	 * In the supplied templates, replaces any matches of the string "TIMESTAMP"
-	 * with the value specified in code.
-	 *
-	 * @param code The code to use in the update.
-	 * @param templatePaths Paths to the files that are to be updated.
-	 */
-	private void updateTemplates(String code, String[] templatePaths) {
-		File[] headers = new File[templatePaths.length];
-		File[] originals = new File[templatePaths.length];
-
-		int index = 0;
-
-		for (String templatePath : templatePaths) {
-			File header = new File(localWebAppDir, templatePath);
-			File original = FileUtils.changeType(header, "clean");
-
-			headers[index] = header;
-			originals[index] = original;
-
-			if (header.exists()) {
-				String html = FileUtils.read(header);
-				assert ! Utils.isBlank(html) : header;
-				FileUtils.move(header, original);
-				assert ! Utils.isBlank(FileUtils.read(original)) : header;
-				html = html.replaceAll("TIMESTAMP", code);
-				FileUtils.write(header, html);
-			} else {
-				Log.e("publish", "NO TEMPLATE?! "+header);
-			}
-
-			index++;
-		}
-
-		try {
-			Log.report("publish","Uploading "+siteName+" templates...", Level.INFO);
-			String remoteTemplates = remoteUserHost+":"+remoteWebAppDir.getAbsolutePath()+"/";
-			RSyncTask rsync3 = new RSyncTask(
-					new File(localWebAppDir,"templates").getAbsolutePath(),
-					remoteTemplates, false);
-			rsync3.run();
-
-		} finally {
-			index = 0;
-
-			for (File original : originals) {
-				File header = headers[index];
-
-				// reset header.html
-				if (original.exists()) {
-					FileUtils.move(original, header);
-					assert ! Utils.isBlank(FileUtils.read(header));
-				}
-
-				index++;
-			}
-		}
+	private void doUploadSomeFiles() {
+		RSyncTask rsync2 = new RSyncTask(
+				new File(localWebAppDir, "files/chimera").getAbsolutePath(),
+				remoteUserHost+":"+remoteWebAppDir+"/files/chimera",
+				false);
+		rsync2.run();
 	}
 
 	private void doUploadProperties(Object code) throws IOException {

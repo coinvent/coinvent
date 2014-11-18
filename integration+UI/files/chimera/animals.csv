@@ -1,20 +1,20 @@
 # Triples in csv format
 meerkat,desc1,"A meerkat is a small mammal that lives in the Kalahari Desert in southern Africa."
-meerkat,desc2,"It is a member of the mongoose family, and eats scorpions and insects."
-meerkat,desc3,"A group of meerkats is called a 'clan', and usually all of the meerkats are relatives."
+meerkat,diet,"It is a member of the mongoose family, and eats scorpions and insects."
+meerkat,society,"A group of meerkats is called a 'clan', and usually all of the meerkats are relatives."
 
 lion,desc1,"The lion is a large mammal of the Felidae (cat) family. Some large males weigh over 250 kg (550 lb)."
-lion,desc2,"Today, wild lions live in sub-Saharan Africa and parts of Asia, but their range used to include Europe and parts of America."
-lion,desc3,"Lions are adapted for life in grasslands and mixed areas with trees and grass. The relatively small females are fast runners over short distances, and co-ordinate their hunting of herd animals."
+lion,society,"Today, wild lions live in sub-Saharan Africa and parts of Asia, but their range used to include Europe and parts of America."
+lion,diet,"Lions are adapted for life in grasslands and mixed areas with trees and grass. The relatively small females are fast runners over short distances, and co-ordinate their hunting of herd animals."
 
 mandrill,desc1,"The Mandrill is an old world monkey related to the baboon."
-mandrill,desc2,"Mandrills mostly live in tropical rainforests and forest-savanna mosaics. They live in groups called hordes."
+mandrill,society,"Mandrills mostly live in tropical rainforests and forest-savanna mosaics. They live in groups called hordes."
 mandrill,desc3,"Charles Darwin wrote in The Descent of Man that 'no other member in the whole class of mammals is coloured in so extraordinary a manner as the adult male mandrill.'"
 
 porcupine,desc1,"A porcupine is a rodent with a coat of sharp spines, or quills, that defend them from predators."
 porcupine,desc2,"Porcupine quills are as sharp as needles, can be removed very easily, and will remain stuck in an attacker."
-porcupine,desc3,"Porcupines in search of salt sometimes live in human places, eating tool handles, footwear, clothes and other items that have been coated in salty sweat. Salt licks placed nearby can stop porcupine damage."
+porcupine,diet,"Porcupines in search of salt sometimes live in human places, eating tool handles, footwear, clothes and other items that have been coated in salty sweat. Salt licks placed nearby can stop porcupine damage."
 
 elephant,desc1,"The African Elephant is the largest land animal."
-elephant,desc2,"They live in family groups led by a matriach. Multiple family groups will come together to socialise."
+elephant,society,"They live in family groups led by a matriach. Multiple family groups will come together to socialise."
 elephant,desc3,"Elephant intelligence has been compared with that of primates and cetaceans. They appear to have self-awareness and show empathy for dying or dead individuals of their kind."

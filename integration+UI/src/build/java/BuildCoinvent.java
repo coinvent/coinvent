@@ -22,20 +22,20 @@ public class BuildCoinvent extends BuildTask {
 			"winterwell.utils",
 			"winterwell.web",
 //			"winterwell.base",
-			"winterwell.maths",
-			"winterwell.nlp",
-			"winterwell.depot",
+//			"winterwell.maths",
+//			"winterwell.nlp",
+//			"winterwell.depot",
 			"winterwell.datalog",
-			"jtwitter",
-			"jgeoplanet", //handled as a special case
+//			"jtwitter",
+//			"jgeoplanet", //handled as a special case
 //			"j4square",
 			"winterwell.bob",
-			"juice",
-			"pinpoint",
+//			"juice",
+//			"pinpoint",
 //			"babel",
-			"linkedin-j",
+//			"linkedin-j",
 //			"gson-forked", The jar is used instead
-			"bigmachine"
+//			"bigmachine"
 	};
 
 	@Override

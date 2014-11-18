@@ -19,7 +19,7 @@ public class CoinventConfig {
 	public int port = 8200;
 	
 	@Option
-	public File webAppDir = new File(".").getAbsoluteFile();
+	public File webAppDir = FileUtils.getWorkingDirectory();
 	
 	public Map<String,Class<? extends ICoinvent>> actor2code = new ArrayMap(
 			"dumb", DumbActor.class,
