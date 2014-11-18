@@ -1,0 +1,169 @@
+spec Symbols = 
+    free type Note ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 
+| 7 | 8 | 9 | x | x1
+    free type ChordType ::= maj | min | dom7 | fifths 
+    free type Rel ::= unison | m2 |  P5 | m7 | M6 %% m7 refers to minor 7th interval, P5 to perfect 5th interval
+end
+
+%% spec Chord = 
+%% Symbols then
+%%     sort Chord 
+  
+    %% preds    
+    %%     hasNote : Chord * Note
+
+    %% ops
+    %%     third: Chord -> Note
+    %%     bass: Chord -> Note
+    %%     root: Chord -> Note
+    %% forall c:Chord,n:Note.
+    %%    bassrel(c)=n => hasNote(c,n)
+%% end
+
+spec Cadence = 
+Symbols then
+  ops
+    prefinal: ChordType
+    final: ChordType
+    bassRel : Rel %% Relation between bass note of prefinal and final
+    rootsRel : Rel %% Relation between root note of prefinal and final
+    pfRel : Rel %% Relation between root and bass note of prefinal
+    fRel : Rel %% Relation between root and bass note of final
+end
+
+spec Perfect7Cadence = 
+  Cadence then
+    . prefinal = dom7
+    . final = maj
+    . bassRel = P5
+    . rootsRel = P5
+    . fRel = unison
+    . pfRel = unison
+end
+
+spec PhrygianCadence = 
+  Cadence then
+    . prefinal = min
+    . final = fifths
+    . bassRel = m2
+    . rootsRel = m7
+    . fRel = unison
+    . pfRel = M6
+end
+
+spec GenericCadence = 
+  Cadence then
+    . fRel = unison
+end
+
+interpretation GenerictoPhrygian: GenericCadence to PhrygianCadence end
+  
+interpretation GenerictoPerfect: GenericCadence to Perfect7Cadence end
+
+spec Blend = combine GenerictoPhrygian,GenerictoPerfect
+
+spec WeakenedCadence = 
+Symbols then
+  ops
+    fRel : Rel %% Relation between root and bass note of final
+end
+
+spec WeakenedPerfect7CadenceTritone = 
+  WeakenedCadence then
+  ops
+    prefinal: ChordType
+    final: ChordType
+    pfRel : Rel %% Relation between root and bass note of prefinal
+    fRel : Rel %% Relation between root and bass note of final
+    . prefinal = dom7
+    . final = maj
+    %% . bassRel = P5
+    %% . rootsRel = P5
+    . fRel = unison
+    . pfRel = unison
+end
+
+spec WeakenedPhrygianCadenceTritone = 
+  WeakenedCadence then
+    ops
+      bassRel : Rel %% Relation between bass note of prefinal and final
+      fRel : Rel %% Relation between root and bass note of final
+    %% . prefinal = min
+    %% . final = fifths
+    . bassRel = m2
+    %% . rootsRel = m7
+    . fRel = unison
+    %% . pfRel = M6
+end
+
+spec WeakenedGenericCadence = 
+  WeakenedCadence then
+    . fRel = unison
+end
+
+interpretation WeakenedGenerictoPhrygianTritone: WeakenedGenericCadence to WeakenedPhrygianCadenceTritone end
+  
+interpretation WeakenedGenerictoPerfectTritone: WeakenedGenericCadence to WeakenedPerfect7CadenceTritone end
+
+spec WeakenedBlend = combine WeakenedGenerictoPhrygianTritone,WeakenedGenerictoPerfectTritone
+
+%% WeakenedPhrygianCadence
+
+%% spec WeakenedPhrygianCadence = 
+%%   Chord then
+%%   ops
+%%     prefinal:Chord
+%%     final:Chord
+%%     . hasNote(prefinal,1)
+%%     . hasNote(prefinal,5)
+%%     . hasNote(final,0)
+%%     . hasNote(final,4)
+%%     . hasNote(final,7)
+%%     . root(final) = 0
+%%     . root(prefinal) = 1
+%%     . bassrel(final) = 0
+%%     . third(final) = 4
+%%     . third(prefinal) = 5
+%% end
+
+%% interpretation GenerictoWPhrygian: GenericCadence to WeakenedPhrygianCadence = 
+%%    prefinal |-> prefinal,
+%%    final |-> final,
+%%    hasNote |-> hasNote,
+%%    bassrel |-> bassrel,
+%%    third |-> third,
+%%    root |-> root 
+  
+%% interpretation GenerictoWPerfect: GenericCadence to WeakenedPerfectCadence = 
+%%    prefinal |-> prefinal,
+%%    final |-> final,
+%%    hasNote |-> hasNote,
+%%    bassrel |-> bassrel,
+%%    third |-> third,
+%%    root |-> root 
+
+%% spec TritoneBlend = combine GenerictoWPhrygian,GenerictoWPerfect
+
+
+%% spec TritoneCadence = 
+%%   Chord then
+%%   ops
+%%     prefinal: Chord
+%%     final:Chord
+%%     . hasNote(prefinal,8)
+%%     . hasNote(prefinal,x1)
+%%     . hasNote(prefinal,1)
+%%     . hasNote(prefinal,5)
+%%     . hasNote(final,0)
+%%     . hasNote(final,4)
+%%     . hasNote(final,7)
+%%     . root(final) = 0
+%%     . root(prefinal) = 1
+%%     . bassrel(final) = 0
+%%     . bassrel(prefinal) = 0
+%%     . third(final) = 4
+%%     . third(prefinal) = 5
+%% end
+
+
+%% interpretation Tritone: TritoneBlend to TritoneCadence
