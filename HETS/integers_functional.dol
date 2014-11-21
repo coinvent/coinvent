@@ -1,0 +1,176 @@
+logic CASL
+%%% start with naturals with successor and <
+spec NatSuc = 
+   sort Num
+   ops zero:Num
+       __ + __: Num * Num -> Num
+       suc: Num -> Num
+   pred 
+      __ < __: Num * Num
+
+forall x,y,z: Num
+     . not (x<x)
+     . x<y /\ y < z => x<z
+     . x<y \/ x = y \/ y<x
+     . x<y <=> (suc(x) = y \/ exists sx:Num.
+                     suc(x)= sx /\ sx < y)
+     . suc(x) = y /\ suc(x) = z => y = z
+     . suc(x) = suc(y) => x=y
+     . exists a: Num . suc(x) = a
+     . not (suc(x) = zero)
+     . suc(x) = y => zero < y
+     . x<y => suc(x) < suc(y)
+     . zero + y = y
+     . suc(x) + y = suc(x+y)
+end
+%%% naturals with predecessor and <
+spec NatRotate = 
+   sort Num
+   ops zero:Num
+       pre: Num -> Num
+   pred 
+      __ < __: Num * Num
+
+forall x,y,z: Num
+     . not (x<x)
+     . x<y /\ y <z => x<z
+     . x<y \/ x = y \/ y<x
+     . x<y <=> (x = pre(y) \/ exists sx:Num.
+             pre(y) = sx /\ x < sx)
+     . pre(x) = y /\ pre(x) = z => y = z
+     . pre(x) = pre(y) => x=y
+     . exists a: Num . pre(x) = a
+     . not (pre(x) = zero)
+     . pre(x) = y => y < zero
+     . x<y => pre(x) < pre(y)
+end
+%% generic space
+spec Generic = 
+   sort Num
+   op zero:Num
+      next: Num -> Num
+   preds lt: Num * Num
+
+
+    forall x,y,z: Num
+     . not lt(x,x)
+     . lt(x,y) /\ lt(y,z) => lt(x,z)
+     . lt(x,y) \/ x = y \/ lt(y,x)
+     . lt(x,y) <=> (x = next(y) \/ exists sx:Num.
+             next(y) = sx /\ lt(x,sx))
+     . exists a: Num . next(x) = a
+     . not (next(x) = zero)
+     . next(x) = y => lt(y,zero)
+     . lt(x,y) => lt(next(x),next(y))
+     . next(x) = next(y) => x = y
+     . next(x) = z /\ next(y) = z => x = y
+end
+%%% identify < = <, zero = zero and suc = pre
+view I1: Generic to NatSuc = 
+   zero |->  zero, next |-> suc, lt |-> __ < __
+
+view I2: Generic to NatRotate = 
+   zero |->  zero, next |-> pre, lt |-> __ < __
+
+
+%% blend is inconsistent
+spec Colimit = 
+  combine I1,I2 
+end
+
+
+%%% weakened generic space without next operator, but keeping < and zero
+spec altGeneric = 
+   sort Num
+   op zero:Num
+      
+   preds lt: Num * Num
+
+
+    forall x,y,z: Num
+     . not lt(x,x)
+     . lt(x,y) /\ lt(y,z) => lt(x,z)
+     . lt(x,y) \/ x = y \/ lt(y,x)
+
+end
+
+view I1reform: altGeneric to NatSuc = 
+   zero |->  zero, lt |-> __ < __
+
+view I2reform: altGeneric to NatRotate = 
+   zero |->  zero, lt |-> __ < __
+
+%% blend is inconsistent - need to weaken further
+%% problem is suc and pre not defined either side of origin
+spec altColimit = 
+   combine I1reform,I2reform
+
+
+
+
+%%%% revised spec for naturals - no limit axioms on successor
+spec RevNatSuc = 
+   sort Num
+   ops zero:Num
+       __ + __: Num * Num -> Num
+       suc: Num -> Num
+   pred 
+      __ < __: Num * Num
+
+forall x,y,z: Num
+     . not (x<x)
+     . x<y /\ y < z => x<z
+     . x<y \/ x = y \/ y<x
+     . x<y <=> (suc(x) = y \/ exists sx:Num.
+                     suc(x)= sx /\ sx < y)
+     . suc(x) = y /\ suc(x) = z => y = z
+     . suc(x) = suc(y) => x=y
+     . exists a: Num . suc(x) = a
+     . x<y => suc(x) < suc(y)
+     . zero + y = y
+     . suc(x) + y = suc(x+y)
+end
+
+%%% revised rotated natural spec
+spec RevNatRotate = 
+   sort Num
+   ops zero:Num
+       pre: Num -> Num
+   pred 
+      __ < __: Num * Num
+
+forall x,y,z: Num
+     . not (x<x)
+     . x<y /\ y <z => x<z
+     . x<y \/ x = y \/ y<x
+     . x<y <=> (x = pre(y) \/ exists sx:Num.
+             pre(y) = sx /\ x < sx)
+     . pre(x) = y /\ pre(x) = z => y = z
+     . pre(x) = pre(y) => x=y
+     . exists a: Num . pre(x) = a
+     . x<y => pre(x) < pre(y)
+end
+
+%%% revised generic theory
+spec RevGeneric = 
+   sort Num
+   op zero:Num
+   preds lt: Num * Num
+
+
+    forall x,y,z: Num
+     . not lt(x,x)
+     . lt(x,y) /\ lt(y,z) => lt(x,z)
+     . lt(x,y) \/ x = y \/ lt(y,x)
+end
+
+view I1rev: RevGeneric to RevNatSuc = 
+   zero |->  zero, lt |-> __ < __
+
+view I2rev: RevGeneric to RevNatRotate = 
+   zero |->  zero, lt |-> __ < __
+
+%%% consistent blend
+spec RevColimit = 
+  combine I1rev,I2rev 
+end
