@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.coinvent.actor.ICoinvent;
 import org.coinvent.impl.chimera.ChimeraActor;
+import org.coinvent.impl.chimera.ChimeraActorBuggy;
 import org.coinvent.impl.dumb.DumbActor;
 import org.coinvent.impl.hets.HETSActor;
 
@@ -24,7 +25,8 @@ public class CoinventConfig {
 	public Map<String,Class<? extends ICoinvent>> actor2code = new ArrayMap(
 			"dumb", DumbActor.class,
 			"hets", HETSActor.class,
-			"chimera", ChimeraActor.class
+			"chimera", ChimeraActor.class,
+			"chimera.boggy", ChimeraActorBuggy.class
 			);
 
 	@Option

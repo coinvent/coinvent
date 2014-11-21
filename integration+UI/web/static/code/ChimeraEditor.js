@@ -56,7 +56,14 @@ ChimeraEditor.prototype.wireup = function() {
 				// HACK The chimera backend is going to send back json for convenience
 				var chimeraObj = JSON.parse(editor.model.blend.text);	
 				if (chimeraObj.name) $('.chimera-name').text(chimeraObj.name);
-				$('.chimera-desc').text(chimeraObj.desc1+" "+chimeraObj.desc2+" "+chimeraObj.desc3);	
+				// splat out the text values
+				var keys = _.keys(chimeraObj);
+				var text = "";
+				for(var ki=0;ki<keys.length;ki++) {
+					var vali = chimeraObj[keys[ki]];
+					text += vali+" ";
+				}
+				$('.chimera-desc').text(text);	
 			})
 			.fail(function(e){
 				toastr.warning(e);
