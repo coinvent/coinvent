@@ -512,11 +512,27 @@ follow the DOL / MMT / Ontohub convention and write file_uri?ontology_name.
  1. JSON maps, e.g. "{"sun":"nucleus", "planet":"electron"}"   
  2. DOL fragments, using only the inner part of the DOL mapping, e.g. "sun |-> nucleus, planet |-> electron".
 
-`BlendDiagram` type: A packet of data comprising the Concepts and Mappings for a blend diagram in progress. The component Concepts of a BlendDiagram use the names `base`, `blend`, `input1`, `input2`, and the Mappings `base_input1`, `base_input2`, `input1_blend`, `input2_blend`. If weakenings are used, then these Concepts are names `weakinput1`, `weakinput2`, and `weakbase`, with corresponding Mappings. Can be provided as the source text itself,  
-or as a uri for a file containing the BlendDiagram. Can be in JSON or in DOL, identified in the case of a uri by a .json or .dol file-ending.
+`ConceptGraph` (aka BlendDiagram) type: A packet of data comprising the Concepts and Mappings for a blend diagram (possibly a blend diagram in progress). Can be provided as the "source text" itself, or as a uri for a file containing the ConceptGraph, and the same applied for individual concepts within the graph. Can be in JSON or in DOL, identified in the case of a uri by a .json or .dol file-ending. The JSON format is:
 
-`sentence` type: A specific sentence within a Concept. Either the sentence itself, or a sentence-label (defined in the concept file
-using a DOL annotation of the form `%(label)%`. A sentence will typically end with a DOL annotation carrying some meta-information, such as conflict or importance. Example sentences are: a sentence+annotation: `2+2=5 %conflict%`, or a label+annotation `%(controversial_sentence_label) conflict%`.
+	{
+		/** the Concepts involved */
+		concepts: {
+			$conceptName: Concept
+		},
+		
+		/** Mappings between Concepts */
+		mappings: { 
+			/** e.g. the Mapping from input1 to blend would be named "input1_blend" */
+			$conceptName1_$conceptName2: {Mapping}
+		},
+		
+		/** Optional: information on associated jobs. See the /job endpoint */
+		jobs: {?Job[]}
+	}
+
+The typical Concepts use the names `base`, `blend`, `input1`, `input2`, and the Mappings `base_input1`, `base_input2`, `input1_blend`, `input2_blend`. If weakenings are used, then these Concepts are named `weakinput1`, `weakinput2`, and `weakbase`, with corresponding Mappings. 
+
+`sentence` type: A specific sentence within a Concept. Either the sentence itself, or a sentence-label (defined in the concept file using a DOL annotation of the form `%(label)%`. A sentence will typically end with a DOL annotation carrying some meta-information, such as conflict or importance. Example sentences are: a sentence+annotation: `2+2=5 %conflict%`, or a label+annotation `%(controversial_sentence_label) conflict%`.
 
 All inputs are of course sent URL encoded.
 
@@ -560,7 +576,7 @@ Parameters:
  - base: {concept}
  - base_input1: {mapping} from base to input1
  - base_input2: {mapping} from base to input1
- - cursor: {?url} For requesting follow-on results.
+ - cursor: {?url} As provided by a previous request, for requesting follow-on results.
    
 Response-cargo: 
 	
@@ -583,7 +599,7 @@ Parameters:
  - base: {?concept}
  - base_input1: {?mapping} from base to input1
  - base_input2: {?mapping} from base to input1
- - cursor: {?url} For requesting follow-on results.
+ - cursor: {?url} As provided by a previous request, for requesting follow-on results.
  
 Response-cargo: 
 	
@@ -603,9 +619,10 @@ Default end point: http://coinvent.soda.sh:8400/weaken/$user_name
 
 Parameters: 
 
- - blend_diagram: A Blend Diagram in Progress
+ - concept_graph: {ConceptGraph}
+ - focus: {?string} the name of a Concept in concept_graph, which indicates the blend you wish to make work. "blend" will be assumed if not set.  
  - sentence_metadata: {?sentence[]} Markers for conflict-set(s) and important sentences.
- - cursor: {?url} For requesting follow-on results.
+ - cursor: {?url} As provided by a previous request, for requesting follow-on results.
  
 Response-cargo: A weakened blend diagram
 
