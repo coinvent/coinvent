@@ -458,8 +458,8 @@ To mitigate these risks, the system design allows for components to be fulfilled
 
 ## References
 
- - CASL: [user manual](http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_user_manual)
- and [reference manual](http://www.informatik.uni-bremen.de/cofi/wiki/index.php/CASL_reference_manual)
+ - CASL: [user manual](http://www.informatik.uni-bremen.de/cofi/index.php/CASL_user_manual)
+ and [reference manual](http://www.informatik.uni-bremen.de/cofi/index.php/CASL_reference_manual)
  - DOL: <https://github.com/tillmo/DOL>
  - HDTP: <http://link.springer.com/chapter/10.1007%2F978-3-642-54516-0_7>
  - HETS: <http://www.informatik.uni-bremen.de/agbkb/forschung/formal_methods/CoFI/hets>
