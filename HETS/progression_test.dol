@@ -1,0 +1,81 @@
+spec Symbols = 
+    free type Note ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | x | x1
+end
+
+spec Chord = 
+Symbols then
+    sort Chord 
+  
+    preds    
+        hasNote : Chord * Note
+
+    ops
+        third: Chord -> Note
+        bassrel: Chord -> Note
+        root: Chord -> Note
+    forall c:Chord,n:Note.
+       bassrel(c)=n => hasNote(c,n)
+end
+
+spec PerfectCadence = 
+  Chord then
+  ops
+    prefinal: Chord
+    final:Chord
+    . hasNote(prefinal,7)
+    . hasNote(prefinal,x1)
+    . hasNote(prefinal,2)
+    . hasNote(prefinal,5)
+    . hasNote(final,0)
+    . hasNote(final,4)
+    . hasNote(final,7)
+    . root(final) = 0
+    . root(prefinal) = 7
+    . bassrel(final) = 0
+    . bassrel(prefinal) = 0
+    . third(final) = 4
+    . third(prefinal) = x1 
+end
+
+
+spec PhrygianCadence = 
+  Chord then
+  ops
+    prefinal:Chord
+    final:Chord
+    . hasNote(prefinal,1)
+    . hasNote(prefinal,5)
+    . hasNote(prefinal,x)
+    . hasNote(prefinal,8)
+    . hasNote(final,0)
+    . hasNote(final,4)
+    . hasNote(final,7)
+    . root(final) = 0
+    . root(prefinal) = 1
+    . bassrel(final) = 0
+    . bassrel(prefinal) = 9
+    . third(final) = 4
+    . third(prefinal) = 5
+end
+
+spec GenericProgression = 
+    Chord then
+    ops
+      c:Chord
+      . hasNote(c,0)
+      . hasNote(c,4)
+      . hasNote(c,7)
+      . root(c) = 0
+      . bassrel(c) = 0
+      . third(c) = 4
+end
+
+interpretation Genphryg: GenericProgression to PhrygianCadence =
+    c |-> final
+
+interpretation Genperf: GenericProgression to PerfectCadence =
+    c |-> prefinal
+
+spec Progression = combine Genphryg,Genperf
+    with gn_prefinal14 |-> passing
+    
