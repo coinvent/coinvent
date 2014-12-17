@@ -23,6 +23,7 @@ exec(rmAxDirectly(perfect7cadence,2),t) :- t = 2.  %% final
 exec(rmAxDirectly(phrygiancadence,29),t) :- t = 3. %% pfrel
 exec(rmAxDirectly(perfect7cadence,4),t) :- t = 4.  %% rootsRel
 exec(rmAxDirectly(phrygiancadence,27),t) :- t = 5. %% bassRel
+
 %% exec(rmAx(perfect7cadence,2),t) :- t = 6.
 %% exec(rmAx(phrygiancadence,27),t) :- t = 7.
 %% exec(rmAx(perfect7cadence,3),t) :- t = 8.
