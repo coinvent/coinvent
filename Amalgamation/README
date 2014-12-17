@@ -1,0 +1,43 @@
+To run the blending, adjust the var "lp_path" in iclingo-py.lp to the absolute path of your system and execute "run-plending.py" using python. By default it will do the cadence blending example specified in cadence.casl. 
+
+If you want to do other blendings, modify the settings.py as follows:
+	+ change the "fName" var and provide the CASL file that contains two specifications to blend.
+	+ modify the "specsToBlend" variable and enter the two specs in the casl file that are to be blended. 
+	+ the searchControlFile var is optional (but should at least be an empty string) and intended to be used as an ad-hoc solution to guide the ASP search.
+
+Important limitations and TODOs:
+	+ The system only generates one set of blends for one generalization process (only one stable model is generated). There should be more than one solution for different generalizations in the future. 
+	+ For each generalization process, the system should not provide all symmentric blend specs in one casl file, but rather compute the individual blends of the generalization spaces iteratively with separate casl files, starting from the less general generalizations. Having one stable model per blend allows us to use ASPs maximization statements. Considering also asymmetric blends gives us more useful solutions. 
+	
+
+	+ Operator and predicate names must be disjoint in each specification, i.e. a operator name can 
+	not be a predicate name. Furthermore, overloading is not supported. otherwise this will result in errors. 
+	+ If predicates or operator names are equal in different specifications, they are considered to be equal. 
+	+ Only identity mappings are considered so far between specs.
+	+ Sorts are determined only by predicates and operators. Think whether they should also be determined by axioms, as e.g. in the monks blend example. 
+
+
+
+Algorithm overview
+
+Input: CASL spec with two input spaces to blend
+	1. Use a sequence of generalization operations to compute generic space. 
+		The possible generalization operations are
+			rmOperator	
+			rmPred
+			(genOperator (generalize an operator --> Future work))
+			(genPred (generalize a predicate --> Future work))
+
+		The Generic space is the space where the following sets are equal:
+			predicates
+			operators
+			sorts (inherently induced by predicates and operators)
+			axioms
+	2. Once a generic space is found, generate a CASL spec with all intermediate generalization spaces. Specify blends for all pairs of intermediate specs. Then run hets and check consisteny of all blends. 
+
+		
+
+	
+
+	
+

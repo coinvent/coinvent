@@ -1,0 +1,44 @@
+spec Symbols = 
+    free type ChordType ::= maj | min | dom7 | fifths 
+    free type Rel ::= unison | m2 |  P5 | m7 | M6 %% m7 refers to minor 7th interval, P5 to perfect 5th interval
+end
+
+spec Cadence = 
+Symbols then
+  ops
+    prefinal : ChordType
+    final : ChordType
+    bassRel : Rel
+    rootsRel : Rel
+    pfRel : Rel
+    fRel : Rel
+
+end
+
+spec Perfect7Cadence = 
+  Cadence then
+    . prefinal = dom7
+    . final = maj      %%(4)
+    . bassRel = P5     %%(4)
+    . rootsRel = P5    %%(5)
+    . pfRel = unison
+    . fRel = unison
+end
+
+spec PhrygianCadence = 
+  Cadence then
+    . prefinal = min
+    . final = fifths
+    . bassRel = m2
+    . rootsRel = m7
+    . pfRel = M6
+    . fRel = unison
+end
+
+
+%% spec InvalidCadence = Cadence then
+%%    . not rootsRel = m7 /\ pfRel = M6 /\ fRel = unison /\ bassRel = P5   %% ("Weight of axiom")
+%%    . not rootsRel = m7 /\ pfRel = unison /\ fRel = unison /\ bassRel = m2
+%%    . not rootsRel = P5 /\ pfRel = M6 /\ fRel = unison /\ bassRel = P5
+%%    . not rootsRel = P5 /\ pfRel = unison /\ fRel = unison /\ bassRel = m2
+%% end
