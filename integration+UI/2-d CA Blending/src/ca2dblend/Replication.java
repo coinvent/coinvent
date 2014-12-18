@@ -149,7 +149,7 @@ public class Replication {
 	    		   }
 	      
 	       nextalive = scheme.act(alive,count,conway);
-	       if ((!conway && nextalive && aliveonly) || (!conway && !aliveonly)) {scheme.blend(schemes);}
+	       if ((!conway && nextalive && aliveonly) || (!conway && !aliveonly)) {scheme.blendmax(schemes);}
 	       }
 	   
 	    public void actupdate()
