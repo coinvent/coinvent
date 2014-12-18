@@ -1,27 +1,23 @@
 package ca2dblend;
 
-
-
 import ca2dblend.Location;
 import ca2dblend.Field;
 import ca2dblend.Replication;
 
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
-
 import java.awt.event.MouseEvent;
-
 import javax.swing.JPopupMenu;
-
 import java.awt.event.MouseListener;
+import java.applet.*;
+import java.net.*;
 
 
 
-public class GridView extends JFrame 
+
+public class GridViewApplet extends Applet 
 {
-	
 	private static final long serialVersionUID = 1L;
 
 	// Colors used for dead locations.
@@ -31,15 +27,24 @@ public class GridView extends JFrame
     private int step;
     private JCheckBox inheritButton;	
     private JCheckBox aliveButton;	
-   // private Field field;
+    
+    
+    
+    
     /**
      * Create a view of the given width and height.
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public GridView(int height, int width)
-    {
-        setTitle("2d Cellular Automata Blend");
+    
+    public void init() {
+
+    	
+    	int height = 80;
+    	int width = 120;
+
+    	
+    	
 
         inheritButton = new JCheckBox("Inherit only from Alive Neighbours");
         inheritButton.setMnemonic(KeyEvent.VK_C); 
@@ -49,22 +54,17 @@ public class GridView extends JFrame
         aliveButton.setSelected(false);
         setLocation(20, 50);
         fieldView = new FieldView(height, width);
-        Container contents = getContentPane();
+        Container contents = this;
        
         contents.add(aliveButton, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(inheritButton, BorderLayout.SOUTH);
-        pack();
+       
         setVisible(true);
+        showStatus();   
     }
     
-    public static void main( String[] args )
-	{
-
-		GridView view = new GridView(80, 120);
-		view.showStatus();
-		
-	}		
+    
     
     public void showStatus()
     {
@@ -72,7 +72,7 @@ public class GridView extends JFrame
             setVisible(true);
         }            
         fieldView.paint_field();
-        fieldView.repaint();
+        repaint();
     }
 
   
@@ -275,9 +275,9 @@ public class GridView extends JFrame
          */
         public void preparePaint()
         {
-            if(! size.equals(getSize())) 
+            if(! size.equals(getPreferredSize())) 
         	{  // if the size has changed...
-                size = getSize();
+                size = getPreferredSize();
                 fieldImage = fieldView.createImage(size.width, size.height);
                 g = fieldImage.getGraphics();
 
