@@ -125,7 +125,7 @@ public class Replication {
 		      return neighbourreplications;
 	   }
 	   
-	   public void act(boolean conway, boolean inherit, boolean aliveonly)
+	   public void act(boolean conway, boolean inherit, boolean aliveonly, boolean intersection,boolean union,boolean average)
 	    {
 	       ArrayList<Replication> al = get_neighbours();
 	       ArrayList<Scheme> schemes = new ArrayList<Scheme>();
@@ -149,7 +149,7 @@ public class Replication {
 	    		   }
 	      
 	       nextalive = scheme.act(alive,count,conway);
-	       if ((!conway && nextalive && aliveonly) || (!conway && !aliveonly)) {scheme.blendmax(schemes);}
+	       if ((!conway && nextalive && aliveonly) || (!conway && !aliveonly)) {if (union) {scheme.blendmax(schemes);} else if (average) {scheme.blend(schemes);} else if (intersection){scheme.blendmin(schemes);}}
 	       }
 	   
 	    public void actupdate()
