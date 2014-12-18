@@ -93,6 +93,9 @@ public class GridView extends JFrame
         private boolean conway;
         private boolean inherit = false;
         private boolean aliveonly = false;
+        private boolean intersection = false;
+        private boolean union = false;
+        private boolean average = false;
         private Replication global_repl;
        
         private Timer timer = new Timer(20, this);
@@ -174,13 +177,29 @@ public class GridView extends JFrame
         		animate = true;
         	}
         	
-        	if (message == "Run as Blend") 
+        	if (message == "Run as Average Blend") 
         	{
         		conway = false;
         		timer.start();
         		animate = true;
+        		average = true;
         	}
         	
+        	if (message == "Run as Intersection Blend") 
+        	{
+        		conway = false;
+        		timer.start();
+        		animate = true;
+        		intersection = true;
+        	}
+        	
+        	if (message == "Run as Union Blend") 
+        	{
+        		conway = false;
+        		timer.start();
+        		animate = true;
+        		union = true;
+        	}
         	
         	if (animate && (step <300))
         	{
@@ -188,7 +207,7 @@ public class GridView extends JFrame
         	aliveButton.setText("Inherit only if Alive.   "+"Step = "+Integer.toString(step));
         	for (i = 0;i<field.getDepth();i++){
                 	for (j = 0; j< field.getWidth();j++){
-                		field.getObjectAt(i, j).act(conway,inherit,aliveonly);
+                		field.getObjectAt(i, j).act(conway,inherit,aliveonly,intersection,union,average);
                 	}
         		}
 
@@ -206,7 +225,11 @@ public class GridView extends JFrame
         		step =0;
         		animate = false;
         		conway = false;
+        		intersection = false;
+        		union = false;
+        		average = false;
         		timer.stop();
+        		
         			}
         }	
     
@@ -330,10 +353,17 @@ public class GridView extends JFrame
    			item.addActionListener(this);
    			
    			
-			popupMenu.add(item = new JMenuItem("Run as Blend"));
+			popupMenu.add(item = new JMenuItem("Run as Average Blend"));
 			item.setHorizontalTextPosition(JMenuItem.RIGHT);
 			item.addActionListener(this);
         		
+			popupMenu.add(item = new JMenuItem("Run as Union Blend"));
+			item.setHorizontalTextPosition(JMenuItem.RIGHT);
+			item.addActionListener(this);
+			
+			popupMenu.add(item = new JMenuItem("Run as Intersection Blend"));
+			item.setHorizontalTextPosition(JMenuItem.RIGHT);
+			item.addActionListener(this);
 
 
 			popupMenu.add(item = new JMenuItem("Show replication info"));
