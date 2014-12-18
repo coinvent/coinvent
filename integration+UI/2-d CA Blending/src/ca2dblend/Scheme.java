@@ -17,6 +17,7 @@ public class Scheme {
 	    // Usually this can be a field rather than a method variable
 	    Random rand = new Random();
 
+	    if (max<min){max=min;}
 	    // nextInt is normally exclusive of the top value,
 	    // so add 1 to make it inclusive
 	    int randomNum = rand.nextInt((max - min) + 1) + min;
@@ -42,8 +43,8 @@ public class Scheme {
 	{
 				
 		weight = randInt(1,100);
-		underpopulate = randInt(1,100);
-		overpopulate = randInt(underpopulate+50,200);
+		underpopulate = randInt(1,50);
+		overpopulate = randInt(underpopulate+100,200);
 		reproduce_low = randInt(underpopulate+1,underpopulate+10);
 		reproduce_high = randInt(overpopulate-10,overpopulate);		
 	}
