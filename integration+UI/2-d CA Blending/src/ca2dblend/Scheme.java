@@ -68,7 +68,7 @@ public class Scheme {
 		   {
 			   return false;   
 		   }
-		   else return true;
+		   else return alive;
 	   }
 	   else
   {
@@ -93,7 +93,7 @@ public class Scheme {
 	   {
 		   return false;   
 	   }
-	   else return true;}
+	   else return alive;}
 	}
 	
 	
@@ -125,6 +125,63 @@ public class Scheme {
 	  new_over = t_over / s;
 	  new_reproduce_low = t_reproduce_low/s;
 	  new_reproduce_high = t_reproduce_high/s;
+	  new_weight = t_weight/s;
+	  
+	  while ((new_over - new_under) < 2)
+	  {
+		  if (new_under > 1)
+		  {
+			  new_under--;
+	      } else
+	      {
+	    	if (new_over < 2997)
+	      	{
+	    	  new_over ++;
+	      	}
+	      }
+	  }
+	  
+	  while (new_reproduce_low<=new_under)
+	  {new_reproduce_low++;}
+	  
+	  while (new_reproduce_high>=new_over)
+	  {new_reproduce_high--;}
+	  
+	  underpopulate = new_under;
+	  overpopulate = new_over;
+	  reproduce_low = new_reproduce_low;
+	  reproduce_high = new_reproduce_high;
+	  weight = new_weight;
+	}}
+
+	void blendmax(ArrayList<Scheme> neighbourschemes)
+	{
+      int t_under = underpopulate;
+      int t_over = overpopulate;
+      int t_reproduce_low = reproduce_low;
+      int t_reproduce_high = reproduce_high;
+      int t_weight = weight;
+      int new_under,new_over,new_reproduce_low,new_reproduce_high,new_weight;
+      
+      Iterator<Scheme> itr = neighbourschemes.iterator();
+      int s = neighbourschemes.size();
+      if (s!=0)
+      {
+      
+      
+	  while(itr.hasNext()) {
+	         Scheme element = itr.next();
+	         if ((element.underpopulate) < t_under) {t_under = element.underpopulate;}
+	         if ((element.overpopulate) > t_over) {t_over = element.overpopulate;}
+	         if ((element.reproduce_low) < t_reproduce_low) {t_reproduce_low = element.reproduce_low;}
+	         if ((element.reproduce_high) > t_reproduce_high) {t_reproduce_high = element.reproduce_high;}
+	         t_weight = element.weight++;
+	  }
+	  
+	  new_under = t_under;
+	  new_over = t_over;
+	  new_reproduce_low = t_reproduce_low;
+	  new_reproduce_high = t_reproduce_high;
 	  new_weight = t_weight/s;
 	  
 	  while ((new_over - new_under) < 2)
