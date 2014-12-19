@@ -4,7 +4,7 @@ import subprocess
 
 from settings import *
 
-fName = caslInputFile
+fName = inputFile
 
 xmlFileName = casl2Xml(fName,inputSpaces) 
 caslSpecs = parseXmlCasl(xmlFileName)

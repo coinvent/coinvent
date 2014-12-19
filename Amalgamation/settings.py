@@ -1,8 +1,8 @@
 ###### In this settings file we define some global variables ######
 
-##### CASL input file should contain the input spaces, i.e. specifications to be blended. The CASL file can also contain other specifications, so that e.g. the input spaces can inherit structure from a same parent spec. However, a parent spec is not necessarily a generic space. Currently, only two input spaces are supported.
+##### The input file should contain the input spaces, i.e. specifications to be blended. The file can also contain other specifications, so that e.g., in CASL, the input spaces can inherit structure from a same parent space. However, a parent space is not necessarily a generic space. Currently, only two input spaces are supported.
 
-caslInputFile = "examples/minimal.casl"
+inputFile = "examples/minimal.casl"
 inputSpaces = ["S1","S2"]
 
 ###### The search control file is an auxiliary file which is supposed to include domain specific knowledge for guiding the search. 
@@ -15,10 +15,22 @@ numModels = 1
 minIterations = 1
 
 ###### The maximal number of iterations for generalization
-maxIterations = 100
+maxIterations = 20
 
+############################
+###### CASL-specific #######
+############################
 
-caslInputFile = "examples/cadenceByAx.casl"
+###### For generalization, determine whether removal of axioms, predicates and operators are allowed atomic generalization actions. For certain domains it may be useful to use only a subset of generalization operations.
+# TODO: THis is currently not working... For now (de)-comment respective LP rules in generalize.lp file to select generalization operations
+# rmAxAllowed = True
+# rmPredAllowed = True
+# rmOpAllowed = True
+
+###################################################################
+
+## Here is space to quickly overwrite the previous above for debugging purposes.
+inputFile = "examples/cadenceByAx.casl"
 inputSpaces = ["Perfect7Cadence","PhrygianCadence"]
-searchControlFile = "examples/cadenceByAxControl.lp"
+# searchControlFile = "examples/cadenceByAxControl.lp"
 

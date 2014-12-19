@@ -1,6 +1,11 @@
 
 #program cumulative1(t).
 
+%% Determine when an input spec has  been altered
+altered(I,t) :- exec(rmOp(I,OP),t).
+altered(I,t) :- exec(rmPred(I,P),t).
+altered(I,t) :- exec(rmAx(I,Ax),t).
+
 %%%%% Only remove an axiom if a contradicting axiom has not been removed before from another spec.
 
 %% It is mandatory to remove an axiom if at least one other input spec has an axiom that involves the same removable operator.
