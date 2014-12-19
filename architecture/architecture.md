@@ -2,7 +2,7 @@
 # Coinvent Architecture
 
 Authors: Daniel Winterstein, Ewen Maclean, Mihai Codescu.    
-Status: Version 1.0 was submitted to the EU as deliverable 8.1. This document is now the live version which will track the evolution of Coinvent.   
+Status: Published. Version 1.0 was submitted to the EU as deliverable 8.1. This document is now the live version which will track the evolution of Coinvent.   
 Version: 1.1      
 
 - [Overview](#overview)
