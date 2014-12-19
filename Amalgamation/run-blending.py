@@ -27,7 +27,8 @@ print "Generated Logic Programming facts from CASL Spec."
 lpName = fName.split(".casl")[0] + ".lp"
 
 if searchControlFile != "":
-	subprocess.call(["clingo4", "--number="+str(numModels), "iclingo-py.lp", "generalize.lp", lpName, searchControlFile])
+	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpName, searchControlFile])
 else:
-	subprocess.call(["clingo4", "--number="+str(numModels), "iclingo-py.lp", "generalize.lp", lpName])
+	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpName])
+
 # subprocess.call(["hets", "-g", "amalgamBlend_0.casl"])
