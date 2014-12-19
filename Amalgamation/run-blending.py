@@ -1,4 +1,4 @@
-from parseCasl import *
+from langCasl import *
 import os
 import subprocess
 
@@ -6,12 +6,12 @@ from settings import *
 
 fName = caslInputFile
 
-xmlFileName = casl2Xml(fName,specsToConsider) 
+xmlFileName = casl2Xml(fName,inputSpaces) 
 caslSpecs = parseXmlCasl(xmlFileName)
 print "blending the following CASL specs:"
 for spec in caslSpecs:
     print spec.toStr()
-# exit(1)
+# raw_input()
 print "\n\n\n"
 
 lpRep = toLP(caslSpecs)
@@ -21,12 +21,13 @@ lpFileName = fName.split(".")[0]+".lp"
 lpFile = open(lpFileName,'w')
 lpFile.write(lpRep)
 lpFile.close()
+print "Generated Logic Programming facts from CASL Spec."
+# raw_input()
 
 lpName = fName.split(".casl")[0] + ".lp"
 
 if searchControlFile != "":
-	subprocess.call(["clingo4", "--number="+str(numModels), "iclingo-py.lp", "blend.lp", lpName, searchControlFile])# | sed s/\") \"/\")\\n\"/g"])\\
+	subprocess.call(["clingo4", "--number="+str(numModels), "iclingo-py.lp", "generalize.lp", lpName, searchControlFile])
 else:
-	subprocess.call(["clingo4", "--number="+str(numModels), "iclingo-py.lp", "blend.lp", lpName])# | sed s/\") \"/\")\\n\"/g"])\\	
-
-subprocess.call(["hets", "-g", "amalgamBlend_0.casl"])
+	subprocess.call(["clingo4", "--number="+str(numModels), "iclingo-py.lp", "generalize.lp", lpName])
+# subprocess.call(["hets", "-g", "amalgamBlend_0.casl"])

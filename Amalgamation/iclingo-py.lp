@@ -5,7 +5,7 @@ import os, sys, time, subprocess
 lp_path = os.path.abspath('/home/manni/mac-home/svn/coinvent/Amalgamation/')
 sys.path.append(lp_path)
 from settings import *
-from parseCasl import *
+from langCasl import *
 generalizations = {}
 
 blends = []
@@ -21,6 +21,7 @@ def on_model(model):
     for a in model.atoms() :
         tmpFile.write(str(a)+"\n")
         print a
+    raw_input()
     tmpFile.close()
     while not os.path.isfile("tmpModel") :
         print ":::::::::::::::: file tmpModel not yet written!!!!!!:::::::::::::::"
@@ -165,11 +166,9 @@ def get(val, default):
     return val if val != None else default
 
 def main(prg):
-    global generalizations,blends
-    imin   = get(prg.get_const("imin"), 1)
-    imax   = prg.get_const("imax")
-    istop  = get(prg.get_const("istop"), "SAT")
-    iquery = get(prg.get_const("iquery"), 1)
+    global generalizations,blends, minIterations, maxIterations
+    imin   = minIterations
+    imax   = maxIterations
     
     step = 1
     
@@ -178,15 +177,13 @@ def main(prg):
     while True:
         if imax != None and step > imax: break
         parts.append(("cumulative1", [step]))
-        if step >= iquery: 
-            parts.append(("volatile1", [step]))
+        parts.append(("volatile1", [step]))
         prg.ground(parts)
         parts = []
         prg.release_external(Fun("query1", [step-1]))
-        if step >= iquery: 
-            prg.assign_external(Fun("query1", [step]), True)
+        prg.assign_external(Fun("query1", [step]), True)
         ret = prg.solve(None, on_model)
-        if step >= imin and ((istop == "SAT" and ret == SolveResult.SAT) or (istop == "UNSAT" and ret != SolveResult.SAT)): break
+        if step >= imin and (ret == SolveResult.SAT): break
         step = step+1
 
     blendId = 0
@@ -197,33 +194,29 @@ def main(prg):
         outFile.close()
         blendId = blendId + 1
 
+    print "Iteration for generalizations done. Starting blend iteration."
+
+    step = 1
+    parts.append(("base2", []))
+    while True:
+        if imax != None and step > imax: break
+        parts.append(("cumulative2", [step]))
+        parts.append(("volatile2", [step]))
+        prg.ground(parts)
+        parts = []
+        prg.release_external(Fun("query2", [step-1]))
+        prg.assign_external(Fun("query2", [step]), True)
+        # ret = prg.solve(None, on_model)
+        ret = prg.solve(None, on_model)
+        if step >= imin and (ret == SolveResult.SAT) : break
+        step = step + 1
+
     # last cleanup...
     os.system('rm *.th')
 
-    print "iteration done..."
-    print '\a'
-
-    # step = 1
-    # parts.append(("base2", []))
-    # while True:
-    #     if imax != None and step > imax: break
-    #     parts.append(("cumulative2", [step]))
-    #     if step >= iquery: 
-    #         parts.append(("volatile2", [step]))
-    #     prg.ground(parts)
-    #     parts = []
-    #     prg.release_external(Fun("query2", [step-1]))
-    #     if step >= iquery: 
-    #         prg.assign_external(Fun("query2", [step]), True)
-    #     ret = prg.solve(None, on_model)
-    #     if step >= imin and ((istop == "SAT" and ret == SolveResult.SAT) or (istop == "UNSAT" and ret != SolveResult.SAT)): break
-    #     step = step + 1
-
-
-
 def computeGeneralizedCaslSpecs():
     print "computing CASL specs"
-    global caslInputFile, specsToConsider
+    global caslInputFile, inputSpaces
 
     caslFName = caslInputFile
     # get information about generic space and inputs for the particular t from Answer Set. TODO: File has to be read only once of course.
@@ -232,7 +225,7 @@ def computeGeneralizedCaslSpecs():
 
     # parse CASL file again to get data structure. TODO: File has to be parsed only once of course.
     print "generating xml file"
-    xmlFileName = casl2Xml(caslFName,specsToConsider) 
+    xmlFileName = casl2Xml(caslFName,inputSpaces) 
     print "parsing xml tree"
     caslSpecs = parseXmlCasl(xmlFileName)
     print "done parsing xml"

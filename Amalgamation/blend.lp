@@ -1,8 +1,5 @@
-
-#const istop  = "SAT".
 #const imin   = 1.
 #const imax   = 100.
-#const iquery = 1.
 
 #program  base1. 
 altered(I,0) :- spec(I).
@@ -20,7 +17,8 @@ s(t).
 % Remove Predicate
 %% a(rmPred(I,PRED),t) :- hasPred(I,PRED,t), removable(I,PRED).
 % Remove Axiom
-a(rmAxDirectly(I,Ax),t) :- hasAxiom(I,Ax,t), removable(I,Ax).
+%% a(rmAxDirectly(I,Ax),t) :- hasAxiom(I,Ax,t), removable(I,Ax).
+a(rmAx(I,Ax),t) :- hasAxiom(I,Ax,t), removable(I,Ax).
 
 %% a(rmAx(I,Ax),t) :- hasAxiom(I,Ax,t), not hasAxiom(I2,Ax,t), spec(I2), I2 != I.
 
