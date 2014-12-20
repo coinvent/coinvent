@@ -315,9 +315,9 @@ Symbols then
         bassabs: Chord -> Note
     forall c:Chord,n:Note
        . bassrel(c)=n => hasRelNote(c,n)
-       . hasRelNote(c,n) => hasAbsNote(c,(root(c)+n))
-       . thirdrel(c) = n => thirdabs(c) = root(c)+n
-       . bassrel(c) = n => bassabs(c) = root(c)+n
+       . hasRelNote(c,n) <=> hasAbsNote(c,(root(c)+n))
+       . thirdrel(c) = n <=> thirdabs(c) = root(c)+n
+       . bassrel(c) = n <=> bassabs(c) = root(c)+n
 end
 
 
@@ -348,7 +348,7 @@ end
 
 spec Generic = 
   Chord then
-  op c:Chord
+  ops c:Chord
   . bassrel(c) = 0
   . hasRelNote(c,7)
   . hasRelNote(c,0)
