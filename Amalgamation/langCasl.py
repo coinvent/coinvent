@@ -6,16 +6,21 @@ import time
 from string import *
 import re
 
-    
+### casl2Xml translates CASL input spaces to an xml file. The xml simplifies the CASL parsing. 
+### Input:  CASL file name and names of input spaces
+### Output: The path to an xml file representing the input spaces.     
 def casl2Xml(fName,inputSpaces):    
     newFileName = fName.split(".")[0]+"_raw.casl"
     # os.system("echo \"\" > "+ newFileName)
     xmlFileName = newFileName.split(".")[0]+".xml"
+
+    # First generate .th files from CASL files. 
     print "generating Casl .th files using HETS from " + fName
     # os.system("hets -o th "+fName)
     subprocess.call(["hets", "-o th", fName])
     print "DONE generating casl .th files using HETS"
-    #TODO: be sure that all .th files have been generated
+    
+    #To be sure that all .th files have been generated repeat this 5 times. This is necessary because file generation via command line turned out to be buggy,
     allGenerated = False
     tries = 0
     while allGenerated == False and tries < 5:
@@ -32,16 +37,19 @@ def casl2Xml(fName,inputSpaces):
                 break
         tries = tries + 1
 
+    # Second read the input spaces to be blended in CASL syntax from .th files and concatenate the strings. 
     newFileContent = ""
     for spec in inputSpaces:
-        tmpFile = open(fName[:-5]+"_"+spec+".th", "r")
+        tmpFile = open(fName.split(".")[0]+"_"+spec+".th", "r")
         tmp = tmpFile.read()
         newFileContent = newFileContent + tmp
     
     newFile = open(newFileName, "w")
     newFile.write(newFileContent)
     newFile.close()
-    # os.system("rm *.th")   
+    os.system("rm *.th")   
+
+    # Third, generate xml file from concatenated CASL input spaces. As above, this is buggy, so we make sure that the xml file is generated correctly by trying 5 times. 
     xmlFileSize = 0
     tries = 0
     while True:
@@ -59,7 +67,6 @@ def casl2Xml(fName,inputSpaces):
         print ":::::::::::::::: file " + xmlFileName + " not yet written correctly after " + str(tries) + " tries!!!!!!:::::::::::::::"
         if tries > 5:
             exit(1)
-        # time.sleep(0.5)
         
         print "calling hets to compute xml"
         subprocess.call(["hets", "-o xml", newFileName])
@@ -69,12 +76,9 @@ def casl2Xml(fName,inputSpaces):
         print "done calling hets to compute xml"
 
     os.remove(newFileName)
-    #     # raw_input()
-    #     continue
-    # time.sleep(0.1)
-    #TODO: be sure that .xml file has been generated
     return xmlFileName
 
+## This class represents a predicate in CASL. 
 class CaslPred:
     def __init__(self, name):
         self.name = name
@@ -100,7 +104,7 @@ class CaslPred:
         str = str[:-3]
         return str         
              
-        
+## This class represents an operator in CASL.       
 class CaslOp:
     def __init__(self, name):
         self.name = name
@@ -137,7 +141,7 @@ class CaslOp:
             str = str + " : " +self.dom
         return str 
     
-        
+# This class represents a CASL specification.        
 class CaslSpec:
     def __init__(self, name):
         self.name = name
@@ -208,17 +212,20 @@ class CaslSpec:
                 oStr = oStr + "axInvolvesPredOp("+str(ax['id'])+","+predOp.lower()+").\n"
             if ax['removable'] == 1:
                 oStr = oStr + "removable("+self.name.lower()+","+str(ax['id'])+").\n"
-
         #for so in self.sorts:
         #    oStr = oStr + "hasSort("+self.name.lower()+","+so+",0).\n"
         return oStr
 
-def getPredByText(text):
-    pName = text[4:].split(":")[0].strip()
-    thisPred = CaslPred(pName)
-    thisPred.args = text.split(":")[1].strip().split(" * ")
-    return thisPred
-        
+# This is used to get a predicate object by parsing a string in a predicate node of the xml format that HETS produces. Its probably deprecated, but I don't dare to delete yet (20.12.14)
+# def getPredByText(text):
+#     pName = text[4:].split(":")[0].strip()
+#     thisPred = CaslPred(pName)
+#     thisPred.args = text.split(":")[1].strip().split(" * ")
+#     return thisPred
+
+# This is the main method to turn the xml representation of input spaces into the internal data structure
+# Input: The path to an XML file name
+# Output: a list of CASL specs represented in the internal data structure
 def parseXmlCasl(xmlFile):
     specs = []
     # print "Calling parseXml method"
@@ -321,6 +328,10 @@ def parseXmlCasl(xmlFile):
             # print  ax['predsOps']
 
     return specs
+
+# Check whether an axiom may be removed with an atomic generalization operation.
+# Input: list of non-removable operators and predicates, and a string representation of an axiom
+# Output: 1 or 0 to determine whether the axiom is removable. The axiom is not removable if it involves a non-removable operator or predicate.
 def checkAxRemovable(nonRemovableOps,axText):
     if axText.find("generated type") == 0:
         return 0
@@ -334,7 +345,7 @@ def checkAxRemovable(nonRemovableOps,axText):
             return 0
     return 1
     
-
+# Turn CASL specs in their internal data structure into a Logic Programming specification that is compatible with the ASP files. 
 def toLP(caslSpecs):
     lpStr = ""
     for s in caslSpecs:
