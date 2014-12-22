@@ -447,8 +447,7 @@ spec NewGenChord = combine GtoGen_Dmin7,GtoGen_Emaj7
 %% this is a subsort defining a type of minor69 chord
 spec Min69 = 
   RelChord then
-  sort Min69 < RelChord
-  op c:Min69
+  op c:RelChord
   . thirdrel(c) = minor
   . fifthrel(c) = perfect
   . sixthrel(c) = major
