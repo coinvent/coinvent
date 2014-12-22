@@ -347,11 +347,6 @@ RelChord then
      ops
 %% here absolute note positions are defined for specific chords
         root: AbsChord -> Note                                 %(root_def)%
-        thirdabs: AbsChord ->? Note                            %(thirdabs_def)%
-        bassabs: AbsChord -> Note                              %(bassabs_def)%
-        fifthabs: AbsChord ->? Note                            %(fifthabs_sef)%
-        seventhabs: AbsChord ->? Note                          %(seventh_abs_def)%
-        sixthabs: AbsChord ->? Note                            %(sixth_abs_def)%   
 %% this axiom relate relative to absolute note positions
     forall c:AbsChord,n:Note    
        . hasRelNote(c,n) <=> hasAbsNote(c,(root(c)+n))         %(reltoabs_note)%
