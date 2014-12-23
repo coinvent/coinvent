@@ -1,0 +1,453 @@
+spec Symbols = 
+%%  Note can be interpreted as an absolute note
+%%  Or an interval
+    free type Note ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | x | x1
+%% can describe interals in the following way
+    free type Modifier ::= major | minor | diminished | perfect | augmented
+%% these operators act on intervals
+%% e.g. a fifth + a fifth = a ninth
+%% start at a C, go up a fith, you get to G
+%% go up a fifth from G, you get to D
+%% so an interval which is 7, plus another, you get 2
+    ops __ + __: Note * Note -> Note
+        __ - __: Note * Note -> Note
+%%% this gives a calculus for how to add intervals
+    . 0 + 0 = 0
+    . 0 + 1 = 1
+    . 0 + 2 = 2
+    . 0 + 3 = 3
+    . 0 + 4 = 4
+    . 0 + 5 = 5
+    . 0 + 6 = 6
+    . 0 + 7 = 7
+    . 0 + 8 = 8
+    . 0 + 9 = 9
+    . 0 + x = x
+    . 0 + x1 = x1
+    . 1 + 0 = 1
+    . 1 + 1 = 2
+    . 1 + 2 = 3
+    . 1 + 3 = 4
+    . 1 + 4 = 5
+    . 1 + 5 = 6
+    . 1 + 6 = 7
+    . 1 + 7 = 8
+    . 1 + 8 = 9
+    . 1 + 9 = x
+    . 1 + x = x1
+    . 1 + x1 = 0
+    . 2 + 0 = 2
+    . 2 + 1 = 3
+    . 2 + 2 = 4
+    . 2 + 3 = 5
+    . 2 + 4 = 6
+    . 2 + 5 = 7
+    . 2 + 6 = 8
+    . 2 + 7 = 9
+    . 2 + 8 = x
+    . 2 + 9 = x1
+    . 2 + x = 0
+    . 2 + x1 = 1
+    . 3 + 0 = 3
+    . 3 + 1 = 4
+    . 3 + 2 = 5
+    . 3 + 3 = 6
+    . 3 + 4 = 7
+    . 3 + 5 = 8
+    . 3 + 6 = 9
+    . 3 + 7 = x
+    . 3 + 8 = x1
+    . 3 + 9 = 0
+    . 3 + x = 1
+    . 3 + x1 = 2
+    . 4 + 0 = 4
+    . 4 + 1 = 5
+    . 4 + 2 = 6
+    . 4 + 3 = 7
+    . 4 + 4 = 8
+    . 4 + 5 = 9
+    . 4 + 6 = x
+    . 4 + 7 = x1
+    . 4 + 8 = 0
+    . 4 + 9 = 1
+    . 4 + x = 2
+    . 4 + x1 = 3
+    . 5 + 0 = 5
+    . 5 + 1 = 6
+    . 5 + 2 = 7
+    . 5 + 3 = 8
+    . 5 + 4 = 9
+    . 5 + 5 = x
+    . 5 + 6 = x1
+    . 5 + 7 = 0
+    . 5 + 8 = 1
+    . 5 + 9 = 2
+    . 5 + x = 3
+    . 5 + x1 = 4
+    . 6 + 0 = 6
+    . 6 + 1 = 7
+    . 6 + 2 = 8
+    . 6 + 3 = 9
+    . 6 + 4 = x
+    . 6 + 5 = x1
+    . 6 + 6 = 0
+    . 6 + 7 = 1
+    . 6 + 8 = 2
+    . 6 + 9 = 3
+    . 6 + x = 4
+    . 6 + x1 = 5
+    . 7 + 0 = 7
+    . 7 + 1 = 8
+    . 7 + 2 = 9
+    . 7 + 3 = x
+    . 7 + 4 = x1
+    . 7 + 5 = 0
+    . 7 + 6 = 1
+    . 7 + 7 = 2
+    . 7 + 8 = 3
+    . 7 + 9 = 4
+    . 7 + x = 5
+    . 7 + x1 = 6
+    . 8 + 0 = 8
+    . 8 + 1 = 9
+    . 8 + 2 = x
+    . 8 + 3 = x1
+    . 8 + 4 = 0
+    . 8 + 5 = 1
+    . 8 + 6 = 2
+    . 8 + 7 = 3
+    . 8 + 8 = 4
+    . 8 + 9 = 5
+    . 8 + x = 6
+    . 8 + x1 = 7
+    . 9 + 0 = 9
+    . 9 + 1 = x
+    . 9 + 2 = x1
+    . 9 + 3 = 0
+    . 9 + 4 = 1
+    . 9 + 5 = 2
+    . 9 + 6 = 3
+    . 9 + 7 = 4
+    . 9 + 8 = 5
+    . 9 + 9 = 6
+    . 9 + x = 7
+    . 9 + x1 = 8
+    . x + 0 = x
+    . x + 1 = x1
+    . x + 2 = 0
+    . x + 3 = 1
+    . x + 4 = 2
+    . x + 5 = 3
+    . x + 6 = 4
+    . x + 7 = 5
+    . x + 8 = 6
+    . x + 9 = 7
+    . x + x = 8
+    . x + x1 = 9
+    . x1 + 0 = x1
+    . x1 + 1 = 0
+    . x1 + 2 = 1
+    . x1 + 3 = 2
+    . x1 + 4 = 3
+    . x1 + 5 = 4
+    . x1 + 6 = 5
+    . x1 + 7 = 6
+    . x1 + 8 = 7
+    . x1 + 9 = 8
+    . x1 + x = 9
+    . x1 + x1 = x
+
+ . 0 - 0 = 0
+    . 0 - 1 = x1
+    . 0 - 2 = x
+    . 0 - 3 = 9
+    . 0 - 4 = 8
+    . 0 - 5 = 7
+    . 0 - 6 = 6
+    . 0 - 7 = 5
+    . 0 - 8 = 4
+    . 0 - 9 = 3
+    . 0 - x = 2
+    . 0 - x1 = 1
+    . 1 - 0 = 1
+    . 1 - 1 = 0
+    . 1 - 2 = x1
+    . 1 - 3 = x
+    . 1 - 4 = 9
+    . 1 - 5 = 8
+    . 1 - 6 = 7
+    . 1 - 7 = 6
+    . 1 - 8 = 5
+    . 1 - 9 = 4
+    . 1 - x = 3
+    . 1 - x1 = 2
+    . 2 - 0 = 2
+    . 2 - 1 = 1
+    . 2 - 2 = 0
+    . 2 - 3 = x1
+    . 2 - 4 = x
+    . 2 - 5 = 9
+    . 2 - 6 = 8
+    . 2 - 7 = 7
+    . 2 - 8 = 6
+    . 2 - 9 = 5
+    . 2 - x = 4
+    . 2 - x1 = 3
+    . 3 - 0 = 3
+    . 3 - 1 = 2
+    . 3 - 2 = 1
+    . 3 - 3 = 0
+    . 3 - 4 = x1
+    . 3 - 5 = x
+    . 3 - 6 = 9
+    . 3 - 7 = 8
+    . 3 - 8 = 7
+    . 3 - 9 = 6
+    . 3 - x = 5
+    . 3 - x1 = 4
+    . 4 - 0 = 4
+    . 4 - 1 = 3
+    . 4 - 2 = 2
+    . 4 - 3 = 1
+    . 4 - 4 = 0
+    . 4 - 5 = x1
+    . 4 - 6 = x
+    . 4 - 7 = 9
+    . 4 - 8 = 8
+    . 4 - 9 = 7
+    . 4 - x = 6
+    . 4 - x1 = 5
+    . 5 - 0 = 5
+    . 5 - 1 = 4
+    . 5 - 2 = 3
+    . 5 - 3 = 2
+    . 5 - 4 = 1
+    . 5 - 5 = 0
+    . 5 - 6 = x1
+    . 5 - 7 = x
+    . 5 - 8 = 9
+    . 5 - 9 = 8
+    . 5 - x = 7
+    . 5 - x1 = 6
+    . 6 - 0 = 6
+    . 6 - 1 = 5
+    . 6 - 2 = 4
+    . 6 - 3 = 3
+    . 6 - 4 = 2
+    . 6 - 5 = 1
+    . 6 - 6 = 0
+    . 6 - 7 = x1
+    . 6 - 8 = x
+    . 6 - 9 = 9
+    . 6 - x = 8
+    . 6 - x1 = 7
+    . 7 - 0 = 7
+    . 7 - 1 = 6
+    . 7 - 2 = 5
+    . 7 - 3 = 4
+    . 7 - 4 = 3
+    . 7 - 5 = 2
+    . 7 - 6 = 1
+    . 7 - 7 = 0
+    . 7 - 8 = x1
+    . 7 - 9 = x
+    . 7 - x = 9
+    . 7 - x1 = 8
+    . 8 - 0 = 8
+    . 8 - 1 = 7
+    . 8 - 2 = 6
+    . 8 - 3 = 5
+    . 8 - 4 = 4
+    . 8 - 5 = 3
+    . 8 - 6 = 2
+    . 8 - 7 = 1
+    . 8 - 8 = 0
+    . 8 - 9 = x1
+    . 8 - x = x
+    . 8 - x1 = 9
+    . 9 - 0 = 9
+    . 9 - 1 = 8
+    . 9 - 2 = 7
+    . 9 - 3 = 6
+    . 9 - 4 = 5
+    . 9 - 5 = 4
+    . 9 - 6 = 3
+    . 9 - 7 = 2
+    . 9 - 8 = 1
+    . 9 - 9 = 0
+    . 9 - x = x1
+    . 9 - x1 = x
+    . x - 0 = x
+    . x - 1 = 9
+    . x - 2 = 8
+    . x - 3 = 7
+    . x - 4 = 6
+    . x - 5 = 5
+    . x - 6 = 4
+    . x - 7 = 3
+    . x - 8 = 2
+    . x - 9 = 1
+    . x - x = 0
+    . x - x1 = x1
+    . x1 - 0 = x1
+    . x1 - 1 = x
+    . x1 - 2 = 9
+    . x1 - 3 = 8
+    . x1 - 4 = 7
+    . x1 - 5 = 6
+    . x1 - 6 = 5
+    . x1 - 7 = 4
+    . x1 - 8 = 3
+    . x1 - 9 = 2
+    . x1 - x = 1
+    . x1 - x1 = 0
+end
+
+spec RelScale = 
+  Symbols then
+  sort RelScale
+  preds hasRelNote: RelScale * Note
+end
+
+spec Mixolydian = 
+  RelScale then
+  ops 
+    s:RelScale
+  . hasRelNote(s,0)
+  . hasRelNote(s,2)
+  . hasRelNote(s,4)
+  . hasRelNote(s,5)
+  . hasRelNote(s,7)
+  . hasRelNote(s,9)
+  . hasRelNote(s,x)
+end
+
+spec Lydian = 
+  RelScale then
+  ops 
+    s:RelScale
+  . hasRelNote(s,0)
+  . hasRelNote(s,2)
+  . hasRelNote(s,4)
+  . hasRelNote(s,6)
+  . hasRelNote(s,7)
+  . hasRelNote(s,9)
+  . hasRelNote(s,x1)
+end
+
+spec AbsScale =
+  RelScale then  
+  sort AbsScale < RelScale then 
+  preds 
+    hasAbsNote: RelScale * Note
+  ops 
+    root: AbsScale -> Note  
+    forall s: AbsScale, n:Note
+    . hasRelNote(s,n) <=> hasAbsNote(s,n+root(s))
+end 
+
+spec CMixolydian = 
+  AbsScale then
+  op s:AbsScale
+  . root(s) = 0
+  . hasAbsNote(s,0)
+  . hasAbsNote(s,2)
+  . hasAbsNote(s,4)
+  . hasAbsNote(s,5)
+  . hasAbsNote(s,7)
+  . hasAbsNote(s,9)
+  . hasAbsNote(s,x)
+end
+
+spec CLydian = 
+  AbsScale then
+  op s:AbsScale
+  . root(s) = 0
+  . hasAbsNote(s,0)
+  . hasAbsNote(s,2)
+  . hasAbsNote(s,4)
+  . hasAbsNote(s,6)
+  . hasAbsNote(s,7)
+  . hasAbsNote(s,9)
+  . hasAbsNote(s,x1)
+end
+
+  
+spec Generic = 
+  AbsScale then
+  ops
+   s: AbsScale
+    . hasAbsNote(s,0)
+    . hasAbsNote(s,2)
+    . hasAbsNote(s,4)
+    . hasAbsNote(s,7)
+    . hasAbsNote(s,9)
+    . root(s) = 0
+end
+
+interpretation GtoMixo: Generic to CMixolydian = 
+  s |-> s
+
+interpretation GtoLydian: Generic to CLydian = 
+  s |-> s
+
+spec NewScale = combine GtoMixo,GtoLydian
+
+
+spec GenCMixolydian = 
+  AbsScale then
+  ops 
+    s:AbsScale
+  . root(s) = 0
+  . hasAbsNote(s,0)
+  . hasAbsNote(s,2)
+  . hasAbsNote(s,4)
+  . hasAbsNote(s,7)
+  . hasAbsNote(s,9)
+  . hasAbsNote(s,x)
+end
+
+spec GenCLydian = 
+  AbsScale then
+  ops 
+    s:AbsScale
+  . root(s) = 0
+  . hasAbsNote(s,0)
+  . hasAbsNote(s,2)
+  . hasAbsNote(s,4)
+  . hasAbsNote(s,6)
+  . hasAbsNote(s,7)
+  . hasAbsNote(s,9)
+end
+
+
+interpretation GtoMixoGen: Generic to GenCMixolydian = 
+  s |-> s
+
+interpretation GtoLydianGen: Generic to GenCLydian = 
+  s |-> s
+
+spec BlendScale = combine GtoMixoGen,GtoLydianGen
+
+
+spec LydianDominant =
+  RelScale then
+  op s: RelScale
+  . hasRelNote(s,0)
+  . hasRelNote(s,2)
+  . hasRelNote(s,4)
+  . hasRelNote(s,6)
+  . hasRelNote(s,7)
+  . hasRelNote(s,9)
+  . hasRelNote(s,x)
+end
+
+spec CLydianDominant = 
+  LydianDominant then
+  AbsScale then
+  op s:AbsScale
+  . root(s) = 0
+end
+
+interpretation BlendScaletoCLydianDominant: BlendScale to CLydianDominant =
+  s |-> s
