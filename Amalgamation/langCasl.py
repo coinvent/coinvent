@@ -118,16 +118,29 @@ class CaslOp:
         op = CaslOp(opName)
         if text.find("->") == -1:
             op.dom = text.split(":")[1].strip()
-        else:
-            op.args = text.split(":")[1].split("->")[0].strip().split(" * ")  
-            op.dom = text.split("->")[1].strip()
+            op.partial = False
+        else: 
+            # if the operator is not a partial function (i.e. a total function)
+            if text.find("->?") == -1:
+                op.args = text.split(":")[1].split("->")[0].strip().split(" * ")  
+                op.dom = text.split("->")[1].strip()
+                op.partial = False
+            # if the operator is a partial function
+            else:
+                op.args = text.split(":")[1].split("->?")[0].strip().split(" * ")  
+                op.dom = text.split("->?")[1].strip()
+                op.partial = True
         return op
     
     def toStr(self):
         str = "op " + self.name + " : " 
         for s in self.args: str = str + s +" * " 
         str = str[:-3]
-        str = str + " -> " +self.dom
+        if self.partial == False:
+            arrStr = "->"
+        else:
+            arrStr = "-> ?"
+        str = str + arrStr +self.dom
         if self.removable:
             str = str + " \t (r)"
         return str 
@@ -135,8 +148,12 @@ class CaslOp:
         str = self.name + " : " 
         for s in self.args: str = str + s +" * " 
         str = str[:-3]
+        if self.partial == False:
+            arrStr = "->"
+        else:
+            arrStr = "-> ?"
         if len(self.args) > 0:
-            str = str + " -> " +self.dom    
+            str = str + arrStr +self.dom    
         else:
             str = str + " : " +self.dom
         return str 
@@ -161,7 +178,10 @@ class CaslSpec:
         for p in self.preds: s = s + "\t " + p.toStr() +"\n"
         s += "\n \t axioms: \n"
         for ax in self.axioms: 
-            s = s + "\t\t " + ax['ax'] + " \t\t ("+ str(ax['id']) +") \n"
+            s = s + "\t\t " + ax['ax'] + " \t\t ("+ str(ax['id']) 
+            if (ax['removable']) == 1:
+                s = s + "-r"
+            s = s +") \n"
             # s = s +  "("+ str(ax['id']) +") "
         return s
 
@@ -186,36 +206,37 @@ class CaslSpec:
         
     def toLP(self):
         oStr = "spec("+self.name.lower()+").\n"
-        oStr = oStr + "hasId("+self.name.lower()+","+str(self.id)+").\n"
-        # for op in self.ops:
-        #     oStr = oStr + "hasOp("+self.name.lower()+","+self.name.lower()+"_"+op.name.lower()+",0).\n"
-        # for p in self.preds:
-        #     oStr = oStr + "hasPred("+self.name.lower()+","+self.name.lower()+"_"+p.name.lower()+",0).\n"
-        # for so in self.sorts:
-        #     oStr = oStr + "hasSort("+self.name.lower()+","+self.name.lower()+"_"+so+",0).\n"        
+        oStr = oStr + "hasId("+toLPName(self.name)+","+str(self.id)+").\n"      
         for op in self.ops:
-            oStr = oStr + "hasOp("+self.name.lower()+","+op.name.lower()+",1).\n"
+            oStr = oStr + "hasOp("+toLPName(self.name)+","+toLPName(op.name)+",1).\n"
             for arg in op.args:
-                oStr = oStr + "opHasSort("+op.name.lower()+","+arg.lower()+").\n"
-            oStr = oStr + "opHasSort("+op.name.lower()+","+op.dom.lower()+").\n"
+                oStr = oStr + "opHasSort("+toLPName(op.name)+","+toLPName(arg)+").\n"
+            oStr = oStr + "opHasSort("+toLPName(op.name)+","+toLPName(op.dom)+").\n"
             if op.removable == True:
-                oStr = oStr + "removable("+self.name.lower()+","+op.name.lower()+").\n"
+                oStr = oStr + "removable("+toLPName(self.name)+","+toLPName(op.name)+").\n"
         for p in self.preds:
-            oStr = oStr + "hasPred("+self.name.lower()+","+p.name.lower()+",1).\n"
+            oStr = oStr + "hasPred("+toLPName(self.name)+","+toLPName(p.name)+",1).\n"
             for arg in p.args:
-                oStr = oStr + "predHasSort("+p.name.lower()+","+arg.lower()+").\n"
+                oStr = oStr + "predHasSort("+toLPName(p.name)+","+toLPName(arg)+").\n"
             if p.removable == True:
-                oStr = oStr + "removable("+self.name.lower()+","+p.name.lower()+").\n"
+                oStr = oStr + "removable("+toLPName(self.name)+","+toLPName(p.name)+").\n"
         for ax in self.axioms:
-            oStr = oStr + "hasAxiom("+self.name.lower()+","+str(ax['id'])+",1).\n"
+            oStr = oStr + "hasAxiom("+toLPName(self.name)+","+str(ax['id'])+",1).\n"
             for predOp in ax['predsOps']:
-                oStr = oStr + "axInvolvesPredOp("+str(ax['id'])+","+predOp.lower()+").\n"
+                oStr = oStr + "axInvolvesPredOp("+str(ax['id'])+","+toLPName(predOp)+").\n"
             if ax['removable'] == 1:
-                oStr = oStr + "removable("+self.name.lower()+","+str(ax['id'])+").\n"
+                oStr = oStr + "removable("+toLPName(self.name)+","+str(ax['id'])+").\n"
         #for so in self.sorts:
-        #    oStr = oStr + "hasSort("+self.name.lower()+","+so+",0).\n"
+        #    oStr = oStr + "hasSort("+toLPName(self.name)+","+so+",0).\n"
         return oStr
 
+def toLPName(predOp):
+    s = predOp.lower()
+    if s == "__+__" or s == "+":
+        s =  "plus"
+    if s == "__-__" or s == "-":
+        s = "minus"
+    return s
 # This is used to get a predicate object by parsing a string in a predicate node of the xml format that HETS produces. Its probably deprecated, but I don't dare to delete yet (20.12.14)
 # def getPredByText(text):
 #     pName = text[4:].split(":")[0].strip()
@@ -310,7 +331,7 @@ def parseXmlCasl(xmlFile):
             if ax['ax'].find("generated type") == 0:
                 ax['predsOps'] = [] 
                 continue
-            axStrArr = re.split("[ .=(),]|not|forall|exists|exists!",ax['ax'])
+            axStrArr = re.split("[ .=(),:><;\n]|not|forall|exists|exists!",ax['ax'])
             # print axStrArr
             predOpNames = []
             for item in axStrArr:

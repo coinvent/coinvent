@@ -18,10 +18,10 @@ s(t).
 %%% Set preconditions for atomic generalization operations
 % Remove Operator
 %% #external rmOpAllowed.
-poss(rmOp(OP),I,t) :- hasOp(I,OP,t), removable(I,OP).
+%% poss(rmOp(OP),I,t) :- hasOp(I,OP,t), removable(I,OP).
 % Remove Predicate
 %% #external rmPredAllowed.
-poss(rmPred(PRED),I,t) :- hasPred(I,PRED,t), removable(I,PRED).
+%% poss(rmPred(PRED),I,t) :- hasPred(I,PRED,t), removable(I,PRED).
 % Remove Axiom
 %% #external rmAxAllowed.
 poss(rmAxDirectly(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
@@ -57,15 +57,19 @@ allIsomorphic(I1,t) :- spec(I1), {isNotIsomorphic(I1,I2,t) : spec(I2)}0.
 % If there is at least one spec which is not isomorphic witah all other input spaces, we have not reached the generic space.
 notGenericReached(t) :- not allIsomorphic(I,t), spec(I). 
 
-%% % Generate generalization search space. If the generic space is not yet reached, execute a generalization operation. I tested three generation rule variations. The last seems to be the fastest, even though the search space becomes bigger. This may change with a higher number of steps. 
-%% 1{exec(A,I,t) : a(A,I),  poss(A,I,t), notPartialIdMorph(I,I2,t), spec(I2), I != I2 }1 :- notGenericReached(t).
+%% % Generate generalization search space. If the generic space is not yet reached, execute a generalization operation. I tested three generation rule variations. The last seems to be the fastest for a small planning horizon, even though the search space becomes bigger that way.
+1{exec(A,I,t) : a(A,I),  poss(A,I,t), notPartialIdMorph(I,I2,t), spec(I2), I != I2 }1 :- notGenericReached(t).
 %% 1{exec(A,I,t) : a(A,I),  poss(A,I,t), not allIsomorphic(I,t)}1 :- notGenericReached(t).
-%% This turns out to be fastest for test example:
-1{exec(A,I,t) : a(A,I),  poss(A,I,t)}1 :- notGenericReached(t).
+%% This seems to be fastest for a small planning horizon:
+%% 1{exec(A,I,t) : a(A,I),  poss(A,I,t)}1 :- notGenericReached(t).
+
+%% Some speedup: do one spec after another, and start with smallest specId. This may not be appropriate anymore when introducing non-id morphisms.
+specModified(I,t) :- exec(A,I,t).
+:- specModified(I1,t), specModified(I2,T_before), T_before < t, I2 > I1.
 
 %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query1(t).
 :- notGenericReached(t), query1(t).
 
 #show exec/3.
-#show s/1.
+%% #show s/1.

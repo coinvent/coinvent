@@ -15,7 +15,13 @@ sys.path.append(lp_path)
 # We also want to be able to call the other amalgamation module python scripts.
 from settings import *
 from langCasl import *
-from auxFunctions import *
+# from auxFunctions import *
+
+# This is called if a model is found. Here, the model is printed.
+def on_model(model):
+    print "Model found. \n"
+    for a in model.atoms() :
+        print a
 
 ## The function main is called by clingo. It implements the main iteration loop.
 def main(prg):
@@ -40,8 +46,7 @@ def main(prg):
     # if rmOpAllowed : prg.assign_external(Fun("rmOpAllowed", [] ), True)
     # if rmPredAllowed : prg.assign_external(Fun("rmPredAllowed", []), True)
     # if rmAxAllowed : prg.assign_external(Fun("rmAxAllowed", []), True)
-    
-    
+        
     #### First, find a path to the generic space
 
     # The main generalization loop starts here!
@@ -59,8 +64,8 @@ def main(prg):
         prg.assign_external(Fun("query1", [step]), True)
         
         # Find Stable Models for this iteration
-        ret = prg.solve()
-        # ret = prg.solve(None, on_model)
+        # ret = prg.solve()
+        ret = prg.solve(None, on_model)
         
         # If Stable Models are found and we are beyond the minimal number of slices, break loop.
         if step >= imin and (ret == SolveResult.SAT): break

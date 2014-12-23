@@ -34,3 +34,6 @@ inputFile = "examples/cadenceByAx.casl"
 inputSpaces = ["Perfect7Cadence","PhrygianCadence"]
 # searchControlFile = "examples/cadenceByAxControl.lp"
 
+# inputFile = "examples/chord_blend_test.dol"
+# inputSpaces = ["Dmin7","Emaj7"]
+
