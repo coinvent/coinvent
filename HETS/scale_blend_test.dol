@@ -303,170 +303,151 @@ spec Symbols =
     . x1 - x1 = 0
 end
 
-spec RelChord = 
-Symbols then
-%% primary sort for RelChord 
-    sort RelChord 
-
-%% a chord can be defined via relative positions from the root 
-    preds    
-        hasRelNote : RelChord * Note
-    ops
-%% thirdrel is a partial function defining the third (minor, major)
-%% bassrel determine which note is in the bass - this must be in the chord
-%% this guarantees one note at least
-        thirdrel: RelChord ->? Modifier                   %(thirdrel_def)%  
-        bassrel: RelChord -> Note                         %(bassrel_def)%
-%% other potential interesting functions?
-        seventhrel:RelChord ->? Modifier                 %(seventhrel_def)%
-        sixthrel:RelChord ->? Modifier                    %(sixthrel_def)%
-        fifthrel: RelChord ->? Modifier                   %(fifthrel_def)%
-
-%% these are definitions for what each modifier means in terms of notes
-%% e.g. a perfect fifth is a note interval of 7 (semitones)
- forall c:RelChord,n:Note
-       . bassrel(c)=n => hasRelNote(c,n)                %(bassrel)%  
-       . thirdrel(c) = minor => hasRelNote(c,3)         %(minor3rel)%
-       . thirdrel(c) = major => hasRelNote(c,4)         %(major3rel)%
-       . seventhrel(c) = minor => hasRelNote(c,x)       %(minor7rel)%
-       . seventhrel(c) = major => hasRelNote(c,x1)      %(major7rel)%
-       . sixthrel(c) = minor => hasRelNote(c,8)         %(minor6rel)%
-       . sixthrel(c) = major => hasRelNote(c,9)         %(major6rel)%
-       . fifthrel(c) = perfect => hasRelNote(c,7)       %(perfect5rel)%
-       . fifthrel(c) = diminished => hasRelNote(c,6)    %(dimin5rel)%
-       . fifthrel(c) = augmented => hasRelNote(c,8)     %(augment5rel)%
+spec RelScale = 
+  Symbols then
+  sort RelScale
+  preds hasRelNote: RelScale * Note
 end
 
-spec AbsChord = 
-RelChord then 
-%% primary sort for RelChord 
-     sort AbsChord < RelChord
-
-     preds
-        hasAbsNote: AbsChord * Note                       
-     ops
-%% here absolute note positions are defined for specific chords
-        root: AbsChord -> Note                                 %(root_def)%
-%% this axiom relate relative to absolute note positions
-    forall c:AbsChord,n:Note    
-       . hasRelNote(c,n) <=> hasAbsNote(c,(root(c)+n))         %(reltoabs_note)%
+spec Mixolydian = 
+  RelScale then
+  ops 
+    s:RelScale
+  . hasRelNote(s,0)
+  . hasRelNote(s,2)
+  . hasRelNote(s,4)
+  . hasRelNote(s,5)
+  . hasRelNote(s,7)
+  . hasRelNote(s,9)
+  . hasRelNote(s,x)
 end
 
-spec Dmin7 = 
-   AbsChord then
-%% Dmin7 has D,F,A,C = 2,5,9,0
-   op c:AbsChord
-   . hasAbsNote(c,2)
-   . hasAbsNote(c,5)
-   . hasAbsNote(c,9)
-   . hasAbsNote(c,0)
-   . thirdrel(c) = minor
-   . fifthrel(c) = perfect
-   . bassrel(c) = 0
-   . seventhrel(c) = minor
-   . root(c) = 2
+spec Lydian = 
+  RelScale then
+  ops 
+    s:RelScale
+  . hasRelNote(s,0)
+  . hasRelNote(s,2)
+  . hasRelNote(s,4)
+  . hasRelNote(s,6)
+  . hasRelNote(s,7)
+  . hasRelNote(s,9)
+  . hasRelNote(s,x1)
 end
 
-spec Emaj7 =
-   AbsChord then 
-%%Emaj7 has E,G#,B,D# = 4,8,x1,3
-   op c:AbsChord
-   . hasAbsNote(c,4)
-   . hasAbsNote(c,8)
-   . hasAbsNote(c,x1)
-   . hasAbsNote(c,3)
-   . thirdrel(c) = major
-   . seventhrel(c) = major
-   . fifthrel(c) = perfect
-   . bassrel(c) = 0
-   . root(c) = 4
+spec AbsScale =
+  RelScale then  
+  sort AbsScale < RelScale then 
+  preds 
+    hasAbsNote: RelScale * Note
+  ops 
+    root: AbsScale -> Note  
+    forall s: AbsScale, n:Note
+    . hasRelNote(s,n) <=> hasAbsNote(s,n+root(s))
+end 
+
+spec CMixolydian = 
+  AbsScale then
+  op s:AbsScale
+  . root(s) = 0
+  . hasAbsNote(s,0)
+  . hasAbsNote(s,2)
+  . hasAbsNote(s,4)
+  . hasAbsNote(s,5)
+  . hasAbsNote(s,7)
+  . hasAbsNote(s,9)
+  . hasAbsNote(s,x)
 end
 
+spec CLydian = 
+  AbsScale then
+  op s:AbsScale
+  . root(s) = 0
+  . hasAbsNote(s,0)
+  . hasAbsNote(s,2)
+  . hasAbsNote(s,4)
+  . hasAbsNote(s,6)
+  . hasAbsNote(s,7)
+  . hasAbsNote(s,9)
+  . hasAbsNote(s,x1)
+end
 
+  
 spec Generic = 
-  AbsChord then
-  op c:AbsChord
-  . bassrel(c) = 0
-  . fifthrel(c) = perfect
-  . hasRelNote(c,7)
-  . hasRelNote(c,0)
+  AbsScale then
+  ops
+   s: AbsScale
+    . hasAbsNote(s,0)
+    . hasAbsNote(s,2)
+    . hasAbsNote(s,4)
+    . hasAbsNote(s,7)
+    . hasAbsNote(s,9)
+    . root(s) = 0
 end
 
-interpretation GtoDmin7: Generic to Dmin7 = 
-  c |-> c
-%%  hasRelNote |-> hasRelNote,
-%%  bassrel |-> bassrel 
+interpretation GtoMixo: Generic to CMixolydian = 
+  s |-> s
 
-interpretation GtoEmaj7: Generic to Emaj7 = 
-  c |-> c
-%%  hasRelNote |-> hasRelNote,
-%%  bassrel |-> bassrel 
+interpretation GtoLydian: Generic to CLydian = 
+  s |-> s
 
-spec NewChord = combine GtoDmin7,GtoEmaj7
+spec NewScale = combine GtoMixo,GtoLydian
 
-%% Generalised version Dmin7 where the notes which we do not want in the blend are removed
-%% corresponding features are also removed (only the seventh feature in this case
-spec Gen_Dmin7 = 
-   AbsChord then
-   op c:AbsChord
-   . hasAbsNote(c,2)
-   . hasAbsNote(c,5)
-%%   . hasAbsNote(c,9)
-%%   . hasAbsNote(c,0)
-%%   . seventhrel(c) = minor
-   . fifthrel(c) = perfect
-   . thirdrel(c) = minor
-   . bassrel(c) = 0
-   . root(c) = 2
+
+spec GenCMixolydian = 
+  AbsScale then
+  ops 
+    s:AbsScale
+  . root(s) = 0
+  . hasAbsNote(s,0)
+  . hasAbsNote(s,2)
+  . hasAbsNote(s,4)
+  . hasAbsNote(s,7)
+  . hasAbsNote(s,9)
+  . hasAbsNote(s,x)
 end
 
-%% Generalised version Dmin7 where the notes which we do not want in the blend are removed
-%% corresponding features are also removed (only the third and seventh and root)
-spec Gen_Emaj7 = 
-   AbsChord then
-   op c:AbsChord
-   . hasAbsNote(c,4)
-%%   . hasAbsNote(c,8)
-   . hasAbsNote(c,x1)
-%%   . hasAbsNote(c,3)
-%%   . thirdrel(c) = major
-   . bassrel(c) = 0
-%%   . root(c) = 4
-%%   .seventhrel(c) = major
-   . fifthrel(c) = perfect
+spec GenCLydian = 
+  AbsScale then
+  ops 
+    s:AbsScale
+  . root(s) = 0
+  . hasAbsNote(s,0)
+  . hasAbsNote(s,2)
+  . hasAbsNote(s,4)
+  . hasAbsNote(s,6)
+  . hasAbsNote(s,7)
+  . hasAbsNote(s,9)
 end
 
-interpretation GtoGen_Dmin7: Generic to Gen_Dmin7 = 
-  c |-> c
 
-interpretation GtoGen_Emaj7: Generic to Gen_Emaj7 = 
-  c |-> c
+interpretation GtoMixoGen: Generic to GenCMixolydian = 
+  s |-> s
 
-spec NewGenChord = combine GtoGen_Dmin7,GtoGen_Emaj7
+interpretation GtoLydianGen: Generic to GenCLydian = 
+  s |-> s
 
-%% this is a subsort defining a type of minor69 chord
-spec Min69 = 
-  RelChord then
-  op c:RelChord
-  . thirdrel(c) = minor
-  . fifthrel(c) = perfect
-  . sixthrel(c) = major
-  . bassrel(c) = 0
-  . hasRelNote(c,0)
-  . hasRelNote(c,2)
-  . hasRelNote(c,3)
-  . hasRelNote(c,7)
-  . hasRelNote(c,9)
+spec BlendScale = combine GtoMixoGen,GtoLydianGen
+
+
+spec LydianDominant =
+  RelScale then
+  op s: RelScale
+  . hasRelNote(s,0)
+  . hasRelNote(s,2)
+  . hasRelNote(s,4)
+  . hasRelNote(s,6)
+  . hasRelNote(s,7)
+  . hasRelNote(s,9)
+  . hasRelNote(s,x)
 end
 
-%% this is a minor69 with a D at the root using both Min69 and AbsChord
-spec Dmin69 = 
-  Min69 then
-  AbsChord then
-  op c:AbsChord
-  . root(c) = 2
+spec CLydianDominant = 
+  LydianDominant then
+  AbsScale then
+  op s:AbsScale
+  . root(s) = 0
+end
 
-%% this generates proof obligations which prove the blend is the same
-%% as the definition made by hand
-interpretation NewGenChordtoDmin69: NewGenChord to Dmin69 =
-  c |-> c
+interpretation BlendScaletoCLydianDominant: BlendScale to CLydianDominant =
+  s |-> s
