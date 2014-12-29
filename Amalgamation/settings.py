@@ -9,13 +9,19 @@ inputSpaces = ["S1","S2"]
 searchControlFile = ""
 
 ###### The number of models to be generated (0 for all models)
-numModels = 1
+numModels = 4
 
 ###### The minimal number of iterations for generalization
-minIterations = 1
+minIterationsGeneralize = 1
 
 ###### The maximal number of iterations for generalization
-maxIterations = 20
+maxIterationsGeneralize = 20
+
+###### The minimal number of iterations for blending
+minIterationsBlend = 1
+
+###### The maximal number of iterations for blending
+maxIterationsBlend = 20
 
 ############################
 ###### CASL-specific #######
@@ -29,9 +35,9 @@ maxIterations = 20
 
 ###################################################################
 
-## Here is space to quickly overwrite the previous above for debugging purposes.
-inputFile = "examples/cadenceByAx.casl"
-inputSpaces = ["Perfect7Cadence","PhrygianCadence"]
+## Here is space to quickly overwrite the above settings for debugging purposes.
+# inputFile = "examples/cadenceByAx.casl"
+# inputSpaces = ["Perfect7Cadence","PhrygianCadence"]
 # searchControlFile = "examples/cadenceByAxControl.lp"
 
 # inputFile = "examples/chord_blend_test.dol"

@@ -15,22 +15,30 @@ sys.path.append(lp_path)
 # We also want to be able to call the other amalgamation module python scripts.
 from settings import *
 from langCasl import *
+from blendFunctions import *
 # from auxFunctions import *
 
+model = 
+
 # This is called if a model is found. Here, the model is printed.
-def on_model(model):
+def onModelGeneralize(model):
+    printModel(model)
+    
+
+def printModel(model):
     print "Model found. \n"
     for a in model.atoms() :
         print a
 
+
 ## The function main is called by clingo. It implements the main iteration loop.
 def main(prg):
     ## The following are constants 
-    global minIterations, maxIterations, rmOpAllowed,rmAxAllowed,rmPredAllowed
+    global minIterationsGeneralize, maxIterationsGeneralize, rmOpAllowed,rmAxAllowed,rmPredAllowed
     
     ## Some abbreviations to make the code more compact:
-    imin   = minIterations
-    imax   = maxIterations
+    imin   = minIterationsGeneralize
+    imax   = maxIterationsGeneralize
     
     ## We start at step 1.
     step = 1
@@ -65,40 +73,46 @@ def main(prg):
         
         # Find Stable Models for this iteration
         # ret = prg.solve()
-        ret = prg.solve(None, on_model)
+        ret = prg.solve(None, onModelGeneralize)
         
         # If Stable Models are found and we are beyond the minimal number of slices, break loop.
         if step >= imin and (ret == SolveResult.SAT): break
         step = step+1
 
-    #### Second, find a blend to the generic space    (TODO)
-    # 
-    # blendId = 0
-    # for blend in blends:
-    #     fName = "amalgamBlend_"+str(blendId)+".casl"
-    #     outFile = open(fName,"w")
-    #     outFile.write(blend)
-    #     outFile.close()
-    #     blendId = blendId + 1
+    ### Second, find a blend with the generic space 
+    
+    imin   = minIterationsBlend-1
+    imax   = maxIterationsBlend-1
 
-    # print "Iteration for generalizations done. Starting blend iteration."
+    ## Here we start at step 0, because we want to try to blend the non-generalized versions first, and step 0 means no generalization at all done. 
+    step = 0
+    
+    ## The parts of the logic program to be grounded are declared with an empty sequence. 
+    parts = []
 
-    # step = 1
-    # parts.append(("base2", []))
-    # while True:
-    #     if imax != None and step > imax: break
-    #     parts.append(("cumulative2", [step]))
-    #     parts.append(("volatile2", [step]))
-    #     prg.ground(parts)
-    #     parts = []
-    #     prg.release_external(Fun("query2", [step-1]))
-    #     prg.assign_external(Fun("query2", [step]), True)
-    #     # ret = prg.solve(None, on_model)
-    #     ret = prg.solve(None, on_model)
-    #     if step >= imin and (ret == SolveResult.SAT) : break
-    #     step = step + 1
-
-    # last cleanup...
-    # os.system('rm *.th')
+    ## We append the base2 part of the Logic Program. (See e.g. blend.lp to see which part this is.)
+    parts.append(("base2", []))
+    
+    # The main blending interation loop starts here!
+    while True:
+        # Abort after the max. number of iterations 
+        if step > imax: break
+        # Append the cumulative part for the particular step (slice) of the program.
+        parts.append(("cumulative2", [step]))
+        # Ground the new slice
+        prg.ground(parts)
+        parts = []
+        # Release the query1(t) atom from the last slice (step-1) from the program. 
+        prg.release_external(Fun("query2", [step-1]))
+        # Add the atom query1(t) of this slice to the program. 
+        prg.assign_external(Fun("query2", [step]), True)
+        
+        # Find Stable Models for this iteration
+        # ret = prg.solve()
+        ret = prg.solve(None, printModel)
+        
+        # If Stable Models are found and we are beyond the minimal number of slices, break loop.
+        if step >= imin and (ret == SolveResult.SAT): break
+        step = step+1
 
 #end.

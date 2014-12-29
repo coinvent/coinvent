@@ -29,8 +29,8 @@ print "Generated Logic Programming facts from CASL Spec."
 
 # Invoke clingo4 and run 
 if searchControlFile != "":
-	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName, searchControlFile])
+	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", "blend.lp", lpFileName, searchControlFile])
 else:
-	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName])
+	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", "blend.lp", lpFileName])
 
 # subprocess.call(["hets", "-g", "amalgamBlend_0.casl"])
