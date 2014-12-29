@@ -30,16 +30,16 @@ bs(t).
 %% To keep things simple we concentrate on two input spaces to be blended first. We extend this later to an arbitrary number of input spaces.
 %% colimit(I1,T1,I2,T2,t) :- specModified(I1,T1+1), specModified(I2,T2+1), T1 + T2 = t, I1 > I2.
 1{colimit(I1,T1,I2,T2,t) : specModified(I1,T1+1), specModified(I2,T2+1), T1 + T2 = t, I1 > I2}1.
-%% #show colimit/5.
+#show colimit/5.
 
 
-%% %%%%%%%%%%%%%%%%%%%%%%%
-%% %%% Computing Part %%%
-%% %%%%%%%%%%%%%%%%%%%%%%%
-%% Get value of colimit
-colimitVal(I1,T1,I2,T2,V,t) :- colimit(I1,T1,I2,T2,t), V = @getColimitVal(I1,T1,I2,T2).
+%% %% %%%%%%%%%%%%%%%%%%%%%%%
+%% %% %%% Computing Part %%%
+%% %% %%%%%%%%%%%%%%%%%%%%%%%
+%% %% Get value of colimit
+%% colimitVal(I1,T1,I2,T2,V,t) :- colimit(I1,T1,I2,T2,t), V = @getColimitVal(I1,T1,I2,T2).
 
-#show colimitVal/6.
+%% #show colimitVal/6.
 
 %% %%%%%%%%%%%%%%%%%%%%
 %% %%% Testing Part %%%

@@ -18,8 +18,6 @@ from langCasl import *
 from blendFunctions import *
 # from auxFunctions import *
 
-model = 
-
 # This is called if a model is found. Here, the model is printed.
 def onModelGeneralize(model):
     printModel(model)
