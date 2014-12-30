@@ -16,24 +16,33 @@ sys.path.append(lp_path)
 from settings import *
 from langCasl import *
 from blendFunctions import *
-# from auxFunctions import *
+
+# Global variable required for the blending: the input spaces in the internal data structure represenation. 
+inputSpaces = []
 
 # This is called if a model is found. Here, the model is printed.
 def onModelGeneralize(model):
+    global inputSpaces
     printModel(model)
+    blendingGeneralizationCost = findLeasetGeneralizedBlends(model.atoms(), inputSpaces)
     
 
 def printModel(model):
-    print "Model found. \n"
-    for a in model.atoms() :
+    print "Model found: \n"
+    for a in model.atoms():
         print a
 
 
 ## The function main is called by clingo. It implements the main iteration loop.
 def main(prg):
-    ## The following are constants 
+    ## The following are constants coming from the settings.py file
     global minIterationsGeneralize, maxIterationsGeneralize, rmOpAllowed,rmAxAllowed,rmPredAllowed
     
+    ## Prepare internal data structure for the later blending. 
+    global inputSpaces, inputFile
+    inputSpacesXmlFileName = input2Xml(inputFile,inputSpaces) 
+    inputSpaces = parseXml(inputSpacesXmlFileName)
+
     ## Some abbreviations to make the code more compact:
     imin   = minIterationsGeneralize
     imax   = maxIterationsGeneralize
@@ -68,8 +77,8 @@ def main(prg):
         prg.release_external(Fun("query1", [step-1]))
         # Add the atom query1(t) of this slice to the program. 
         prg.assign_external(Fun("query1", [step]), True)
-        
-        # Find Stable Models for this iteration
+
+        # Find Stable Models for this generalization iteration
         # ret = prg.solve()
         ret = prg.solve(None, onModelGeneralize)
         
@@ -79,38 +88,38 @@ def main(prg):
 
     ### Second, find a blend with the generic space 
     
-    imin   = minIterationsBlend-1
-    imax   = maxIterationsBlend-1
+    # imin   = minIterationsBlend-1
+    # imax   = maxIterationsBlend-1
 
-    ## Here we start at step 0, because we want to try to blend the non-generalized versions first, and step 0 means no generalization at all done. 
-    step = 0
+    # ## Here we start at step 0, because we want to try to blend the non-generalized versions first, and step 0 means no generalization at all done. 
+    # step = 0
     
-    ## The parts of the logic program to be grounded are declared with an empty sequence. 
-    parts = []
+    # ## The parts of the logic program to be grounded are declared with an empty sequence. 
+    # parts = []
 
-    ## We append the base2 part of the Logic Program. (See e.g. blend.lp to see which part this is.)
-    parts.append(("base2", []))
+    # ## We append the base2 part of the Logic Program. (See e.g. blend.lp to see which part this is.)
+    # parts.append(("base2", []))
     
-    # The main blending interation loop starts here!
-    while True:
-        # Abort after the max. number of iterations 
-        if step > imax: break
-        # Append the cumulative part for the particular step (slice) of the program.
-        parts.append(("cumulative2", [step]))
-        # Ground the new slice
-        prg.ground(parts)
-        parts = []
-        # Release the query1(t) atom from the last slice (step-1) from the program. 
-        prg.release_external(Fun("query2", [step-1]))
-        # Add the atom query1(t) of this slice to the program. 
-        prg.assign_external(Fun("query2", [step]), True)
+    # # The main blending interation loop starts here!
+    # while True:
+    #     # Abort after the max. number of iterations 
+    #     if step > imax: break
+    #     # Append the cumulative part for the particular step (slice) of the program.
+    #     parts.append(("cumulative2", [step]))
+    #     # Ground the new slice
+    #     prg.ground(parts)
+    #     parts = []
+    #     # Release the query1(t) atom from the last slice (step-1) from the program. 
+    #     prg.release_external(Fun("query2", [step-1]))
+    #     # Add the atom query1(t) of this slice to the program. 
+    #     prg.assign_external(Fun("query2", [step]), True)
         
-        # Find Stable Models for this iteration
-        # ret = prg.solve()
-        ret = prg.solve(None, printModel)
+    #     # Find Stable Models for this iteration
+    #     # ret = prg.solve()
+    #     ret = prg.solve(None, printModel)
         
-        # If Stable Models are found and we are beyond the minimal number of slices, break loop.
-        if step >= imin and (ret == SolveResult.SAT): break
-        step = step+1
+    #     # If Stable Models are found and we are beyond the minimal number of slices, break loop.
+    #     if step >= imin and (ret == SolveResult.SAT): break
+    #     step = step+1
 
 #end.

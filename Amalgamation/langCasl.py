@@ -6,10 +6,10 @@ import time
 from string import *
 import re
 
-### casl2Xml translates CASL input spaces to an xml file. The xml simplifies the CASL parsing. 
+### input2Xml translates CASL input spaces to an xml file. The xml simplifies the CASL parsing. 
 ### Input:  CASL file name and names of input spaces
 ### Output: The path to an xml file representing the input spaces.     
-def casl2Xml(fName,inputSpaces):    
+def input2Xml(fName,inputSpaces):    
     newFileName = fName.split(".")[0]+"_raw.casl"
     # os.system("echo \"\" > "+ newFileName)
     xmlFileName = newFileName.split(".")[0]+".xml"
@@ -247,7 +247,7 @@ def toLPName(predOp):
 # This is the main method to turn the xml representation of input spaces into the internal data structure
 # Input: The path to an XML file name
 # Output: a list of CASL specs represented in the internal data structure
-def parseXmlCasl(xmlFile):
+def parseXml(xmlFile):
     specs = []
     # print "Calling parseXml method"
     tree = ET.parse(xmlFile)
@@ -375,5 +375,98 @@ def toLP(caslSpecs):
     
     return lpStr
     
+
+def getGeneralizedSpaces(atoms, inputSpaces):
+    originalCaslSpecs = copy.deepcopy(inputSpaces)
+
+    generalizations = {}
+    lastSpecName = ''
+    for spec in originalCaslSpecs:
+        generalizations[spec.name] = [spec]
+        lastSpecName = spec.name
+    # modify CASL data according to Answer Set atoms.
+    acts = {}
+    for atom in atoms:
+        a = str(atom)
+        if a[:4] == "exec":
+            # print a
+            actStr = a[5:-1]
+            act = {}
+            actStrArr = actStr.split(",")
+            act["step"] = int(actStrArr[len(actStrArr)-1])
+            act["iSpace"] = actStrArr[len(actStrArr)-2]
+            atomicActStr = ""
+            # re-assemble first parts of this string to obtain the atomic generalization action string.
+            for item in actStrArr:
+                if item == actStrArr[len(actStrArr)-2]:
+                    break
+                atomicActStr = atomicActStr + item
+            act["actType"] = atomicActStr.split("(")[0]
+            act["argVect"] = atomicActStr.split("(")[1][:-1].split(",")
+            # print "new action: "
+            # print act
+            if act["step"] not in acts.keys():
+                acts[act["step"]] = {}
+            if act["iSpace"] not in acts[act["step"]].keys():
+                acts[act["step"]][act["iSpace"]] = []
+            
+            acts[act["step"]][act["iSpace"]].append(act)
+
+    # print " All actions:"
+    # print acts
+    for step in sorted(acts.keys()):
+        for iSpace in sorted(acts[step]):
+            for cSpec in inputSpaces:
+                # print cSpec.name.lower()
+                # remove operators, predicates and axioms
+                if cSpec.name.lower() == iSpace:  
+                    for act in acts[step][iSpace]:
+                        print "action:"
+                        print act
+                        if act["actType"] == "rmOp" :
+                            for op in cSpec.ops:
+                                if op.name.lower() == act["argVect"][0]:
+                                    cSpec.ops.remove(op)
+                            
+                        if act["actType"] == "rmPred" :
+                            for p in cSpec.preds:
+                                if p.name.lower() == act["argVect"][0]:
+                                    cSpec.preds.remove(p)
+
+                        if act["actType"] == "rmAx" :
+                            for a in cSpec.axioms:
+                                if str(a['id']) == act["argVect"][0]:
+                                    cSpec.axioms.remove(a)
+                                   
+                    # remove unnecessary sorts
+                    sorts = []
+                    for op in cSpec.ops:
+                        for arg in op.args:
+                            sorts.append(arg)
+                        sorts.append(op.dom)
+                    for p in cSpec.preds:
+                        for arg in p.args:
+                            sorts.append(arg)
+                    uniqueSorts = []
+                    [uniqueSorts.append(item) for item in sorts if item not in uniqueSorts]
+                    sorts = uniqueSorts
+                    cSpec.sorts = sorts
+                    # print cSpec.toStr()
+
+                    thisCSpec = copy.deepcopy(cSpec)
+                    thisCSpec.name = thisCSpec.name + "_gen_" + str(len(generalizations[thisCSpec.name]))
+                    generalizations[cSpec.name].append(thisCSpec)
+                    # print "generalization"
+                    # print thisCSpec.toStr()
+                    # raw_input()
+
+    # add one last generic cSpec
+    genSpec = copy.deepcopy(generalizations[lastSpecName][len(generalizations[lastSpecName])-1])
+    genSpec.name = "Generic"
+    generalizations["Generic"] = [genSpec]    
+
+    # print generalizations
+
+    return generalizations
 
 

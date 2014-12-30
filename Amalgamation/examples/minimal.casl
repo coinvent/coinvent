@@ -10,7 +10,7 @@ end
 
 spec S1 = Generic then    
     . f = v1
-    . g = v1
+    %% . g = v1
     %% . h = v2
 end
 

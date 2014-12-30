@@ -31,10 +31,10 @@ s(t).
 poss(rmAxDirectly(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
 
 % Indirect Axiom Removal
-execIndir(rmAx(AX),I,t) :- exec(rmOp(OP),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,OP).
-execIndir(rmAx(AX),I,t) :- exec(rmPred(P),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,P).
+exec(rmAx(AX),I,t) :- exec(rmOp(OP),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,OP).
+exec(rmAx(AX),I,t) :- exec(rmPred(P),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,P).
 % Direct Axiom Removal
-execIndir(rmAx(AX),I,t) :- exec(rmAxDirectly(AX),I,t).
+exec(rmAx(AX),I,t) :- exec(rmAxDirectly(AX),I,t).
 
 % Some auxiliary information to quickly tell whether a spec was modified at a time point.
 specModified(I,t) :- exec(A,I,t).
@@ -42,7 +42,7 @@ specModified(I,t) :- exec(A,I,t).
 %% Inertia for operators and predicates and axioms
 hasOp(I,OP,t+1) :- hasOp(I,OP,t), not exec(rmOp(OP),I,t).
 hasPred(I,P,t+1) :- hasPred(I,P,t), not exec(rmPred(P),I,t).
-hasAxiom(I,A,t+1) :- hasAxiom(I,A,t), not execIndir(rmAx(A),I,t).
+hasAxiom(I,A,t+1) :- hasAxiom(I,A,t), not exec(rmAx(A),I,t).
 
 %%%%%%%%%% Check if a generic space hase been reached %%%%%%%%%%
 % A generic space is reached if there are total morphisms between all generalized versions of all input spaces, i.e. when for all input spaces a generalized vesion is found that is isomorphic with all other generalized versions of input spaces. In this preliminary version we make restriction that we only consider identity morphisms. We also assume that symbols in one input space mean the same as symbols in the other input space. (E.e. we can only have a (river)bank in one input space and a (financial)bank in the other if the symbols are not equal, i.e. we would have to explicitly say river_bank and financial_bank.) Overloading is also not supported.
@@ -65,7 +65,7 @@ allIsomorphic(I1,t) :- spec(I1), {isNotIsomorphic(I1,I2,t) : spec(I2)}0.
 notGenericReached(t) :- not allIsomorphic(I,t), spec(I). 
 
 % Determine when the generic space has been reached.
-genericReachedAt(T,t) :- notGenericReached(T-1), not notGenericReached(T), s(T).
+%% genericReachedAt(T,t) :- notGenericReached(T-1), not notGenericReached(T), s(T).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -98,5 +98,5 @@ genericReachedAt(T,t) :- notGenericReached(T-1), not notGenericReached(T), s(T).
 :- notGenericReached(t), query1(t).
 
 #show exec/3.
-#show genericReachedAt/2.
+%% #show genericReachedAt/2.
 %% #show s/1.

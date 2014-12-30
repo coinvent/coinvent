@@ -3,13 +3,13 @@
 ##### The input file should contain the input spaces, i.e. specifications to be blended. The file can also contain other specifications, so that e.g., in CASL, the input spaces can inherit structure from a same parent space. However, a parent space is not necessarily a generic space. Currently, only two input spaces are supported.
 
 inputFile = "examples/minimal.casl"
-inputSpaces = ["S1","S2"]
+inputSpaceNames = ["S1","S2"]
 
 ###### The search control file is an auxiliary file which is supposed to include domain specific knowledge for guiding the search. 
 searchControlFile = ""
 
 ###### The number of models to be generated (0 for all models)
-numModels = 4
+numModels = 1
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
