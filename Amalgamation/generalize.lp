@@ -61,8 +61,11 @@ isNotIsomorphic(I1,I2,t) :- notPartialIdMorph(I1,I2,t), I1 != I2.
 
 % Finally we determine whether an input space I1 is generic wrt. all other input spaces. This is the case if there is no space with which I1 is not isomorphic.
 allIsomorphic(I1,t) :- spec(I1), {isNotIsomorphic(I1,I2,t) : spec(I2)}0. 
-% If there is at least one spec which is not isomorphic witah all other input spaces, we have not reached the generic space.
+% If there is at least one spec which is not isomorphic with all other input spaces, we have not reached the generic space.
 notGenericReached(t) :- not allIsomorphic(I,t), spec(I). 
+
+% Determine when the generic space has been reached.
+genericReachedAt(T,t) :- notGenericReached(T-1), not notGenericReached(T), s(T).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -95,4 +98,5 @@ notGenericReached(t) :- not allIsomorphic(I,t), spec(I).
 :- notGenericReached(t), query1(t).
 
 #show exec/3.
+#show genericReachedAt/2.
 %% #show s/1.

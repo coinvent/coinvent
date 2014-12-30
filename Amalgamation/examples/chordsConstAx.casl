@@ -21,7 +21,7 @@ Symbols then
 end
 
 
-%% These instances do not inherit from the generic chord instance. 
+%% These instances inherit from the chord spec. 
 spec EMaj7Chord = 
 Chord then
     ops eMaj7Chord : Chord
