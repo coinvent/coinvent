@@ -52,22 +52,22 @@ def input2Xml(fName,inputSpaces):
     # Third, generate xml file from concatenated CASL input spaces. As above, this is buggy, so we make sure that the xml file is generated correctly by trying 5 times. 
     xmlFileSize = 0
     tries = 0
+    print "Generating xml file for parsing."
     while True:
-        tries = tries + 1
         if os.path.isfile(xmlFileName) and (xmlFileSize != 0):
             # print "Calling parseXml method"
             try:
                 tree = ET.parse(xmlFileName)
-                print "End calling parseXml method"
+                # print "End calling parseXml method"
                 break
             except ET.ParseError:
-                print "xml parse error, continuing... Press key"
-                
-            
-        print ":::::::::::::::: file " + xmlFileName + " not yet written correctly after " + str(tries) + " tries!!!!!!:::::::::::::::"
-        if tries > 5:
-            exit(1)
+                print "xml parse error, trying again..."
         
+        if tries > 5:
+            print "ERROR: :::::::::::::::: file " + xmlFileName + " not yet written correctly after " + str(tries) + " tries! Aboting... :::::::"
+            exit(1)
+        tries = tries + 1
+
         print "calling hets to compute xml"
         subprocess.call(["hets", "-o xml", newFileName])
         if os.path.isfile(xmlFileName):
@@ -421,8 +421,8 @@ def getGeneralizedSpaces(atoms, inputSpaces):
                 # remove operators, predicates and axioms
                 if cSpec.name.lower() == iSpace:  
                     for act in acts[step][iSpace]:
-                        print "action:"
-                        print act
+                        # print "action:"
+                        # print act
                         if act["actType"] == "rmOp" :
                             for op in cSpec.ops:
                                 if op.name.lower() == act["argVect"][0]:

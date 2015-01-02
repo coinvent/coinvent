@@ -20,12 +20,23 @@ from blendFunctions import *
 # Global variable required for the blending: the input spaces in the internal data structure represenation. 
 inputSpaces = []
 
+# Global variable to store the best blends that ere found so far. 
+blends = []
+
+# Global variable to store the max. allowed cost for a blend. 
+maxCost = sys.maxint
+
 # This is called if a model is found. Here, the model is printed.
 def onModelGeneralize(model):
-    global inputSpaces
+    global inputSpaces, maxCost, blends
     printModel(model)
-    blendingGeneralizationCost = findLeasetGeneralizedBlends(model.atoms(), inputSpaces)
+    [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends)
+
+    # Set the new max. allowed cost for a blend. 
+    maxCost = min(blendingGeneralizationCost,maxCost)
     
+    print blends
+    writeBlends(blends)
 
 def printModel(model):
     print "Model found: \n"
@@ -85,41 +96,5 @@ def main(prg):
         # If Stable Models are found and we are beyond the minimal number of slices, break loop.
         if step >= imin and (ret == SolveResult.SAT): break
         step = step+1
-
-    ### Second, find a blend with the generic space 
-    
-    # imin   = minIterationsBlend-1
-    # imax   = maxIterationsBlend-1
-
-    # ## Here we start at step 0, because we want to try to blend the non-generalized versions first, and step 0 means no generalization at all done. 
-    # step = 0
-    
-    # ## The parts of the logic program to be grounded are declared with an empty sequence. 
-    # parts = []
-
-    # ## We append the base2 part of the Logic Program. (See e.g. blend.lp to see which part this is.)
-    # parts.append(("base2", []))
-    
-    # # The main blending interation loop starts here!
-    # while True:
-    #     # Abort after the max. number of iterations 
-    #     if step > imax: break
-    #     # Append the cumulative part for the particular step (slice) of the program.
-    #     parts.append(("cumulative2", [step]))
-    #     # Ground the new slice
-    #     prg.ground(parts)
-    #     parts = []
-    #     # Release the query1(t) atom from the last slice (step-1) from the program. 
-    #     prg.release_external(Fun("query2", [step-1]))
-    #     # Add the atom query1(t) of this slice to the program. 
-    #     prg.assign_external(Fun("query2", [step]), True)
-        
-    #     # Find Stable Models for this iteration
-    #     # ret = prg.solve()
-    #     ret = prg.solve(None, printModel)
-        
-    #     # If Stable Models are found and we are beyond the minimal number of slices, break loop.
-    #     if step >= imin and (ret == SolveResult.SAT): break
-    #     step = step+1
 
 #end.

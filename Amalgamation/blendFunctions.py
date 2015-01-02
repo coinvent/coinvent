@@ -4,7 +4,9 @@ from settings import *
 from langCasl import *
 from itertools import *
 
-def findLeasetGeneralizedBlends(modelAtoms, inputSpaces):
+
+def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
+
     # Parse model and execute actions on internal data structure to obtain the generalized inut spaces. 
     genInputSpaces = getGeneralizedSpaces(modelAtoms, inputSpaces)
 
@@ -16,13 +18,18 @@ def findLeasetGeneralizedBlends(modelAtoms, inputSpaces):
 
     # State all generalized input spaces:     
     for specName in genInputSpaces.keys():
+        genLevel = 0
+        if specName == "Generic":
+            cstr = cstr + genInputSpaces[specName][0].toCaslStr()+"\n\n"
+            continue
         for spec in genInputSpaces[specName]:
             cstr = cstr + spec.toCaslStr()+"\n\n"
             cstr = cstr + "view GenTo"+spec.name+": Generic to "+spec.name+" end\n\n"
+            genLevel = genLevel + 1
 
     # State blends (colimit operation)
     for cost in sorted(blendCombis.keys()):
-        print "Trying blends with generalization cost of " + str(cost)
+        print "Specifying blends with generalization cost of " + str(cost)
         
         for combi in blendCombis[cost]:            
             cstr = cstr + "spec Blend"
@@ -36,8 +43,10 @@ def findLeasetGeneralizedBlends(modelAtoms, inputSpaces):
             cstr = cstr[:-1]
             cstr = cstr + " end\n\n"
     
-    # Write file, try multiple times due to bug        
-    os.system("rm amalgamTmp.casl")
+    # Write file, try multiple times (this is necessary due to some strange file writing bug...)
+    if os.path.isfile("amalgamTmp.casl"):
+        os.system("rm amalgamTmp.casl")
+
     tries = 0
     while not os.path.isfile("amalgamTmp.casl") :        
         outFile = open("amalgamTmp.casl","w")
@@ -45,70 +54,126 @@ def findLeasetGeneralizedBlends(modelAtoms, inputSpaces):
         outFile.close()
         tries = tries + 1
         if tries > 5:
-            print ":::::::::::::::: ERROR! file amalgamTmp.casl not yet written after "+ str(tries) + "tries. !!!!!!:::::::::::::::"
+            print "ERROR! file amalgamTmp.casl not yet written after "+ str(tries) + "tries. Aborting program... "
             exit(1)
 
-    # print "generating tptp"
-    # subprocess.call(["hets", "-o tptp", "amalgamTmp.casl"])
-    # print "Done generating tptp"
+    blendValue = 0
+    consistent = 0
+    print "generating tptp"
+    subprocess.call(["hets", "-o tptp", "amalgamTmp.casl"])
+    print "Done generating tptp"
     # # raw_input()
+    for cost in sorted(blendCombis.keys()):
+        blendValue = cost
+        print "Trying blends with generalization cost of " + str(cost)
+        if cost > maxCost:
+            print "cost "  +str(cost) + " > " + str(maxCost) + " too high, aborting..."
+            os.remove("amalgamTmp.casl")
+            os.system("rm *.tptp")
+            return -1
 
-    # for step in sorted(generalizationPairs.keys()):
-    #     print "step " + str(step)
-    #     if step > minSteps:
-    #         print "step "  +str(step) + " > " + str(minSteps) + " too high, aborting..."
-    #         os.system("rm *.tptp")
+        # TODO: do not blend if generic space is reached. 
+        isBestBlendCost = False
+        for combi in blendCombis[cost]:   
+            blendName = "Blend" 
+            for specName in combi.keys():
+                sCost = combi[specName]
+                blendName = blendName + "_" + specName + "-" + str(sCost)
 
+            print "Checking consistency of " + blendName + ""
+            #generate tptp format of theory and call eprover to check consistency
+            blendTptpName = "amalgamTmp_"+blendName+".tptp"
+            tries = 0
+            # raw_input()
+            while True:
+                if os.path.isfile(blendTptpName) and os.stat(blendTptpName).st_size != 0:
+                    break
+                print "generating tptp"
+                subprocess.call(["hets", "-o tptp", "amalgamTmp.casl"])
+                print "Done generating tptp"
+                # This is a hack because hets sometimes seems to not generate all .tptp files. So we just try again and again until its working. 
+                tries = tries + 1
+                if tries > 5:
+                    print "ERROR: File "+blendTptpName+" not yet written correctly "+ str(tries) + " times! Aborting..."
+                    exit(0)
 
-    #         return 
-    #     if step == len(generalizationPairs.keys())-1:
-    #         print "step "  +str(step) + " is maxstep, aborting..."
-    #         os.system("rm *.tptp")
-    #         return
-
-    #     blendName = "Blend_" + str(step)
-    #     print "Checking consistency of " + blendName + ""
-    #     #generate tptp format of theory and call eprover to check consistency
-    #     blendTptpName = "amalgamTmp_"+blendName+".tptp"
-    #     tries = 0
-
-    #     while True:
-    #         if os.path.isfile(blendTptpName) and os.stat(blendTptpName).st_size != 0:
-    #             break
-    #         print ":::::::::::::::: file "+blendTptpName+" not yet written correctly "+ str(tries) + " times!!!!!!:::::::::::::::"
-    #         print "generating tptp again"
-    #         subprocess.call(["hets", "-o tptp", "amalgamTmp.casl"])
-    #         print "Done generating tptp again"
-    #         # This is a hack because, hets sometimes seems to not generate all .tptp files. So we just try again and again until its working. 
-    #         time.sleep(0.5)
-    #         tries = tries + 1
-    #         if tries > 5:
-    #             exit(0)
-
-    #     # print "tptpSize : " + str(os.stat(blendTptpName).st_size)
-
-    #     if os.stat(blendTptpName).st_size == 0:
-    #         exit(1)
-
-    #     consistent = checkConsistencyEprover(blendTptpName)
-    #     if consistent == -1:
-    #         print "Consistency could not be determined by eprover, trying darwin"
-    #         consistent = checkConsistencyDarwin(blendTptpName)
+            consistent = checkConsistencyEprover(blendTptpName)
+            if consistent == -1:
+                print "Consistency could not be determined by eprover, trying darwin"
+                consistent = checkConsistencyDarwin(blendTptpName)
+                        
+            if consistent == 1:
+                prettyBlendStr = prettyPrintBlend(genInputSpaces,combi)
+                blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "blendCost" : cost}
+                isBestBlendCost = True
+                # If a better blend was found, delete all previous blends. 
+                if cost < maxCost:
+                    print "New min. cost: " + str(cost)
+                    blends = []
+                    # raw_input()
+                    maxCost = cost
+                blends.append(blendInfo) 
+                # break
         
-    #     if consistent == 1:
-    #         cstr = prettyPrintBlend(generalizationPairs,step)
-    #         os.system("rm *.tptp")
-    #         if step < minSteps:
-    #             print "New min. number of steps: " + str(step)
-    #             blends = []
-    #         minSteps = step
-    #         blends.append(cstr)
-    #         break
+        if isBestBlendCost == True:
+            break
     
-    # os.remove("amalgamTmp.casl")
+    # blendValue = consistent
+    os.system("rm *.tptp")
+    os.remove("amalgamTmp.casl")
+    # print blends
+    if consistent == 1:
+        return [blends,blendValue]
+    else:
+        print "ERROR: consistency could not be proven when computing least general blend. Aborting...."
+        exit(1)
+
+def prettyPrintBlend(genInputSpaces,combi):
+
+    lastSpecs = {}
+
+    # state generic space
+    cstr = genInputSpaces["Generic"][0].toCaslStr()+"\n\n"
     
-    totalGeneralizationCost = 1
-    return totalGeneralizationCost
+    # initiate blend spec string
+    blendStr =  "spec Blend = combine "
+    for iSpaceName in genInputSpaces.keys():
+        if iSpaceName == "Generic":
+            continue
+        lastSpecName = ''
+        numGeneralizations = 0
+        for spec in genInputSpaces[iSpaceName]:
+            cstr = cstr + spec.toCaslStr()+"\n\n"
+            # define view to previous spec. 
+            if lastSpecName != '':
+                cstr = cstr + "view "+spec.name+"To"+lastSpecName+" : " + spec.name + " to " +lastSpecName + " end \n\n"
+            lastSpecName = spec.name
+            # The most general input space has been found
+            if numGeneralizations == combi[iSpaceName]:
+                # view from generic space to generalized input space:
+                cstr = cstr + "view GenTo"+lastSpecName+" : Generic to " + lastSpecName + " end \n\n"
+                # Specify blend
+                blendStr = blendStr + "GenTo"+spec.name+","
+                break
+            numGeneralizations = numGeneralizations + 1
+        
+    blendStr = blendStr[:-1] + " end\n\n"
+
+    cstr = cstr + blendStr
+
+    return cstr
+
+def writeBlends(blends):
+    raw_input
+    os.system("rm Blend_*.casl")
+    for blend in blends:
+        blendStr = blend["prettyHetsStr"]
+        fName = blend["blendName"] + "_c_"+str(blend["blendCost"])+".casl"
+        outFile = open(fName,"w")
+        outFile.write(blendStr)
+        outFile.close()
+    raw_input
+
 
 def getPossBlendCombis(genInputSpaces):
     maxGeneralizationsPerSpace = 0
@@ -146,8 +211,7 @@ def getPossBlendCombis(genInputSpaces):
         if combiValid:
             combis[thisCombiCost].append(thisCombi)
 
-    print combis
-
+    # print combis
     return combis
 
    
