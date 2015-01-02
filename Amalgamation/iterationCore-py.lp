@@ -29,14 +29,17 @@ maxCost = sys.maxint
 # This is called if a model is found. Here, the model is printed.
 def onModelGeneralize(model):
     global inputSpaces, maxCost, blends
-    printModel(model)
-    [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends)
 
-    # Set the new max. allowed cost for a blend. 
-    maxCost = min(blendingGeneralizationCost,maxCost)
+    printModel(model)
+
+    [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends)
     
-    print blends
-    writeBlends(blends)
+    if blendingGeneralizationCost < maxCost:
+        # print blends
+        maxCost = blendingGeneralizationCost
+        writeBlends(blends)
+        print "Found blend with a cheaper generalization cost of  " + str(maxCost) + ". Press any key to go to next model."
+        # raw_input()
 
 def printModel(model):
     print "Model found: \n"

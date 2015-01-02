@@ -9,7 +9,7 @@ inputSpaceNames = ["S1","S2"]
 searchControlFile = ""
 
 ###### The number of models to be generated (0 for all models)
-numModels = 1
+numModels = 100
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -36,10 +36,10 @@ maxIterationsBlend = 20
 ###################################################################
 
 ## Here is space to quickly overwrite the above settings for debugging purposes.
-# inputFile = "examples/cadenceByAx.casl"
-# inputSpaces = ["Perfect7Cadence","PhrygianCadence"]
+inputFile = "examples/cadenceByAx.casl"
+inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 # searchControlFile = "examples/cadenceByAxControl.lp"
 
 # inputFile = "examples/chord_blend_test.dol"
-# inputSpaces = ["Dmin7","Emaj7"]
+# inputSpaceNames = ["Dmin7","Emaj7"]
 

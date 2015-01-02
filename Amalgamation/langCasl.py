@@ -10,51 +10,59 @@ import re
 ### Input:  CASL file name and names of input spaces
 ### Output: The path to an xml file representing the input spaces.     
 def input2Xml(fName,inputSpaces):    
-    newFileName = fName.split(".")[0]+"_raw.casl"
-    # os.system("echo \"\" > "+ newFileName)
-    xmlFileName = newFileName.split(".")[0]+".xml"
 
     # First generate .th files from CASL files. 
-    print "generating Casl .th files using HETS from " + fName
-    # os.system("hets -o th "+fName)
-    subprocess.call(["hets", "-o th", fName])
-    print "DONE generating casl .th files using HETS"
-    
     #To be sure that all .th files have been generated repeat this 5 times. This is necessary because file generation via command line turned out to be buggy,
     allGenerated = False
     tries = 0
-    while allGenerated == False and tries < 5:
+    while True:
+        print "generating Casl .th files using HETS from " + fName
+        subprocess.call(["hets", "-o th", fName])
+        print "DONE generating casl .th files using HETS"        
         allGenerated = True
         for spec in inputSpaces:
             specThFName = fName.split(".")[0]+"_"+spec+".th"
             # print "th fle name" + specThFName
-            thFileSize = os.stat(specThFName).st_size
-            if (not os.path.isfile(specThFName)) or (thFileSize == 0):
-                allGenerated = False
-                print ":::::::::::::::: file " + specThFName + " not yet written in " + str(tries) + " times !!!!!!:::::::::::::::"
-                subprocess.call(["hets", "-o th", fName])
+            if os.path.isfile(specThFName):
                 thFileSize = os.stat(specThFName).st_size
+            else:
+                thFileSize = 0
+            if thFileSize == 0:
+                allGenerated = False
                 break
+        if allGenerated == True:
+             break        
+        if tries > 5:
+            print "ERROR: file " + specThFName + " not yet written in " + str(tries) + " times ! Aborting..."                
         tries = tries + 1
 
     # Second read the input spaces to be blended in CASL syntax from .th files and concatenate the strings. 
     newFileContent = ""
     for spec in inputSpaces:
-        tmpFile = open(fName.split(".")[0]+"_"+spec+".th", "r")
+        thFileName = fName.split(".")[0]+"_"+spec+".th"
+        tmpFile = open(thFileName, "r")
         tmp = tmpFile.read()
         newFileContent = newFileContent + tmp
     
+    newFileName = fName.split(".")[0]+"_raw.casl"
     newFile = open(newFileName, "w")
     newFile.write(newFileContent)
     newFile.close()
-    os.system("rm *.th")   
+
+    #Clean up and remove temporary theory files...
+    os.system("rm " + fName.split(".")[0]+"*.th")
 
     # Third, generate xml file from concatenated CASL input spaces. As above, this is buggy, so we make sure that the xml file is generated correctly by trying 5 times. 
-    xmlFileSize = 0
+    xmlFileName = newFileName.split(".")[0]+".xml"
+    
     tries = 0
-    print "Generating xml file for parsing."
+    # print "Generating xml file for parsing."
     while True:
-        if os.path.isfile(xmlFileName) and (xmlFileSize != 0):
+        xmlFileSize = 0
+        if os.path.isfile(xmlFileName):
+            statinfo = os.stat(xmlFileName)
+            xmlFileSize = statinfo.st_size
+        if xmlFileSize != 0:
             # print "Calling parseXml method"
             try:
                 tree = ET.parse(xmlFileName)
@@ -64,16 +72,13 @@ def input2Xml(fName,inputSpaces):
                 print "xml parse error, trying again..."
         
         if tries > 5:
-            print "ERROR: :::::::::::::::: file " + xmlFileName + " not yet written correctly after " + str(tries) + " tries! Aboting... :::::::"
+            print "ERROR: File " + xmlFileName + " not yet written correctly after " + str(tries) + " tries! Aboting... :::::::"
             exit(1)
         tries = tries + 1
 
-        print "calling hets to compute xml"
-        subprocess.call(["hets", "-o xml", newFileName])
-        if os.path.isfile(xmlFileName):
-            statinfo = os.stat(xmlFileName)
-            xmlFileSize = statinfo.st_size
-        print "done calling hets to compute xml"
+        print "Calling hets to generate xml file for parsing"
+        subprocess.call(["hets", "-o xml", newFileName])        
+        print "Done calling hets to generate xml"
 
     os.remove(newFileName)
     return xmlFileName
@@ -376,12 +381,12 @@ def toLP(caslSpecs):
     return lpStr
     
 
-def getGeneralizedSpaces(atoms, inputSpaces):
-    originalCaslSpecs = copy.deepcopy(inputSpaces)
+def getGeneralizedSpaces(atoms, originalInputSpaces):
 
+    inputSpaces = copy.deepcopy(originalInputSpaces)
     generalizations = {}
     lastSpecName = ''
-    for spec in originalCaslSpecs:
+    for spec in originalInputSpaces:
         generalizations[spec.name] = [spec]
         lastSpecName = spec.name
     # modify CASL data according to Answer Set atoms.

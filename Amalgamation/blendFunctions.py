@@ -18,14 +18,12 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
 
     # State all generalized input spaces:     
     for specName in genInputSpaces.keys():
-        genLevel = 0
         if specName == "Generic":
             cstr = cstr + genInputSpaces[specName][0].toCaslStr()+"\n\n"
             continue
         for spec in genInputSpaces[specName]:
             cstr = cstr + spec.toCaslStr()+"\n\n"
             cstr = cstr + "view GenTo"+spec.name+": Generic to "+spec.name+" end\n\n"
-            genLevel = genLevel + 1
 
     # State blends (colimit operation)
     for cost in sorted(blendCombis.keys()):
@@ -43,7 +41,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             cstr = cstr[:-1]
             cstr = cstr + " end\n\n"
     
-    # Write file, try multiple times (this is necessary due to some strange file writing bug...)
+    # First make sure file does noe exists, and then write file. Try writing multiple times (this is necessary due to some strange file writing bug...)
     if os.path.isfile("amalgamTmp.casl"):
         os.system("rm amalgamTmp.casl")
 
@@ -57,24 +55,21 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             print "ERROR! file amalgamTmp.casl not yet written after "+ str(tries) + "tries. Aborting program... "
             exit(1)
 
-    blendValue = 0
-    consistent = 0
-    print "generating tptp"
-    subprocess.call(["hets", "-o tptp", "amalgamTmp.casl"])
-    print "Done generating tptp"
-    # # raw_input()
+    generalizationCost = sys.maxint
     for cost in sorted(blendCombis.keys()):
-        blendValue = cost
+        consistent = -1
+        generalizationCost = cost
         print "Trying blends with generalization cost of " + str(cost)
         if cost > maxCost:
             print "cost "  +str(cost) + " > " + str(maxCost) + " too high, aborting..."
             os.remove("amalgamTmp.casl")
             os.system("rm *.tptp")
-            return -1
+            return [blends,maxCost]
 
         # TODO: do not blend if generic space is reached. 
         isBestBlendCost = False
         for combi in blendCombis[cost]:   
+            thisCombiConsistent = -1
             blendName = "Blend" 
             for specName in combi.keys():
                 sCost = combi[specName]
@@ -84,10 +79,18 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             #generate tptp format of theory and call eprover to check consistency
             blendTptpName = "amalgamTmp_"+blendName+".tptp"
             tries = 0
-            # raw_input()
+
+            # Try to generate input files several times. This is neccesary due to strange file writing bug. 
             while True:
-                if os.path.isfile(blendTptpName) and os.stat(blendTptpName).st_size != 0:
+
+                if os.path.isfile(blendTptpName):
+                     blendFileSize = os.stat(blendTptpName).st_size
+                else: 
+                    blendFileSize = 0
+                
+                if blendFileSize != 0:
                     break
+                
                 print "generating tptp"
                 subprocess.call(["hets", "-o tptp", "amalgamTmp.casl"])
                 print "Done generating tptp"
@@ -97,15 +100,15 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                     print "ERROR: File "+blendTptpName+" not yet written correctly "+ str(tries) + " times! Aborting..."
                     exit(0)
 
-            consistent = checkConsistencyEprover(blendTptpName)
-            if consistent == -1:
+            thisCombiConsistent = checkConsistencyEprover(blendTptpName)
+            if thisCombiConsistent == -1:
                 print "Consistency could not be determined by eprover, trying darwin"
-                consistent = checkConsistencyDarwin(blendTptpName)
+                thisCombiConsistent = checkConsistencyDarwin(blendTptpName)
                         
-            if consistent == 1:
+            if thisCombiConsistent == 1:
                 prettyBlendStr = prettyPrintBlend(genInputSpaces,combi)
-                blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "blendCost" : cost}
-                isBestBlendCost = True
+                blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "generalizationCost" : cost}
+                consistent = 1
                 # If a better blend was found, delete all previous blends. 
                 if cost < maxCost:
                     print "New min. cost: " + str(cost)
@@ -115,19 +118,17 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                 blends.append(blendInfo) 
                 # break
         
-        if isBestBlendCost == True:
+        if consistent == 1:
             break
     
-    # blendValue = consistent
+    if consistent != 1:
+        generalizationCost == sys.maxint
+
     os.system("rm *.tptp")
     os.remove("amalgamTmp.casl")
-    # print blends
-    if consistent == 1:
-        return [blends,blendValue]
-    else:
-        print "ERROR: consistency could not be proven when computing least general blend. Aborting...."
-        exit(1)
 
+    return [blends,generalizationCost]
+    
 def prettyPrintBlend(genInputSpaces,combi):
 
     lastSpecs = {}
@@ -166,15 +167,17 @@ def prettyPrintBlend(genInputSpaces,combi):
 def writeBlends(blends):
     raw_input
     os.system("rm Blend_*.casl")
+    bNum = 0
     for blend in blends:
         blendStr = blend["prettyHetsStr"]
-        fName = blend["blendName"] + "_c_"+str(blend["blendCost"])+".casl"
+        fName = blend["blendName"] + "_c_"+str(blend["generalizationCost"])+"_b_"+str(bNum)+".casl"
         outFile = open(fName,"w")
         outFile.write(blendStr)
         outFile.close()
+        bNum = bNum + 1
     raw_input
 
-
+# Returns an array of possible Blend combinations and provides a generalization cost value for the combination
 def getPossBlendCombis(genInputSpaces):
     maxGeneralizationsPerSpace = 0
     for gisName in genInputSpaces:
@@ -185,31 +188,66 @@ def getPossBlendCombis(genInputSpaces):
     numSpaces = len(genInputSpaces) -1 # The -1 is there because Generic Space does not count...
     
     # generate the list of all possible combinaions of generalization steps by using the cartesian product function.     
-    possCombiList = [list(combi) for combi in product(range(maxGeneralizationsPerSpace+1),repeat = numSpaces)]
-    # now make these lists readable for the later processing by generating the "combis" dictionary which is organized by generalization cost. 
-    combis = {}
-    for combi in possCombiList:
-        thisCombiCost = 0
-        for cost in combi:
-            thisCombiCost = thisCombiCost + cost
-        if thisCombiCost not in combis.keys():
-            combis[thisCombiCost] = []
+    combiList = [list(combi) for combi in product(range(maxGeneralizationsPerSpace+1),repeat = numSpaces)]
+    # Now make these lists readable for the later processing by generating the "combis" dictionary which is organized by generalization cost. Also check if combi is valid. , i.e. if the number of generalizations in the possCombiList variable applied is valid. If valid add them to list of possible combis. 
+    possCombis = []
+    for combi in combiList:
         thisCombi = {}
         gisNum = 0
-        combiValid = True
         for gisName in sorted(genInputSpaces.keys()):
             if gisName == "Generic":
                 continue            
             thisCombi[gisName] = combi[gisNum]
             # Also check if this combination is valid. It may be, that for a particular input space there is no generalization at all, or less generalizations than for other input spaces.
             if len(genInputSpaces[gisName]) <= combi[gisNum]:
-                combiValid = False
                 break
             gisNum = gisNum + 1
+        
+        # Append this combi if it is valid. 
+        possCombis.append(thisCombi)
+
+    combis = {}
+    for combi in possCombis:
+        thisCombiCost = 0
+        minSpaceGenCost = sys.maxint
+        maxSpaceGenCost = 0
+        for iSpaceName in combi.keys():
+            cost = combi[iSpaceName]
+            minSpaceGenCost = min(cost,minSpaceGenCost)
+            maxSpaceGenCost = max(cost,maxSpaceGenCost)
+            thisCombiCost = thisCombiCost + cost            
+
+        avgCost = thisCombiCost / len(combi.keys())
+
+        totalDiffFromAvg = 0
+        for iSpaceName in combi.keys():
+            cost = combi[iSpaceName]
+            totalDiffFromAvg = totalDiffFromAvg + abs(avgCost - cost)
+
+        avgDiffFromAvg = float(totalDiffFromAvg) / float(len(combi.keys()))
+        symFactor = avgDiffFromAvg + 1
+        
+        # print "combi cost for "
+        # print combi
+        # print "avg diff from average:"
+        # print avgDiffFromAvg
+        # print "symmetry factor:"
+        # print symFactor
+        # print "apriori cost:"
+        # print thisCombiCost
+        # print "final cost is"
+        # print int(thisCombiCost * symFactor)
+
+        # raw_input()
+
+        # finalCombiCost = int(100*(thisCombiCost + avgDiffFromAvg))
+        finalCombiCost = maxSpaceGenCost * 10 + minSpaceGenCost
+        # TODO: Modify cost with symmetry value. I.e., those combis with are asymmetric are more expensive. 
 
 
-        if combiValid:
-            combis[thisCombiCost].append(thisCombi)
+        if finalCombiCost not in combis.keys():
+            combis[finalCombiCost] = []
+        combis[finalCombiCost].append(combi)
 
     # print combis
     return combis
