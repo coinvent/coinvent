@@ -9,7 +9,7 @@ inputSpaceNames = ["S1","S2"]
 searchControlFile = ""
 
 ###### The number of models to be generated (0 for all models)
-numModels = 100
+numModels = 40
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
