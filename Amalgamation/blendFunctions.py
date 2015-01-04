@@ -164,6 +164,7 @@ def prettyPrintBlend(genInputSpaces,combi):
 
     return cstr
 
+# This function takes a list of blend speciications and writes them to disk.
 def writeBlends(blends):
     raw_input
     os.system("rm Blend_*.casl")
@@ -194,38 +195,41 @@ def getPossBlendCombis(genInputSpaces):
     for combi in combiList:
         thisCombi = {}
         gisNum = 0
+        combiValid = True
         for gisName in sorted(genInputSpaces.keys()):
             if gisName == "Generic":
                 continue            
             thisCombi[gisName] = combi[gisNum]
             # Also check if this combination is valid. It may be, that for a particular input space there is no generalization at all, or less generalizations than for other input spaces.
             if len(genInputSpaces[gisName]) <= combi[gisNum]:
+                combiValid = False
                 break
             gisNum = gisNum + 1
         
         # Append this combi if it is valid. 
-        possCombis.append(thisCombi)
+        if combiValid:
+            possCombis.append(thisCombi)
 
     combis = {}
     for combi in possCombis:
-        thisCombiCost = 0
+        # thisCombiCost = 0
         minSpaceGenCost = sys.maxint
         maxSpaceGenCost = 0
         for iSpaceName in combi.keys():
             cost = combi[iSpaceName]
             minSpaceGenCost = min(cost,minSpaceGenCost)
             maxSpaceGenCost = max(cost,maxSpaceGenCost)
-            thisCombiCost = thisCombiCost + cost            
+            # thisCombiCost = thisCombiCost + cost            
 
-        avgCost = thisCombiCost / len(combi.keys())
+        # avgCost = thisCombiCost / len(combi.keys())
 
-        totalDiffFromAvg = 0
-        for iSpaceName in combi.keys():
-            cost = combi[iSpaceName]
-            totalDiffFromAvg = totalDiffFromAvg + abs(avgCost - cost)
+        # totalDiffFromAvg = 0
+        # for iSpaceName in combi.keys():
+        #     cost = combi[iSpaceName]
+        #     totalDiffFromAvg = totalDiffFromAvg + abs(avgCost - cost)
 
-        avgDiffFromAvg = float(totalDiffFromAvg) / float(len(combi.keys()))
-        symFactor = avgDiffFromAvg + 1
+        # avgDiffFromAvg = float(totalDiffFromAvg) / float(len(combi.keys()))
+        # symFactor = avgDiffFromAvg + 1
         
         # print "combi cost for "
         # print combi
@@ -242,22 +246,19 @@ def getPossBlendCombis(genInputSpaces):
 
         # finalCombiCost = int(100*(thisCombiCost + avgDiffFromAvg))
         finalCombiCost = maxSpaceGenCost * 10 + minSpaceGenCost
-        # TODO: Modify cost with symmetry value. I.e., those combis with are asymmetric are more expensive. 
-
 
         if finalCombiCost not in combis.keys():
             combis[finalCombiCost] = []
         combis[finalCombiCost].append(combi)
 
-    # print combis
     return combis
 
    
 def checkConsistencyEprover(blendTptpName) :
-
+        global eproverTimeLimit
         # os.system("eprover --auto --tptp3-format "+blendTptpName+" > consistencyRes.log")
         resFile = open("consistencyRes.log", "w")
-        subprocess.call(["eprover","--auto" ,"--tptp3-format", blendTptpName], stdout=resFile)
+        subprocess.call(["eprover","--auto" ,"--tptp3-format", "--cpu-limit="+str(eproverTimeLimit), blendTptpName], stdout=resFile)
         resFile.close()
         # exit(0)
         while not os.path.isfile("consistencyRes.log") :
@@ -269,10 +270,9 @@ def checkConsistencyEprover(blendTptpName) :
         res = resFile.read()
         resFile.close()
 
-        subprocess.call(["rm", "consistencyRes.log"])
-        # os.system("rm consistencyRes.log")
+        os.system("rm consistencyRes.log")
 
-        if res.find("# No proof found!") != -1:
+        if res.find("# No proof found!") != -1 or res.find("# Failure: Resource limit exceeded") != -1:
             print "Eprover: No consistency proof found with eprover"
             return -1
 
@@ -284,10 +284,10 @@ def checkConsistencyEprover(blendTptpName) :
         return 1
 
 def checkConsistencyDarwin(blendTptpName) :
-
+        global darwinTimeLimit
         # os.system("darwin "+blendTptpName+" > consistencyRes.log")
         resFile = open("consistencyRes.log", "w")
-        subprocess.call(["darwin", blendTptpName], stdout=resFile)
+        subprocess.call(["darwin", "-to " + str(darwinTimeLimit), blendTptpName], stdout=resFile)
         resFile.close()
         # exit(0)
         while not os.path.isfile("consistencyRes.log") :
@@ -309,10 +309,10 @@ def checkConsistencyDarwin(blendTptpName) :
         os.system("rm consistencyRes.log")
 
         if res.find("SZS status Satisfiable") != -1:
-            print "Darwin: Blend consistent."
+            print "Darwin: Consistency proof found."
             return 1
 
         else : #if res.find("SZS status Unsatisfiable") != -1:
-            print "Darwin: Blend inconsistent "
+            print "Darwin: Blend inconsistent or consistency not determined."
             return 0
     

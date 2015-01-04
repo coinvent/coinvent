@@ -14,7 +14,6 @@ a(rmOp(OP),I) :- removable(I,OP).
 a(rmPred(PRED),I) :- removable(I,PRED).
 a(rmAxDirectly(Ax),I) :- removable(I,Ax).
 
-
 %%% Define steps
 #program cumulative1(t).
 s(t).

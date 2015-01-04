@@ -9,7 +9,7 @@ inputSpaceNames = ["S1","S2"]
 searchControlFile = ""
 
 ###### The number of models to be generated (0 for all models)
-numModels = 40
+numModels = 1
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -22,6 +22,10 @@ minIterationsBlend = 1
 
 ###### The maximal number of iterations for blending
 maxIterationsBlend = 20
+
+###### Time limit for eprover and darwin consistency check in seconds CPU time
+eproverTimeLimit = 10
+darwinTimeLimit = 10
 
 ############################
 ###### CASL-specific #######
@@ -36,10 +40,13 @@ maxIterationsBlend = 20
 ###################################################################
 
 ## Here is space to quickly overwrite the above settings for debugging purposes.
-inputFile = "examples/cadenceByAx.casl"
-inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
+# inputFile = "examples/cadenceByAx.casl"
+# inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 # searchControlFile = "examples/cadenceByAxControl.lp"
 
-# inputFile = "examples/chord_blend_test.dol"
-# inputSpaceNames = ["Dmin7","Emaj7"]
+inputFile = "examples/chordBlendRelAbs.casl"
+inputSpaceNames = ["Dmin7","Emaj7"]
 
+
+# inputFile = "examples/subSortTest.casl"
+# inputSpaceNames = ["S1","S2"]

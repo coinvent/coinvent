@@ -12,7 +12,7 @@ inputSpaces = parseXml(inputSpacesXmlFileName)
 
 print "blending the following CASL specs:"
 for s in inputSpaces:
-    print s.toStr()
+    print s.toCaslStr()
 # raw_input()
 print "\n\n\n"
 

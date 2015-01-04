@@ -26,7 +26,7 @@ blends = []
 # Global variable to store the max. allowed cost for a blend. 
 maxCost = sys.maxint
 
-# This is called if a model is found. Here, the model is printed.
+# This is called if a model is found.
 def onModelGeneralize(model):
     global inputSpaces, maxCost, blends
 
@@ -53,8 +53,11 @@ def main(prg):
     global minIterationsGeneralize, maxIterationsGeneralize, rmOpAllowed,rmAxAllowed,rmPredAllowed
     
     ## Prepare internal data structure for the later blending. 
-    global inputSpaces, inputFile
-    inputSpacesXmlFileName = input2Xml(inputFile,inputSpaces) 
+    global inputSpaceNames, inputSpaces, inputFile
+    
+    print "Starting main iteration loop. Reading input spaces."
+
+    inputSpacesXmlFileName = input2Xml(inputFile,inputSpaceNames) 
     inputSpaces = parseXml(inputSpacesXmlFileName)
 
     ## Some abbreviations to make the code more compact:
