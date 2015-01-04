@@ -44,7 +44,7 @@ darwinTimeLimit = 10
 # inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 # searchControlFile = "examples/cadenceByAxControl.lp"
 
-inputFile = "examples/chordBlendRelAbs.casl"
+inputFile = "examples/chordBlendRelAbsSimple.casl"
 inputSpaceNames = ["Dmin7","Emaj7"]
 
 
