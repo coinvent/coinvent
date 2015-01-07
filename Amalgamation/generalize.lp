@@ -92,6 +92,15 @@ notGenericReached(t) :- not allIsomorphic(I,t), spec(I).
 
 %% TODO: Speedup 3: have a total (or partial) order on predicate names, operators and axioms, and do generalization in that order. Possibly use some randomness here. That is, the order only determines the likelyhood with which the axiom, predicate or operator is removed. 
 
+%%%%%%%%%%%%%%%%%%%%%%%
+%%% Evaluation Part %%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%% modelValue(V,t) :- modelValue(V_before,t-1), exec
+%% %% This final model value is what counts...
+%% finalModelValue(V) :- not notGenericReached(t), modelValue(V,t).
+
+%% 0{spec(I_other) : not hasAxiom(I_other,Ax,t), spec(I_other)}0.
 %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query1(t).
 :- notGenericReached(t), query1(t).

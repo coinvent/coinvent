@@ -99,10 +99,6 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                     print "ERROR: File "+blendTptpName+" not yet written correctly "+ str(tries) + " times! Aborting..."
                     exit(0)
 
-            # if blendName == "Blend_Dmin7-0_Emaj7-5":
-            #     print "Blend Blend_Dmin7-0_Emaj7-5"
-            #     raw_input()
-
             thisCombiConsistent = checkConsistencyEprover(blendTptpName)
             if thisCombiConsistent == -1:
                 print "Consistency could not be determined by eprover, trying darwin"
@@ -116,13 +112,8 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                 if cost < maxCost:
                     print "New min. cost: " + str(cost)
                     blends = []
-                    # raw_input()
                     maxCost = cost
                 blends.append(blendInfo) 
-                # break
-            # if blendName == "Blend_Dmin7-0_Emaj7-5":
-            #     print "Blend Blend_Dmin7-0_Emaj7-5"
-            #     raw_input()
 
         if consistent != 1:
             generalizationCost == sys.maxint
