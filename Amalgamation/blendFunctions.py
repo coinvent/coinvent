@@ -54,7 +54,6 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
         if tries > 5:
             print "ERROR! file amalgamTmp.casl not yet written after "+ str(tries) + "tries. Aborting program... "
             exit(1)
-
     generalizationCost = sys.maxint
     for cost in sorted(blendCombis.keys()):
         consistent = -1
@@ -97,7 +96,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                 tries = tries + 1
                 if tries > 5:
                     print "ERROR: File "+blendTptpName+" not yet written correctly "+ str(tries) + " times! Aborting..."
-                    exit(0)
+                    exit(1)
 
             thisCombiConsistent = checkConsistencyEprover(blendTptpName)
             if thisCombiConsistent == -1:
@@ -117,7 +116,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
 
         if consistent != 1:
             generalizationCost == sys.maxint
-
+    raw_input()
     os.system("rm *.tptp")
     os.remove("amalgamTmp.casl")
 
@@ -281,27 +280,19 @@ def checkConsistencyDarwin(blendTptpName) :
         global darwinTimeLimit
         # os.system("darwin "+blendTptpName+" > consistencyRes.log")
         resFile = open("consistencyRes.log", "w")
-        subprocess.call(["darwin", "-to " + str(darwinTimeLimit), blendTptpName], stdout=resFile)
+        # subprocess.call(["darwin", "--timeout-cpu " + str(darwinTimeLimit), blendTptpName], stdout=resFile)
+        # subprocess.call(["darwin", "-to " + str(darwinTimeLimit), blendTptpName], stdout=resFile)
+        subprocess.call(["darwin", blendTptpName], stdout=resFile)
         resFile.close()
-        # exit(0)
         while not os.path.isfile("consistencyRes.log") :
             print ":::::::::::::::: file consistencyRes.log not yet written!!!!!!:::::::::::::::"
-            exit(0)
-        #     continue
+            exit(1)
 
         resFile = open("consistencyRes.log",'r')
         res = resFile.read()
         resFile.close()
 
-        # subprocess.call(["rm", "consistencyRes.log"])
-
-        while not os.path.isfile("consistencyRes.log") :
-            print ":::::::::::::::: file consistencyRes.log not yet written!!!!!!:::::::::::::::"
-            exit(0)
-        #     continue
-
         os.system("rm consistencyRes.log")
-
         if res.find("SZS status Satisfiable") != -1:
             print "Darwin: Consistency proof found."
             return 1

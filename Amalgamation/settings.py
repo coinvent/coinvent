@@ -9,7 +9,7 @@ inputSpaceNames = ["S1","S2"]
 searchControlFile = ""
 
 ###### The number of models to be generated (0 for all models)
-numModels = 1
+numModels = 30
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -31,22 +31,22 @@ darwinTimeLimit = 10
 ###### CASL-specific #######
 ############################
 
-###### For generalization, determine whether removal of axioms, predicates and operators are allowed atomic generalization actions. For certain domains it may be useful to use only a subset of generalization operations.
+###### For generalization, determine whether removal of axioms, sorts, predicates and operators are allowed atomic generalization actions. For certain domains it may be useful to use only a subset of generalization operations.
 # TODO: THis is currently not working... For now (de)-comment respective LP rules in generalize.lp file to select generalization operations
 # rmAxAllowed = True
 # rmPredAllowed = True
 # rmOpAllowed = True
+# rmSortAllowed = True
 
 ###################################################################
 
 ## Here is space to quickly overwrite the above settings for debugging purposes.
-# inputFile = "examples/cadenceByAx.casl"
-# inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
+inputFile = "examples/cadenceByAx.casl"
+inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 # searchControlFile = "examples/cadenceByAxControl.lp"
 
-inputFile = "examples/chordBlendRelAbsSimple.casl"
-inputSpaceNames = ["Dmin7","Emaj7"]
-
+# inputFile = "examples/chordBlendRelAbsSimple.casl"
+# inputSpaceNames = ["Dmin7","Emaj7"]
 
 # inputFile = "examples/subSortTest.casl"
 # inputSpaceNames = ["S1","S2"]

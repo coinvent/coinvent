@@ -13,7 +13,6 @@ inputSpaces = parseXml(inputSpacesXmlFileName)
 print "blending the following CASL specs:"
 for s in inputSpaces:
     print s.toCaslStr()
-# raw_input()
 print "\n\n\n"
 
 # Generate the Logic Programming representation of the CASL input spaces. 
@@ -32,4 +31,3 @@ if searchControlFile != "":
 else:
 	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName])
 
-# subprocess.call(["hets", "-g", "amalgamBlend_0.casl"])

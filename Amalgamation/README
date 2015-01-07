@@ -37,6 +37,9 @@ If you want to do other blendings, modify the settings.py as follows:
 ** Important limitations and TODOs ** 
 	+ Operator and predicate names must be disjoint in each specification, i.e. a operator name can 
 	not be a predicate name. Furthermore, overloading is not supported. otherwise this will result in errors. 
+	+ Generalizing sorts currently under development. You have to keep sort specifications equal for all input specs. 
+		TODO: In generalize.lp formulate predicates noPredHasSort3 and noOpHasSort/3.
+	+ Timeout with darwin problem solving not working. 
 	+ IMPORTANT (from category theoretical point of view): If predicates or operator names are equal in different input specifications, they are considered to be equal. 
 	+ IMPORTANT (from category theoretical point of view): Only identity mappings are considered so far between specs. We will have a much richer generalization process when using also non-id mappings.
 	+ Sorts are determined only by predicates and operators. I have to think whether they should also be determined by axioms, as e.g. in the monks blend example. 

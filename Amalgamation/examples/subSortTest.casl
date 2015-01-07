@@ -1,20 +1,18 @@
 spec Generic = 
-    sort Sort1 < Sort2
-    sort Sort2 < Sort3
+    sort Sort1
+    sort Sort2 < Sort1
+    sort DummySort
 end
 
-spec S1 = Generic then    
-    ops fs11 : Sort1
+spec S1 = Generic 
+then    
+	sort Sort4
+    %% ops fs11 : Sort1
+    	%% fs123 : Sort2 -> Sort3
     %% ops fs12 : Sort1
 end
 
 spec S2 = Generic then
-    ops fs2 : Sort2
-    ops fs3 : Sort3
+	sort Sort5
+	sort Sort1 < Sort5
 end
-
-%% view GenToS1 : Generic to S1 end
-%% view GenToS2 : Generic to S2 end
-
-%% spec Blend = combine GenToS1,GenToS2
-%% end 
