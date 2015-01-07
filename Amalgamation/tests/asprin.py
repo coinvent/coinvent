@@ -54,13 +54,13 @@ def main(prg):
         print "Answer: "+ str(step)
         if step > startone:
             if ((maxmodels != 1) and (forgetlast != 0) and (step - startone > 1)): prg.releaseExternal(Fun("_volatile",[0,step-2]))
-            prg.ground("doholds",[step-1])
-            prg.ground("preference",[0,step-1])
-            prg.ground("constraints",[0,step-1])
+            prg.ground([("doholds",[step-1])])
+            prg.ground([("preference",[0,step-1])])
+            prg.ground([("constraints",[0,step-1])])
 	    if (maxmodels != 1):
-                prg.ground("volatile_external",[0,step-1])
+                prg.ground([("volatile_external",[0,step-1])])
 		prg.assignExternal(Fun("_volatile",[0,step-1]),True)
-            else: prg.ground("volatile_fact",[0,step-1])
+            else: prg.ground([("volatile_fact",[0,step-1])])
         ret = prg.solve(None,onModel)
         if ret == SolveResult.UNSAT:
             if (step==1 or unsat==1):  print "UNSATISFIABLE"; break
@@ -69,10 +69,10 @@ def main(prg):
             if (maxmodels == nmodels): break
             for i in range(startone,step): prg.releaseExternal(Fun("_volatile",[0,i]))
             startone = step + 1
-            prg.ground("deletemodel",[])
-            prg.ground("preference", [step-1,0])
-            prg.ground("unsat_constraints", [step-1,0])
-            prg.ground("volatile_external",[step-1,0])
+            prg.ground([("deletemodel",[])])
+            prg.ground([("preference", [step-1,0])])
+            prg.ground([("unsat_constraints", [step-1,0])])
+            prg.ground([("volatile_external",[step-1,0])])
             prg.assignExternal(Fun("_volatile",[step-1,0]),True)
             if forgetopt != 0:
                 for i in opt: prg.assignExternal(Fun("_volatile",[i,0]),True)
