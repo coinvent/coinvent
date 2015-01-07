@@ -1,0 +1,159 @@
+#!/usr/bin/python
+# {{{ GPL License
+
+# This file is part of gringo - a grounder for logic programs.
+# Copyright (C) 2013  Roland Kaminski
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# }}}
+
+import os
+from os.path import join
+
+# {{{ Auxiliary functions
+
+def find_files(env, path):
+    oldcwd = os.getcwd()
+    try:
+        os.chdir(Dir('#').abspath)
+        sources = []
+        for root, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                if filename.endswith(".cc") or filename.endswith(".cpp"):
+                    sources.append(os.path.join(root, filename))
+                if filename.endswith(".yy"):
+                    target = os.path.join(root, filename[:-3],  "grammar.cc")
+                    source = os.path.join(root, filename)
+                    sources.append(target)
+                    env.Bison(target, source)
+                if filename.endswith(".xh"):
+                    target = os.path.join(root, filename[:-3] + ".hh")
+                    source = os.path.join(root, filename)
+                    env.Re2c(target, source)
+        return sources
+    finally:
+        os.chdir(oldcwd)
+
+def bison_emit(target, source, env):
+    path = os.path.split(str(target[0]))[0];
+    target += [os.path.join(path, "grammar.hh"), os.path.join(path, "grammar.out")]
+    return target, source
+
+def CheckBison(context):
+    context.Message('Checking for bison 2.5... ')
+    (result, output) = context.TryAction("${BISON} ${SOURCE} -o /dev/null", '%require "2.5"\n%%\nstart:', ".y")
+    context.Result(result)
+    return result
+    #return True
+
+def CheckRe2c(context):
+    context.Message('Checking for re2c... ')
+    (result, output) = context.TryAction("${RE2C} ${SOURCE}", '', ".x")
+    context.Result(result)
+    return result
+
+# }}}
+# {{{ Basic environment
+
+Import('env')
+
+bison_action = Action("${BISON} -r all --report-file=${str(TARGET)[:-3]}.out -o ${TARGET} ${SOURCE} ${test}")
+
+bison_builder = Builder(
+    action = bison_action,
+    emitter = bison_emit,
+    suffix = '.cc',
+    src_suffix = '.yy'
+    )
+
+re2c_action = Action("${RE2C} -o ${TARGET} ${SOURCE}")
+
+re2c_builder = Builder(
+    action = re2c_action,
+    suffix = '.hh',
+    src_suffix = '.xh'
+    )
+
+env['ENV']['PATH'] = os.environ['PATH']
+env['BUILDERS']['Bison'] = bison_builder
+env['BUILDERS']['Re2c']  = re2c_builder
+
+# }}}
+# {{{ Gringo specific configuration
+
+conf = Configure(env, custom_tests = {'CheckBison' : CheckBison, 'CheckRe2c' : CheckRe2c}, log_file = join("build", GetOption('build_dir') + ".log"))
+DEFS = {}
+failure = False
+
+if not conf.CheckBison():
+    print 'error: no usable bison version found'
+    failure = True
+
+if not conf.CheckRe2c():
+    print 'error: no usable re2c version found'
+    failure = True
+
+env = conf.Finish()
+env.PrependUnique(LIBPATH=[Dir('.')])
+env.Append(CPPDEFINES=DEFS)
+
+# }}}
+
+if failure: Exit(1)
+
+# {{{ Ctags
+
+ctagsCommand = env.Command('ctags', [], 'ctags --c++-kinds=+p --fields=+imaS --extra=+q -R libgringo app libprefator')
+ctagsAlias   = env.Alias('tags', [ctagsCommand])
+env.AlwaysBuild(ctagsCommand)
+
+# }}}
+# {{{ Gringo: Library + Program
+
+gringoEnv = env.Clone()
+gringoEnv.Append(CPPPATH = [Dir('#libgringo'), 'libgringo/src'])
+
+LIBGRINGO_SOURCES = find_files(gringoEnv, 'libgringo/src')
+
+gringoEnv.StaticLibrary('libgringo', LIBGRINGO_SOURCES)
+
+GRINGO_SOURCES    = find_files(gringoEnv, 'app/gringo')
+gringoEnv.Prepend(LIBS=[ 'libgringo' ])
+gringoProgram = gringoEnv.Program('gringo', GRINGO_SOURCES)
+gringoEnv.Alias('gringo', gringoProgram)
+
+# }}}
+# {{{ Prefator
+
+prefatorEnv = env.Clone()
+prefatorEnv.Prepend(LIBS=[ 'libprefator','libgringo' ])
+prefatorEnv.Append(CPPPATH = [Dir('#libprefator'), 'libprefator/src'])
+prefatorEnv.Append(CPPPATH = [Dir('#libgringo'), 'libgringo/src'])
+
+
+LIBPREFATOR_SOURCES = find_files(prefatorEnv, 'libprefator/src')
+PREFATOR_SOURCES = find_files(prefatorEnv, 'app/prefator/')
+
+prefatorEnv.StaticLibrary('libprefator', LIBPREFATOR_SOURCES)
+
+prefatorProgram  = prefatorEnv.Program('prefator', PREFATOR_SOURCES)
+prefatorEnv.Alias('prefator', prefatorProgram)
+
+# }}}
+
+
+
+
+
