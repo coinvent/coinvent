@@ -7,7 +7,7 @@ end
 spec S1 = Generic 
 then    
 	sort Sort4
-    %% ops fs11 : Sort1
+    ops fs11 : Sort4
     	%% fs123 : Sort2 -> Sort3
     %% ops fs12 : Sort1
 end
