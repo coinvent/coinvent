@@ -25,9 +25,8 @@ lpFile.close()
 print "Generated Logic Programming facts from CASL Spec."
 # raw_input()
 
+# Call apsrin to generate preferences LP file.
+# subprocess.call(["./asprin/asprin.parser", "preferences.lp", "./asprin/asprin.lib"])
 # Invoke clingo4 and run 
-if searchControlFile != "":
-	subprocess.call(["./clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName, searchControlFile])
-else:
-	subprocess.call(["./clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName])
+subprocess.call(["./clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName])
 

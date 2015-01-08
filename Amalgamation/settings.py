@@ -5,9 +5,6 @@
 inputFile = "examples/minimal.casl"
 inputSpaceNames = ["S1","S2"]
 
-###### The search control file is an auxiliary file which is supposed to include domain specific knowledge for guiding the search. 
-searchControlFile = ""
-
 ###### The number of models to be generated (0 for all models)
 numModels = 30
 
@@ -43,7 +40,6 @@ darwinTimeLimit = 10
 ## Here is space to quickly overwrite the above settings for debugging purposes.
 inputFile = "examples/cadenceByAx.casl"
 inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
-# searchControlFile = "examples/cadenceByAxControl.lp"
 
 # inputFile = "examples/chordBlendRelAbsSimple.casl"
 # inputSpaceNames = ["Dmin7","Emaj7"]
