@@ -25,6 +25,14 @@ It currently works with CASL only, and relies on HETS (via commandline-call) to 
 	- generalize.lp
 		This contains the core search rules to generalize towards the generic space. 
 
+- Clingo binary
+	- clingo4 is the 64bit binary of clingo v.4.4.0. I complied it with python and lua support. 
+	- gringo.so are the python libraries for clingo
+	If your system complains that python or lua are not found, do (in ubuntu):
+	
+	sudo apt-get install python2.7 python2.7-dev lua5.1 lua5.1-policy-dev
+
+
 ** GET STARTED **
 The module will only run on a linux-based 64bit distribution, because of the clingo4 binary. If you want to run on another system (e.g. Mac), you have to get your own clingo4 binary. I suggest to use a Virtual Machine instead.
 To run the blending, adjust the var "lp_path" in iterationCore-py.lp to the absolute path of your system and execute "run-blending.py" using python. By default it will do the cadence blending example specified in cadenceByAx.casl. To run another example, adopt settings.py.

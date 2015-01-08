@@ -89,18 +89,18 @@ def main(prg):
         parts.append(("cumulative1", [step]))
         # # Ground the new slice
         prg.ground(parts)
-        # parts = []
-        # # Release the query1(t) atom from the last slice (step-1) from the program. 
-        # prg.release_external(Fun("query1", [step-1]))
-        # # Add the atom query1(t) of this slice to the program. 
-        # prg.assign_external(Fun("query1", [step]), True)
+        parts = []
+        # Release the query1(t) atom from the last slice (step-1) from the program. 
+        prg.release_external(Fun("query1", [step-1]))
+        # Add the atom query1(t) of this slice to the program. 
+        prg.assign_external(Fun("query1", [step]), True)
 
-        # # Find Stable Models for this generalization iteration
-        # # ret = prg.solve()
-        # ret = prg.solve(None, onModelGeneralize)
+        # Find Stable Models for this generalization iteration
+        # ret = prg.solve()
+        ret = prg.solve(None, onModelGeneralize)
         
-        # # If Stable Models are found and we are beyond the minimal number of slices, break loop.
-        # if step >= imin and (ret == SolveResult.SAT): break
+        # If Stable Models are found and we are beyond the minimal number of slices, break loop.
+        if step >= imin and (ret == SolveResult.SAT): break
         step = step+1
 
 #end.
