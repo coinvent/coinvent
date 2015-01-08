@@ -33,6 +33,8 @@ __preference(p1,aso).
 __preference(p1,(1,(X,Y)),1,lit(t,a(X)),()) :- gr(X), gr(Y), X = Y - 1.
 __preference(p1,(1,(X,Y)),2,lit(t,a(Y)),()) :- gr(X), gr(Y), X = Y - 1.
 __optimize(p1).
+
+
 %file:	asprin.lib
 #program base.
 
