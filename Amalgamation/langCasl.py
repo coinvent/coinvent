@@ -222,7 +222,7 @@ class CaslSpec:
             caslStr = caslStr + "\t\t " + p.toPlainStr() +"\n"
         caslStr += "\n"
         for ax in self.axioms: 
-            caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "   %% p:"+str(ax['priority']) + "\n"
+            caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "   %% AxId:"+str(ax['id']) + "   p:"+str(ax['priority']) + "\n"
         caslStr = caslStr + "end"
         return caslStr
         

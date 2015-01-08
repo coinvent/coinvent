@@ -6,7 +6,7 @@ inputFile = "examples/minimal.casl"
 inputSpaceNames = ["S1","S2"]
 
 ###### The number of models to be generated (0 for all models)
-numModels = 30
+numModels = 70
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1

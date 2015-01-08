@@ -12,8 +12,12 @@
 %%% Declare atomic generalization operations. (Sorts are automatically removed if there is no operator or predicate left that utilizes the sort. Therefore there is no explicit operation to remove sorts.)
 a(rmOp(OP),I) :- removable(I,OP).
 a(rmPred(PRED),I) :- removable(I,PRED).
-a(rmAxDirectly(Ax),I) :- removable(I,Ax).
+%% a(rmAxDirectly(Ax),I) :- removable(I,Ax).
+a(rmAx(Ax),I) :- removable(I,Ax).
 a(rmSort(S),I) :- removable(I,S).
+
+%%% Initial generalization value is 0 for all specs.
+genValue(I,0,1) :- spec(I).
 
 %%% Define steps
 #program cumulative1(t).
@@ -23,11 +27,11 @@ s(t).
 
 % Remove Operator
 %% #external rmOpAllowed.
-%% poss(rmOp(OP),I,t) :- hasOp(I,OP,t), removable(I,OP).
+%% poss(rmOp(Op),I,t) :- hasOp(I,Op,t), removable(I,Op), 0{hasAxiom(I,Ax,t) : axInvolvesPredOp(Ax,Op)}0.
 
 % Remove Predicate
 %% #external rmPredAllowed.
-%% poss(rmPred(PRED),I,t) :- hasPred(I,PRED,t), removable(I,PRED).
+%% poss(rmPred(Pred),I,t) :- hasPred(I,Pred,t), removable(I,Pred), 0{hasAxiom(I,Ax,t) : axInvolvesPredOp(Ax,Pred)}0.
 
 % Remove Sort 
 %% #external rmSortAllowed.
@@ -38,13 +42,14 @@ s(t).
 
 % Remove Axiom
 %% #external rmAxAllowed.
-poss(rmAxDirectly(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
+%% poss(rmAxDirectly(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
+poss(rmAx(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
 
 % Indirect Axiom Removal
-exec(rmAx(AX),I,t) :- exec(rmOp(OP),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,OP).
-exec(rmAx(AX),I,t) :- exec(rmPred(P),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,P).
+%% exec(rmAx(AX),I,t) :- exec(rmOp(OP),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,OP).
+%% exec(rmAx(AX),I,t) :- exec(rmPred(P),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,P).
 % Direct Axiom Removal
-exec(rmAx(AX),I,t) :- exec(rmAxDirectly(AX),I,t).
+%% exec(rmAx(AX),I,t) :- exec(rmAxDirectly(AX),I,t).
 
 % Some auxiliary information to quickly tell whether a spec was modified at a time point.
 specModified(I,t) :- exec(A,I,t).
@@ -101,13 +106,15 @@ notGenericReached(t) :- not allIsomorphic(I,t), spec(I).
 :- specModified(I,t), not specModified(I,T_before), T_before < t, s(T_before).
 
 %% Speedup 2: Do not remove predicates, operators or axioms if they are present in all input spaces, i.e., if there is no spec that does not have the axiom, predicate or operator.
-:- exec(rmAxDirectly(Ax),I,t), 0{spec(I_other) : not hasAxiom(I_other,Ax,t), spec(I_other)}0.
+%% :- exec(rmAxDirectly(Ax),I,t), 0{spec(I_other) : not hasAxiom(I_other,Ax,t), spec(I_other)}0.
+:- exec(rmAx(Ax),I,t), 0{spec(I_other) : not hasAxiom(I_other,Ax,t), spec(I_other)}0.
 :- exec(rmPred(PRED),I,t), 0{spec(I_other) : not hasPred(I_other,PRED,t), spec(I_other)}0.
 :- exec(rmOp(OP),I,t), 0{spec(I_other) : not hasOp(I_other,OP,t), spec(I_other)}0.
 %% For sorts this speedup does not work due to subsorts, because sometimes it is necessary to remove a child sort that is common in all input spaces to be able to remove a parent sort that is present in only one input space. Maybe a modified version is possible that respects subsorts. 
 %% :- exec(rmSort(S),I,t), 0{spec(I_other) : not hasSort(I_other,S,t), spec(I_other)}0.
 
-%% TODO: Speedup 3: have a total (or partial) order on predicate names, operators and axioms, and do generalization in that order. Possibly use some randomness here. That is, the order only determines the likelyhood with which the axiom, predicate or operator is removed. 
+%% Speedup 3 (optional): have a total (or partial) priority order on predicates, operators and axioms, and do generalization strictly in that order. That is, only do optimal generalizations in terms of priority. The advantage is the much better performance, the disadvantage is that only optimal blends are generated. Optimal blends are often good, but not always the "best" or "most interesting" blends. 
+%% :- not stepOptimal(I,t), specModified(I,t).
 
 %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query1(t).
@@ -118,11 +125,16 @@ notGenericReached(t) :- not allIsomorphic(I,t), spec(I).
 %%% Evaluation Part %%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-%% TODO!!!
-%% modelValue(V,t) :- modelValue(V_before,t-1), exec
-%% %% This final model value is what counts...
-%% finalModelValue(V) :- not notGenericReached(t), modelValue(V,t).
+stepOptimal(I,t) :- not specModified(I,t), spec(I).
+stepOptimal(I,t) :- rmLowestPriorityAx(I,Ax,t).
+rmLowestPriorityAx(I,Ax,t) :- priority(I,Ax,P), exec(rmAx(Ax),I,t), 0{hasAxiom(I,Ax_other,t) : priority(I,Ax_other,P_other), Ax != Ax_other, P_other < P, removable(I,Ax_other)}0.
 
+totalGenValue(V,t) :- V = {stepOptimal(I,T) : s(T), spec(I)}, not notGenericReached(t).
+
+#maximize{V@1 : totalGenValue(V,t)}.
+
+
+#show totalGenValue/2.
 #show exec/3.
 %% #show genericReachedAt/2.
 %% #show s/1.

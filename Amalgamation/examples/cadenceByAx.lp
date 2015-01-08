@@ -53,16 +53,20 @@ priority(perfect7cadence,rootsrel,1).
 hasOp(perfect7cadence,unison,1).
 opHasSort(perfect7cadence,unison,rel).
 priority(perfect7cadence,unison,1).
+
+%% High priority
 hasAxiom(perfect7cadence,1,1).
 axInvolvesPredOp(1,prefinal).
 axInvolvesPredOp(1,dom7).
 removable(perfect7cadence,1).
-priority(perfect7cadence,1,1).
+priority(perfect7cadence,1,10).
+%% High priority
 hasAxiom(perfect7cadence,2,1).
 axInvolvesPredOp(2,final).
 axInvolvesPredOp(2,maj).
 removable(perfect7cadence,2).
-priority(perfect7cadence,2,1).
+priority(perfect7cadence,2,10).
+
 hasAxiom(perfect7cadence,3,1).
 axInvolvesPredOp(3,bassrel).
 axInvolvesPredOp(3,p5).
@@ -78,11 +82,13 @@ axInvolvesPredOp(5,pfrel).
 axInvolvesPredOp(5,unison).
 removable(perfect7cadence,5).
 priority(perfect7cadence,5,1).
+%% High priority
 hasAxiom(perfect7cadence,6,1).
 axInvolvesPredOp(6,frel).
 axInvolvesPredOp(6,unison).
 removable(perfect7cadence,6).
-priority(perfect7cadence,6,1).
+priority(perfect7cadence,6,10).
+
 hasAxiom(perfect7cadence,7,1).
 axInvolvesPredOp(7,maj).
 axInvolvesPredOp(7,min).
@@ -228,21 +234,26 @@ axInvolvesPredOp(27,bassrel).
 axInvolvesPredOp(27,m2).
 removable(phrygiancadence,27).
 priority(phrygiancadence,27,1).
+
+%% High priority
 hasAxiom(phrygiancadence,28,1).
 axInvolvesPredOp(28,rootsrel).
 axInvolvesPredOp(28,m7).
 removable(phrygiancadence,28).
-priority(phrygiancadence,28,1).
+priority(phrygiancadence,28,10).
+%% High priority
 hasAxiom(phrygiancadence,29,1).
 axInvolvesPredOp(29,pfrel).
 axInvolvesPredOp(29,m6).
 removable(phrygiancadence,29).
-priority(phrygiancadence,29,1).
+priority(phrygiancadence,29,10).
+%% High priority
 hasAxiom(phrygiancadence,6,1).
 axInvolvesPredOp(6,frel).
 axInvolvesPredOp(6,unison).
 removable(phrygiancadence,6).
-priority(phrygiancadence,6,1).
+priority(phrygiancadence,6,10).
+
 hasAxiom(phrygiancadence,7,1).
 axInvolvesPredOp(7,maj).
 axInvolvesPredOp(7,min).

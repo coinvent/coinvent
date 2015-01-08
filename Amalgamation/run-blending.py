@@ -19,9 +19,9 @@ print "\n\n\n"
 lpRep = toLP(inputSpaces)
 lpRep = "#program base1.\n\n" + lpRep
 lpFileName = fName.split(".")[0]+".lp"
-lpFile = open(lpFileName,'w')
-lpFile.write(lpRep)
-lpFile.close()
+# lpFile = open(lpFileName,'w')
+# lpFile.write(lpRep)
+# lpFile.close()
 print "Generated Logic Programming facts from CASL Spec."
 # raw_input()
 

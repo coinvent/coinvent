@@ -17,24 +17,33 @@ end
 
 spec Perfect7Cadence = 
   Cadence then
-    . prefinal = dom7
-    . final = maj      %%(4)
-    . bassRel = P5     %%(4)
-    . rootsRel = P5    %%(5)
-    . pfRel = unison
-    . fRel = unison
+    . prefinal = dom7  %% p:10
+    . final = maj      %% p:10
+    . bassRel = P5     %% p:2
+    . rootsRel = P5    %% p:2
+    . pfRel = unison   %% p:2
+    . fRel = unison    %% p:10
 end
 
 spec PhrygianCadence = 
   Cadence then
-    . prefinal = min
-    . final = fifths
-    . bassRel = m2
+    . prefinal = min   %% p:2
+    . final = fifths   %% p:2
+    . bassRel = m2     %% p:2
+    . rootsRel = m7    %% p:10
+    . pfRel = M6       %% p:10
+    . fRel = unison    %% p:10
+end
+
+spec Backdoor = Cadence then
+    . prefinal = dom7
+    . final = maj
+    %% . bassRel = m2
     . rootsRel = m7
     . pfRel = M6
     . fRel = unison
+    
 end
-
 
 %% spec InvalidCadence = Cadence then
 %%    . not rootsRel = m7 /\ pfRel = M6 /\ fRel = unison /\ bassRel = P5   %% ("Weight of axiom")
