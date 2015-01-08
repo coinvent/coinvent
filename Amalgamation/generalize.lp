@@ -23,7 +23,7 @@ s(t).
 
 % Remove Operator
 %% #external rmOpAllowed.
-poss(rmOp(OP),I,t) :- hasOp(I,OP,t), removable(I,OP).
+%% poss(rmOp(OP),I,t) :- hasOp(I,OP,t), removable(I,OP).
 
 % Remove Predicate
 %% #external rmPredAllowed.
@@ -31,16 +31,14 @@ poss(rmOp(OP),I,t) :- hasOp(I,OP,t), removable(I,OP).
 
 % Remove Sort 
 %% #external rmSortAllowed.
-poss(rmSort(S),I,t) :- hasSort(I,S,t), removable(I,S) , isNotParentSort(I,S,t), noOpUsesSort(I,S,t), noPredUsesSort(I,S,t).
-isNotParentSort(I,S,t) :- 0{hasSort(I,S_child,t) : isParentSort(I,S, S_child)}0, hasSort(I,S,t).
-noOpUsesSort(I,S,t) :- 0{hasOp(I,Op,t) : opHasSort(I,Op,S)}0, hasSort(I,S,t).
-noPredUsesSort(I,S,t) :- 0{hasPred(I,Op,t) : predHasSort(I,Op,S)}0, hasSort(I,S,t).
+%% poss(rmSort(S),I,t) :- hasSort(I,S,t), removable(I,S) , isNotParentSort(I,S,t), noOpUsesSort(I,S,t), noPredUsesSort(I,S,t).
+%% isNotParentSort(I,S,t) :- 0{hasSort(I,S_child,t) : isParentSort(I,S, S_child)}0, hasSort(I,S,t).
+%% noOpUsesSort(I,S,t) :- 0{hasOp(I,Op,t) : opHasSort(I,Op,S)}0, hasSort(I,S,t).
+%% noPredUsesSort(I,S,t) :- 0{hasPred(I,Op,t) : predHasSort(I,Op,S)}0, hasSort(I,S,t).
 
-%% #show noOpUsesSort/3.
-%% #show noPredUsesSort/3.
 % Remove Axiom
 %% #external rmAxAllowed.
-%% poss(rmAxDirectly(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
+poss(rmAxDirectly(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
 
 % Indirect Axiom Removal
 exec(rmAx(AX),I,t) :- exec(rmOp(OP),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,OP).

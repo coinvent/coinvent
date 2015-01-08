@@ -9,7 +9,7 @@ from gringo import *
 # Some auxiliary libraries that we need:
 import os, sys, time, subprocess
 ## This variable has to be modified in order to get the system running in your specific system path. TODO: Automate this somehow...
-lp_path = os.path.abspath('/home/manni/mac-home/svn/coinvent/Amalgamation/')
+lp_path = os.path.abspath('/home/parallels/mac-home/svn/coinvent/Amalgamation/')
 sys.path.append(lp_path)
 
 # We also want to be able to call the other amalgamation module python scripts.
@@ -79,28 +79,28 @@ def main(prg):
     # if rmPredAllowed : prg.assign_external(Fun("rmPredAllowed", []), True)
     # if rmAxAllowed : prg.assign_external(Fun("rmAxAllowed", []), True)
         
-    #### First, find a path to the generic space
+    # #### First, find a path to the generic space
 
-    # The main generalization loop starts here!
+    # # The main generalization loop starts here!
     while True:
         # Abort after the max. number of iterations 
         if step > imax: break
         # Append the cumulative part for the particular step (slice) of the program.
         parts.append(("cumulative1", [step]))
-        # Ground the new slice
+        # # Ground the new slice
         prg.ground(parts)
-        parts = []
-        # Release the query1(t) atom from the last slice (step-1) from the program. 
-        prg.release_external(Fun("query1", [step-1]))
-        # Add the atom query1(t) of this slice to the program. 
-        prg.assign_external(Fun("query1", [step]), True)
+        # parts = []
+        # # Release the query1(t) atom from the last slice (step-1) from the program. 
+        # prg.release_external(Fun("query1", [step-1]))
+        # # Add the atom query1(t) of this slice to the program. 
+        # prg.assign_external(Fun("query1", [step]), True)
 
-        # Find Stable Models for this generalization iteration
-        # ret = prg.solve()
-        ret = prg.solve(None, onModelGeneralize)
+        # # Find Stable Models for this generalization iteration
+        # # ret = prg.solve()
+        # ret = prg.solve(None, onModelGeneralize)
         
-        # If Stable Models are found and we are beyond the minimal number of slices, break loop.
-        if step >= imin and (ret == SolveResult.SAT): break
+        # # If Stable Models are found and we are beyond the minimal number of slices, break loop.
+        # if step >= imin and (ret == SolveResult.SAT): break
         step = step+1
 
 #end.
