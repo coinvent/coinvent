@@ -1,0 +1,84 @@
+logic CASL
+
+spec strict-total-order = 
+   sort elem
+   preds
+    __ > __: elem * elem
+end
+
+spec Iterative-process = 
+  strict-total-order with elem |-> state then
+   preds
+     initial_state: state;
+     final_state: state;
+     process_state: state;
+     follows: state * state;
+  op
+    st1: state
+    iterate: state -> state;
+  forall s:state
+      . initial_state(s) <=> not exists t:state. (process_state(t) /\ follows(s,t)) %ax1%
+      . final_state(s) <=> not exists t:state. (process_state(t) /\ follows(t,s)) %ax2%
+      . process_state(s) <=> (process_state(iterate(s)) /\ (not follows(s,iterate(s)))) %ax3%
+end
+
+spec Completed-iterative-process = 
+  Iterative-process then
+  op
+     f:state;
+  . final_state(f)  %ax0%
+  . exists s:state. process_state(s) /\ (not (exists t:state. (process_state(t) => follows(t,s)))) %ax1%
+  . forall s:state. (final_state(s) => s=f)  %ax2%
+end
+
+spec Endless-iterative-process =
+  Iterative-process then
+  op
+    f:state
+  . final_state(f) %ax0%
+  . forall s:state. process_state(s) => exists t:state. (process_state(t) /\ follows(t,s)) %ax1%
+  . not exists s:state. final_state(s)    %ax2%
+end
+
+spec Weakened-Completed-iterative-process = 
+  Iterative-process then
+  op
+     f:state;
+  . final_state(f)  %ax0%
+ %[ . exists s:state. process_state(s) /\ (not (exists t:state. (process_state(t) => follows(t,s)))) %ax1%]%
+  . forall s:state. (final_state(s) => s=f)  %ax2%
+end
+
+spec Weakened-Endless-iterative-process =
+  Iterative-process then
+  op
+    f:state
+  . final_state(f) %ax0%
+  . forall s:state. process_state(s) => exists t:state. (process_state(t) /\ follows(t,s)) %ax1%
+%[  . not exists s:state. final_state(s)    %ax2%]%
+end
+
+
+
+
+interpretation I1: Iterative-process to Completed-iterative-process 
+  = st1 |-> f 
+
+interpretation I2: Iterative-process to Endless-iterative-process 
+  = st1 |-> f
+
+interpretation I3: Iterative-process to Weakened-Completed-iterative-process 
+  = st1 |-> f 
+
+interpretation I4: Iterative-process to Weakened-Endless-iterative-process 
+  = st1 |-> f
+
+
+
+spec Blend = combine I1,I2
+  
+
+spec Blend2 = combine I3, I4
+
+
+end
