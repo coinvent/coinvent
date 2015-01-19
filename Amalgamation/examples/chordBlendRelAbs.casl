@@ -356,14 +356,14 @@ spec Dmin7 =
    AbsChord then
 %% Dmin7 has D,F,A,C = 2,5,9,0
    op c:AbsChord
-   . hasAbsNote(c,2)
-   . hasAbsNote(c,5)
-   . hasAbsNote(c,9)
-   . hasAbsNote(c,0)
+   . hasAbsNote(c,2)   
+   . hasAbsNote(c,5)      
+   . hasAbsNote(c,9)      
+   . hasAbsNote(c,0)        %% p:1 %% <=> seventhrel(c) =minor
    . thirdrel(c) = minor
    . fifthrel(c) = perfect
    . bassrel(c) = 0
-   . seventhrel(c) = minor
+   . seventhrel(c) = minor  %% p:1
    . root(c) = 2
 end
 
@@ -371,15 +371,15 @@ spec Emaj7 =
    AbsChord then 
 %%Emaj7 has E,G#,B,D# = 4,8,x1,3
    op c:AbsChord
-   . hasAbsNote(c,4)
-   . hasAbsNote(c,8)
+   . hasAbsNote(c,4)  
+   . hasAbsNote(c,8)          %% p:3 <=> thirdrel(c) = major
    . hasAbsNote(c,x1)
-   . hasAbsNote(c,3)
-   . thirdrel(c) = major
-   . seventhrel(c) = major
+   . hasAbsNote(c,3)          %% p:2 <=> seventhrel(major)
+   . thirdrel(c) = major      %% p:3
+   . seventhrel(c) = major    %% p:2
    . fifthrel(c) = perfect
    . bassrel(c) = 0
-   . root(c) = 4
+   . root(c) = 4              %% p:4
 end
 
 
