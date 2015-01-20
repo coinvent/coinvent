@@ -5,19 +5,20 @@ import copy
 import time
 from string import *
 import re
+from settings import *
 
 ### input2Xml translates CASL input spaces to an xml file. The xml simplifies the CASL parsing. 
 ### Input:  CASL file name and names of input spaces
 ### Output: The path to an xml file representing the input spaces.     
 def input2Xml(fName,inputSpaces):    
-
+    global hetsExe
     # First generate .th files from CASL files. 
     #To be sure that all .th files have been generated repeat this 5 times. This is necessary because file generation via command line turned out to be buggy,
     allGenerated = False
     tries = 0
     while True:
         print "Generating Casl .th files using HETS from " + fName
-        subprocess.call(["hets", "-o th", fName])
+        subprocess.call([hetsExe, "-o th", fName])
         print "Done generating casl .th files using HETS"        
         # raw_input()
         allGenerated = True
@@ -80,7 +81,7 @@ def input2Xml(fName,inputSpaces):
             exit(1)
         tries = tries + 1
         print "Calling hets to generate xml file for parsing"
-        subprocess.call(["hets", "-o xml", newFileName])        
+        subprocess.call([hetsExe, "-o xml", newFileName])        
         print "Done calling hets to generate xml"
 
     os.remove(newFileName)
@@ -222,7 +223,7 @@ class CaslSpec:
             caslStr = caslStr + "\t\t " + p.toPlainStr() +"\n"
         caslStr += "\n"
         for ax in self.axioms: 
-            caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "   %% AxId:"+str(ax['id']) + "   p:"+str(ax['priority']) + "\n"
+            caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "\t" + "%(" + ax["name"]+ ")%" + " %importance(" + str(ax['priority']) +")%"   "  %% AxId:"+str(ax['id']) + "   p:"+str(ax['priority']) + "\n"
         caslStr = caslStr + "end"
         return caslStr
         
@@ -325,12 +326,22 @@ def parseXml(xmlFile):
                         thisSpec.preds.append(pred)   
                         
                 if entry.tag == "Axiom":
+                    name = ''
+                    if 'name' in entry.attrib.keys():
+                        name = entry.attrib['name']
+                    
+                    priority = 1
+                    # # This is a quick hack to encode axiom prioritites in axiom names using :p:. 
+                    if name.find(":p:") != -1:
+                        priority = int(name.split(":p:")[1])   
+                    if 'importance' in entry.attrib.keys():
+                        priority = int(entry.attrib['importance'])
                     for subEntry in entry:
                         if subEntry.tag == "Text":
                             axText = subEntry.text
                             # print axText
                             axRemovable = checkAxRemovable(nonRemovableOps,axText)
-                            thisSpec.axioms.append({'ax' : axText, 'id' : -1, 'removable' : axRemovable, 'priority' : 1})
+                            thisSpec.axioms.append({'ax' : axText, 'id' : -1, 'removable' : axRemovable, 'priority' : priority, 'name' : name})
         # print thisSpec.toStr()
         specs.append(thisSpec)
 

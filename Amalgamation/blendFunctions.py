@@ -23,7 +23,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             continue
         for spec in genInputSpaces[specName]:
             cstr = cstr + spec.toCaslStr()+"\n\n"
-            cstr = cstr + "view GenTo"+spec.name+": Generic to "+spec.name+" end\n\n"
+            cstr = cstr + "view GenTo"+spec.name+" : Generic to "+spec.name+" end\n\n"
 
     # State blends (colimit operation)
     for cost in sorted(blendCombis.keys()):
@@ -90,7 +90,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                     break
                 
                 print "generating tptp"
-                subprocess.call(["hets", "-o tptp", "amalgamTmp.casl"])
+                subprocess.call([hetsExe, "-o tptp", "amalgamTmp.casl"])
                 print "Done generating tptp"
                 # This is a hack because hets sometimes seems to not generate all .tptp files. So we just try again and again until its working. 
                 tries = tries + 1

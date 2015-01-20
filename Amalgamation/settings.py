@@ -24,6 +24,11 @@ maxIterationsBlend = 20
 eproverTimeLimit = 10
 darwinTimeLimit = 10
 
+###### Path to the HETS executable ######
+hetsExe = 'hets'
+# hetsExe = '/media/psf/Home/svn/coinvent/Amalgamation/hetsPrio' # This is the experimental version with priorities by Mihai.
+
+
 ############################
 ###### CASL-specific #######
 ############################
