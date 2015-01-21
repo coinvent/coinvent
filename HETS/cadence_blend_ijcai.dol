@@ -353,21 +353,21 @@ RelChord then
 end
 
 %%% CADENCE
-%% this is paramaterised byt the relative position of prefinal to final 
-%% - e.g. a perfect cadence has Note 7
+%%% this just introduces two abschord, and a resolution
+%%% from this the root of the prefinal or final can be deduced if necessary
 spec Cadence = 
   AbsChord then
   ops prefinal: AbsChord
       final: AbsChord
       resolution: Note
-      . root(prefinal) = root(final)+resolution
+      . root(prefinal) = root(final)+resolution   %(resolution_root)%
 end
 
 %%% PERFECT CADENCE
 
 spec CPerfectCadence = 
   Cadence then 
-    . resolution = 7 
+    . resolution = 7           
     . hasRelNote(prefinal,0)
     . hasRelNote(prefinal,4)
     . hasRelNote(prefinal,7)
@@ -383,6 +383,7 @@ end
 
 spec GenCPerfectCadence = 
   Cadence then
+    . hasRelNote(prefinal,0)   
     . hasRelNote(prefinal,7)
     . hasRelNote(prefinal,4)
     . hasRelNote(prefinal,x)
@@ -401,7 +402,7 @@ spec CBackdoorCadence =
   Cadence then 
     . resolution = x
     . hasRelNote(prefinal,0)
-    . hasRelNote(prefinal,3)
+    . hasRelNote(prefinal,3)   
     . hasRelNote(prefinal,7)
     . hasRelNote(final,0)
     . hasRelNote(final,7)
@@ -426,17 +427,17 @@ end
 spec GenericCadence =
   Cadence then
   . hasRelNote(final,0)
-  . hasRelNote(final,4)
   . hasRelNote(final,7)
   . root(final) = 0
   . fifthrel(prefinal) = perfect
+  . fifthrel(final) = perfect
 end
 
-interpretation I1: GenericCadence to CPerfectCadence 
-interpretation I2: GenericCadence to CBackdoorCadence
+interpretation GentoCPerf: GenericCadence to CPerfectCadence 
+interpretation GentoCBack: GenericCadence to CBackdoorCadence
 
-interpretation I3: GenericCadence to GenCPerfectCadence 
-interpretation I4: GenericCadence to GenCBackdoorCadence
+interpretation GentoGenCPerf: GenericCadence to GenCPerfectCadence 
+interpretation GentoGenCBack: GenericCadence to GenCBackdoorCadence
 
-spec Blend1 = combine I1,I2
-spec Blend2 = combine I3,I4
+spec Blend = combine GentoCPerf,GentoCBack
+spec GenBlend = combine GentoGenCPerf, GentoGenCBack
