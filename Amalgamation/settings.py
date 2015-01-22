@@ -43,11 +43,14 @@ hetsExe = 'hets'
 ###################################################################
 
 ## Here is space to quickly overwrite the above settings for debugging purposes.
-inputFile = "examples/cadenceByAx.casl"
-inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
+# inputFile = "examples/cadenceByAx.casl"
+# inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 
 # inputFile = "examples/chordBlendRelAbsSimple.casl"
 # inputSpaceNames = ["Dmin7","Emaj7"]
 
 # inputFile = "examples/subSortTest.casl"
 # inputSpaceNames = ["S1","S2"]
+
+inputFile = "examples/PerfectAndBackdoorToBlues_simple.casl"
+inputSpaceNames = ["CBackdoorCadence","CPerfectCadence"]
