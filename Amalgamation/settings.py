@@ -40,6 +40,10 @@ inputFile = "examples/cadenceByAx.casl"
 inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 # searchControlFile = "examples/cadenceByAxControl.lp"
 
+inputFile = "examples/PerfectAndPhrygianToBackdoor.casl"
+inputSpaceNames = ["CPerfectCadence","CPhrygianCadence"]
+
+
 # inputFile = "examples/chord_blend_test.dol"
 # inputSpaceNames = ["Dmin7","Emaj7"]
 
