@@ -396,7 +396,7 @@ spec GenCPerfectCadence =
     . seventhrel(prefinal) = minor
 end 
 
-%%% BACKDOOR CADENCE
+%%% PHRYGIAN CADENCE
 
 spec CPhrygianCadence = 
   Cadence then 
@@ -434,10 +434,10 @@ spec GenericCadence =
 end
 
 interpretation GentoCPerf: GenericCadence to CPerfectCadence 
-interpretation GentoCBack: GenericCadence to CPhrygianCadence
+interpretation GentoCPhryg: GenericCadence to CPhrygianCadence
 
 interpretation GentoGenCPerf: GenericCadence to GenCPerfectCadence 
-interpretation GentoGenCBack: GenericCadence to GenCPhrygianCadence
+interpretation GentoGenCPhryg: GenericCadence to GenCPhrygianCadence
 
-spec Blend = combine GentoCPerf,GentoCBack
-spec GenBlend = combine GentoGenCPerf, GentoGenCBack
+spec Blend = combine GentoCPerf,GentoCPhryg
+spec GenBlend = combine GentoGenCPerf, GentoGenCPhryg
