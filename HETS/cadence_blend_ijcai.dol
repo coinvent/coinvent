@@ -398,7 +398,7 @@ end
 
 %%% BACKDOOR CADENCE
 
-spec CBackdoorCadence = 
+spec CPhrygianCadence = 
   Cadence then 
     . resolution = x
     . hasRelNote(prefinal,0)
@@ -412,7 +412,7 @@ spec CBackdoorCadence =
     . fifthrel(prefinal) = perfect
 end 
 
-spec GenCBackdoorCadence = 
+spec GenCPhrygianCadence = 
   Cadence then 
     . resolution = x
     . hasRelNote(prefinal,0)
@@ -434,10 +434,10 @@ spec GenericCadence =
 end
 
 interpretation GentoCPerf: GenericCadence to CPerfectCadence 
-interpretation GentoCBack: GenericCadence to CBackdoorCadence
+interpretation GentoCBack: GenericCadence to CPhrygianCadence
 
 interpretation GentoGenCPerf: GenericCadence to GenCPerfectCadence 
-interpretation GentoGenCBack: GenericCadence to GenCBackdoorCadence
+interpretation GentoGenCBack: GenericCadence to GenCPhrygianCadence
 
 spec Blend = combine GentoCPerf,GentoCBack
 spec GenBlend = combine GentoGenCPerf, GentoGenCBack
