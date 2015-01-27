@@ -1,0 +1,26 @@
+spec Symbols = 
+    free type Note ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 
+| 7 | 8 | 9 | x | x1
+end
+
+spec Chord = 
+Symbols then
+    sort Chord 
+  
+    preds    
+        hasRelNote : Chord * Note
+        hasAbsNote: Chord * Note
+
+    ops
+        thirdrel: Chord ->? Note
+        bassrel: Chord -> Note
+        root: Chord -> Note
+        thirdabs: Chord ->? Note
+        bassabs: Chord -> Note
+    forall c:Chord,n:Note
+       . bassrel(c)=n <=> hasRelNote(c,n)
+       . hasRelNote(c,n) <=> hasAbsNote(c,(root(c)+n))
+       . thirdrel(c) = n <=> thirdabs(c) = root(c)+n
+       . bassrel(c) = n <=> bassabs(c) = root(c)+n
+end
+

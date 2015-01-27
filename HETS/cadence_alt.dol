@@ -1,6 +1,5 @@
 spec Symbols = 
-    free type Note ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 
-| 7 | 8 | 9 | x | x1
+    %% free type Note ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | x | x1
     free type ChordType ::= maj | min | dom7 | fifths 
     free type Rel ::= unison | m2 |  P5 | m7 | M6 %% m7 refers to minor 7th interval, P5 to perfect 5th interval
 end
@@ -75,6 +74,7 @@ spec WeakenedPerfect7CadenceTritone =
     final: ChordType
     pfRel : Rel %% Relation between root and bass note of prefinal
     fRel : Rel %% Relation between root and bass note of final
+    %% bassRel : Rel
     . prefinal = dom7
     . final = maj
     %% . bassRel = P5
@@ -105,6 +105,6 @@ interpretation WeakenedGenerictoPhrygianTritone: WeakenedGenericCadence to Weake
   
 interpretation WeakenedGenerictoPerfectTritone: WeakenedGenericCadence to WeakenedPerfect7CadenceTritone end
 
-spec WeakenedBlend = combine WeakenedGenerictoPhrygianTritone,WeakenedGenerictoPerfectTritone
+spec WeakenedBlend = combine WeakenedGenerictoPhrygianTritone,WeakenedGenerictoPerfectTritone end
 
 

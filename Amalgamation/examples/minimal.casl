@@ -1,0 +1,27 @@
+spec Symbols =
+    free type Value ::= v1 | v2
+end
+
+spec Generic = Symbols then
+	ops f : Value
+		g : Value
+		%% h : Value
+end
+
+spec S1 = Generic then    
+    . f = v1
+    %% . g = v1
+    %% . h = v2
+end
+
+spec S2 = Generic then
+    . f = v2
+    . g = v2
+    %% . h = v1
+end
+
+%% view GenToS1 : Generic to S1 end
+%% view GenToS2 : Generic to S2 end
+
+%% spec Blend = combine GenToS1,GenToS2
+%% end 

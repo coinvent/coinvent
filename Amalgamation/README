@@ -1,0 +1,44 @@
+************************************************************************
+*** COINVENT Amalgamation Module 									 ***
+*** author: Manfred Eppe (meppe@iiia.csic.es)						 ***
+*** author: Roberto Confalonieri (confalonieri@iiia.csic.es)         ***
+************************************************************************
+
+** OVERVIEW **
+This is the amalgamation system which is the core of the blending process. The current state (02.01.15) is a vertical prototype of the COINVENT system which is motivated mostly by the efforts on the IJCAI paper. It should run with some music examples by end of January. Starting from Mid-February (after IJCAI paper) we will improve this prototype to achieve language-independence, etc. 
+It currently works with CASL only, and relies on HETS (via commandline-call) to compute colimits. In future versions it will rely also on language modules to have language-independence, and HDTP to improve generalization search. 
+
+** MODULE FILE STRUCTURE **
+- Python code:
+	- run-blending.py 
+		This is the file to be called to start the blending. It invokes the ASP solver clingo4, which in turn invokes Python for parsing and other stuff and HETS for computing colimits. 
+	- langCasl.py 
+		This is a language specific file to parse CASL specifications, and to produce CASL syntax output from the internal datastructure.
+	- settings.py 
+		This is used to set the casl input file, the number of stable models produced, and other things. 
+	- blendFunctions.py
+		This contains functions to perform the actual blending of the generalized input spaces. 
+
+- Answer Set Programming code:
+	- iterationCore-py.lp
+		This is a Logic Programming file containting the main iteration loops as a python script. 
+	- generalize.lp
+		This contains the core search rules to generalize towards the generic space. 
+
+** GET STARTED **
+The module will only run on a linux-based 64bit distribution, because of the clingo4 binary. If you want to run on another system (e.g. Mac), you have to get your own clingo4 binary. I suggest to use a Virtual Machine instead.
+To run the blending, adjust the var "lp_path" in iterationCore-py.lp to the absolute path of your system and execute "run-blending.py" using python. By default it will do the cadence blending example specified in cadenceByAx.casl. To run another example, adopt settings.py.
+
+If you want to do other blendings, modify the settings.py as follows:
+	+ change the "fName" var and provide the CASL file that contains two specifications to blend.
+	+ modify the "specsToBlend" variable and enter the two specs in the casl file that are to be blended. 
+	+ the searchControlFile var is optional (but should at least be an empty string) and intended to be used as an ad-hoc solution to guide the ASP search.
+
+Important limitations and TODOs:
+	+ Operator and predicate names must be disjoint in each specification, i.e. a operator name can 
+	not be a predicate name. Furthermore, overloading is not supported. otherwise this will result in errors. 
+	+ IMPORTANT (from category theoretical point of view): If predicates or operator names are equal in different input specifications, they are considered to be equal. 
+	+ IMPORTANT (from category theoretical point of view): Only identity mappings are considered so far between specs. We will have a much richer generalization process when using also non-id mappings.
+	+ Sorts are determined only by predicates and operators. I have to think whether they should also be determined by axioms, as e.g. in the monks blend example. 
+
+
