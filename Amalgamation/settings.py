@@ -6,7 +6,7 @@ inputFile = "examples/minimal.casl"
 inputSpaceNames = ["S1","S2"]
 
 ###### The number of models to be generated (0 for all models)
-numModels = 70
+numModels = 10
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -52,5 +52,6 @@ hetsExe = 'hets'
 # inputFile = "examples/subSortTest.casl"
 # inputSpaceNames = ["S1","S2"]
 
-inputFile = "examples/PerfectAndBackdoorToBlues_simple.casl"
-inputSpaceNames = ["CBackdoorCadence","CPerfectCadence"]
+# inputFile = "examples/PerfectAndPhrygianToBackdoor_simple.casl"
+inputFile = "examples/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
+inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]

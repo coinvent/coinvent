@@ -9,12 +9,17 @@
 %%% The base program is iteration independent. These are just some auxiliary predicates.
 #program  base1. 
 
-%%% Declare atomic generalization operations. (Sorts are automatically removed if there is no operator or predicate left that utilizes the sort. Therefore there is no explicit operation to remove sorts.)
-a(rmOp(OP),I) :- removable(I,OP).
-a(rmPred(PRED),I) :- removable(I,PRED).
-%% a(rmAxDirectly(Ax),I) :- removable(I,Ax).
-a(rmAx(Ax),I) :- removable(I,Ax).
-a(rmSort(S),I) :- removable(I,S).
+%%% Declare Axioms, sorts, operators, predicats.
+axiom(Ax) :- hasAxiom(_,Ax,1).
+operator(Op) :- hasOp(_,Op,1).
+predicate(Pred) :- hasPred(_,Pred,1).
+sort(S) :- hasSort(_,S,1).
+
+%%% Declare atomic generalization operations. 
+a(rmOp(OP),I) :- removableOp(I,OP).
+a(rmPred(PRED),I) :- removablePred(I,PRED).
+a(rmAx(Ax),I) :- removableAx(I,Ax).
+a(rmSort(S),I) :- removableSort(I,S).
 
 %%% Initial generalization value is 0 for all specs.
 genValue(I,0,1) :- spec(I).
@@ -27,23 +32,22 @@ s(t).
 
 % Remove Operator
 %% #external rmOpAllowed.
-%% poss(rmOp(Op),I,t) :- hasOp(I,Op,t), removable(I,Op), 0{hasAxiom(I,Ax,t) : axInvolvesPredOp(Ax,Op)}0.
+%% poss(rmOp(Op),I,t) :- hasOp(I,Op,t), removableOp(I,Op), 0{hasAxiom(I,Ax,t) : axInvolvesPredOp(Ax,Op)}0.
 
 % Remove Predicate
 %% #external rmPredAllowed.
-%% poss(rmPred(Pred),I,t) :- hasPred(I,Pred,t), removable(I,Pred), 0{hasAxiom(I,Ax,t) : axInvolvesPredOp(Ax,Pred)}0.
+%% poss(rmPred(Pred),I,t) :- hasPred(I,Pred,t), removablePred(I,Pred), 0{hasAxiom(I,Ax,t) : axInvolvesPredOp(Ax,Pred)}0.
 
 % Remove Sort 
 %% #external rmSortAllowed.
-%% poss(rmSort(S),I,t) :- hasSort(I,S,t), removable(I,S) , isNotParentSort(I,S,t), noOpUsesSort(I,S,t), noPredUsesSort(I,S,t).
+%% poss(rmSort(S),I,t) :- hasSort(I,S,t), removableSort(I,S) , isNotParentSort(I,S,t), noOpUsesSort(I,S,t), noPredUsesSort(I,S,t).
 %% isNotParentSort(I,S,t) :- 0{hasSort(I,S_child,t) : isParentSort(I,S, S_child)}0, hasSort(I,S,t).
 %% noOpUsesSort(I,S,t) :- 0{hasOp(I,Op,t) : opHasSort(I,Op,S)}0, hasSort(I,S,t).
 %% noPredUsesSort(I,S,t) :- 0{hasPred(I,Op,t) : predHasSort(I,Op,S)}0, hasSort(I,S,t).
 
 % Remove Axiom
 %% #external rmAxAllowed.
-%% poss(rmAxDirectly(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
-poss(rmAx(Ax),I,t) :- hasAxiom(I,Ax,t), removable(I,Ax).
+poss(rmAx(Ax),I,t) :- hasAxiom(I,Ax,t), removableAx(I,Ax).
 
 % Indirect Axiom Removal
 %% exec(rmAx(AX),I,t) :- exec(rmOp(OP),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,OP).
@@ -92,8 +96,10 @@ notGenericReached(t) :- not allIsomorphic(I,t), spec(I).
 %% % Generate generalization search space. If the generic space is not yet reached, execute a generalization operation. I tested three generation rule variations. The last seems to be the fastest for a small planning horizon, even though the search space becomes bigger that way.
 %% This does not work anymore properly after introducing generalization operations on sorts. 
 %% 0{exec(A,I,t) : a(A,I),  poss(A,I,t), notPartialIdMorph(I,I2,t), spec(I2), I != I2 }1 :- notGenericReached(t), spec(I).
+
 %% This seems to be quite OK:
 0{exec(A,I,t) : a(A,I),  poss(A,I,t), not allIsomorphic(I,t)}1 :- notGenericReached(t), spec(I).
+
 %% This seems to be fastest for a small planning horizon:
 %% 0{exec(A,I,t) : poss(A,I,t)}1 :- notGenericReached(t), spec(I).
 
@@ -105,36 +111,38 @@ notGenericReached(t) :- not allIsomorphic(I,t), spec(I).
 %% Speedup 1: No "gaps" on operation steps: if no operation happens at a step, then no operations will happen in the future anymore. 
 :- specModified(I,t), not specModified(I,T_before), T_before < t, s(T_before).
 
-%% Speedup 2: Do not remove predicates, operators or axioms if they are present in all input spaces, i.e., if there is no spec that does not have the axiom, predicate or operator.
-%% :- exec(rmAxDirectly(Ax),I,t), 0{spec(I_other) : not hasAxiom(I_other,Ax,t), spec(I_other)}0.
-:- exec(rmAx(Ax),I,t), 0{spec(I_other) : not hasAxiom(I_other,Ax,t), spec(I_other)}0.
-:- exec(rmPred(PRED),I,t), 0{spec(I_other) : not hasPred(I_other,PRED,t), spec(I_other)}0.
-:- exec(rmOp(OP),I,t), 0{spec(I_other) : not hasOp(I_other,OP,t), spec(I_other)}0.
-%% For sorts this speedup does not work due to subsorts, because sometimes it is necessary to remove a child sort that is common in all input spaces to be able to remove a parent sort that is present in only one input space. Maybe a modified version is possible that respects subsorts. 
-%% :- exec(rmSort(S),I,t), 0{spec(I_other) : not hasSort(I_other,S,t), spec(I_other)}0.
-
-%% Speedup 3 (optional): have a total (or partial) priority order on predicates, operators and axioms, and do generalization strictly in that order. That is, only do optimal generalizations in terms of priority. The advantage is the much better performance, the disadvantage is that only optimal blends are generated. Optimal blends are often good, but not always the "best" or "most interesting" blends. 
-%% :- not stepOptimal(I,t), specModified(I,t).
+%% Speedup 2: have a total (or partial) priority order on predicates, operators and axioms, and do generalization strictly in that order. That is, only do optimal generalizations in terms of priority. The advantage is the much better performance, the disadvantage is that only optimal blends are generated. Optimal blends are often good, but not always the "best" or "most interesting" blends. 
+:- not stepOptimal(I,t), specModified(I,t).
 
 %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query1(t).
 :- query1(t), notGenericReached(t).
 
-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%% Evaluation Part %%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-stepOptimal(I,t) :- not specModified(I,t), spec(I).
+%% Determine whether predicates, operators or axioms are present in all input spaces, i.e., if there is no spec that does not have the axiom, predicate or operator.
+allSpecsHaveAx(Ax,t) :- 0{spec(I_other) : not hasAxiom(I_other,Ax,t), spec(I_other)}0, axiom(Ax).
+allSpecsHavePred(PRED,t) :- 0{spec(I_other) : not hasPred(I_other,PRED,t), spec(I_other)}0, predicate(PRED).
+allSpecsHaveOp(OP,t) :- 0{spec(I_other) : not hasOp(I_other,OP,t), spec(I_other)}0, operator(OP).
+%% For sorts this does not work due to subsorts, because sometimes it is necessary to remove a child sort that is common in all input spaces to be able to remove a parent sort that is present in only one input space. Maybe a modified version is possible that respects subsorts. 
+allSpecsHaveSort(S,t) :- 0{spec(I_other) : not hasSort(I_other,S,t), spec(I_other)}0, sort(S).
+
+%% stepOptimal(I,t) :- not specModified(I,t), spec(I).
 stepOptimal(I,t) :- rmLowestPriorityAx(I,Ax,t).
-rmLowestPriorityAx(I,Ax,t) :- priority(I,Ax,P), exec(rmAx(Ax),I,t), 0{hasAxiom(I,Ax_other,t) : priority(I,Ax_other,P_other), Ax != Ax_other, P_other < P, removable(I,Ax_other)}0.
 
-totalGenValue(V,t) :- V = {stepOptimal(I,T) : s(T), spec(I)}, not notGenericReached(t).
-
-#maximize{V@1 : totalGenValue(V,t)}.
+%% Determine when the axiom with the lowest possible priority has been removed. It should be impossible to remove an axiom that exists in all input spaces TODO: Write similar rules for predicates and operators. For Sorts, this is a bit more difficult because of subsorting. 
+rmLowestPriorityAx(I,Ax,t) :- priorityAx(I,Ax,P), exec(rmAx(Ax),I,t), not allSpecsHaveAx(Ax,t), 0{hasAxiom(I,Ax_other,t) : priorityAx(I,Ax_other,P_other), Ax != Ax_other, P_other < P, removableAx(I,Ax_other), not allSpecsHaveAx(Ax_other,t)}0.
 
 
-#show totalGenValue/2.
+%% totalGenValue(V,t) :- V = {stepOptimal(I,T) : s(T), spec(I)}, not notGenericReached(t).
+%% #maximize{V@1 : totalGenValue(V,t)}.
+
+
+%% #show totalGenValue/2.
 #show exec/3.
+%% #show stepOptimal/2.
+%% #show rmLowestPriorityAx/3.
 %% #show genericReachedAt/2.
 %% #show s/1.

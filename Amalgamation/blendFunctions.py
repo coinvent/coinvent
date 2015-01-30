@@ -1,5 +1,5 @@
 from gringo import *
-import os, sys, time, subprocess
+import os, sys, time, subprocess, threading, shlex
 from settings import *
 from langCasl import *
 from itertools import *
@@ -16,10 +16,11 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
     # initialize output string for casl file
     cstr = ''
 
+    # First state generic spaces
+    cstr = cstr + genInputSpaces["Generic"][0].toCaslStr()+"\n\n"
     # State all generalized input spaces:     
     for specName in genInputSpaces.keys():
-        if specName == "Generic":
-            cstr = cstr + genInputSpaces[specName][0].toCaslStr()+"\n\n"
+        if specName == "Generic":            
             continue
         for spec in genInputSpaces[specName]:
             cstr = cstr + spec.toCaslStr()+"\n\n"
@@ -103,7 +104,8 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                 print "Consistency could not be determined by eprover, trying darwin"
                 thisCombiConsistent = checkConsistencyDarwin(blendTptpName)
                         
-            if thisCombiConsistent == 1:
+            # if thisCombiConsistent == 1: # If we can show that the blend is consistent
+            if thisCombiConsistent != 0: # If we can not show that the blend is inconsistent
                 prettyBlendStr = prettyPrintBlend(genInputSpaces,combi)
                 blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "generalizationCost" : cost}
                 consistent = 1
@@ -278,26 +280,95 @@ def checkConsistencyEprover(blendTptpName) :
 
 def checkConsistencyDarwin(blendTptpName) :
         global darwinTimeLimit
-        # os.system("darwin "+blendTptpName+" > consistencyRes.log")
-        resFile = open("consistencyRes.log", "w")
-        # subprocess.call(["darwin", "--timeout-cpu " + str(darwinTimeLimit), blendTptpName], stdout=resFile)
-        # subprocess.call(["darwin", "-to " + str(darwinTimeLimit), blendTptpName], stdout=resFile)
-        subprocess.call(["darwin", blendTptpName], stdout=resFile)
-        resFile.close()
-        while not os.path.isfile("consistencyRes.log") :
-            print ":::::::::::::::: file consistencyRes.log not yet written!!!!!!:::::::::::::::"
-            exit(1)
+        
+        darwinCmd = Command("darwin " + blendTptpName)
 
-        resFile = open("consistencyRes.log",'r')
-        res = resFile.read()
-        resFile.close()
+        status,output,error = darwinCmd.run(timeout=darwinTimeLimit)
+        # res = darwinCmd.run(timeout=darwinTimeLimit, shell=True)
 
-        os.system("rm consistencyRes.log")
-        if res.find("SZS status Satisfiable") != -1:
-            print "Darwin: Consistency proof found."
-            return 1
+        print output
+        cVal = -1
+        if output.find("ABORTED termination") != -1:
+            print "Consistency check failed: TIMEOUT" 
+            cVal = -1
+        if output.find("SZS status Satisfiable") != -1:
+            print "Consistency check succeeds: CONSISTENT"
+            cVal = 1
+        if output.find("SZS status Unsatisfiable") != -1:
+            print "Consistency check succeeds: INCONSISTENT"
+            cVal = 0
+        
+        # raw_input()
 
-        else : #if res.find("SZS status Unsatisfiable") != -1:
-            print "Darwin: Blend inconsistent or consistency not determined."
-            return 0
-    
+        return cVal
+
+        # exit(0)
+
+        # # os.system("darwin "+blendTptpName+" > consistencyRes.log")
+        # resFile = open("consistencyRes.log", "w")
+        # # subprocess.call(["darwin", "--timeout-cpu " + str(darwinTimeLimit), blendTptpName], stdout=resFile)
+        # # subprocess.call(["darwin", blendTptpName, " -to " + str(darwinTimeLimit)], stdout=resFile)
+        # subprocess.call(["darwin", " -to " + str(darwinTimeLimit), blendTptpName], stdout=resFile)
+        # # subprocess.call(["darwin", blendTptpName], stdout=resFile)
+        # resFile.close()
+        # while not os.path.isfile("consistencyRes.log") :
+        #     print ":::::::::::::::: file consistencyRes.log not yet written!!!!!!:::::::::::::::"
+        #     exit(1)
+
+        # resFile = open("consistencyRes.log",'r')
+        # res = resFile.read()
+        # resFile.close()
+        # print res
+        # raw_input()
+        # os.system("rm consistencyRes.log")
+        # if res.find("SZS status Satisfiable") != -1:
+        #     print "Darwin: Consistency proof found."
+        #     return 1
+
+        # else : #if res.find("SZS status Unsatisfiable") != -1:
+        #     print "Darwin: Blend inconsistent or consistency not determined."
+        #     return 0
+
+
+class Command(object):
+    """
+    Enables to run subprocess commands in a different thread with TIMEOUT option.
+
+    Based on jcollado's solution:
+    http://stackoverflow.com/questions/1191374/subprocess-with-timeout/4825933#4825933
+    """
+    command = None
+    process = None
+    status = None
+    output, error = '', ''
+
+    def __init__(self, command):
+        if isinstance(command, basestring):
+            command = shlex.split(command)
+        self.command = command
+
+    def run(self, timeout=None, **kwargs):
+        """ Run a command then return: (status, output, error). """
+        def target(**kwargs):
+            try:
+                self.process = subprocess.Popen(self.command, **kwargs)
+                # print self.command
+                self.output, self.error = self.process.communicate()
+                self.status = self.process.returncode
+            except:
+                self.error = traceback.format_exc()
+                self.status = -1
+        # default stdout and stderr
+        if 'stdout' not in kwargs:
+            kwargs['stdout'] = subprocess.PIPE
+        if 'stderr' not in kwargs:
+            kwargs['stderr'] = subprocess.PIPE
+        # thread
+        thread = threading.Thread(target=target, kwargs=kwargs)
+        thread.start()
+        thread.join(timeout)
+        if thread.is_alive():
+            self.process.terminate()
+            thread.join()
+        return self.status, self.output, self.error
+

@@ -113,7 +113,7 @@ class CaslPred:
         for s in self.args: outStr = outStr + s +" * " 
         outStr = outStr[:-3]
 
-        outStr = outStr + "   %% p:"+ str(self.priority)
+        outStr = outStr + "   %% prio:"+ str(self.priority)
 
         return outStr 
              
@@ -173,7 +173,7 @@ class CaslOp:
         else:
             outStr = outStr + " : " +self.dom
 
-        outStr = outStr + "   %% p:"+ str(self.priority)
+        outStr = outStr + "   %% prio:"+ str(self.priority)
         return outStr 
     
 ## This class represents a sort in CASL.       
@@ -189,7 +189,7 @@ class CaslSort:
         outStr = "sort " + self.name
         if self.parent != "":
             outStr = outStr + " < " + self.parent
-        outStr = outStr + "   %% p:"+ str(self.priority)
+        outStr = outStr + "   %% prio:"+ str(self.priority)
         return outStr
 
 # This class represents a CASL specification.        
@@ -223,7 +223,7 @@ class CaslSpec:
             caslStr = caslStr + "\t\t " + p.toPlainStr() +"\n"
         caslStr += "\n"
         for ax in self.axioms: 
-            caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "\t" + "%(" + ax["name"]+ ")%" + " %importance(" + str(ax['priority']) +")%"   "  %% AxId:"+str(ax['id']) + "   p:"+str(ax['priority']) + "\n"
+            caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "\t" + "%(" + ax["name"]+ ")%" + " %priority(" + str(ax['priority']) +")%"   "  %% AxId:"+str(ax['id']) + "   prio:"+str(ax['priority']) + "    rem:"+str(ax['removable'])+ "\n"
         caslStr = caslStr + "end"
         return caslStr
         
@@ -236,30 +236,30 @@ class CaslSpec:
                 oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(op.name)+","+toLPName(arg)+").\n"
             oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(op.name)+","+toLPName(op.dom)+").\n"
             if op.removable == True:
-                oStr = oStr + "removable("+toLPName(self.name)+","+toLPName(op.name)+").\n"
-            oStr = oStr + "priority("+toLPName(self.name)+","+toLPName(op.name)+","+str(op.priority)+").\n"
+                oStr = oStr + "removableOp("+toLPName(self.name)+","+toLPName(op.name)+").\n"
+            oStr = oStr + "priorityOp("+toLPName(self.name)+","+toLPName(op.name)+","+str(op.priority)+").\n"
         for p in self.preds:
             oStr = oStr + "hasPred("+toLPName(self.name)+","+toLPName(p.name)+",1).\n"
             for arg in p.args:
                 oStr = oStr + "predHasSort("+toLPName(self.name)+","+toLPName(p.name)+","+toLPName(arg)+").\n"
             if p.removable == True:
-                oStr = oStr + "removable("+toLPName(self.name)+","+toLPName(p.name)+").\n"
-            oStr = oStr + "priority("+toLPName(self.name)+","+toLPName(p.name)+","+str(p.priority)+").\n"
+                oStr = oStr + "removablePred("+toLPName(self.name)+","+toLPName(p.name)+").\n"
+            oStr = oStr + "priorityPred("+toLPName(self.name)+","+toLPName(p.name)+","+str(p.priority)+").\n"
         for ax in self.axioms:
             oStr = oStr + "hasAxiom("+toLPName(self.name)+","+str(ax['id'])+",1).\n"
             for predOp in ax['predsOps']:
                 oStr = oStr + "axInvolvesPredOp("+str(ax['id'])+","+toLPName(predOp)+").\n"
             if ax['removable'] == 1:
-                oStr = oStr + "removable("+toLPName(self.name)+","+str(ax['id'])+").\n"
-            oStr = oStr + "priority("+toLPName(self.name)+","+toLPName(str(ax['id']))+","+str(ax['priority'])+").\n"
+                oStr = oStr + "removableAx("+toLPName(self.name)+","+str(ax['id'])+").\n"
+            oStr = oStr + "priorityAx("+toLPName(self.name)+","+toLPName(str(ax['id']))+","+str(ax['priority'])+").\n"
         
         for so in self.sorts.keys():
             oStr = oStr + "hasSort("+toLPName(self.name)+","+toLPName(so)+",1).\n"
             if self.sorts[so].parent != "":
                 oStr = oStr + "isParentSort("+toLPName(self.name)+","+toLPName(self.sorts[so].parent)+","+toLPName(so)+").\n"
             if self.sorts[so].removable == True:
-                oStr = oStr + "removable("+toLPName(self.name)+","+toLPName(so)+").\n"
-            oStr = oStr + "priority("+toLPName(self.name)+","+toLPName(so)+","+str(self.sorts[so].priority)+").\n"
+                oStr = oStr + "removableSort("+toLPName(self.name)+","+toLPName(so)+").\n"
+            oStr = oStr + "prioritySort("+toLPName(self.name)+","+toLPName(so)+","+str(self.sorts[so].priority)+").\n"
         return oStr
 
 # This is just a dirty quickfix to use (infix) plus and minus operators. 
@@ -331,16 +331,21 @@ def parseXml(xmlFile):
                         name = entry.attrib['name']
                     
                     priority = 1
-                    # # This is a quick hack to encode axiom prioritites in axiom names using :p:. 
+                    removable = 1
+                    # # This is a quick hack to encode axiom prioritites in axiom names using :p:, and removability using :r:. 
                     if name.find(":p:") != -1:
-                        priority = int(name.split(":p:")[1])   
-                    if 'importance' in entry.attrib.keys():
-                        priority = int(entry.attrib['importance'])
+                        priority = int(name.split(":p:")[1].split(":")[0])
+                        # print "axiom " + name + " has priority " + str(priority)
+                        # raw_input()
+                    if name.find(":r:") != -1:
+                        removable = int(name.split(":r:")[1].split(":")[0])
+                    if 'priority' in entry.attrib.keys():
+                        priority = int(entry.attrib['priority'])
                     for subEntry in entry:
                         if subEntry.tag == "Text":
                             axText = subEntry.text
-                            # print axText
-                            axRemovable = checkAxRemovable(nonRemovableOps,axText)
+                            # The axiom is not removable if indicated in its name by ':r:0:', or if it contains only generated type constants, which will be determined by checkAxRemovable
+                            axRemovable = min(checkAxRemovable(nonRemovableOps,axText),removable)
                             thisSpec.axioms.append({'ax' : axText, 'id' : -1, 'removable' : axRemovable, 'priority' : priority, 'name' : name})
         # print thisSpec.toStr()
         specs.append(thisSpec)
