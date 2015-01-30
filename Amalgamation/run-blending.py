@@ -12,10 +12,10 @@ inputSpaces = parseXml(inputSpacesXmlFileName)
 
 print "blending the following CASL specs:"
 for s in inputSpaces:
-    print s.toStr()
-# raw_input()
+    print s.toCaslStr()
 print "\n\n\n"
 
+# raw_input()
 # Generate the Logic Programming representation of the CASL input spaces. 
 lpRep = toLP(inputSpaces)
 lpRep = "#program base1.\n\n" + lpRep
@@ -24,12 +24,11 @@ lpFile = open(lpFileName,'w')
 lpFile.write(lpRep)
 lpFile.close()
 print "Generated Logic Programming facts from CASL Spec."
+# exit(1)
 # raw_input()
 
+# Call apsrin to generate preferences LP file.
+# subprocess.call(["./asprin/asprin.parser", "preferences.lp", "./asprin/asprin.lib"])
 # Invoke clingo4 and run 
-if searchControlFile != "":
-	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName, searchControlFile])
-else:
-	subprocess.call(["clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName])
+subprocess.call(["./clingo4", "--number="+str(numModels), "iterationCore-py.lp", "generalize.lp", lpFileName])
 
-# subprocess.call(["hets", "-g", "amalgamBlend_0.casl"])

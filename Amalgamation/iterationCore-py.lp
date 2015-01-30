@@ -9,7 +9,7 @@ from gringo import *
 # Some auxiliary libraries that we need:
 import os, sys, time, subprocess
 ## This variable has to be modified in order to get the system running in your specific system path. TODO: Automate this somehow...
-lp_path = os.path.abspath('/home/manni/mac-home/svn/coinvent/Amalgamation/')
+lp_path = os.path.abspath('/home/parallels/mac-home/svn/coinvent/Amalgamation/')
 sys.path.append(lp_path)
 
 # We also want to be able to call the other amalgamation module python scripts.
@@ -26,7 +26,7 @@ blends = []
 # Global variable to store the max. allowed cost for a blend. 
 maxCost = sys.maxint
 
-# This is called if a model is found. Here, the model is printed.
+# This is called if a model is found.
 def onModelGeneralize(model):
     global inputSpaces, maxCost, blends
 
@@ -34,8 +34,7 @@ def onModelGeneralize(model):
 
     [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends)
     
-    if blendingGeneralizationCost <= maxCost:
-        # print blends
+    if blendingGeneralizationCost <= maxCost and blendingGeneralizationCost < sys.maxint:
         maxCost = blendingGeneralizationCost
         writeBlends(blends)
         print "Found blend with a cheaper or equal generalization cost of  " + str(maxCost) + "."
@@ -53,8 +52,11 @@ def main(prg):
     global minIterationsGeneralize, maxIterationsGeneralize, rmOpAllowed,rmAxAllowed,rmPredAllowed
     
     ## Prepare internal data structure for the later blending. 
-    global inputSpaces, inputFile
-    inputSpacesXmlFileName = input2Xml(inputFile,inputSpaces) 
+    global inputSpaceNames, inputSpaces, inputFile
+    
+    print "Starting main iteration loop. Reading input spaces."
+
+    inputSpacesXmlFileName = input2Xml(inputFile,inputSpaceNames) 
     inputSpaces = parseXml(inputSpacesXmlFileName)
 
     ## Some abbreviations to make the code more compact:
@@ -76,15 +78,15 @@ def main(prg):
     # if rmPredAllowed : prg.assign_external(Fun("rmPredAllowed", []), True)
     # if rmAxAllowed : prg.assign_external(Fun("rmAxAllowed", []), True)
         
-    #### First, find a path to the generic space
+    # #### First, find a path to the generic space
 
-    # The main generalization loop starts here!
+    # # The main generalization loop starts here!
     while True:
         # Abort after the max. number of iterations 
         if step > imax: break
         # Append the cumulative part for the particular step (slice) of the program.
         parts.append(("cumulative1", [step]))
-        # Ground the new slice
+        # # Ground the new slice
         prg.ground(parts)
         parts = []
         # Release the query1(t) atom from the last slice (step-1) from the program. 

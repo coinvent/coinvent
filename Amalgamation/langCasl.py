@@ -5,20 +5,22 @@ import copy
 import time
 from string import *
 import re
+from settings import *
 
 ### input2Xml translates CASL input spaces to an xml file. The xml simplifies the CASL parsing. 
 ### Input:  CASL file name and names of input spaces
 ### Output: The path to an xml file representing the input spaces.     
 def input2Xml(fName,inputSpaces):    
-
+    global hetsExe
     # First generate .th files from CASL files. 
     #To be sure that all .th files have been generated repeat this 5 times. This is necessary because file generation via command line turned out to be buggy,
     allGenerated = False
     tries = 0
     while True:
-        print "generating Casl .th files using HETS from " + fName
-        subprocess.call(["hets", "-o th", fName])
-        print "DONE generating casl .th files using HETS"        
+        print "Generating Casl .th files using HETS from " + fName
+        subprocess.call([hetsExe, "-o th", fName])
+        print "Done generating casl .th files using HETS"        
+        # raw_input()
         allGenerated = True
         for spec in inputSpaces:
             specThFName = fName.split(".")[0]+"_"+spec+".th"
@@ -33,7 +35,8 @@ def input2Xml(fName,inputSpaces):
         if allGenerated == True:
              break        
         if tries > 5:
-            print "ERROR: file " + specThFName + " not yet written in " + str(tries) + " times ! Aborting..."                
+            print "ERROR: file " + specThFName + " not yet written in " + str(tries) + " times ! Aborting..."
+            exit(1)                
         tries = tries + 1
 
     # Second read the input spaces to be blended in CASL syntax from .th files and concatenate the strings. 
@@ -57,6 +60,8 @@ def input2Xml(fName,inputSpaces):
     
     tries = 0
     # print "Generating xml file for parsing."
+    if os.path.isfile(xmlFileName):
+        os.system("rm " + xmlFileName)
     while True:
         xmlFileSize = 0
         if os.path.isfile(xmlFileName):
@@ -75,9 +80,8 @@ def input2Xml(fName,inputSpaces):
             print "ERROR: File " + xmlFileName + " not yet written correctly after " + str(tries) + " tries! Aboting... :::::::"
             exit(1)
         tries = tries + 1
-
         print "Calling hets to generate xml file for parsing"
-        subprocess.call(["hets", "-o xml", newFileName])        
+        subprocess.call([hetsExe, "-o xml", newFileName])        
         print "Done calling hets to generate xml"
 
     os.remove(newFileName)
@@ -89,6 +93,7 @@ class CaslPred:
         self.name = name
         self.args = []
         self.removable = True
+        self.priority = 1
     
     @staticmethod
     def byStr(text):
@@ -104,10 +109,13 @@ class CaslPred:
         return str    
 
     def toPlainStr(self):
-        str = self.name + " : " 
-        for s in self.args: str = str + s +" * " 
-        str = str[:-3]
-        return str         
+        outStr = self.name + " : " 
+        for s in self.args: outStr = outStr + s +" * " 
+        outStr = outStr[:-3]
+
+        outStr = outStr + "   %% prio:"+ str(self.priority)
+
+        return outStr 
              
 ## This class represents an operator in CASL.       
 class CaslOp:
@@ -116,6 +124,7 @@ class CaslOp:
         self.args = []
         self.dom = ''
         self.removable = True
+        self.priority = 1
     
     @staticmethod
     def byStr(text):
@@ -138,103 +147,122 @@ class CaslOp:
         return op
     
     def toStr(self):
-        str = "op " + self.name + " : " 
-        for s in self.args: str = str + s +" * " 
-        str = str[:-3]
+        outStr = "op " + self.name + " : " 
+        for s in self.args: outStr = outStr + s +" * " 
+        outStr = outStr[:-3]
         if self.partial == False:
-            arrStr = "->"
+            arrStr = " -> "
         else:
-            arrStr = "-> ?"
-        str = str + arrStr +self.dom
+            arrStr = " ->? "
+        outStr = outStr + arrStr +self.dom
+        outStr = outStr + str(self.priority)
         if self.removable:
-            str = str + " \t (r)"
-        return str 
-    def toPlainStr(self):
-        str = self.name + " : " 
-        for s in self.args: str = str + s +" * " 
-        str = str[:-3]
-        if self.partial == False:
-            arrStr = "->"
-        else:
-            arrStr = "-> ?"
-        if len(self.args) > 0:
-            str = str + arrStr +self.dom    
-        else:
-            str = str + " : " +self.dom
-        return str 
+            outStr = outStr + " \t (r)"
+        return outStr 
     
+    def toPlainStr(self):
+        outStr = self.name + " : " 
+        for s in self.args: outStr = outStr + s +" * " 
+        outStr = outStr[:-3]
+        if self.partial == False:
+            arrStr = " -> "
+        else:
+            arrStr = " ->? "
+        if len(self.args) > 0:
+            outStr = outStr + arrStr +self.dom    
+        else:
+            outStr = outStr + " : " +self.dom
+
+        outStr = outStr + "   %% prio:"+ str(self.priority)
+        return outStr 
+    
+## This class represents a sort in CASL.       
+class CaslSort:
+    def __init__(self, name):
+        self.name = name
+        self.parent = ""
+        self.priority = 1
+        self.removable = True
+        # self.childs = []
+
+    def toStr(self):
+        outStr = "sort " + self.name
+        if self.parent != "":
+            outStr = outStr + " < " + self.parent
+        outStr = outStr + "   %% prio:"+ str(self.priority)
+        return outStr
+
 # This class represents a CASL specification.        
 class CaslSpec:
     def __init__(self, name):
         self.name = name
         self.ops = []
         self.preds = []
-        self.sorts = []
+        self.sorts = {}
         self.axioms = []
         self.id = 0
-    
-    def toStr(self):
-        s = "CaslSpec:\n"
-        s = s + "\t name: " + self.name +"\n"
-        s = s + "\t sorts: " 
-        for srt in self.sorts: s = s + srt +" " 
-        s = s + "\n"
-        for op in self.ops: s = s + "\t " + op.toStr() +"\n"
-        for p in self.preds: s = s + "\t " + p.toStr() +"\n"
-        s += "\n \t axioms: \n"
-        for ax in self.axioms: 
-            s = s + "\t\t " + ax['ax'] + " \t\t ("+ str(ax['id']) 
-            if (ax['removable']) == 1:
-                s = s + "-r"
-            s = s +") \n"
-            # s = s +  "("+ str(ax['id']) +") "
-        return s
 
     def toCaslStr(self):
-        # str = "CaslSpec:\n"
-        str = "spec "
-        str = str +  self.name +" = \n"
-        if len(self.sorts) > 0 :
-            str = str + "\t sorts " 
-        for s in self.sorts: str = str + s +" " 
-        str = str + "\n"
+        # caslStr = "CaslSpec:\n"
+        caslStr = "spec "
+        caslStr = caslStr +  self.name +" = \n"
+        for s in self.sorts.keys(): 
+            caslStr = caslStr + "\t sort " + s  
+            if self.sorts[s].parent != "":
+                caslStr = caslStr + " < " + self.sorts[s].parent
+            caslStr = caslStr + "   %% p:" + str(self.sorts[s].priority)
+            caslStr = caslStr + "\n" 
+
+        caslStr = caslStr + "\n"
         if len(self.ops) > 0 :
-            str = str + "\t ops \n" 
-        for op in self.ops: str = str + "\t\t " + op.toPlainStr() +"\n"
+            caslStr = caslStr + "\t ops \n" 
+        for op in self.ops: caslStr = caslStr + "\t\t " + op.toPlainStr() +"\n"
         if len(self.preds) > 0 :
-            str = str + "\t preds \n"
-        for p in self.preds: str = str + "\t\t " + p.toPlainStr() +"\n"
-        str += "\n"
-        for ax in self.axioms: str = str + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "\n"
-        str = str + "end"
-        return str
+            caslStr = caslStr + "\t preds \n"
+        for p in self.preds: 
+            caslStr = caslStr + "\t\t " + p.toPlainStr() +"\n"
+        caslStr += "\n"
+        for ax in self.axioms: 
+            caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "\t" + "%(" + ax["name"]+ ")%" + " %priority(" + str(ax['priority']) +")%"   "  %% AxId:"+str(ax['id']) + "   prio:"+str(ax['priority']) + "    rem:"+str(ax['removable'])+ "\n"
+        caslStr = caslStr + "end"
+        return caslStr
         
     def toLP(self):
-        oStr = "spec("+self.name.lower()+").\n"
+        oStr = "spec("+toLPName(self.name)+").\n"
         oStr = oStr + "hasId("+toLPName(self.name)+","+str(self.id)+").\n"      
         for op in self.ops:
             oStr = oStr + "hasOp("+toLPName(self.name)+","+toLPName(op.name)+",1).\n"
             for arg in op.args:
-                oStr = oStr + "opHasSort("+toLPName(op.name)+","+toLPName(arg)+").\n"
-            oStr = oStr + "opHasSort("+toLPName(op.name)+","+toLPName(op.dom)+").\n"
+                oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(op.name)+","+toLPName(arg)+").\n"
+            oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(op.name)+","+toLPName(op.dom)+").\n"
             if op.removable == True:
-                oStr = oStr + "removable("+toLPName(self.name)+","+toLPName(op.name)+").\n"
+                oStr = oStr + "removableOp("+toLPName(self.name)+","+toLPName(op.name)+").\n"
+            oStr = oStr + "priorityOp("+toLPName(self.name)+","+toLPName(op.name)+","+str(op.priority)+").\n"
         for p in self.preds:
             oStr = oStr + "hasPred("+toLPName(self.name)+","+toLPName(p.name)+",1).\n"
             for arg in p.args:
-                oStr = oStr + "predHasSort("+toLPName(p.name)+","+toLPName(arg)+").\n"
+                oStr = oStr + "predHasSort("+toLPName(self.name)+","+toLPName(p.name)+","+toLPName(arg)+").\n"
             if p.removable == True:
-                oStr = oStr + "removable("+toLPName(self.name)+","+toLPName(p.name)+").\n"
+                oStr = oStr + "removablePred("+toLPName(self.name)+","+toLPName(p.name)+").\n"
+            oStr = oStr + "priorityPred("+toLPName(self.name)+","+toLPName(p.name)+","+str(p.priority)+").\n"
         for ax in self.axioms:
             oStr = oStr + "hasAxiom("+toLPName(self.name)+","+str(ax['id'])+",1).\n"
             for predOp in ax['predsOps']:
                 oStr = oStr + "axInvolvesPredOp("+str(ax['id'])+","+toLPName(predOp)+").\n"
             if ax['removable'] == 1:
-                oStr = oStr + "removable("+toLPName(self.name)+","+str(ax['id'])+").\n"
-        #for so in self.sorts:
-        #    oStr = oStr + "hasSort("+toLPName(self.name)+","+so+",0).\n"
+                oStr = oStr + "removableAx("+toLPName(self.name)+","+str(ax['id'])+").\n"
+            oStr = oStr + "priorityAx("+toLPName(self.name)+","+toLPName(str(ax['id']))+","+str(ax['priority'])+").\n"
+        
+        for so in self.sorts.keys():
+            oStr = oStr + "hasSort("+toLPName(self.name)+","+toLPName(so)+",1).\n"
+            if self.sorts[so].parent != "":
+                oStr = oStr + "isParentSort("+toLPName(self.name)+","+toLPName(self.sorts[so].parent)+","+toLPName(so)+").\n"
+            if self.sorts[so].removable == True:
+                oStr = oStr + "removableSort("+toLPName(self.name)+","+toLPName(so)+").\n"
+            oStr = oStr + "prioritySort("+toLPName(self.name)+","+toLPName(so)+","+str(self.sorts[so].priority)+").\n"
         return oStr
 
+# This is just a dirty quickfix to use (infix) plus and minus operators. 
 def toLPName(predOp):
     s = predOp.lower()
     if s == "__+__" or s == "+":
@@ -242,12 +270,6 @@ def toLPName(predOp):
     if s == "__-__" or s == "-":
         s = "minus"
     return s
-# This is used to get a predicate object by parsing a string in a predicate node of the xml format that HETS produces. Its probably deprecated, but I don't dare to delete yet (20.12.14)
-# def getPredByText(text):
-#     pName = text[4:].split(":")[0].strip()
-#     thisPred = CaslPred(pName)
-#     thisPred.args = text.split(":")[1].strip().split(" * ")
-#     return thisPred
 
 # This is the main method to turn the xml representation of input spaces into the internal data structure
 # Input: The path to an XML file name
@@ -279,13 +301,17 @@ def parseXml(xmlFile):
                                 nonRems = nonRemStr.split("|")
                                 for nr in nonRems : nonRemovableOps.append(nr.strip())
         for decAx in dgNode:
-            # print "nonRemovable ops in " + specName+ ":"
-            # print nonRemovableOps
-            # generate spec from xmlTree, under consideration of the nonremovable ops
             for entry in decAx:
                 if entry.tag == "Symbol":
                     if entry.attrib['kind'] == 'sort':
-                        thisSpec.sorts.append(entry.attrib['name'])
+                        sName = entry.attrib['name']
+                        thisSpec.sorts[entry.attrib['name']] = CaslSort(sName)
+                        sSortArr = entry.text.split("<")
+                        if len(sSortArr) == 2:
+                            pSort = sSortArr[1].strip()
+                            thisSpec.sorts[sName].parent = pSort
+                            # thisSpec.sorts[pSort].childs.append(sName)
+                        
                     if entry.attrib['kind'] == 'op':
                         op = CaslOp.byStr(entry.text)
                         # print "op"
@@ -300,12 +326,27 @@ def parseXml(xmlFile):
                         thisSpec.preds.append(pred)   
                         
                 if entry.tag == "Axiom":
+                    name = ''
+                    if 'name' in entry.attrib.keys():
+                        name = entry.attrib['name']
+                    
+                    priority = 1
+                    removable = 1
+                    # # This is a quick hack to encode axiom prioritites in axiom names using :p:, and removability using :r:. 
+                    if name.find(":p:") != -1:
+                        priority = int(name.split(":p:")[1].split(":")[0])
+                        # print "axiom " + name + " has priority " + str(priority)
+                        # raw_input()
+                    if name.find(":r:") != -1:
+                        removable = int(name.split(":r:")[1].split(":")[0])
+                    if 'priority' in entry.attrib.keys():
+                        priority = int(entry.attrib['priority'])
                     for subEntry in entry:
                         if subEntry.tag == "Text":
                             axText = subEntry.text
-                            # print axText
-                            axRemovable = checkAxRemovable(nonRemovableOps,axText)
-                            thisSpec.axioms.append({'ax' : axText, 'id' : -1, 'removable' : axRemovable})
+                            # The axiom is not removable if indicated in its name by ':r:0:', or if it contains only generated type constants, which will be determined by checkAxRemovable
+                            axRemovable = min(checkAxRemovable(nonRemovableOps,axText),removable)
+                            thisSpec.axioms.append({'ax' : axText, 'id' : -1, 'removable' : axRemovable, 'priority' : priority, 'name' : name})
         # print thisSpec.toStr()
         specs.append(thisSpec)
 
@@ -342,16 +383,8 @@ def parseXml(xmlFile):
             for item in axStrArr:
                 if item == "":
                     continue
-                # if item == ".":
-                #     continue
-                # if item == "not":
-                #     continue
                 predOpNames.append(item)
             ax['predsOps'] = copy.deepcopy(predOpNames)
-            # print "axiom " + ax['ax'] 
-            # print "has id " + str(ax['id'])
-            # print " contains the following preds and ops:"
-            # print  ax['predsOps']
 
     return specs
 
@@ -426,8 +459,6 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                 # remove operators, predicates and axioms
                 if cSpec.name.lower() == iSpace:  
                     for act in acts[step][iSpace]:
-                        # print "action:"
-                        # print act
                         if act["actType"] == "rmOp" :
                             for op in cSpec.ops:
                                 if op.name.lower() == act["argVect"][0]:
@@ -438,25 +469,15 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                 if p.name.lower() == act["argVect"][0]:
                                     cSpec.preds.remove(p)
 
+                        if act["actType"] == "rmSort" :
+                            for srt in cSpec.sorts.keys():
+                                if toLPName(srt) == act["argVect"][0]:
+                                    del cSpec.sorts[srt]
+
                         if act["actType"] == "rmAx" :
                             for a in cSpec.axioms:
                                 if str(a['id']) == act["argVect"][0]:
                                     cSpec.axioms.remove(a)
-                                   
-                    # remove unnecessary sorts
-                    sorts = []
-                    for op in cSpec.ops:
-                        for arg in op.args:
-                            sorts.append(arg)
-                        sorts.append(op.dom)
-                    for p in cSpec.preds:
-                        for arg in p.args:
-                            sorts.append(arg)
-                    uniqueSorts = []
-                    [uniqueSorts.append(item) for item in sorts if item not in uniqueSorts]
-                    sorts = uniqueSorts
-                    cSpec.sorts = sorts
-                    # print cSpec.toStr()
 
                     thisCSpec = copy.deepcopy(cSpec)
                     thisCSpec.name = thisCSpec.name + "_gen_" + str(len(generalizations[thisCSpec.name]))
