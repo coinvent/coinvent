@@ -9,14 +9,24 @@ spec Generic = Symbols then
 end
 
 spec S1 = Generic then    
-    . f = v1
+    sorts 
+        Sort1
+        Sort2
+        Sort3
+    ops
+        op1 : Sort1 -> Value
+        op2 : Sort1 * Sort2 -> Value
+        op3 : Sort3 -> Sort1
+        s1Constant : Sort1
+    %% . f = v1
+    . forall s1v1,s1v2 :Sort1 . exists s2v1 : Sort2 . (op2(s1v1,s2v1) = v1 \/ op2(s1v1,s2v1) = v2) /\ (op2(s1v1,s2v1) = op1(s1v1))
     %% . g = v1
     %% . h = v2
 end
 
 spec S2 = Generic then
-    . f = v2
-    . g = v2
+    . f = v1
+    %% . g = v2
     %% . h = v1
 end
 

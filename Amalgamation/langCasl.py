@@ -7,6 +7,7 @@ from string import *
 import re
 from settings import *
 
+sortShort = {}
 ### input2Xml translates CASL input spaces to an xml file. The xml simplifies the CASL parsing. 
 ### Input:  CASL file name and names of input spaces
 ### Output: The path to an xml file representing the input spaces.     
@@ -192,6 +193,39 @@ class CaslSort:
         outStr = outStr + "   %% prio:"+ str(self.priority)
         return outStr
 
+
+
+# This class represents a CASL Axiom.        
+class CaslAx:    
+
+    def __init__(self, id, name, axStr):
+        self.id = id
+        self.name = name
+        self.axStr = axStr
+        self.removable = 1
+        self.priority = 0
+        self.predsOps = []
+        self.eqClass = -1
+        
+        
+    def toCaslStr(self):
+        return self.axStr
+
+    def determinePredOps(self):
+        self.predsOps = []
+
+        
+    def toLP(self):
+        oStr = "axiom("+str(self.id)+").\n"
+        for predOp in self.predsOps:
+            oStr = oStr + "axInvolvesPredOp("+str(self.id)+","+toLPName(predOp)+").\n"
+        if self.removable == 1:
+            oStr = oStr + "removableAx("+str(self.id)+").\n"
+        oStr = oStr + "priorityAx("+toLPName(str(self.id))+","+str(self.priority)+").\n"
+
+        return oStr
+
+
 # This class represents a CASL specification.        
 class CaslSpec:
     def __init__(self, name):
@@ -223,7 +257,8 @@ class CaslSpec:
             caslStr = caslStr + "\t\t " + p.toPlainStr() +"\n"
         caslStr += "\n"
         for ax in self.axioms: 
-            caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "\t" + "%(" + ax["name"]+ ")%" + " %priority(" + str(ax['priority']) +")%"   "  %% AxId:"+str(ax['id']) + "   prio:"+str(ax['priority']) + "    rem:"+str(ax['removable'])+ "\n"
+            oStr = oStr + ax.toCaslStr()
+            # caslStr = caslStr + "\t " + ax['ax'].replace("\n", "\n\t\t\t") + "\t" + "%(" + ax["name"]+ ")%" + " %priority(" + str(ax['priority']) +")%"   "  %% AxId:"+str(ax['id']) + "   prio:"+str(ax['priority']) + "    rem:"+str(ax['removable'])+ "\n"
         caslStr = caslStr + "end"
         return caslStr
         
@@ -246,12 +281,8 @@ class CaslSpec:
                 oStr = oStr + "removablePred("+toLPName(self.name)+","+toLPName(p.name)+").\n"
             oStr = oStr + "priorityPred("+toLPName(self.name)+","+toLPName(p.name)+","+str(p.priority)+").\n"
         for ax in self.axioms:
-            oStr = oStr + "hasAxiom("+toLPName(self.name)+","+str(ax['id'])+",1).\n"
-            for predOp in ax['predsOps']:
-                oStr = oStr + "axInvolvesPredOp("+str(ax['id'])+","+toLPName(predOp)+").\n"
-            if ax['removable'] == 1:
-                oStr = oStr + "removableAx("+toLPName(self.name)+","+str(ax['id'])+").\n"
-            oStr = oStr + "priorityAx("+toLPName(self.name)+","+toLPName(str(ax['id']))+","+str(ax['priority'])+").\n"
+            oStr = oStr + ax.toLPStr()
+            oStr.append("hasAxiom("+toLPName(self.name)+","+str(ax.id)+",1).\n")
         
         for so in self.sorts.keys():
             oStr = oStr + "hasSort("+toLPName(self.name)+","+toLPName(so)+",1).\n"
@@ -276,11 +307,13 @@ def toLPName(predOp):
 # Output: a list of CASL specs represented in the internal data structure
 def parseXml(xmlFile):
     specs = []
+    global sortShort
     # print "Calling parseXml method"
     tree = ET.parse(xmlFile)
     # print "End calling parseXml method"
     dGraph = tree.getroot()
-    ctr = 0   
+    ctr = 0  
+    axCtr = 0 
     for dgNode in dGraph:
         if 'refname' not in dgNode.attrib.keys():
             continue
@@ -324,85 +357,90 @@ def parseXml(xmlFile):
                     if entry.attrib['kind'] == 'pred':
                         pred = CaslPred.byStr(entry.text)
                         thisSpec.preds.append(pred)   
-                        
+
+        for decAx in dgNode:
+            for entry in decAx:                
                 if entry.tag == "Axiom":
+                    
                     name = ''
                     if 'name' in entry.attrib.keys():
                         name = entry.attrib['name']
-                    
-                    priority = 1
-                    removable = 1
-                    # # This is a quick hack to encode axiom prioritites in axiom names using :p:, and removability using :r:. 
-                    if name.find(":p:") != -1:
-                        priority = int(name.split(":p:")[1].split(":")[0])
-                        # print "axiom " + name + " has priority " + str(priority)
-                        # raw_input()
-                    if name.find(":r:") != -1:
-                        removable = int(name.split(":r:")[1].split(":")[0])
-                    if 'priority' in entry.attrib.keys():
-                        priority = int(entry.attrib['priority'])
+                                        
                     for subEntry in entry:
                         if subEntry.tag == "Text":
-                            axText = subEntry.text
+                            axStr = subEntry.text
+                            if axStr = '':
+                                continue
+                            ax = CaslAx(axCtr,name,axStr)
+                            
+                            # Check priority:
+
+
+
+                            # Check if axiom is removable:
+        
+                            # it is not removable if its a generated type axiom.
+                            if axStr.find("generated type") == 0:
+                                removable = 0
+        
+        # If this is an axiom stating that a generated type is not equal to a generated type, its not removable.
+        axStrArr = axStr.split(" ")
+        predOpNames = []
+        allGenerated = True
+
+        if len(axStrArr) == 5:
+            if axStrArr[4] in nonRemovableOps and axStrArr[2] in nonRemovableOps:
+                # print "axiom "+ axText + " not removable because it consists only of generated type specs."
+                return 0
+
+                            # ax = parseAxText(axText)
                             # The axiom is not removable if indicated in its name by ':r:0:', or if it contains only generated type constants, which will be determined by checkAxRemovable
-                            axRemovable = min(checkAxRemovable(nonRemovableOps,axText),removable)
-                            thisSpec.axioms.append({'ax' : axText, 'id' : -1, 'removable' : axRemovable, 'priority' : priority, 'name' : name})
+                            # axRemovable = min(checkAxRemovable(nonRemovableOps,axText),removable)
+                            # thisSpec.axioms.append({'ax' : ax, 'axText' : axText, 'id' : -1, 'removable' : axRemovable, 'priority' : priority, 'name' : name})
         # print thisSpec.toStr()
         specs.append(thisSpec)
 
-    # enumerate axioms
-    axCtr = 1
-    for spec in specs:
-        for ax in spec.axioms:
-            idAssigned = False
-            for spec2 in specs:
-                if idAssigned:
-                    break
-                if spec2.name == spec.name:
-                    continue
-                for ax2 in spec2.axioms:
-                    if idAssigned:
-                        break
-                    if ax2['ax'] == ax['ax'] and ax2['id'] != -1:
-                        ax['id'] = ax2['id']
-                        idAssigned = True
-            if idAssigned == False:
-                ax['id'] = axCtr
-                axCtr = axCtr + 1
-
-    # print "# check occurrence of predicates and operators in axioms"
+    
+    # Assign axiom equivalence classes over all specifications. For now, just consider syntactic equality as equivalence.
+    axEqClasses = []
+    newEqClass = 0
     for spec in specs:
         # print spec.toStr()
-        for ax in spec.axioms:
-            if ax['ax'].find("generated type") == 0:
-                ax['predsOps'] = [] 
-                continue
-            axStrArr = re.split("[ .=(),:><;\n]|not|forall|exists|exists!",ax['ax'])
-            # print axStrArr
-            predOpNames = []
-            for item in axStrArr:
-                if item == "":
-                    continue
-                predOpNames.append(item)
-            ax['predsOps'] = copy.deepcopy(predOpNames)
+        for ax in spec.axioms:  
+            for [otherSpecId,otherAxStr,eqClassId] in axEqClasses:
+                if axIsEquivalent(ax.axStr,spec.id,otherAxStr,otherSpecId, specs):
+                    ax.eqClass = eqClassId
+                else:
+                    ax.eqClass = newEqClass
+                    axEqClasses.append([ax.id,ax.axStr,newEqClass])
+                    newEqClass = newEqClass + 1
+
+    
+    # print "# check occurrence of predicates and operators in axioms and check axiom equivalence"
+    # for spec in specs:
+    #     # print spec.toStr()
+    #     for ax in spec.axioms:
+    #         if ax.axStr.find("generated type") == 0:
+    #             ax.predsOps = [] 
+    #             ax.removable = 0
+    #             ax.priority = -1
+    #             continue
+    #         axStrArr = re.split("[ .=(),:><;\n]|not|forall|exists|exists!",ax.axStr)
+    #         # print axStrArr
+    #         predOpNames = []
+    #         for item in axStrArr:
+    #             if item == "":
+    #                 continue
+    #             predOpNames.append(item)
+    #         ax.predsOps = copy.deepcopy(predOpNames)
+
+        # TODO: check axiom equivalence
 
     return specs
 
-# Check whether an axiom may be removed with an atomic generalization operation.
-# Input: list of non-removable operators and predicates, and a string representation of an axiom
-# Output: 1 or 0 to determine whether the axiom is removable. The axiom is not removable if it involves a non-removable operator or predicate.
-def checkAxRemovable(nonRemovableOps,axText):
-    if axText.find("generated type") == 0:
-        return 0
-    axStrArr = axText.split(" ")
-    predOpNames = []
-    allGenerated = True
-    # If this is an axiom stating that a generated type is not equal to a generated type, 
-    if len(axStrArr) == 5:
-        if axStrArr[4] in nonRemovableOps and axStrArr[2] in nonRemovableOps:
-            # print "axiom "+ axText + " not removable because it consists only of generated type specs."
-            return 0
-    return 1
+# This is supposed to test whether two axioms from two specifications are equivalent, assuming uniqueness of names. For now it just checks syntactic equality of axioms.
+def axIsEquivalent(axStr1,specId1,axStr2,specId2, specs):
+    return axStr1 == axStr2
     
 # Turn CASL specs in their internal data structure into a Logic Programming specification that is compatible with the ASP files. 
 def toLP(caslSpecs):

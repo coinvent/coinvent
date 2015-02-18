@@ -46,12 +46,8 @@ hetsExe = 'hets'
 # inputFile = "examples/cadenceByAx.casl"
 # inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 
-# inputFile = "examples/chordBlendRelAbsSimple.casl"
-# inputSpaceNames = ["Dmin7","Emaj7"]
-
 # inputFile = "examples/subSortTest.casl"
 # inputSpaceNames = ["S1","S2"]
 
-# inputFile = "examples/PerfectAndPhrygianToBackdoor_simple.casl"
-inputFile = "examples/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
-inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]
+# inputFile = "examples/music/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
+# inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]
