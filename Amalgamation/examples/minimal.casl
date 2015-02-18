@@ -4,11 +4,33 @@ end
 
 spec Generic = Symbols then
 	ops f : Value
-		g : Value
+		
+    preds 
+        p1:Value
 		%% h : Value
 end
 
-spec S1 = Generic then    
+spec S1 = Generic then  
+    op g : Value  
+    %% . f = v1 %(Ax1-1:p:2)% %priority(2)%
+    . g = v2 %(Ax1-2:p:3)% %priority(3)%
+end
+
+spec S2 = Generic then    
+    op h : Value
+    %% . f = v2 %(Ax2-1:p:4)% %priority(4)%
+end
+
+spec TestSpec2 = Generic then
+    preds   p1 : Value
+            p2 : Value
+    . f = v1 %priority(1)%
+    %% . g = v2
+    %% . h = v1
+end
+
+
+spec TestSpec1 = Generic then    
     sorts 
         Sort1
         Sort2
@@ -18,17 +40,12 @@ spec S1 = Generic then
         op2 : Sort1 * Sort2 -> Value
         op3 : Sort3 -> Sort1
         s1Constant : Sort1
-    %% . f = v1
-    . forall s1v1,s1v2 :Sort1 . exists s2v1 : Sort2 . (op2(s1v1,s2v1) = v1 \/ op2(s1v1,s2v1) = v2) /\ (op2(s1v1,s2v1) = op1(s1v1))
+    . f = v1 %priority(4)%
+    . forall s1v1,s1v2 :Sort1 . exists s2v1 : Sort2 . forall s1v3 : Sort3.  (op2(s1v1,s2v1) = v1 \/ op2(s1v1,s2v1) = v2) /\ (op2(s1v1,s2v1) = op1(s1v2) \/ op3(s1v3) = s1v1) %priority(3)%
     %% . g = v1
     %% . h = v2
 end
 
-spec S2 = Generic then
-    . f = v1
-    %% . g = v2
-    %% . h = v1
-end
 
 %% view GenToS1 : Generic to S1 end
 %% view GenToS2 : Generic to S2 end

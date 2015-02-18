@@ -32,11 +32,11 @@ s(t).
 
 % Remove Operator
 %% #external rmOpAllowed.
-%% poss(rmOp(Op),I,t) :- hasOp(I,Op,t), removableOp(I,Op), 0{hasAxiom(I,Ax,t) : axInvolvesPredOp(Ax,Op)}0.
+poss(rmOp(Op),I,t) :- hasOp(I,Op,t), removableOp(I,Op), 0{hasAxiom(I,Ax,t) : axInvolvesPredOpSort(Ax,Op)}0.
 
 % Remove Predicate
 %% #external rmPredAllowed.
-%% poss(rmPred(Pred),I,t) :- hasPred(I,Pred,t), removablePred(I,Pred), 0{hasAxiom(I,Ax,t) : axInvolvesPredOp(Ax,Pred)}0.
+%% poss(rmPred(Pred),I,t) :- hasPred(I,Pred,t), removablePred(I,Pred), 0{hasAxiom(I,Ax,t) : axInvolvesPredOpSort(Ax,Pred)}0.
 
 % Remove Sort 
 %% #external rmSortAllowed.
@@ -50,8 +50,8 @@ s(t).
 poss(rmAx(Ax),I,t) :- hasAxiom(I,Ax,t), removableAx(I,Ax).
 
 % Indirect Axiom Removal
-%% exec(rmAx(AX),I,t) :- exec(rmOp(OP),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,OP).
-%% exec(rmAx(AX),I,t) :- exec(rmPred(P),I,t), hasAxiom(I,AX,t), axInvolvesPredOp(AX,P).
+%% exec(rmAx(AX),I,t) :- exec(rmOp(OP),I,t), hasAxiom(I,AX,t), axInvolvesPredOpSort(AX,OP).
+%% exec(rmAx(AX),I,t) :- exec(rmPred(P),I,t), hasAxiom(I,AX,t), axInvolvesPredOpSort(AX,P).
 % Direct Axiom Removal
 %% exec(rmAx(AX),I,t) :- exec(rmAxDirectly(AX),I,t).
 
@@ -129,11 +129,17 @@ allSpecsHaveOp(OP,t) :- 0{spec(I_other) : not hasOp(I_other,OP,t), spec(I_other)
 %% For sorts this does not work due to subsorts, because sometimes it is necessary to remove a child sort that is common in all input spaces to be able to remove a parent sort that is present in only one input space. Maybe a modified version is possible that respects subsorts. 
 allSpecsHaveSort(S,t) :- 0{spec(I_other) : not hasSort(I_other,S,t), spec(I_other)}0, sort(S).
 
-%% stepOptimal(I,t) :- not specModified(I,t), spec(I).
 stepOptimal(I,t) :- rmLowestPriorityAx(I,Ax,t).
+stepOptimal(I,t) :- rmLowestPriorityOp(I,Op,t).
+stepOptimal(I,t) :- rmLowestPriorityPred(I,Pred,t).
+stepOptimal(I,t) :- rmLowestPrioritySort(I,Sort,t).
+%% stepOptimal(I,t) :- spec(I).
 
 %% Determine when the axiom with the lowest possible priority has been removed. It should be impossible to remove an axiom that exists in all input spaces TODO: Write similar rules for predicates and operators. For Sorts, this is a bit more difficult because of subsorting. 
 rmLowestPriorityAx(I,Ax,t) :- priorityAx(I,Ax,P), exec(rmAx(Ax),I,t), not allSpecsHaveAx(Ax,t), 0{hasAxiom(I,Ax_other,t) : priorityAx(I,Ax_other,P_other), Ax != Ax_other, P_other < P, removableAx(I,Ax_other), not allSpecsHaveAx(Ax_other,t)}0.
+rmLowestPriorityOp(I,Op,t) :- priorityOp(I,Op,P), exec(rmOp(Op),I,t), not allSpecsHaveOp(Op,t), 0{hasOp(I,Op_other,t) : priorityOp(I,Op_other,P_other), Op != Op_other, P_other < P, removableOp(I,Op_other), not allSpecsHaveOp(Op_other,t)}0.
+rmLowestPriorityPred(I,Pred,t) :- priorityPred(I,Pred,P), exec(rmPred(Pred),I,t), not allSpecsHavePred(Pred,t), 0{hasPred(I,Pred_other,t) : priorityPred(I,Pred_other,P_other), Pred != Pred_other, P_other < P, removablePred(I,Pred_other), not allSpecsHavePred(Pred_other,t)}0.
+rmLowestPrioritySort(I,Sort,t) :- prioritySort(I,Sort,P), exec(rmSort(Sort),I,t), not allSpecsHaveSort(Sort,t), 0{hasSort(I,Sort_other,t) : prioritySort(I,Sort_other,P_other), Sort != Sort_other, P_other < P, removableSort(I,Sort_other), not allSpecsHaveSort(Sort_other,t)}0.
 
 
 %% totalGenValue(V,t) :- V = {stepOptimal(I,T) : s(T), spec(I)}, not notGenericReached(t).
