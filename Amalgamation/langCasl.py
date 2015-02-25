@@ -7,6 +7,10 @@ from string import *
 import re
 from settings import *
 
+from auxFunctions import *
+
+from FOL import *
+
 # axMap = {}
 
 # caslToLpNameMap = {}
@@ -209,28 +213,6 @@ class CaslSort:
 
 
 
-# This class represents a CASL Axiom.        
-class CaslAx:    
-
-    def __init__(self, id, name, axStr):
-        self.id = id
-        self.name = name
-        self.axStr = axStr
-        self.removable = 1
-        self.priority = 0
-        
-    def toCaslStr(self):
-        return self.axStr + " " + "%("+self.name+")% \t " + "%priority(" + str(self.priority) + ")% \t %%rem:" + str(self.removable)+" %%id:"+str(self.id)+" \n"
-        
-    def toLPStr(self, specName):
-        if self.axStr.find("generated type") != -1:
-            return ""
-        oStr = "hasAxiom("+toLPName(specName)+","+str(self.id)+",1).\n"
-        if self.removable == 1:
-            oStr = oStr + "removableAx("+toLPName(specName) +","+str(self.id)+").\n"
-        oStr = oStr + "priorityAx("+toLPName(specName) +","+str(self.id)+","+str(self.priority)+",1).\n"
-
-        return oStr
 
 
 # This class represents a CASL specification.        
@@ -284,25 +266,6 @@ class CaslSpec:
             oStr = oStr + ax.toLPStr(self.name) + "\n"        
 
         return oStr
-
-# This is just a dirty quickfix to use (infix) plus and minus operators. 
-def toLPName(caslName):
-    s = caslName[0:1].lower() + caslName[1:]
-    if s == "__+__" or s == "+":
-        s =  "plus"
-    if s == "__-__" or s == "-":
-        s = "minus"
-    return s
-
-# TODO: This causes errors when upper-case letters are used in operators, predicates or sorts. I should create a dictionary with a mapping from Casl to LP names and vice versa. 
-def toCaslName(lpName):
-    # s = predOp.lower()
-    s = lpName
-    # if s == "__+__" or s == "+":
-    #     s =  "plus"
-    # if s == "__-__" or s == "-":
-    #     s = "minus"
-    return s
 
 # This is the main method to turn the xml representation of input spaces into the internal data structure
 # Input: The path to an XML file name
