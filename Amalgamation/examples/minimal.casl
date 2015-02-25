@@ -1,6 +1,6 @@
 spec Symbols =
-    sort Value
-    %% free type Value ::= v1 | v2
+    %% sort Value
+    free type Value ::= v1 | v2
 end
 
 spec Generic = Symbols then

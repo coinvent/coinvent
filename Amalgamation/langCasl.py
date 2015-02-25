@@ -7,7 +7,10 @@ from string import *
 import re
 from settings import *
 
-axMap = {}
+# axMap = {}
+
+# caslToLpNameMap = {}
+# lpToCaslNameMap = {}
 
 ### input2Xml translates CASL input spaces to an xml file. The xml simplifies the CASL parsing. 
 ### Input:  CASL file name and names of input spaces
@@ -110,6 +113,17 @@ class CaslPred:
         outStr = outStr[:-3]
         outStr = outStr + "   %% prio:"+ str(self.priority)+ "\t rem:"+ str(self.removable)
         return outStr    
+
+    def toLPStr(self, specName) :
+        oStr = "hasPred("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
+        argCtr = 1
+        for arg in self.args:
+            oStr = oStr + "predHasSort("+toLPName(self.name)+","+toLPName(specName)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
+            argCtr = argCtr + 1        
+        if self.removable == True:
+            oStr = oStr + "removablePred("+toLPName(specName)+","+toLPName(self.name)+").\n"
+        oStr = oStr + "priorityPred("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"        
+        return oStr 
              
 ## This class represents an operator in CASL.       
 class CaslOp:
@@ -156,6 +170,18 @@ class CaslOp:
         outStr = outStr + "   %% prio:"+ str(self.priority)+ "\t rem:"+ str(self.removable)
         return outStr 
 
+    def toLPStr(self,specName):
+        oStr = "hasOp("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
+        argCtr = 1
+        for arg in self.args:
+            oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(specName)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
+            argCtr = argCtr + 1
+        oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(specName)+","+toLPName(self.dom)+",domain,1).\n"
+        if self.removable == True:
+            oStr = oStr + "removableOp("+toLPName(specName)+","+toLPName(self.name)+").\n"
+        oStr = oStr + "priorityOp("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"        
+        return oStr 
+
     
 ## This class represents a sort in CASL.       
 class CaslSort:
@@ -164,7 +190,6 @@ class CaslSort:
         self.parent = ""
         self.priority = 1
         self.removable = 1
-        # self.childs = []
 
     def toCaslStr(self):
         outStr = "sort " + self.name
@@ -172,6 +197,15 @@ class CaslSort:
             outStr = outStr + " < " + self.parent
         outStr = outStr + "   %% prio:"+ str(self.priority) + "\t rem:"+ str(self.removable)
         return outStr
+
+    def toLPStr(self,specName):
+        oStr = "hasSort("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
+        if self.parent != "":
+            oStr = oStr + "isParentSort("+toLPName(specName)+","+toLPName(self.parent)+","+toLPName(self.name)+").\n"
+        if self.removable == True:
+            oStr = oStr + "removableSort("+toLPName(specName)+","+toLPName(self.name)+").\n"
+        oStr = oStr + "prioritySort("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+",1).\n"
+        return oStr
 
 
 
@@ -184,44 +218,14 @@ class CaslAx:
         self.axStr = axStr
         self.removable = 1
         self.priority = 0
-        # self.eqClass = -1
-        self.predsOpsSorts = self.determinePredsOpsSorts()
-        # print self.predsOpsSorts
         
     def toCaslStr(self):
         return self.axStr + " " + "%("+self.name+")% \t " + "%priority(" + str(self.priority) + ")% \t %%rem:" + str(self.removable)+" %%id:"+str(self.id)+" \n"
-
-    def determinePredsOpsSorts(self):
-        # print self.axStr
-        if self.axStr.find("generated type") != -1:
-            return []
-
-        #Determine variables of quantifiers. These must not be considered as operators, predicates or sorts. 
-        qStrings = re.findall("forall (.*?) :|exists (.*?) :", self.axStr)
-        vars = []
-        for qstrs in qStrings:
-            for qs in qstrs:
-                for item in qs.split(', '):
-                    if item != '':
-                        vars.append(item)
-
-        # Remove all strings from axiom that are not operators, predicates or sorts (or variables).
-        axStrArr = re.split("[ .=(),:><;\n]|not|forall|exists|exists!|/\\\\|\\\\/",self.axStr)
-        predOpSortNames = []
-        # Now add all resulting strings to array if they are not empty strings or variables. 
-        for item in axStrArr:
-            if item == "":
-                continue
-            if (item not in predOpSortNames) and (item not in vars):
-                predOpSortNames.append(toLPName(item))
-        # print predOpSortNames
-        return predOpSortNames
-
         
-    def toLP(self, specName):
-        oStr = "axiom("+str(self.id)+").\n"
-        for predOpSort in self.predsOpsSorts:
-            oStr = oStr + "axInvolvesPredOpSort("+str(self.id)+","+toLPName(predOpSort)+").\n"
+    def toLPStr(self, specName):
+        if self.axStr.find("generated type") != -1:
+            return ""
+        oStr = "hasAxiom("+toLPName(specName)+","+str(self.id)+",1).\n"
         if self.removable == 1:
             oStr = oStr + "removableAx("+toLPName(specName) +","+str(self.id)+").\n"
         oStr = oStr + "priorityAx("+toLPName(specName) +","+str(self.id)+","+str(self.priority)+",1).\n"
@@ -235,7 +239,7 @@ class CaslSpec:
         self.name = name
         self.ops = []
         self.preds = []
-        self.sorts = {}
+        self.sorts = []
         self.axioms = []
         self.id = 0
 
@@ -243,17 +247,12 @@ class CaslSpec:
         # caslStr = "CaslSpec:\n"
         caslStr = "spec "
         caslStr = caslStr +  self.name +" = \n"
-        for s in self.sorts.keys(): 
-            caslStr = caslStr + "\t sort " + s  
-            if self.sorts[s].parent != "":
-                caslStr = caslStr + " < " + self.sorts[s].parent
-            caslStr = caslStr + "   %% prio:" + str(self.sorts[s].priority)
-            caslStr = caslStr + "\n" 
-
-        caslStr = caslStr + "\n"
+        for s in self.sorts: 
+            caslStr = caslStr + "\t " + s.toCaslStr() + "\n"
         if len(self.ops) > 0 :
             caslStr = caslStr + "\t ops \n" 
-        for op in self.ops: caslStr = caslStr + "\t\t " + op.toCaslStr() +"\n"
+        for op in self.ops: 
+            caslStr = caslStr + "\t\t " + op.toCaslStr() +"\n"
         if len(self.preds) > 0 :
             caslStr = caslStr + "\t preds \n"
         for p in self.preds: 
@@ -262,46 +261,33 @@ class CaslSpec:
         for ax in self.axioms: 
             caslStr = caslStr + ax.toCaslStr()
         caslStr = caslStr + "end"
+        
         return caslStr
         
     def toLP(self):
-        oStr = "spec("+toLPName(self.name)+").\n"
-        oStr = oStr + "hasId("+toLPName(self.name)+","+str(self.id)+").\n"      
+        oStr  = "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
+        oStr += "%% spec " + self.name+" %%\n"
+        oStr += "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n"
+        oStr = oStr + "spec("+toLPName(self.name)+").\n"
+        oStr = oStr + "hasId("+toLPName(self.name)+","+str(self.id)+").\n\n"      
+        oStr += "%% sorts %%\n"
+        for so in self.sorts:
+            oStr = oStr + so.toLPStr(self.name) + "\n"
+        oStr += "%% operators %%\n"
         for op in self.ops:
-            oStr = oStr + "hasOp("+toLPName(self.name)+","+toLPName(op.name)+",1).\n"
-            argCtr = 1
-            for arg in op.args:
-                oStr = oStr + "opHasSort("+toLPName(op.name)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
-                argCtr = argCtr + 1
-            oStr = oStr + "opHasSort("+toLPName(op.name)+","+toLPName(op.dom)+",domain,1).\n"
-            if op.removable == True:
-                oStr = oStr + "removableOp("+toLPName(self.name)+","+toLPName(op.name)+").\n"
-            oStr = oStr + "priorityOp("+toLPName(self.name)+","+toLPName(op.name)+","+str(op.priority)+",1).\n"
+            oStr = oStr + op.toLPStr(self.name) + "\n"
+        oStr += "%% predicates %%\n"
         for p in self.preds:
-            oStr = oStr + "hasPred("+toLPName(self.name)+","+toLPName(p.name)+",1).\n"
-            argCtr = 1
-            for arg in p.args:
-                oStr = oStr + "predHasSort("+toLPName(p.name)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
-                argCtr = argCtr + 1
-            if p.removable == True:
-                oStr = oStr + "removablePred("+toLPName(self.name)+","+toLPName(p.name)+").\n"
-            oStr = oStr + "priorityPred("+toLPName(self.name)+","+toLPName(p.name)+","+str(p.priority)+",1).\n"
+            oStr = oStr + p.toLPStr(self.name) + "\n"
+        oStr += "%% axioms %%\n"
         for ax in self.axioms:
-            oStr = oStr + ax.toLP(self.name)
-            oStr += "hasAxiom("+toLPName(self.name)+","+str(ax.id)+",1).\n"
-        
-        for so in self.sorts.keys():
-            oStr = oStr + "hasSort("+toLPName(self.name)+","+toLPName(so)+",1).\n"
-            if self.sorts[so].parent != "":
-                oStr = oStr + "isParentSort("+toLPName(self.name)+","+toLPName(self.sorts[so].parent)+","+toLPName(so)+").\n"
-            if self.sorts[so].removable == True:
-                oStr = oStr + "removableSort("+toLPName(self.name)+","+toLPName(so)+").\n"
-            oStr = oStr + "prioritySort("+toLPName(self.name)+","+toLPName(so)+","+str(self.sorts[so].priority)+",1).\n"
+            oStr = oStr + ax.toLPStr(self.name) + "\n"        
+
         return oStr
 
 # This is just a dirty quickfix to use (infix) plus and minus operators. 
 def toLPName(caslName):
-    s = caslName.lower()
+    s = caslName[0:1].lower() + caslName[1:]
     if s == "__+__" or s == "+":
         s =  "plus"
     if s == "__-__" or s == "-":
@@ -354,11 +340,13 @@ def parseXml(xmlFile):
                 if entry.tag == "Symbol":
                     if entry.attrib['kind'] == 'sort':
                         sName = entry.attrib['name']
-                        thisSpec.sorts[entry.attrib['name']] = CaslSort(sName)
+                        sort = CaslSort(sName)
                         sSortArr = entry.text.split("<")
                         if len(sSortArr) == 2:
                             pSort = sSortArr[1].strip()
-                            thisSpec.sorts[sName].parent = pSort
+                            sort.parent = pSort
+                        thisSpec.sorts.append(sort)
+                        
                             # thisSpec.sorts[pSort].childs.append(sName)
                         
                     if entry.attrib['kind'] == 'op':
@@ -427,13 +415,13 @@ def parseXml(xmlFile):
         specs.append(copy.deepcopy(thisSpec))
 
     # Re-assign axiom Ids, based on equivalence of axioms in their specifications. For now, this is just by syntactic equivalence. TODO: This should be improve by a real logical equivalence check, as commented out below.
-    for spec in specs:
-        for ax in spec.axioms:  
-            if ax.axStr in axMap.keys():
-                ax.id = axMap[ax.axStr]
-            else:
-                ax.id = len(axMap.keys())
-                axMap[ax.axStr] = ax.id
+    # for spec in specs:
+    #     for ax in spec.axioms:  
+    #         if ax.axStr in axMap.keys():
+    #             ax.id = axMap[ax.axStr]
+    #         else:
+    #             ax.id = len(axMap.keys())
+    #             axMap[ax.axStr] = ax.id
     return specs
 
     

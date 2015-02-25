@@ -46,8 +46,8 @@ hetsExe = 'hets'
 # inputFile = "examples/cadenceByAx.casl"
 # inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 
-# inputFile = "examples/houseBoat.casl"
-# inputSpaceNames = ["boat","house"]
+inputFile = "examples/houseBoat.casl"
+inputSpaceNames = ["Boat","House"]
 
 # inputFile = "examples/music/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
 # inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]
