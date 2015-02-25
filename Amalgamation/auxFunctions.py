@@ -199,7 +199,6 @@ def computeGeneralizedCaslSpecs():
                 acts[actStep].append([actType,actArgs])
             else :
                 acts[actStep] = [[actType,actArgs]]
-    # print acts
     for step in sorted(acts.keys()):
         cSpecToAlter = None
         generalizationPairs[step] = []

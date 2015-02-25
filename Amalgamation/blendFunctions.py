@@ -10,7 +10,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
     # Parse model and execute actions on internal data structure to obtain the generalized inut spaces. 
     genInputSpaces = getGeneralizedSpaces(modelAtoms, inputSpaces)
 
-    # get possible combinations of generalization combinations
+    # Get possible combinations of generalization combinations
     blendCombis = getPossBlendCombis(genInputSpaces)    
 
     # initialize output string for casl file
@@ -24,7 +24,36 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             continue
         for spec in genInputSpaces[specName]:
             cstr = cstr + spec.toCaslStr()+"\n\n"
-            cstr = cstr + "view GenTo"+spec.name+" : Generic to "+spec.name+" end\n\n"
+            cstr = cstr + "view GenTo"+spec.name+" : Generic to "+spec.name+" \n"
+            
+            renamings = {}
+            for atom in modelAtoms:
+                a = str(atom)
+                if a[:4] == "exec":
+                    act = getActFromAtom(a)
+                    if act["actType"]  != "renameOp":
+                        continue
+                    if act["iSpace"] != toLPName(specName):
+                        continue
+                    # Add renaming only if operator is in target spec.
+                    rnInOps = False
+                    for op in spec.ops:                        
+                        if act["argVect"][0] == op.name: 
+                            rnInOps = True
+                            break
+                    if rnInOps: 
+                        renamings[act["step"]] = act["argVect"]
+
+            if len(renamings.keys()) > 0:
+                cstr = cstr + " =  "
+                for step in sorted(renamings.keys()):
+                    cstr = cstr + renamings[step][1] + " |-> " + renamings[step][0] + ", "
+                cstr = cstr[:-2]
+
+                    # print act
+                # if atom.find("exec(renameOp(") != -1:
+                    # atomSpec = 
+            cstr = cstr + " end\n\n"
 
     # State blends (colimit operation)
     for cost in sorted(blendCombis.keys()):
@@ -42,7 +71,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             cstr = cstr[:-1]
             cstr = cstr + " end\n\n"
     
-    # First make sure file does noe exists, and then write file. Try writing multiple times (this is necessary due to some strange file writing bug...)
+    # First make sure file does not exists, and then write file. Try writing multiple times (this is necessary due to some strange file writing bug...)
     if os.path.isfile("amalgamTmp.casl"):
         os.system("rm amalgamTmp.casl")
 
@@ -214,32 +243,7 @@ def getPossBlendCombis(genInputSpaces):
             cost = combi[iSpaceName]
             minSpaceGenCost = min(cost,minSpaceGenCost)
             maxSpaceGenCost = max(cost,maxSpaceGenCost)
-            # thisCombiCost = thisCombiCost + cost            
 
-        # avgCost = thisCombiCost / len(combi.keys())
-
-        # totalDiffFromAvg = 0
-        # for iSpaceName in combi.keys():
-        #     cost = combi[iSpaceName]
-        #     totalDiffFromAvg = totalDiffFromAvg + abs(avgCost - cost)
-
-        # avgDiffFromAvg = float(totalDiffFromAvg) / float(len(combi.keys()))
-        # symFactor = avgDiffFromAvg + 1
-        
-        # print "combi cost for "
-        # print combi
-        # print "avg diff from average:"
-        # print avgDiffFromAvg
-        # print "symmetry factor:"
-        # print symFactor
-        # print "apriori cost:"
-        # print thisCombiCost
-        # print "final cost is"
-        # print int(thisCombiCost * symFactor)
-
-        # raw_input()
-
-        # finalCombiCost = int(100*(thisCombiCost + avgDiffFromAvg))
         finalCombiCost = maxSpaceGenCost * 10 + minSpaceGenCost
 
         if finalCombiCost not in combis.keys():
@@ -286,16 +290,16 @@ def checkConsistencyDarwin(blendTptpName) :
         status,output,error = darwinCmd.run(timeout=darwinTimeLimit)
         # res = darwinCmd.run(timeout=darwinTimeLimit, shell=True)
 
-        print output
+        # print output
         cVal = -1
         if output.find("ABORTED termination") != -1:
-            print "Consistency check failed: TIMEOUT" 
+            print "Consistency check w. darwin failed: TIMEOUT" 
             cVal = -1
         if output.find("SZS status Satisfiable") != -1:
-            print "Consistency check succeeds: CONSISTENT"
+            print "Consistency check w. darwin succeeds: CONSISTENT"
             cVal = 1
         if output.find("SZS status Unsatisfiable") != -1:
-            print "Consistency check succeeds: INCONSISTENT"
+            print "Consistency check w. darwin succeeds: INCONSISTENT"
             cVal = 0
         
         # raw_input()

@@ -7,7 +7,8 @@ from string import *
 import re
 from settings import *
 
-sortShort = {}
+axMap = {}
+
 ### input2Xml translates CASL input spaces to an xml file. The xml simplifies the CASL parsing. 
 ### Input:  CASL file name and names of input spaces
 ### Output: The path to an xml file representing the input spaces.     
@@ -93,7 +94,7 @@ class CaslPred:
     def __init__(self, name):
         self.name = name
         self.args = []
-        self.removable = True
+        self.removable = 1
         self.priority = 1
     
     @staticmethod
@@ -107,17 +108,8 @@ class CaslPred:
         outStr = self.name + " : " 
         for s in self.args: outStr = outStr + s +" * " 
         outStr = outStr[:-3]
-        outStr = outStr + "   %% prio:"+ str(self.priority)
+        outStr = outStr + "   %% prio:"+ str(self.priority)+ "\t rem:"+ str(self.removable)
         return outStr    
-
-    # def toPlainStr(self):
-    #     outStr = self.name + " : " 
-    #     for s in self.args: outStr = outStr + s +" * " 
-    #     outStr = outStr[:-3]
-
-    #     outStr = outStr + "   %% prio:"+ str(self.priority)
-
-    #     return outStr 
              
 ## This class represents an operator in CASL.       
 class CaslOp:
@@ -125,7 +117,7 @@ class CaslOp:
         self.name = name
         self.args = []
         self.dom = ''
-        self.removable = True
+        self.removable = 1
         self.priority = 1
     
     @staticmethod
@@ -161,7 +153,7 @@ class CaslOp:
         else:
             outStr = outStr + " : " +self.dom
 
-        outStr = outStr + "   %% prio:"+ str(self.priority)
+        outStr = outStr + "   %% prio:"+ str(self.priority)+ "\t rem:"+ str(self.removable)
         return outStr 
 
     
@@ -171,14 +163,14 @@ class CaslSort:
         self.name = name
         self.parent = ""
         self.priority = 1
-        self.removable = True
+        self.removable = 1
         # self.childs = []
 
     def toCaslStr(self):
         outStr = "sort " + self.name
         if self.parent != "":
             outStr = outStr + " < " + self.parent
-        outStr = outStr + "   %% prio:"+ str(self.priority)
+        outStr = outStr + "   %% prio:"+ str(self.priority) + "\t rem:"+ str(self.removable)
         return outStr
 
 
@@ -232,7 +224,7 @@ class CaslAx:
             oStr = oStr + "axInvolvesPredOpSort("+str(self.id)+","+toLPName(predOpSort)+").\n"
         if self.removable == 1:
             oStr = oStr + "removableAx("+toLPName(specName) +","+str(self.id)+").\n"
-        oStr = oStr + "priorityAx("+toLPName(specName) +","+str(self.id)+","+str(self.priority)+").\n"
+        oStr = oStr + "priorityAx("+toLPName(specName) +","+str(self.id)+","+str(self.priority)+",1).\n"
 
         return oStr
 
@@ -277,19 +269,23 @@ class CaslSpec:
         oStr = oStr + "hasId("+toLPName(self.name)+","+str(self.id)+").\n"      
         for op in self.ops:
             oStr = oStr + "hasOp("+toLPName(self.name)+","+toLPName(op.name)+",1).\n"
+            argCtr = 1
             for arg in op.args:
-                oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(op.name)+","+toLPName(arg)+").\n"
-            oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(op.name)+","+toLPName(op.dom)+").\n"
+                oStr = oStr + "opHasSort("+toLPName(op.name)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
+                argCtr = argCtr + 1
+            oStr = oStr + "opHasSort("+toLPName(op.name)+","+toLPName(op.dom)+",domain,1).\n"
             if op.removable == True:
                 oStr = oStr + "removableOp("+toLPName(self.name)+","+toLPName(op.name)+").\n"
-            oStr = oStr + "priorityOp("+toLPName(self.name)+","+toLPName(op.name)+","+str(op.priority)+").\n"
+            oStr = oStr + "priorityOp("+toLPName(self.name)+","+toLPName(op.name)+","+str(op.priority)+",1).\n"
         for p in self.preds:
             oStr = oStr + "hasPred("+toLPName(self.name)+","+toLPName(p.name)+",1).\n"
+            argCtr = 1
             for arg in p.args:
-                oStr = oStr + "predHasSort("+toLPName(self.name)+","+toLPName(p.name)+","+toLPName(arg)+").\n"
+                oStr = oStr + "predHasSort("+toLPName(p.name)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
+                argCtr = argCtr + 1
             if p.removable == True:
                 oStr = oStr + "removablePred("+toLPName(self.name)+","+toLPName(p.name)+").\n"
-            oStr = oStr + "priorityPred("+toLPName(self.name)+","+toLPName(p.name)+","+str(p.priority)+").\n"
+            oStr = oStr + "priorityPred("+toLPName(self.name)+","+toLPName(p.name)+","+str(p.priority)+",1).\n"
         for ax in self.axioms:
             oStr = oStr + ax.toLP(self.name)
             oStr += "hasAxiom("+toLPName(self.name)+","+str(ax.id)+",1).\n"
@@ -300,24 +296,34 @@ class CaslSpec:
                 oStr = oStr + "isParentSort("+toLPName(self.name)+","+toLPName(self.sorts[so].parent)+","+toLPName(so)+").\n"
             if self.sorts[so].removable == True:
                 oStr = oStr + "removableSort("+toLPName(self.name)+","+toLPName(so)+").\n"
-            oStr = oStr + "prioritySort("+toLPName(self.name)+","+toLPName(so)+","+str(self.sorts[so].priority)+").\n"
+            oStr = oStr + "prioritySort("+toLPName(self.name)+","+toLPName(so)+","+str(self.sorts[so].priority)+",1).\n"
         return oStr
 
 # This is just a dirty quickfix to use (infix) plus and minus operators. 
-def toLPName(predOp):
-    s = predOp.lower()
+def toLPName(caslName):
+    s = caslName.lower()
     if s == "__+__" or s == "+":
         s =  "plus"
     if s == "__-__" or s == "-":
         s = "minus"
     return s
 
+# TODO: This causes errors when upper-case letters are used in operators, predicates or sorts. I should create a dictionary with a mapping from Casl to LP names and vice versa. 
+def toCaslName(lpName):
+    # s = predOp.lower()
+    s = lpName
+    # if s == "__+__" or s == "+":
+    #     s =  "plus"
+    # if s == "__-__" or s == "-":
+    #     s = "minus"
+    return s
+
 # This is the main method to turn the xml representation of input spaces into the internal data structure
 # Input: The path to an XML file name
 # Output: a list of CASL specs represented in the internal data structure
 def parseXml(xmlFile):
+    global axMap
     specs = []
-    global sortShort
     # print "Calling parseXml method"
     tree = ET.parse(xmlFile)
     # print "End calling parseXml method"
@@ -421,7 +427,6 @@ def parseXml(xmlFile):
         specs.append(copy.deepcopy(thisSpec))
 
     # Re-assign axiom Ids, based on equivalence of axioms in their specifications. For now, this is just by syntactic equivalence. TODO: This should be improve by a real logical equivalence check, as commented out below.
-    axMap = {}
     for spec in specs:
         for ax in spec.axioms:  
             if ax.axStr in axMap.keys():
@@ -459,6 +464,27 @@ def toLP(caslSpecs):
     
     return lpStr
     
+def getActFromAtom(a):    
+    # print a
+    if a[:4] != "exec":
+        print "Error, this is not an action atom."
+        exit(0)
+    actStr = a[5:-1]
+    act = {}
+    actStrArr = actStr.split(",")
+    act["step"] = int(actStrArr[len(actStrArr)-1])
+    act["iSpace"] = actStrArr[len(actStrArr)-2]
+    atomicActStr = ""
+    # re-assemble first parts of this string to obtain the atomic generalization action string.
+    for item in actStrArr:
+        if item == actStrArr[len(actStrArr)-2]:
+            break
+        atomicActStr = atomicActStr + item + ","
+    atomicActStr = atomicActStr[:-1]
+    # print atomicActStr
+    act["actType"] = atomicActStr.split("(")[0]
+    act["argVect"] = atomicActStr.split("(")[1][:-1].split(",")
+    return act
 
 def getGeneralizedSpaces(atoms, originalInputSpaces):
 
@@ -473,20 +499,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
     for atom in atoms:
         a = str(atom)
         if a[:4] == "exec":
-            # print a
-            actStr = a[5:-1]
-            act = {}
-            actStrArr = actStr.split(",")
-            act["step"] = int(actStrArr[len(actStrArr)-1])
-            act["iSpace"] = actStrArr[len(actStrArr)-2]
-            atomicActStr = ""
-            # re-assemble first parts of this string to obtain the atomic generalization action string.
-            for item in actStrArr:
-                if item == actStrArr[len(actStrArr)-2]:
-                    break
-                atomicActStr = atomicActStr + item
-            act["actType"] = atomicActStr.split("(")[0]
-            act["argVect"] = atomicActStr.split("(")[1][:-1].split(",")
+            act = getActFromAtom(a)
             # print "new action: "
             # print act
             if act["step"] not in acts.keys():
@@ -507,12 +520,38 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                     for act in acts[step][iSpace]:
                         if act["actType"] == "rmOp" :
                             for op in cSpec.ops:
-                                if op.name.lower() == act["argVect"][0]:
+                                if toLPName(op.name) == act["argVect"][0]:
                                     cSpec.ops.remove(op)
+
+                        if act["actType"] == "renameOp" :
+                            opFrom = act["argVect"][0]
+                            opTo = act["argVect"][1]
+                            for op in cSpec.ops:
+                                if toLPName(op.name) == opFrom:
+                                    cSpec.ops.remove(op)
+                            newOp = copy.deepcopy(op)
+                            newOp.name = toCaslName(opTo)
+                            cSpec.ops.append(newOp)
+
+                            # Get axioms that involve the operator and remove them. 
+                            for ax in cSpec.axioms:
+                                # predsOpsSorts = ax.determinePredsOpsSorts()
+                                # print ax.axStr
+                                # print predsOpsSorts
+                                if op.name in ax.determinePredsOpsSorts():
+                                    # Add new updated axioms with changed operator names
+                                    newAxStr = re.sub("(?<!\w)"+opFrom+"(?!\w)", opTo, ax.axStr)
+                                    # newAx = copy.deepcopy(ax)
+                                    # newAx.axStr = newAxStr
+                                    # newAx.id = axMap[newAxStr]
+                                    # cSpec.axioms.remove(ax)
+                                    # cSpec.axioms.append(newAx)
+                                    ax.axStr = newAxStr
+                                    ax.id = axMap[newAxStr]
                             
                         if act["actType"] == "rmPred" :
                             for p in cSpec.preds:
-                                if p.name.lower() == act["argVect"][0]:
+                                if toLPName(p.name) == act["argVect"][0]:
                                     cSpec.preds.remove(p)
 
                         if act["actType"] == "rmSort" :
@@ -538,7 +577,40 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
     generalizations["Generic"] = [genSpec]    
 
     # print generalizations
+    for origS in generalizations.values():
+        for s in origS:
+            print s.toCaslStr()
 
     return generalizations
+
+# This function works, but it should be more sophisticated and use logical equivalence instead of syntactic equality to check if axioms are equal. 
+def getNewAxIdOpRename(axId,op1,op2):
+    axInt = int(str(axId))
+    op1Str = str(op1)
+    op2Str = str(op2)
+    global axMap
+    # print "Assigning new axiom Id after renaming " + str(op1Str) + " to " + str(op2Str)
+    # TODO: This is probably very slow. I have to find another data type that allows of 1-1 mappings with hashing. 
+    reverseAxMap = {value:key for key, value in axMap.iteritems()}
+    # get original axiom string
+    axStr = reverseAxMap[axInt]
+    # Now apply renaming operations. Replace ech occurrence of op1, that is not surrounded by alphanumerical symbols a-zA-Z0-9 (encoded as \w in regex), with op2
+    newAxStr = re.sub("(?<!\w)"+op1Str+"(?!\w)", op2Str, axStr)
+    # print "Replaced " + axStr + " with " + newAxStr
+    # exit(0)
+    # now add new string to global axiom dictionary if it does not exist already.
+    if newAxStr in axMap.keys():
+        axId = axMap[newAxStr]
+        # print "New ax exists. ID: " + str(axId)
+    else:
+        if len(axMap.keys()) == 0:
+            # this should not happen because there should be at least one axiom when renaming an axiom.
+            print "WARNING!! This should not happen. In function: getAxIdOpRename, in langCasl.py"
+            exit(0)
+        else:
+            axId = max(axMap.values())+1
+        # print "New ax does not exist. ID: " + str(axId)
+        axMap[newAxStr] = axId
+    return axId
 
 
