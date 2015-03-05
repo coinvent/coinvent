@@ -11,7 +11,8 @@ from auxFunctions import *
 
 from FOL import *
 
-# axMap = {}
+axMap = {}
+axEqClasses = {}
 
 # caslToLpNameMap = {}
 # lpToCaslNameMap = {}
@@ -101,7 +102,7 @@ class CaslPred:
     def __init__(self, name):
         self.name = name
         self.args = []
-        self.removable = 1
+        # self.removable = 1
         self.priority = 1
     
     @staticmethod
@@ -115,18 +116,18 @@ class CaslPred:
         outStr = self.name + " : " 
         for s in self.args: outStr = outStr + s +" * " 
         outStr = outStr[:-3]
-        outStr = outStr + "   %% prio:"+ str(self.priority)+ "\t rem:"+ str(self.removable)
+        outStr = outStr + "   %% prio:"+ str(self.priority)
         return outStr    
 
     def toLPStr(self, specName) :
         oStr = "hasPred("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
         argCtr = 1
         for arg in self.args:
-            oStr = oStr + "predHasSort("+toLPName(self.name)+","+toLPName(specName)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
+            oStr = oStr + "predHasSort("+toLPName(specName)+","+toLPName(self.name)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
             argCtr = argCtr + 1        
-        if self.removable == True:
-            oStr = oStr + "removablePred("+toLPName(specName)+","+toLPName(self.name)+").\n"
-        oStr = oStr + "priorityPred("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"        
+        # if self. == True:
+            # oStr = oStr + "removablePred("+toLPName(specName)+","+toLPName(self.name)+").\n"
+        oStr = oStr + "predHasPriority("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"        
         return oStr 
              
 ## This class represents an operator in CASL.       
@@ -135,7 +136,8 @@ class CaslOp:
         self.name = name
         self.args = []
         self.dom = ''
-        self.removable = 1
+        # self.removable = 1
+        self.isDataOp = False
         self.priority = 1
     
     @staticmethod
@@ -171,19 +173,23 @@ class CaslOp:
         else:
             outStr = outStr + " : " +self.dom
 
-        outStr = outStr + "   %% prio:"+ str(self.priority)+ "\t rem:"+ str(self.removable)
+        outStr = outStr + "\t%%prio:"+ str(self.priority)
+        if self.isDataOp:
+            outStr +=  "\t(data operator)"
         return outStr 
 
     def toLPStr(self,specName):
         oStr = "hasOp("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
         argCtr = 1
         for arg in self.args:
-            oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(specName)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
+            oStr = oStr + "opHasSort("+toLPName(specName)+","+toLPName(self.name)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
             argCtr = argCtr + 1
-        oStr = oStr + "opHasSort("+toLPName(self.name)+","+toLPName(specName)+","+toLPName(self.dom)+",domain,1).\n"
-        if self.removable == True:
-            oStr = oStr + "removableOp("+toLPName(specName)+","+toLPName(self.name)+").\n"
-        oStr = oStr + "priorityOp("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"        
+        oStr = oStr + "opHasSort("+toLPName(specName)+","+toLPName(self.name)+","+toLPName(self.dom)+",domain,1).\n"
+        if self.isDataOp == False:
+            oStr = oStr + "isNonDataOp("+toLPName(specName)+","+toLPName(self.name)+").\n"
+        else:
+            oStr = oStr + "isDataOp("+toLPName(specName)+","+toLPName(self.name)+").\n"
+        oStr = oStr + "opHasPriority("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"        
         return oStr 
 
     
@@ -193,27 +199,28 @@ class CaslSort:
         self.name = name
         self.parent = ""
         self.priority = 1
-        self.removable = 1
+        # self.removable = 1
+        self.isDataSort = False
 
     def toCaslStr(self):
         outStr = "sort " + self.name
         if self.parent != "":
             outStr = outStr + " < " + self.parent
-        outStr = outStr + "   %% prio:"+ str(self.priority) + "\t rem:"+ str(self.removable)
+        outStr = outStr + "\t%%prio:"+ str(self.priority)
+        if self.isDataSort:
+            outStr +=  "\t(data sort)"
         return outStr
 
     def toLPStr(self,specName):
         oStr = "hasSort("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
         if self.parent != "":
-            oStr = oStr + "isParentSort("+toLPName(specName)+","+toLPName(self.parent)+","+toLPName(self.name)+").\n"
-        if self.removable == True:
-            oStr = oStr + "removableSort("+toLPName(specName)+","+toLPName(self.name)+").\n"
-        oStr = oStr + "prioritySort("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+",1).\n"
+            oStr = oStr + "hasParentSort("+toLPName(specName)+","+toLPName(self.name)+","+toLPName(self.parent)+",1).\n"
+        if self.isDataSort == False:
+            oStr = oStr + "isNonDataSort("+toLPName(specName)+","+toLPName(self.name)+").\n"
+        else:
+            oStr = oStr + "isDataSort("+toLPName(specName)+","+toLPName(self.name)+").\n"
+        oStr = oStr + "sortHasPriority("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"
         return oStr
-
-
-
-
 
 # This class represents a CASL specification.        
 class CaslSpec:
@@ -279,6 +286,8 @@ def parseXml(xmlFile):
     dGraph = tree.getroot()
     ctr = 0  
     axCtr = 0 
+    dataOps = {}
+    dataSorts = {}
     for dgNode in dGraph:
         if 'refname' not in dgNode.attrib.keys():
             continue
@@ -286,18 +295,25 @@ def parseXml(xmlFile):
         thisSpec = CaslSpec(specName)
         thisSpec.id = len(specs)
         print "found spec " + specName
+        # determine non-removable ops, i.e. those in free type definitions. 
         for decAx in dgNode:
-            # determine non-removable ops, i.e. those in free type definitions. 
-            nonRemovableOps = []
+            # determine data ops, and sorts, i.e. those in generated type definitions. 
+            dataOps[specName] = []
+            dataSorts[specName] = []
             for entry in decAx:
                 if entry.tag == "Axiom":
                     for subEntry in entry:
                         if subEntry.tag == "Text":
                             axText = subEntry.text
                             if axText.find("generated type") == 0:
-                                nonRemStr = axText.split("::=")[1]
-                                nonRems = nonRemStr.split("|")
-                                for nr in nonRems : nonRemovableOps.append(nr.strip())
+
+                                dataOpsStr = axText.split("::=")[1]
+                                dataOpStrs = dataOpsStr.split("|")
+                                for op in dataOpStrs : dataOps[specName].append(op.strip())
+
+                                dataSortStr = axText.split("::=")[0][len("generated type"):].strip()
+                                dataSorts[specName].append(dataSortStr)
+
         for decAx in dgNode:
             for entry in decAx:
                 if entry.tag == "Symbol":
@@ -308,6 +324,12 @@ def parseXml(xmlFile):
                         if len(sSortArr) == 2:
                             pSort = sSortArr[1].strip()
                             sort.parent = pSort
+                        
+                        if sName in dataSorts[specName]:
+                            sort.isDataSort = True
+                        else:
+                            sort.isDataSort = False
+                        
                         thisSpec.sorts.append(sort)
                         
                             # thisSpec.sorts[pSort].childs.append(sName)
@@ -316,8 +338,10 @@ def parseXml(xmlFile):
                         op = CaslOp.byStr(entry.text)
                         # print "op"
                         # print op.name 
-                        if op.name in nonRemovableOps:
-                            op.removable = False
+                        if op.name in dataOps[specName]:
+                            op.isDataOp = True
+                        else:
+                            op.isDataOp = False
                             # print op.name + " is not removable"
                         thisSpec.ops.append(op)
                         
@@ -347,64 +371,19 @@ def parseXml(xmlFile):
                             if 'priority' in entry.attrib.keys():
                                 priority = int(entry.attrib['priority'])
                             ax.priority = priority
-                            # print "PRIO:" + str(priority)
-                            # print entry.attrib.keys()
-                            # Check if axiom is removable:
-                            removable = 1
-                            if name.find(":r:") != -1:
-                                removable = int(name.split(":r:")[1].split(":")[0])
 
-                            if priority == -1:
-                                removable = 0
-        
-                            # it is not removable if its a generated type axiom.
-                            if axStr.find("generated type") == 0:
-                                removable = 0
-
-                            # If this is an axiom stating that a generated type is not equal to a generated type, its not removable.
+                            # If this is an axiom stating that a data op is not equal to a data op, it is a data axiom.
                             axStrArr = axStr.split(" ")
                             predOpNames = []
-                            allGenerated = True
                             if len(axStrArr) == 5:
-                                if axStrArr[4] in nonRemovableOps and axStrArr[2] in nonRemovableOps:
-                                    # print "axiom "+ axText + " not removable because it consists only of generated type specs."
-                                    removable = 0
-                            ax.removable = removable
-
+                                if axStrArr[4] in dataOps[specName] and axStrArr[2] in dataOps[specName]:
+                                    ax.isDataAxiom = True
 
                             thisSpec.axioms.append(copy.deepcopy(ax))
                     axCtr = axCtr + 1
 
         specs.append(copy.deepcopy(thisSpec))
-
-    # Re-assign axiom Ids, based on equivalence of axioms in their specifications. For now, this is just by syntactic equivalence. TODO: This should be improve by a real logical equivalence check, as commented out below.
-    # for spec in specs:
-    #     for ax in spec.axioms:  
-    #         if ax.axStr in axMap.keys():
-    #             ax.id = axMap[ax.axStr]
-    #         else:
-    #             ax.id = len(axMap.keys())
-    #             axMap[ax.axStr] = ax.id
     return specs
-
-    
-    # Assign axiom equivalence classes of axioms over all specifications. For now, just consider syntactic equality as equivalence.
-    # axEqClasses = []
-    # newEqClass = 0
-    # for spec in specs:
-    #     # print spec.toStr()
-    #     for ax in spec.axioms:  
-    #         for [otherSpecId,otherAxStr,eqClassId] in axEqClasses:
-    #             if axIsEquivalent(ax.axStr,spec.id,otherAxStr,otherSpecId, specs):
-    #                 ax.eqClass = eqClassId
-    #             else:
-    #                 ax.eqClass = newEqClass
-    #                 axEqClasses.append([ax.id,ax.axStr,newEqClass])
-    #                 newEqClass = newEqClass + 1
-
-# This is supposed to test whether two axioms from two specifications are equivalent, assuming uniqueness of names. For now it just checks syntactic equality of axioms.
-def axIsEquivalent(axStr1,specId1,axStr2,specId2, specs):
-    return axStr1 == axStr2
     
 # Turn CASL specs in their internal data structure into a Logic Programming specification that is compatible with the ASP files. 
 def toLP(caslSpecs):
@@ -563,5 +542,28 @@ def getNewAxIdOpRename(axId,op1,op2):
         # print "New ax does not exist. ID: " + str(axId)
         axMap[newAxStr] = axId
     return axId
+
+
+def newEquivalenceClass(specName,axId, op1,op2):
+    global axMap
+    global axEqClasses
+
+    newId = 0
+
+    axStr = axMap[axId]
+
+    newAxStr = re.sub(op1,op2,axStr)
+
+    axMap[axId] = newAxStr
+
+    for eqClassId in axEqClasses.keys():
+        if isEquivalent(newAxStr,axEqClasses[eqClassId]):
+            return eqClassId
+
+    newEqClassId = len(axEqClasses)
+    axEqClasses[newEqClassId] = newAxStr
+
+    return newEqClassId
+
 
 

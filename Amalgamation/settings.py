@@ -6,7 +6,7 @@ inputFile = "examples/minimal.casl"
 inputSpaceNames = ["S1","S2"]
 
 ###### The number of models to be generated (0 for all models)
-numModels = 1
+numModels = 0
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -15,7 +15,7 @@ minIterationsGeneralize = 1
 maxIterationsGeneralize = 20
 
 ###### The minimal number of iterations for blending
-minIterationsBlend = 1
+minIterationsBlend = 2
 
 ###### The maximal number of iterations for blending
 maxIterationsBlend = 20

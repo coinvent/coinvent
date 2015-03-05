@@ -31,7 +31,7 @@ def onModelGeneralize(model):
     global inputSpaces, maxCost, blends
 
     printModel(model)
-
+    return 
     [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends)
     
     if blendingGeneralizationCost <= maxCost and blendingGeneralizationCost < sys.maxint:
@@ -97,7 +97,7 @@ def main(prg):
         # Find Stable Models for this generalization iteration
         # ret = prg.solve()
         ret = prg.solve(None, onModelGeneralize)
-        
+
         # If Stable Models are found and we are beyond the minimal number of slices, break loop.
         if step >= imin and (ret == SolveResult.SAT): break
         step = step+1

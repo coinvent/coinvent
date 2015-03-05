@@ -1,0 +1,71 @@
+spec Symbols =
+    %% sort Value
+    free type Value ::= v1 | v2
+end
+
+spec Generic = Symbols then
+	sort Object
+    %% ops f : Value
+		%% g : Value
+    %% preds 
+    %%     p1:Value
+		%% h : Value
+end
+
+spec Boat = 
+%% spec Boat = Generic then  
+    sort Boat < Object
+    sort Person
+    sort Passenger < Person
+    ops 
+        boat1 : Boat
+        passenger1 : Passenger
+        %% captainOf : Boat -> Passenger
+        %% boss1 : Person
+        %% object1 : Object
+        %% selectorOp : Object * Person -> Value
+    preds    
+        isPassenger : Passenger * Boat
+        %% isBossOf : Person * Object
+        %% isRider : Passenger *Boat
+
+    %% . captainOf(boat1) = passenger1 %(Ax-AssignCaptain)% %priority(2)%
+    %% forall p: Passenger, b : Boat
+    %%     . (not captainOf(b) = p \/ isPassenger(p,b)) /\ (isRider(p,b) \/ not captainOf(b) = p) %(Ax-captainIsPAssenger)% %priority(3)%
+
+    %% forall b : Boat . exists p: Passenger 
+    %%     . captainOf(b) = p  %(Ax-boatHasCaptain)% %priority(2)%
+
+    %% This states that if p is boss of o, then selectorOp = v1 (biimplication)
+    %% forall p:Person; o:Object . exists o1 : Object .
+        %% (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
+        %% (isBossOf(p,o1))
+
+
+end
+
+%% spec House = Generic then  
+spec House = 
+    sort House < Object
+    sort Person
+    sort Inhabitant < Person
+    ops 
+        house1 : House
+        inhabitant1 : Inhabitant
+        %% ownerOf : House -> Person
+        %% selectorOp : Object * Person -> Value
+        %% boss1 : Person
+        %% object1 : Object
+    preds    
+        isInhabitant : Inhabitant * House
+        %% isBossOf : Person * Object
+    
+    %% forall p:Person; o:Object 
+        %% . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o))
+
+    %% forall p:Person; o:Object . exists o1 : Object .
+    %%     (not selectorOp(o,xp) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
+    %%     (isBossOf(p,o1))
+
+    %% . ownerOf(house1) = person1 %(Ax-AssignOwner)% %priority(2)%
+end
