@@ -22,6 +22,10 @@
 %%% The base program is iteration independent. These are just some auxiliary predicates.
 #program  base1. 
 
+% The specification that provides the vocabulary is the one with the lowest id (for now). 
+specProvidesVocabulary(Spec1) :- spec(Spec1), hasId(Spec1,Id1), 0{spec(Spec2) : hasId(Spec2,Id2), Id2 > Id1}0.
+#show specProvidesVocabulary/1.
+
 %%%% Operator declaration %%%%
 
 % Removal operators
@@ -86,17 +90,20 @@ noAxUsesSort(Spec,Sort,t) 		:- 	0{hasAx(Spec,Ax,t) : axInvolvesSort(Spec,Ax,Sort
 %%% Rename Operator
 poss(renameOp(Op1,Op2,Spec2),Spec1,t) :- 	a(renameOp(Op1,Op2,Spec2),Spec1), hasOp(Spec1,Op1,t), hasOp(Spec2,Op2,t),
 											not opSortsNotEquivalent(Spec1,Op1,Spec2,Op2,t), 
-											not hasOp(Spec1,Op2,t), not hasOp(Spec2,Op1,t).
+											not hasOp(Spec1,Op2,t), not hasOp(Spec2,Op1,t),
+												specProvidesVocabulary(Spec2).
 
 %%% Rename Predicate
 poss(renamePred(Pred1,Pred2,Spec2),Spec1,t) :- 	a(renamePred(Pred1,Pred2,Spec2),Spec1), hasPred(Spec1,Pred1,t), hasPred(Spec2,Pred2,t), 
 												not predSortsNotEquivalent(Spec1,Pred1,Spec2,Pred2,t), 
-												not hasPred(Spec1,Pred2,t), not hasPred(Spec2,Pred1,t).
+												not hasPred(Spec1,Pred2,t), not hasPred(Spec2,Pred1,t),
+												specProvidesVocabulary(Spec2).
 
 %%% Rename Sort
 poss(renameSort(Sort1,Sort2,Spec2),Spec1,t) :- 	a(renameSort(Sort1,Sort2,Spec2),Spec1), hasSort(Spec1,Sort1,t), hasSort(Spec2,Sort2,t), 
 												%% TODO: in which way do sorts have to be equivalent when renaming them? Parent sorts equivalent? Child sorts equivalen? Both?
-												not hasSort(Spec1,Sort2,t), not hasSort(Spec2,Sort1,t).
+												not hasSort(Spec1,Sort2,t), not hasSort(Spec2,Sort1,t),
+												specProvidesVocabulary(Spec2).
 
 
 %%%% Equality of conceptual spaces %%%%

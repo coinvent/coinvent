@@ -12,22 +12,22 @@ spec Generic = Symbols then
 		%% h : Value
 end
 
-spec Boat = 
-%% spec Boat = Generic then  
+%% spec Boat = 
+spec Boat = Generic then  
     sort Boat < Object
     sort Person
     sort Passenger < Person
     ops 
         boat1 : Boat
         passenger1 : Passenger
-        %% captainOf : Boat -> Passenger
-        %% boss1 : Person
-        %% object1 : Object
-        %% selectorOp : Object * Person -> Value
+        captainOf : Boat -> Passenger
+        boss1 : Person
+        object1 : Object
+        selectorOp : Object * Person -> Value
     preds    
         isPassenger : Passenger * Boat
-        %% isBossOf : Person * Object
-        %% isRider : Passenger *Boat
+        isBossOf : Person * Object
+        isRider : Passenger *Boat
 
     %% . captainOf(boat1) = passenger1 %(Ax-AssignCaptain)% %priority(2)%
     %% forall p: Passenger, b : Boat
@@ -44,21 +44,22 @@ spec Boat =
 
 end
 
-%% spec House = Generic then  
-spec House = 
+spec House = Generic then  
+%% spec House = 
     sort House < Object
     sort Person
     sort Inhabitant < Person
     ops 
+    
         house1 : House
         inhabitant1 : Inhabitant
-        %% ownerOf : House -> Person
-        %% selectorOp : Object * Person -> Value
-        %% boss1 : Person
-        %% object1 : Object
+        ownerOf : House -> Person
+        selectorOp : Object * Person -> Value
+        boss1 : Person
+        object1 : Object
     preds    
         isInhabitant : Inhabitant * House
-        %% isBossOf : Person * Object
+        isBossOf : Person * Object
     
     %% forall p:Person; o:Object 
         %% . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o))

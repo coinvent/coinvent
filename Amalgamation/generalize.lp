@@ -25,18 +25,17 @@ genericReached(t) :- not notGenericReached(t).
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %% %% % Generate generalization search space. If the generic space is not yet reached, execute a generalization operation. 
-0{exec(A,I,t) : a(A,I),  poss(A,I,t)}1 :- not genericReached(t), spec(I).
-%% exec(renameSort(inhabitant,passenger,boat),house,1).
-%% exec(renamePred(isInhabitant,isPassenger,boat),house,2).
+%% 0{exec(A,I,t) : a(A,I),  poss(A,I,t)}1 :- not genericReached(t), spec(I).
+1{exec(A,I,t) : a(A,I),  poss(A,I,t), spec(I)}1 :- not genericReached(t).
 
 %% %%%%%%%%%%%%%%%%%%%%
 %% %%% Testing Part %%%
 %% %%%%%%%%%%%%%%%%%%%%
 
 %% %% Domain-independent heuristics:
-%% %% Speedup 1: No "gaps" on operation steps: if no operation happens at a step, then no operations will happen in the future anymore. 
+%% %% Speedup 1: No "gaps" on operation steps: if no operation happens at a step for a certain spec, then no operations will happen in the future anymore. This has to be disabled if using a generation rule which only applies one operation per step in total. 
 specModified(I,t) :- exec(_,I,t).
-:- specModified(I,t), not specModified(I,T_before), T_before < t, s(T_before).
+%% :- specModified(I,t), not specModified(I,T_before), T_before < t, s(T_before).
 
 %% %% Speedup 2: Allow only a limited number on non-optimal steps. 
 :- nonOptimalSteps(N,I,t), N >= 1.
@@ -44,6 +43,7 @@ specModified(I,t) :- exec(_,I,t).
 %% %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query1(t).
 :- query1(t), notGenericReached(t).
+:- query1(t), t < 4.
 
 %% #show isOptimal/3.
 %% #show nonOptimalSteps/3.
