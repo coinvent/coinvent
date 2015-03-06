@@ -116,11 +116,15 @@ class CaslAx:
         self.axStr = axStr
         self.isDataAxiom = False # THis determines whether only data operators (generated type constants) are part of this axiom. Typicallay, such axioms denote, e.g., that natural numbers are not equal, that the boolean true is not equal to false, or that the tones of a chord (which are data operators) are not equal. 
         self.priority = 0
-        self.quantifications = [] # a list of quantifications. 
-        self.conjuncts = set() # This is a set of conjuncts. A conjunct is a set of disjuncts. A disjunct is a set of strings that represent atoms.
+        # self.atoms = []
+        self.involvedPredicates = {}
+        self.involvedOperators = {}
+        self.involvedSorts = {}
+        # self.quantifications = [] # a list of quantifications. 
+        # self.conjuncts = set() # This is a set of conjuncts. A conjunct is a set of disjuncts. A disjunct is a set of strings that represent atoms.
         self.fromAxStr(axStr)
 
-    def caslAnnotationStr(self):
+    def getCaslAnnotationStr(self):
         aStr = ''
         aStr += "\t%("+self.name+")%\t%priority(" + str(self.priority) + ")%\t%%id:"+str(self.id)
         if self.isDataAxiom:
@@ -128,9 +132,9 @@ class CaslAx:
         return  aStr
 
     def toCaslStr(self):
-        if self.axStr.find("generated type") != -1:
-            return "\t" + self.axStr + self.caslAnnotationStr() + "\n"
-        oStr = ''
+        # if self.axStr.find("generated type") != -1:
+            return "\t" + self.axStr + self.getCaslAnnotationStr() + "\n"
+        # oStr = 
         if len(self.quantifications) > 0: 
             oStr += "\t"
         for q in self.quantifications:
@@ -146,7 +150,7 @@ class CaslAx:
         if len(self.conjuncts) > 0:
             oStr = oStr[:-4]
 
-        oStr += self.caslAnnotationStr() + "\n"
+        oStr += self.getCaslAnnotationStr() + "\n"
 
         # oStr = oStr + "\n"
 

@@ -9,7 +9,7 @@ from settings import *
 
 from auxFunctions import *
 
-from FOL import *
+# from FOL import *
 
 axMap = {}
 axEqClasses = {}
@@ -273,6 +273,237 @@ class CaslSpec:
             oStr = oStr + ax.toLPStr(self.name) + "\n"        
 
         return oStr
+
+class CaslAx:    
+
+    def __init__(self, id, name, axStr):
+        self.id = id
+        self.name = name
+        self.axStr = axStr
+        self.isDataAxiom = False # THis determines whether only data operators (generated type constants) are part of this axiom. Typicallay, such axioms denote, e.g., that natural numbers are not equal, that the boolean true is not equal to false, or that the tones of a chord (which are data operators) are not equal. 
+        self.priority = 0
+        self.eqClass = id
+        self.involvedPredsOps = {}
+        self.involvedSorts = {}
+        self.fromAxStr(axStr)
+
+    def getCaslAnnotationStr(self):
+        aStr = ''
+        aStr += "\t%("+self.name+")%\t%priority(" + str(self.priority) + ")%\t%%id:"+str(self.id)
+        if self.isDataAxiom:
+            aStr += "\t(data axiom)"
+        return  aStr
+
+    def toCaslStr(self):
+        # if self.axStr.find("generated type") != -1:
+        return "\t" + self.axStr + self.getCaslAnnotationStr() + "\n"
+        
+    def toLPStr(self, specName):
+        if self.axStr.find("generated type") != -1:
+            return ""
+        oStr = "\n%% Axiom " + self.name + " %%\n"
+        oStr += "hasAxiom("+toLPName(specName)+","+str(self.id)+",1).\n"
+        if self.isDataAxiom == False:
+            oStr = oStr + "isNonDataAx("+toLPName(specName) +","+str(self.id)+").\n"
+        else:
+            oStr = oStr + "isDataAx("+toLPName(specName) +","+str(self.id)+").\n"
+        oStr = oStr + "axHasPriority("+toLPName(specName) +","+str(self.id)+","+str(self.priority)+").\n"
+        
+        for po in self.involvedPredsOps.keys():
+            oStr += "axInvolvesPredOp("+toLPName(specName) +","+str(self.id)+","+po+",1)."
+        for s in self.involvedSorts.keys():
+            oStr += "axInvolvesSort("+toLPName(specName) +","+str(self.id)+","+s+",1)."
+
+        return oStr
+
+    # This generates the internal axiom representation from an axiom string in CASL
+    def fromAxStr(self, text):
+        if text.find("generated type") != -1:
+            return True
+      
+        # first extract quantifications
+        axStr = copy.deepcopy(text)
+        
+        print "parsing axiom"
+        print axStr    
+
+        qId = 0
+        axStr = axStr.replace("\n", "")
+
+        tmpAxStr = copy.deepcopy(axStr)
+        pattern = "\s:\s\w+"
+        while True:
+            match = re.search(pattern,tmpAxStr)
+            if match == None:
+                break
+            print match.group(0)
+            tmpAxStr = re.sub(pattern,"",tmpAxStr,count=1)
+            self.involvedSorts[match.group(0)[3:]] = True
+
+        print self.involvedSorts
+
+
+        tmpAxStr = copy.deepcopy(axStr)
+        pattern = "\s:\s\w+"
+        while True:
+            match = re.search(pattern,tmpAxStr)
+            if match == None:
+                break
+            print match.group(0)
+            tmpAxStr = re.sub(pattern,"",tmpAxStr,count=1)
+            self.involvedSorts[match.group(0)[3:]] = True
+        
+        
+
+            # for match in sortsMatches:
+                # print match
+
+
+        #     <qName> v : Sort (.|;)  
+
+        #     forallPos = axStr.find("forall")
+        #     existsPos = axStr.find("exists")
+        #     thisQType = ''
+        #     if forallPos != -1:
+        #         if existsPos == -1:
+        #             thisQType = 'fa'
+        #         if forallPos < existsPos:
+        #             thisQType = 'fa'
+        #     if existsPos != -1:
+        #         if forallPos == -1:
+        #             thisQType = 'ex'
+        #         if existsPos < forallPos:
+        #             thisQType = 'ex'
+            
+        #     # no quantification exists anymore
+        #     if thisQType == '':
+        #         break
+
+        #     thisQId = "q"+str(qId) + "_" + str(self.id)
+
+        #     if thisQType == 'fa':
+        #         axStr = axStr[forallPos+len('forall'):]
+        #         thisQ  =  Quantification('forall',thisQId,qId)
+        #     if thisQType == 'ex':
+        #         axStr = axStr[existsPos+len('exists'):]
+        #         thisQ  =  Quantification('exists',thisQId,qId)
+
+        #     qVars = []
+
+        #     nextQPos = axStr.find(".")
+
+        #     varsStr = axStr[:nextQPos]
+        #     varsStr = re.sub(" ", "", varsStr)
+        #     axStr = axStr[nextQPos+1:]
+
+        #     origQVars = varsStr.split(';')
+        #     qVars = {}
+        #     varNum = 0
+        #     for varSort in origQVars:
+        #         sort = varSort.split(":")[1]
+        #         var = varSort.split(":")[0]
+        #         vName = "v"+str(varNum)+"_"+str(qId)#+"_"+var.split(":")[1].lower()
+        #         qVars[var] = vName+":"+sort
+        #         varNum = varNum + 1
+
+        #         # Now replace original varname in axiom string with replacement. This helps to determine equivalence with a simple syntactic check. TODO: THis is still not really logical equivalence, because the order of variables within the same quantification matters. E.g. forall v1,v2. p(v1,v2) is not equivalent to forall v2,v1. p(v1,v2) in our framework, but it should be equivalent. 
+        #         axStr = re.sub("(?<!\w)"+var.split(":")[0]+"(?!\w)",vName,axStr)
+
+        #     thisQ.vars = qVars
+        #     self.quantifications.append(copy.deepcopy(thisQ))
+        #     qId = qId + 1
+        
+        # # # Having all the quantifications, we can look at the conjuncts. First remove white spaces from string and then split by \wedge symbol /\
+        # axStr = axStr.replace("not ", "not#")
+        # axStr = axStr.replace(" ", "")
+        # axStr = axStr.replace(".", "")
+        # axStr = axStr.replace("not#", "not ")
+
+        # #remove opening and closing bracket for axiom string
+        # # if axStr[:1] == "(" and axStr[-1:] == ")":
+        # #     axStr = axStr[1:]
+        # #     axStr = axStr[:-1]
+    
+
+        # conjuncts = axStr.split("/\\")
+
+        # conId = 0
+        # for con in conjuncts:
+        #     thisCName = "c"+str(conId) + "_" + str(self.id)
+        #     thisC = Conjunct(thisCName)
+
+        #     # remove possible brackets at end and beginning of conjunct
+        #     # if con[:1] == "(" and con[-1:] == ")":
+        #     #     con = con[1:]
+        #     #     con = con[:-1]
+            
+        #     # print "conjunct"
+        #     # print con
+
+        #     disjuncts = con.split("\\/")
+        #     disId = 0
+        #     for dis in disjuncts:
+        #         thisDName = "d"+str(disId) + "_" + thisCName
+        #         thisD = Disjunct(thisDName)
+                
+        #         # remove possible brackets at end and beginning of disjunct
+        #         if dis[:1] == "(" and dis.count("(") == dis.count(")") + 1:
+        #             dis = dis[1:]
+        #         if dis[-1:] == ")" and dis.count(")") == dis.count("(") + 1:
+        #             dis = dis[:-1]
+
+        #         # print "disjunct"
+        #         # print dis
+
+        #         if dis.find("not ") == 0:
+        #             thisD.negated = True
+        #             dis = dis[4:]
+
+        #         disLhsRhs = dis.split("=")
+        #         # print "dislhsrhs"
+        #         # print disLhsRhs
+        #         name = disLhsRhs[0].split("(")[0]
+        #         args = re.search("\(.*\)",disLhsRhs[0])
+        #         argVect = []
+        #         if args:
+        #             # print "args lhs"
+        #             # print args.group(0)
+        #             argVect = args.group(0)[1:-1].split(",")
+        #         lhsId = "lhs_"+thisDName
+        #         lhs = Atom(lhsId, name, argVect)
+        #         thisD.lhs = lhs
+        #         if len(disLhsRhs) == 2:
+        #             name = disLhsRhs[1].split("(")[0]
+        #             args = re.search("\(.*\)",disLhsRhs[1])
+        #             argVect = []
+        #             if args:
+        #                 # print "args rhs"
+        #                 # print args.group(0)
+        #                 argVect = args.group(0)[1:-1].split(",")
+        #             rhsId = "lhs_"+thisDName
+        #             rhs = Atom(rhsId,name, argVect)
+        #             thisD.rhs = rhs
+
+        #         # print "caslStr:"
+        #         # print thisD.toCaslStr()
+
+        #         thisC.disjuncts.add(copy.deepcopy(thisD))
+
+        #         disId = disId + 1
+
+        #     self.conjuncts.add(copy.deepcopy(thisC))
+        #     # print "conjunct LP"
+        #     # print thisC.toLPStr()
+        #     conId = conId + 1
+
+        # print "ax in LP"
+        # print self.toLPStr("thisSpec")
+
+        # print "ax in Casl"
+        # print self.toCaslStr()
+
+# 
+
 
 # This is the main method to turn the xml representation of input spaces into the internal data structure
 # Input: The path to an XML file name

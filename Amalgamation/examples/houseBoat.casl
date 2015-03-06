@@ -50,7 +50,7 @@ spec House = Generic then
     sort Person
     sort Inhabitant < Person
     ops 
-    
+
         house1 : House
         inhabitant1 : Inhabitant
         ownerOf : House -> Person
@@ -61,12 +61,14 @@ spec House = Generic then
         isInhabitant : Inhabitant * House
         isBossOf : Person * Object
     
-    %% forall p:Person; o:Object 
-        %% . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o))
+
+    %% . ownerOf(house1) = boss1 %(Ax-AssignOwner)% %priority(2)%
+    forall p:Person ; o:Object . exists o2 : Object 
+        . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o2))
 
     %% forall p:Person; o:Object . exists o1 : Object .
     %%     (not selectorOp(o,xp) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
     %%     (isBossOf(p,o1))
 
-    %% . ownerOf(house1) = person1 %(Ax-AssignOwner)% %priority(2)%
+    
 end
