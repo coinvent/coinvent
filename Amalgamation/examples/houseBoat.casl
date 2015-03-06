@@ -63,8 +63,8 @@ spec House = Generic then
     
 
     %% . ownerOf(house1) = boss1 %(Ax-AssignOwner)% %priority(2)%
-    forall p:Person ; o:Object . exists o2 : Object 
-        . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o2))
+    forall p:Person ; o,o2:Object . exists o3 : Object
+        . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o2)\/ not isBossOf(p,o3) \/ exists o4 : Object . selectorOp(o4,p) = v2)
 
     %% forall p:Person; o:Object . exists o1 : Object .
     %%     (not selectorOp(o,xp) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 

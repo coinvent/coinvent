@@ -9,7 +9,6 @@ fName = inputFile
 # Generate an xml file from a CASL input file. 
 inputSpacesXmlFileName = input2Xml(fName,inputSpaceNames) 
 inputSpaces = parseXml(inputSpacesXmlFileName)
-exit(0)
 print "blending the following CASL specs:"
 for s in inputSpaces:
     print s.toCaslStr()
