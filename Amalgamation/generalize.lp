@@ -28,9 +28,18 @@ genericReached(t) :- not notGenericReached(t).
 %% %% % Generate generalization search space. If the generic space is not yet reached, execute a generalization operation. 
 %% 0{exec(A,I,t) : a(A,I),  poss(A,I,t)}1 :- not genericReached(t), spec(I).
 1{exec(A,I,t) : a(A,I),  poss(A,I,t), spec(I)}1 :- not genericReached(t).
-%% exec(rmAx(0),spec_Boat,1).
-%% exec(renameSort(sort_Person,sort_Hombre,spec_House2),spec_House1,2).
-%% exec(renameOp(po_house1,po_house2,spec_House2),spec_House1,1).
+%% exec(rmOp(po_captainOf),spec_Boat,8)
+%% exec(rmOp(po_owner1),spec_House,9)
+%% exec(rmAx(3),spec_House,6)
+%% exec(rmOp(po_passenger1),spec_Boat,5)
+%% exec(rmAx(0),spec_Boat,2)
+%% exec(renameSort(sort_Boat,sort_House,spec_House),spec_Boat,1).
+%% exec(renameOp(po_boat1,po_house1,spec_House),spec_Boat,2).
+%% exec(renameSort(sort_Passenger,sort_Inhabitant,spec_House),spec_Boat,3).
+%% exec(generalizeOpSort(po_passenger1,domain),spec_Boat,4).
+%% exec(generalizeOpSort(po_captainOf,domain),spec_Boat,5).
+%% exec(rmOp(po_ownerOf),spec_House,7)
+
 
 %% %%%%%%%%%%%%%%%%%%%%
 %% %%% Testing Part %%%
@@ -47,7 +56,8 @@ specModified(I,t) :- exec(_,I,t).
 %% %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query1(t).
 :- query1(t), notGenericReached(t).
-%% :- query1(t), t < 1.
+%% :- query1(t), exec(A,S,t).
+%% t < 3.
 
 #show s/1.
 %% #show removableAx/2.

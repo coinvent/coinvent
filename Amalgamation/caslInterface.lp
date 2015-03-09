@@ -43,17 +43,26 @@ a(renamePred(Pred1,Pred2,Spec2),Spec1) 	:- 	hasPred(Spec1,Pred1,1), hasPred(Spec
 a(renameSort(Sort1,Sort2,Spec2),Spec1) 	:- 	hasSort(Spec1,Sort1,1), hasSort(Spec2,Sort2,1), Spec1 != Spec2, Sort1 != Sort2,
 											isNonDataSort(Spec1,Sort1), isNonDataSort(Spec2,Sort2).
 
+% Generalizing the sort of an operator
+a(generalizeOpSort(Op,Pos),Spec)		:-	opHasSort(Spec,Op,_,Pos,1).
+
+% Generalizing the sort of a predicate
+a(generalizePredSort(Pred,Pos),Spec)	:-	predHasSort(Spec,Pred,_,Pos,1).
 
 %%%% Cost of actions %%%%
 % Cost of removal actions is equal to priority of the elements to be removed.  
 cost(rmOp(Op),Spec,C) 		:- a(rmOp(Op),Spec), 		opHasPriority(Spec,Op,C).
 cost(rmPred(Pred),Spec,C) 	:- a(rmPred(Pred),Spec), 	predHasPriority(Spec,Pred,C).
 cost(rmSort(Sort),Spec,C) 	:- a(rmSort(Sort),Spec), 	sortHasPriority(Spec,Sort,C).
-cost(rmAx(Ax),Spec,C) 	:- a(rmAx(Ax),Spec), 		axHasPriority(Spec,Ax,C).
+cost(rmAx(Ax),Spec,C) 		:- a(rmAx(Ax),Spec), 		axHasPriority(Spec,Ax,C).
 % Cost of renaming actions is always 0.
 cost(renameOp(Op1,Op2,Spec2),Spec1,0)			:- a(renameOp(Op1,Op2,Spec2),Spec1).
 cost(renamePred(Pred1,Pred2,Spec2),Spec1,0)		:- a(renamePred(Pred1,Pred2,Spec2),Spec1).
 cost(renameSort(Sort1,Sort2,Spec2),Spec1,0)		:- a(renameSort(Sort1,Sort2,Spec2),Spec1).
+% Cost of generalisation options is always 0. TODO: Generalising a sort should cost something, depending on the sort or the operator priority. 
+cost(generalizeOpSort(Op,Pos),Spec,0)			:-	a(generalizeOpSort(Op,Pos),Spec).
+cost(generalizePredSort(Pred,Pos),Spec,0)		:-	a(generalizePredSort(Pred,Pos),Spec).
+
 
 %%% Start to iterate over t.
 #program cumulative1(t).
@@ -107,6 +116,16 @@ poss(renameSort(Sort1,Sort2,Spec2),Spec1,t) :- 	a(renameSort(Sort1,Sort2,Spec2),
 												specProvidesVocabulary(Spec2).
 
 
+%%% Generalise Operator Sort
+poss(generalizeOpSort(Op,Pos),Spec,t) :- 	a(generalizeOpSort(Op,Pos),Spec), opHasSort(Spec,Op,SortChild,Pos,t), 
+											hasParentSort(Spec,SortChild,_,t).
+
+%%% Generalise PRedicate Sort
+poss(generalizePredSort(Pred,Pos),Spec,t) :- 	a(generalizePredSort(Pred,Pos),Spec), predHasSort(Spec,Pred,SortChild,Pos,t), 
+												hasParentSort(Spec,SortChild,_,t).
+
+
+
 %%%% Equality of conceptual spaces %%%%
 %% equal(Spec,Spec,t) 		:- 	spec(Spec).
 equal(Spec1,Spec2,t) 	:- 	not notEqual(Spec1,Spec2,t), spec(Spec1), spec(Spec2).
@@ -150,8 +169,10 @@ axInvolvesSort(Spec,Ax,Sort,t+1) 		:- 	axInvolvesSort(Spec,Ax,Sort,t), 	not exec
 
 hasParentSort(Spec,Sort_child,Sort,t+1) :- hasParentSort(Spec,Sort_child,Sort,t),	not exec(renameSort(Sort,_,_),Spec,t).
 hasParentSort(Spec,Sort,Sort_par,t+1) 	:- hasParentSort(Spec,Sort,Sort_par,t), 	not exec(renameSort(Sort,_,_),Spec,t).
-opHasSort(Spec,Op,Sort,Pos,t+1) 		:- opHasSort(Spec,Op,Sort,Pos,t), 			not exec(renameSort(Sort,_,_),Spec,t).
-predHasSort(Spec,Pred,Sort,Pos,t+1) 	:- predHasSort(Spec,Pred,Sort,Pos,t), 		not exec(renameSort(Sort,_,_),Spec,t).
+opHasSort(Spec,Op,Sort,Pos,t+1) 		:- 	opHasSort(Spec,Op,Sort,Pos,t), 			
+											not exec(renameSort(Sort,_,_),Spec,t), not exec(generalizeOpSort(Op,Pos),Spec,t).
+predHasSort(Spec,Pred,Sort,Pos,t+1) 	:- 	predHasSort(Spec,Pred,Sort,Pos,t), 		
+											not exec(renameSort(Sort,_,_),Spec,t), not exec(generalizePredSort(Pred,Pos),Spec,t).
 
 
 %%%% Effect axioms of renamings for sorts, operators, predicates and axioms (i.e. quantifications and atoms in axioms)
@@ -168,7 +189,14 @@ axInvolvesPredOp(Spec1,Ax,Op2,t+1) 			:- 	axInvolvesPredOp(Spec1,Ax,Op1,t),		exe
 % Effects of renaming predicates:
 hasPred(Spec1,Pred2,t+1) 					:- 	hasPred(Spec1,Pred1,t),					exec(renamePred(Pred1,Pred2,Spec2),Spec1,t).
 axInvolvesPredOp(Spec1,Ax,Pred2,t+1) 		:- 	axInvolvesPredOp(Spec1,Ax,Pred1,t),		exec(renamePred(Pred1,Pred2,Spec2),Spec1,t).
-% TODO: Effects of renaming sorts on axioms (i.e., axInvolvesSort)
+% Effects of renaming sorts on axioms (i.e., axInvolvesSort)
+axInvolvesSort(Spec1,Ax,Sort2,t+1) 			:- 	axInvolvesSort(Spec1,Ax,Sort1,t),		exec(renameSort(Sort1,Sort2,Spec2),Spec1,t).
+
+% Effects of generalizing operator sorts:
+opHasSort(Spec,Op,ParentSort,Pos,t+1) 		:-	opHasSort(Spec,Op,ChildSort,Pos,t),		exec(generalizeOpSort(Op,Sort),Spec,t), 
+												hasParentSort(Spec,ChildSort,ParentSort,t).
+predHasSort(Spec,Pred,ParentSort,Pos,t+1) 	:- 	predHasSort(Spec,Pred,ChildSort,Pos,t),	exec(generalizePredSort(Pred,Sort),Spec,t), 
+												hasParentSort(Spec,ChildSort,ParentSort,t).
 
 %%%% Equivalence of axioms, operators, predicates and sorts %%%%
 
