@@ -120,14 +120,14 @@ class CaslPred:
         return outStr    
 
     def toLPStr(self, specName) :
-        oStr = "hasPred("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
+        oStr = "hasPred("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+",1).\n"
         argCtr = 1
         for arg in self.args:
-            oStr = oStr + "predHasSort("+toLPName(specName)+","+toLPName(self.name)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
+            oStr = oStr + "predHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(arg,"sort")+",arg"+str(argCtr)+",1).\n"
             argCtr = argCtr + 1        
         # if self. == True:
-            # oStr = oStr + "removablePred("+toLPName(specName)+","+toLPName(self.name)+").\n"
-        oStr = oStr + "predHasPriority("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"        
+            # oStr = oStr + "removablePred("+toLPName(specName,"spec")+","+toLPName(self.name)+").\n"
+        oStr = oStr + "predHasPriority("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+str(self.priority)+").\n"        
         return oStr 
              
 ## This class represents an operator in CASL.       
@@ -179,17 +179,17 @@ class CaslOp:
         return outStr 
 
     def toLPStr(self,specName):
-        oStr = "hasOp("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
+        oStr = "hasOp("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+",1).\n"
         argCtr = 1
         for arg in self.args:
-            oStr = oStr + "opHasSort("+toLPName(specName)+","+toLPName(self.name)+","+toLPName(arg)+",arg"+str(argCtr)+",1).\n"
+            oStr = oStr + "opHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(arg,"sort")+",arg"+str(argCtr)+",1).\n"
             argCtr = argCtr + 1
-        oStr = oStr + "opHasSort("+toLPName(specName)+","+toLPName(self.name)+","+toLPName(self.dom)+",domain,1).\n"
+        oStr = oStr + "opHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(self.dom,"sort")+",domain,1).\n"
         if self.isDataOp == False:
-            oStr = oStr + "isNonDataOp("+toLPName(specName)+","+toLPName(self.name)+").\n"
+            oStr = oStr + "isNonDataOp("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+").\n"
         else:
-            oStr = oStr + "isDataOp("+toLPName(specName)+","+toLPName(self.name)+").\n"
-        oStr = oStr + "opHasPriority("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"        
+            oStr = oStr + "isDataOp("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+").\n"
+        oStr = oStr + "opHasPriority("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+str(self.priority)+").\n"        
         return oStr 
 
     
@@ -212,14 +212,14 @@ class CaslSort:
         return outStr
 
     def toLPStr(self,specName):
-        oStr = "hasSort("+toLPName(specName)+","+toLPName(self.name)+",1).\n"
+        oStr = "hasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+",1).\n"
         if self.parent != "":
-            oStr = oStr + "hasParentSort("+toLPName(specName)+","+toLPName(self.name)+","+toLPName(self.parent)+",1).\n"
+            oStr = oStr + "hasParentSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+","+toLPName(self.parent,"sort")+",1).\n"
         if self.isDataSort == False:
-            oStr = oStr + "isNonDataSort("+toLPName(specName)+","+toLPName(self.name)+").\n"
+            oStr = oStr + "isNonDataSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+").\n"
         else:
-            oStr = oStr + "isDataSort("+toLPName(specName)+","+toLPName(self.name)+").\n"
-        oStr = oStr + "sortHasPriority("+toLPName(specName)+","+toLPName(self.name)+","+str(self.priority)+").\n"
+            oStr = oStr + "isDataSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+").\n"
+        oStr = oStr + "sortHasPriority("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+","+str(self.priority)+").\n"
         return oStr
 
 # This class represents a CASL specification.        
@@ -254,11 +254,12 @@ class CaslSpec:
         return caslStr
         
     def toLP(self):
+        global lpToCaslMapping
         oStr  = "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
         oStr += "%% spec " + self.name+" %%\n"
         oStr += "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n"
-        oStr = oStr + "spec("+toLPName(self.name)+").\n"
-        oStr = oStr + "hasId("+toLPName(self.name)+","+str(self.id)+").\n\n"      
+        oStr = oStr + "spec("+toLPName(self.name,"spec")+").\n"
+        oStr = oStr + "hasId("+toLPName(self.name,"spec")+","+str(self.id)+").\n\n"      
         oStr += "%% sorts %%\n"
         for so in self.sorts:
             oStr = oStr + so.toLPStr(self.name) + "\n"
@@ -272,6 +273,8 @@ class CaslSpec:
         for ax in self.axioms:
             oStr = oStr + ax.toLPStr(self.name) + "\n"        
 
+        # print "opToCaslMap:"
+        # print lpToCaslMapping
         return oStr
 
 class CaslAx:    
@@ -282,14 +285,14 @@ class CaslAx:
         self.axStr = axStr
         self.isDataAxiom = False # THis determines whether only data operators (generated type constants) are part of this axiom. Typicallay, such axioms denote, e.g., that natural numbers are not equal, that the boolean true is not equal to false, or that the tones of a chord (which are data operators) are not equal. 
         self.priority = 0
-        self.eqClass = id
+        self.eqClass = getEquivalenceClass(axStr)
         self.involvedPredsOps = {}
         self.involvedSorts = {}
         self.fromAxStr(axStr)
 
     def getCaslAnnotationStr(self):
         aStr = ''
-        aStr += "\t%("+self.name+")%\t%priority(" + str(self.priority) + ")%\t%%id:"+str(self.id)
+        aStr += "\t%("+self.name+")%\t%priority(" + str(self.priority) + ")%\t %%id:"+str(self.id) + "\teqClass: "+str(self.eqClass)
         if self.isDataAxiom:
             aStr += "\t(data axiom)"
         return  aStr
@@ -302,17 +305,18 @@ class CaslAx:
         if self.axStr.find("generated type") != -1:
             return ""
         oStr = "\n%% Axiom " + self.name + " %%\n"
-        oStr += "hasAxiom("+toLPName(specName)+","+str(self.id)+",1).\n"
+        oStr += "hasAxiom("+toLPName(specName,"spec")+","+str(self.id)+",1).\n"
+        oStr += "axHasEquivalenceClass("+toLPName(specName,"spec")+","+str(self.id)+","+str(self.eqClass)+",1).\n"
         if self.isDataAxiom == False:
-            oStr = oStr + "isNonDataAx("+toLPName(specName) +","+str(self.id)+").\n"
+            oStr = oStr + "isNonDataAx("+toLPName(specName,"spec") +","+str(self.id)+").\n"
         else:
-            oStr = oStr + "isDataAx("+toLPName(specName) +","+str(self.id)+").\n"
-        oStr = oStr + "axHasPriority("+toLPName(specName) +","+str(self.id)+","+str(self.priority)+").\n"
+            oStr = oStr + "isDataAx("+toLPName(specName,"spec") +","+str(self.id)+").\n"
+        oStr = oStr + "axHasPriority("+toLPName(specName,"spec") +","+str(self.id)+","+str(self.priority)+").\n"
         
         for po in self.involvedPredsOps:
-            oStr += "axInvolvesPredOp("+toLPName(specName) +","+str(self.id)+","+toLPName(po)+",1).\n"
+            oStr += "axInvolvesPredOp("+toLPName(specName,"spec") +","+str(self.id)+","+toLPName(po,"po")+",1).\n"
         for s in self.involvedSorts:
-            oStr += "axInvolvesSort("+toLPName(specName) +","+str(self.id)+","+toLPName(s)+",1).\n"
+            oStr += "axInvolvesSort("+toLPName(specName,"spec") +","+str(self.id)+","+toLPName(s,"sort")+",1).\n"
 
         return oStr
 
@@ -324,8 +328,8 @@ class CaslAx:
         # first extract quantifications
         axStr = copy.deepcopy(text)
         
-        print "parsing axiom"
-        print axStr    
+        # print "parsing axiom"
+        # print axStr    
 
         qId = 0
         axStr = axStr.replace("\n", "")
@@ -339,11 +343,11 @@ class CaslAx:
             match = re.search(pattern,tmpAxStr)
             if match == None:
                 break
-            print match.group(0)
+            # print match.group(0)
             tmpAxStr = re.sub(pattern,"",tmpAxStr,count=1)
             self.involvedSorts[match.group(0)[3:]] = True
 
-        print self.involvedSorts.keys()
+        # print self.involvedSorts.keys()
 
         # Identify variables in axiom (needed to distinguish from operators and predicates)
 
@@ -354,8 +358,8 @@ class CaslAx:
             match = re.search(pattern,tmpAxStr)
             if match == None:
                 break
-            print "varMatch"
-            print match.group(0)
+            # print "varMatch"
+            # print match.group(0)
             varArr = re.split("[\s.=(),:><;\n\\\\/]|not|forall|exists|exists!|",match.group(0))
             varArr = list(set(varArr) - set(self.involvedSorts.keys()))
             vars = vars | set(varArr)
@@ -642,27 +646,27 @@ def getNewAxIdOpRename(axId,op1,op2):
         axMap[newAxStr] = axId
     return axId
 
-
-def newEquivalenceClass(specName,axId, op1,op2):
-    global axMap
+def getEquivalenceClass(axStr):
     global axEqClasses
 
-    newId = 0
-
-    axStr = axMap[axId]
-
-    newAxStr = re.sub(op1,op2,axStr)
-
-    axMap[axId] = newAxStr
-
     for eqClassId in axEqClasses.keys():
-        if isEquivalent(newAxStr,axEqClasses[eqClassId]):
+        if isEquivalent(axStr,axEqClasses[eqClassId]):
             return eqClassId
 
     newEqClassId = len(axEqClasses)
-    axEqClasses[newEqClassId] = newAxStr
-
+    axEqClasses[newEqClassId] = axStr
     return newEqClassId
 
 
+def renameEleAndGetNewEqClass(eqClassId,element,eleFrom,eleTo):
+    global axEqClasses
+
+    axStr = axEqClasses[int(eqClassId)]
+    # print "renaming " + str(eleFrom) + " to " + str(eleTo) + " in axiom " + str(axStr)
+    newAxStr = re.sub("(?<!\w)"+lpToCaslStr(str(eleFrom))+"(?!\w)",lpToCaslStr(str(eleTo)),axStr)
+    # print " result " + newAxStr
+    return getEquivalenceClass(newAxStr)
+
+def isEquivalent(axStr1,axStr2):
+    return axStr1 == axStr2
 

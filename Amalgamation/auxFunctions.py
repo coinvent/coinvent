@@ -1,18 +1,19 @@
-# This is just a dirty quickfix to use (infix) plus and minus operators. 
-def toLPName(caslName):
-    s = caslName[0:1].lower() + caslName[1:]
+
+def toLPName(caslName,elemType):
+
+    # This is just a dirty quickfix to use (infix) plus and minus operators. 
+    s = caslName
     if s == "__+__" or s == "+":
-        s =  "plus"
+       s =  "plus"
     if s == "__-__" or s == "-":
         s = "minus"
+
+    s = elemType + "_"+caslName
     return s
 
-# TODO: This causes errors when upper-case letters are used in operators, predicates or sorts. I should create a dictionary with a mapping from Casl to LP names and vice versa. 
-def toCaslName(lpName):
-    # s = predOp.lower()
-    s = lpName
-    # if s == "__+__" or s == "+":
-    #     s =  "plus"
-    # if s == "__-__" or s == "-":
-    #     s = "minus"
-    return s
+def lpToCaslStr(lpName):
+    uScorePos = lpName.find("_")
+    if uScorePos == -1:
+        print "Error, lpname invalid"
+        exit(1)
+    return lpName[uScorePos+1:]

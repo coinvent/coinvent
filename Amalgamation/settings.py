@@ -6,7 +6,7 @@ inputFile = "examples/minimal.casl"
 inputSpaceNames = ["S1","S2"]
 
 ###### The number of models to be generated (0 for all models)
-numModels = 0
+numModels = 1
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -15,7 +15,7 @@ minIterationsGeneralize = 1
 maxIterationsGeneralize = 20
 
 ###### The minimal number of iterations for blending
-minIterationsBlend = 2
+minIterationsBlend = 1
 
 ###### The maximal number of iterations for blending
 maxIterationsBlend = 20
@@ -48,6 +48,7 @@ hetsExe = 'hets'
 
 inputFile = "examples/houseBoat.casl"
 inputSpaceNames = ["Boat","House"]
+# inputSpaceNames = ["House1","House2"]
 
 # inputFile = "examples/music/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
 # inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]

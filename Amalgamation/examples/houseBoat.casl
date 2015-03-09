@@ -29,17 +29,17 @@ spec Boat = Generic then
         isBossOf : Person * Object
         isRider : Passenger *Boat
 
-    %% . captainOf(boat1) = passenger1 %(Ax-AssignCaptain)% %priority(2)%
+    . captainOf(boat1) = passenger1 %(Ax-AssignCaptain)% %priority(2)%
     %% forall p: Passenger, b : Boat
     %%     . (not captainOf(b) = p \/ isPassenger(p,b)) /\ (isRider(p,b) \/ not captainOf(b) = p) %(Ax-captainIsPAssenger)% %priority(3)%
 
     %% forall b : Boat . exists p: Passenger 
     %%     . captainOf(b) = p  %(Ax-boatHasCaptain)% %priority(2)%
 
-    %% This states that if p is boss of o, then selectorOp = v1 (biimplication)
+    %% %% This states that if p is boss of o, then selectorOp = v1 (biimplication)
     %% forall p:Person; o:Object . exists o1 : Object .
-        %% (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
-        %% (isBossOf(p,o1))
+    %%     (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
+    %%     (isBossOf(p,o1))
 
 
 end
@@ -53,7 +53,7 @@ spec House = Generic then
 
         house1 : House
         inhabitant1 : Inhabitant
-        ownerOf : House -> Person
+        ownerOf : House -> Inhabitant
         selectorOp : Object * Person -> Value
         boss1 : Person
         object1 : Object
@@ -62,13 +62,15 @@ spec House = Generic then
         isBossOf : Person * Object
     
 
-    %% . ownerOf(house1) = boss1 %(Ax-AssignOwner)% %priority(2)%
-    forall p:Person ; o,o2:Object . exists o3 : Object
-        . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o2)\/ not isBossOf(p,o3) \/ exists o4 : Object . selectorOp(o4,p) = v2)
+    . ownerOf(house1) = boss1 %(Ax-AssignOwner)% %priority(2)%
+    %% forall p:Person ; o : Object . isBossOf(p,o)
+    %% forall p:Person ; o,o2:Object . exists o3 : Object
+    %%     . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o2)\/ not isBossOf(p,o3) \/ exists o4 : Object . selectorOp(o4,p) = v2)
 
     %% forall p:Person; o:Object . exists o1 : Object .
-    %%     (not selectorOp(o,xp) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
+    %%     (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
     %%     (isBossOf(p,o1))
 
     
 end
+
