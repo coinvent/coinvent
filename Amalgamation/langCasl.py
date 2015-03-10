@@ -102,8 +102,7 @@ class CaslPred:
     def __init__(self, name):
         self.name = name
         self.args = []
-        # self.removable = 1
-        self.priority = 1
+        self.priority = 0
     
     @staticmethod
     def byStr(text):
@@ -138,7 +137,7 @@ class CaslOp:
         self.dom = ''
         # self.removable = 1
         self.isDataOp = False
-        self.priority = 1
+        self.priority = 0
     
     @staticmethod
     def byStr(text):
@@ -198,7 +197,7 @@ class CaslSort:
     def __init__(self, name):
         self.name = name
         self.parent = ""
-        self.priority = 1
+        self.priority = 0
         # self.removable = 1
         self.isDataSort = False
 
@@ -237,10 +236,14 @@ class CaslSpec:
         caslStr = "spec "
         caslStr = caslStr +  self.name +" = \n"
         for s in self.sorts: 
+            if s.name == "PriorityDummySort":
+                continue
             caslStr = caslStr + "\t " + s.toCaslStr() + "\n"
-        if len(self.ops) > 0 :
+        if len(self.ops) > 1 :
             caslStr = caslStr + "\t ops \n" 
         for op in self.ops: 
+            if op.name == "prioDummyOp":
+                continue
             caslStr = caslStr + "\t\t " + op.toCaslStr() +"\n"
         if len(self.preds) > 0 :
             caslStr = caslStr + "\t preds \n"
@@ -248,6 +251,8 @@ class CaslSpec:
             caslStr = caslStr + "\t\t " + p.toCaslStr() +"\n"
         caslStr += "\n"
         for ax in self.axioms: 
+            if ax.axStr == ". prioDummyOp = prioDummyOp":
+                continue
             caslStr = caslStr + ax.toCaslStr()
         caslStr = caslStr + "end"
         
@@ -262,15 +267,21 @@ class CaslSpec:
         oStr = oStr + "hasId("+toLPName(self.name,"spec")+","+str(self.id)+").\n\n"      
         oStr += "%% sorts %%\n"
         for so in self.sorts:
+            if so.name == "PriorityDummySort":
+                continue
             oStr = oStr + so.toLPStr(self.name) + "\n"
         oStr += "%% operators %%\n"
         for op in self.ops:
+            if op.name == "prioDummyOp":
+                continue
             oStr = oStr + op.toLPStr(self.name) + "\n"
         oStr += "%% predicates %%\n"
         for p in self.preds:
             oStr = oStr + p.toLPStr(self.name) + "\n"
         oStr += "%% axioms %%\n"
         for ax in self.axioms:
+            if ax.axStr == ". prioDummyOp = prioDummyOp":
+                continue
             oStr = oStr + ax.toLPStr(self.name) + "\n"        
 
         # print "opToCaslMap:"
@@ -297,8 +308,7 @@ class CaslAx:
             aStr += "\t(data axiom)"
         return  aStr
 
-    def toCaslStr(self):
-        # if self.axStr.find("generated type") != -1:
+    def toCaslStr(self):        
         return "\t" + self.axStr + self.getCaslAnnotationStr() + "\n"
         
     def toLPStr(self, specName):
@@ -391,6 +401,7 @@ def parseXml(xmlFile):
     axCtr = 0 
     dataOps = {}
     dataSorts = {}
+    opAndSortPriorities = {}
     for dgNode in dGraph:
         if 'refname' not in dgNode.attrib.keys():
             continue
@@ -398,25 +409,38 @@ def parseXml(xmlFile):
         thisSpec = CaslSpec(specName)
         thisSpec.id = len(specs)
         print "found spec " + specName
-        # determine non-removable ops, i.e. those in free type definitions. 
-        for decAx in dgNode:
-            # determine data ops, and sorts, i.e. those in generated type definitions. 
-            dataOps[specName] = []
-            dataSorts[specName] = []
+        
+
+        # First scan axioms to get the following meta-information:
+        # (i) data ops, and sorts. Data ops and sorts are those in generated type definitions, so we have to scan for axioms starting with the string "generated type".
+        # (ii) Priority information of ops, predicates and sorts. Priorities are encoded in the name of dummy-axioms that have the string ". prioDummyOp = prioDummyOp".
+        dataOps[specName] = []
+        dataSorts[specName] = []
+        opAndSortPriorities[specName]= {}
+        for decAx in dgNode:            
             for entry in decAx:
                 if entry.tag == "Axiom":
                     for subEntry in entry:
                         if subEntry.tag == "Text":
                             axText = subEntry.text
                             if axText.find("generated type") == 0:
-
                                 dataOpsStr = axText.split("::=")[1]
                                 dataOpStrs = dataOpsStr.split("|")
                                 for op in dataOpStrs : dataOps[specName].append(op.strip())
 
                                 dataSortStr = axText.split("::=")[0][len("generated type"):].strip()
                                 dataSorts[specName].append(dataSortStr)
+                            if axText.find(". prioDummyOp = prioDummyOp") == 0:
+                                # Priority information is encoded in the name of the axiom with the string above. Each element in this string is separated by the string "--"
+                                prioInfo = entry.attrib['name'].split("--")
+                                for prioInfoItem in prioInfo:
+                                    # prioInfoItem is a strings of the form <ElementName>_<PriorityNumber>
+                                    thisPrioNumber = prioInfoItem.split("_")[1]
+                                    thisPrioElementName = prioInfoItem.split("_")[0]
+                                    opAndSortPriorities[specName][thisPrioElementName] = thisPrioNumber
 
+
+        # Now that data ops and sorts are determined we can parse for sorts, operators and predictates
         for decAx in dgNode:
             for entry in decAx:
                 if entry.tag == "Symbol":
@@ -433,6 +457,11 @@ def parseXml(xmlFile):
                         else:
                             sort.isDataSort = False
                         
+                        if sName in opAndSortPriorities[specName].keys():
+                            sort.priority = opAndSortPriorities[specName][sName]
+                        else:
+                            sort.priority = 0
+
                         thisSpec.sorts.append(sort)
                         
                             # thisSpec.sorts[pSort].childs.append(sName)
@@ -446,10 +475,20 @@ def parseXml(xmlFile):
                         else:
                             op.isDataOp = False
                             # print op.name + " is not removable"
+
+                        if op.name in opAndSortPriorities[specName].keys():
+                            op.priority = opAndSortPriorities[specName][op.name]
+                        else:
+                            op.priority = 0
+
                         thisSpec.ops.append(op)
                         
                     if entry.attrib['kind'] == 'pred':
                         pred = CaslPred.byStr(entry.text)
+                        if pred.name in opAndSortPriorities[specName].keys():
+                            pred.priority = opAndSortPriorities[specName][pred.name]
+                        else:
+                            pred.priority = 0
                         thisSpec.preds.append(pred)   
         # Add axioms
         for decAx in dgNode:

@@ -1,10 +1,12 @@
 spec Symbols =
     %% sort Value
+    sort PriorityDummySort
+    op prioDummyOp : PriorityDummySort
     free type Value ::= v1 | v2
 end
 
 spec Generic = Symbols then
-	sort Object
+	sort Thing
     %% ops f : Value
 		%% g : Value
     %% preds 
@@ -14,22 +16,24 @@ end
 
 %% spec Boat = 
 spec Boat = Generic then  
-    sort Boat < Object
-    sort Person
+    sort Boat < Thing
+    sort Person < Thing
     sort Passenger < Person
     ops 
         boat1 : Boat
         passenger1 : Passenger
         captainOf : Boat -> Passenger
         %% boss1 : Person
-        %% object1 : Object
-        %% selectorOp : Object * Person -> Value
+        %% object1 : Thing
+        %% selectorOp : Thing * Person -> Value
     %% preds    
     %%     isPassenger : Passenger * Boat
-        %% isBossOf : Person * Object
+        %% isBossOf : Person * Thing
         %% isRider : Passenger *Boat
 
     . captainOf(boat1) = passenger1 %(Ax-AssignCaptain)% %priority(2)%
+
+    . prioDummyOp = prioDummyOp %(Boat_p3--Thing_p5--Person_p3--Passenger_p2--boat1_p2--captainOf_p3--passenger1_p2)%
     %% forall p: Passenger, b : Boat
     %%     . (not captainOf(b) = p \/ isPassenger(p,b)) /\ (isRider(p,b) \/ not captainOf(b) = p) %(Ax-captainIsPAssenger)% %priority(3)%
 
@@ -37,7 +41,7 @@ spec Boat = Generic then
     %%     . captainOf(b) = p  %(Ax-boatHasCaptain)% %priority(2)%
 
     %% %% This states that if p is boss of o, then selectorOp = v1 (biimplication)
-    %% forall p:Person; o:Object . exists o1 : Object .
+    %% forall p:Person; o:Thing . exists o1 : Thing .
     %%     (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
     %%     (isBossOf(p,o1))
 
@@ -46,28 +50,29 @@ end
 
 spec House = Generic then  
 %% spec House = 
-    sort House < Object
-    sort Person
+    sort House < Thing
+    sort Person < Thing
     sort Inhabitant < Person
     ops 
 
         house1 : House
         %% inhabitant1 : Inhabitant
         ownerOf : House -> Person
-        %% selectorOp : Object * Person -> Value
+        %% selectorOp : Thing * Person -> Value
         owner1 : Person
-        %% object1 : Object
+        %% object1 : Thing
     %% preds    
         %% isInhabitant : Inhabitant * House
-        %% isBossOf : Person * Object
+        %% isBossOf : Person * Thing
     
 
     . ownerOf(house1) = owner1 %(Ax-AssignOwner)% %priority(2)%
-    %% forall p:Person ; o : Object . isBossOf(p,o)
-    %% forall p:Person ; o,o2:Object . exists o3 : Object
-    %%     . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o2)\/ not isBossOf(p,o3) \/ exists o4 : Object . selectorOp(o4,p) = v2)
+    . prioDummyOp = prioDummyOp %(Thing_p5--House_p3--Person_p3--Inhabitant_p2--house1_p2--ownerOf_p3--owner1_p2)%
+    %% forall p:Person ; o : Thing . isBossOf(p,o)
+    %% forall p:Person ; o,o2:Thing . exists o3 : Thing
+    %%     . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o2)\/ not isBossOf(p,o3) \/ exists o4 : Thing . selectorOp(o4,p) = v2)
 
-    %% forall p:Person; o:Object . exists o1 : Object .
+    %% forall p:Person; o:Thing . exists o1 : Thing .
     %%     (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o)) /\ 
     %%     (isBossOf(p,o1))
 
