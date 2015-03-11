@@ -17,7 +17,7 @@ print "\n\n\n"
 # raw_input()
 # Generate the Logic Programming representation of the CASL input spaces. 
 lpRep = toLP(inputSpaces)
-lpRep = "#program base1.\n\n" + lpRep
+lpRep = "#program baseGeneralize.\n\n" + lpRep
 lpFileName = fName.split(".")[0]+".lp"
 lpFile = open(lpFileName,'w')
 lpFile.write(lpRep)

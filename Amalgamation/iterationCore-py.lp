@@ -3,19 +3,24 @@
 
 #script (python) 
 
+# First we need to etermine the path we are in.
+# Some auxiliary libraries that we need:
+import os, sys, time, subprocess
+
+# Set path for additional import files
+lp_path = os.path.abspath(os.getcwd())
+sys.path.append(lp_path)
+
 # The gringo library contains all important python methods used by clingo.
 from gringo import *
 
-# Some auxiliary libraries that we need:
-import os, sys, time, subprocess
-## This variable has to be modified in order to get the system running in your specific system path. TODO: Automate this somehow...
-lp_path = os.path.abspath('/home/parallels/mac-home/svn/coinvent/Amalgamation/')
-sys.path.append(lp_path)
 
 # We also want to be able to call the other amalgamation module python scripts.
 from settings import *
 from langCasl import *
 from blendFunctions import *
+
+print "starting generalisation"
 
 # Global variable required for the blending: the input spaces in the internal data structure represenation. 
 inputSpaces = []
@@ -56,6 +61,7 @@ def main(prg):
     
     print "Starting main iteration loop. Reading input spaces."
 
+
     inputSpacesXmlFileName = input2Xml(inputFile,inputSpaceNames) 
     inputSpaces = parseXml(inputSpacesXmlFileName)
 
@@ -64,13 +70,13 @@ def main(prg):
     imax   = maxIterationsGeneralize
     
     ## We start at step 1.
-    step = 1
+    stepGeneralize = 1
     
     ## The parts of the logic program to be grounded are declared with an empty sequence. 
     parts = []
 
     ## We append the base1 part of the Logic Program. (See e.g. generalize.lp to see which part this is.)
-    parts.append(("base1", []))
+    parts.append(("baseGeneralize", []))
     
     # These external options are currentl not working. They are intended to disallow generalization operations for particuar domains to improve searhc performance. For now, to realise this, (de)comment respective rules in generalize.lp file manually.
     
@@ -83,23 +89,27 @@ def main(prg):
     # # The main generalization loop starts here!
     while True:
         # Abort after the max. number of iterations 
-        if step > imax: break
+        if stepGeneralize > imax: break
         # Append the cumulative part for the particular step (slice) of the program.
-        parts.append(("cumulative1", [step]))
+        parts.append(("cumulativeGeneralize", [stepGeneralize]))
         # # Ground the new slice
         prg.ground(parts)
         parts = []
         # Release the query1(t) atom from the last slice (step-1) from the program. 
-        prg.release_external(Fun("query1", [step-1]))
+        prg.release_external(Fun("queryGeneralize", [stepGeneralize-1]))
         # Add the atom query1(t) of this slice to the program. 
-        prg.assign_external(Fun("query1", [step]), True)
+        prg.assign_external(Fun("queryGeneralize", [stepGeneralize]), True)
 
         # Find Stable Models for this generalization iteration
-        # ret = prg.solve()
         ret = prg.solve(None, onModelGeneralize)
+        # with prg.solve_iter() as it:
+        #     for model in prg.solve_iter():
+        #         printModel(model)                
+                
 
         # If Stable Models are found and we are beyond the minimal number of slices, break loop.
-        if step >= imin and (ret == SolveResult.SAT): break
-        step = step+1
+        if stepGeneralize >= imin and (ret == SolveResult.SAT): break
+        stepGeneralize = stepGeneralize+1
+
 
 #end.

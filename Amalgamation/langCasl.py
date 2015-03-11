@@ -434,9 +434,11 @@ def parseXml(xmlFile):
                                 # Priority information is encoded in the name of the axiom with the string above. Each element in this string is separated by the string "--"
                                 prioInfo = entry.attrib['name'].split("--")
                                 for prioInfoItem in prioInfo:
+                                    if len(prioInfoItem.split(":p:")) != 2:
+                                        print "WARNING!!! priority information " + prioInfoItem + " in wrong format. Expecting <ElementName>:p:<priorityNumber>. Assigning priority 0 instead."
                                     # prioInfoItem is a strings of the form <ElementName>_<PriorityNumber>
-                                    thisPrioNumber = prioInfoItem.split("_")[1]
-                                    thisPrioElementName = prioInfoItem.split("_")[0]
+                                    thisPrioNumber = prioInfoItem.split(":p:")[1]
+                                    thisPrioElementName = prioInfoItem.split(":p:")[0]
                                     opAndSortPriorities[specName][thisPrioElementName] = thisPrioNumber
 
 
@@ -508,7 +510,7 @@ def parseXml(xmlFile):
                             
                             # Check priority:
                             priority = 0
-                            if name.find(":p:") != -1:
+                            if name.find(":p:") != -1 and name.find("--") == -1:
                                 priority = int(name.split(":p:")[1].split(":")[0])                        
                             if 'priority' in entry.attrib.keys():
                                 priority = int(entry.attrib['priority'])
@@ -520,6 +522,8 @@ def parseXml(xmlFile):
                             if len(axStrArr) == 5:
                                 if axStrArr[4] in dataOps[specName] and axStrArr[2] in dataOps[specName]:
                                     ax.isDataAxiom = True
+                            if axStr.find("generated type") == 0:
+                                ax.isDataAxiom = True
 
                             thisSpec.axioms.append(copy.deepcopy(ax))
                     axCtr = axCtr + 1

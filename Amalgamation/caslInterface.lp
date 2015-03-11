@@ -20,7 +20,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% The base program is iteration independent. These are just some auxiliary predicates.
-#program  base1. 
+#program  baseGeneralize. 
 
 % The specification that provides the vocabulary is the one with the lowest id (for now). 
 specProvidesVocabulary(Spec1) :- spec(Spec1), hasId(Spec1,Id1), 0{spec(Spec2) : hasId(Spec2,Id2), Id2 > Id1}0.
@@ -65,7 +65,7 @@ cost(generalizePredSort(Pred,Pos),Spec,0)		:-	a(generalizePredSort(Pred,Pos),Spe
 
 
 %%% Start to iterate over t.
-#program cumulative1(t).
+#program cumulativeGeneralize(t).
 
 %%%% Action preconditions %%%%%
 
@@ -149,7 +149,7 @@ axNotEquivalent(Spec1,Spec2,Ax1,t)		:- hasAxiom(Spec1,Ax1,t), 	spec(Spec2), 0{ax
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Determine removability of elements. This is static and hence belongs to the base part of the LP.
-#program base1.
+#program baseGeneralize.
 % Only non-data elements with a priority != -1 can be removed. (Setting priority to -1 is a workaround to manually define non-removable elements in a spec.)
 removableOp(Spec,Op) 		:- isNonDataOp(Spec,Op), not opHasPriority(Spec,Op,-1).
 removablePred(Spec,Pred) 	:- predHasPriority(Spec,Pred,P), P != -1.
@@ -157,7 +157,7 @@ removableSort(Spec,Sort) 	:- isNonDataSort(Spec,Sort), not sortHasPriority(Spec,
 removableAx(Spec,Ax) 		:- isNonDataAx(Spec,Ax), not axHasPriority(Spec,Ax,-1).
 
 %%%% Inertia rules for sorts, operators, predicates and axioms. This is dynamic and we need to iterate over t, hence we have a cumulative part again.
-#program cumulative1(t).
+#program cumulativeGeneralize(t).
 hasOp(Spec,Op,t+1) 		:- 	hasOp(Spec,Op,t), 		not exec(rmOp(Op),Spec,t), 		not exec(renameOp(Op,_,_),Spec,t).
 hasPred(Spec,Pred,t+1) 	:- 	hasPred(Spec,Pred,t), 	not exec(rmPred(Pred),Spec,t), 	not exec(renamePred(Pred,_,_),Spec,t).		
 hasSort(Spec,Sort,t+1) 	:- 	hasSort(Spec,Sort,t), 	not exec(rmSort(Sort),Spec,t), 	not exec(renameSort(Sort,_,_),Spec,t).		

@@ -39,7 +39,7 @@ It currently works with CASL only, and relies on HETS (via commandline-call) to 
 
 ** GET STARTED **
 The module will only run on a linux-based 64bit distribution, because of the clingo4 binary. If you want to run on another system (e.g. Mac), you have to get your own clingo4 binary. I suggest to use a Virtual Machine instead.
-To run the blending, adjust the var "lp_path" in iterationCore-py.lp to the absolute path of your system and execute "run-blending.py" using python. By default it will do a house boat blending example specified in houseBoat.casl. To run another example, adopt the file settings.py.
+To run the blending, execute "run-blending.py" using python. By default it will do a house boat blending example specified in houseBoat.casl. To run another example, adopt the file settings.py.
 
 If you want to do other blendings, modify the settings.py as follows:
 	+ change the "fName" var and provide the CASL file that contains two specifications to blend.

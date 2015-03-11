@@ -31,9 +31,9 @@ spec Boat = Generic then
         %% isBossOf : Person * Thing
         %% isRider : Passenger *Boat
 
-    . captainOf(boat1) = passenger1 %(Ax-AssignCaptain)% %priority(2)%
+    . captainOf(boat1) = passenger1 %(Ax-AssignCaptain:p:2)%
 
-    . prioDummyOp = prioDummyOp %(Boat_p3--Thing_p5--Person_p3--Passenger_p2--boat1_p2--captainOf_p3--passenger1_p2)%
+    . prioDummyOp = prioDummyOp %(Boat:p:3--Thing:p:5--Person:p:3--Passenger:p:2--boat1:p:2--captainOf:p:3--passenger1:p:2)%
     %% forall p: Passenger, b : Boat
     %%     . (not captainOf(b) = p \/ isPassenger(p,b)) /\ (isRider(p,b) \/ not captainOf(b) = p) %(Ax-captainIsPAssenger)% %priority(3)%
 
@@ -66,8 +66,8 @@ spec House = Generic then
         %% isBossOf : Person * Thing
     
 
-    . ownerOf(house1) = owner1 %(Ax-AssignOwner)% %priority(2)%
-    . prioDummyOp = prioDummyOp %(Thing_p5--House_p3--Person_p3--Inhabitant_p2--house1_p2--ownerOf_p3--owner1_p2)%
+    . ownerOf(house1) = owner1 %(Ax-AssignOwner:p:2)%
+    . prioDummyOp = prioDummyOp %(Thing:p:5--House:p:3--Person:p:3--Inhabitant:p:2--house1:p:2--ownerOf:p:3--owner1:p:2)%
     %% forall p:Person ; o : Thing . isBossOf(p,o)
     %% forall p:Person ; o,o2:Thing . exists o3 : Thing
     %%     . (not selectorOp(o,p) = v1 \/ isBossOf(p,o)) /\ (selectorOp(o,p) = v1 \/ not isBossOf(p,o2)\/ not isBossOf(p,o3) \/ exists o4 : Thing . selectorOp(o4,p) = v2)
