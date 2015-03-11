@@ -20,7 +20,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% The base program is iteration independent. These are just some auxiliary predicates.
-#program  baseGeneralize. 
+#program  base. 
 
 % The specification that provides the vocabulary is the one with the lowest id (for now). 
 specProvidesVocabulary(Spec1) :- spec(Spec1), hasId(Spec1,Id1), 0{spec(Spec2) : hasId(Spec2,Id2), Id2 > Id1}0.
@@ -43,11 +43,6 @@ a(renamePred(Pred1,Pred2,Spec2),Spec1) 	:- 	hasPred(Spec1,Pred1,1), hasPred(Spec
 a(renameSort(Sort1,Sort2,Spec2),Spec1) 	:- 	hasSort(Spec1,Sort1,1), hasSort(Spec2,Sort2,1), Spec1 != Spec2, Sort1 != Sort2,
 											isNonDataSort(Spec1,Sort1), isNonDataSort(Spec2,Sort2).
 
-% Generalizing the sort of an operator
-a(generalizeOpSort(Op,Pos),Spec)		:-	opHasSort(Spec,Op,_,Pos,1).
-
-% Generalizing the sort of a predicate
-a(generalizePredSort(Pred,Pos),Spec)	:-	predHasSort(Spec,Pred,_,Pos,1).
 
 %%%% Cost of actions %%%%
 % Cost of removal actions is equal to priority of the elements to be removed.  
@@ -59,13 +54,10 @@ cost(rmAx(Ax),Spec,C) 		:- a(rmAx(Ax),Spec), 		axHasPriority(Spec,Ax,C).
 cost(renameOp(Op1,Op2,Spec2),Spec1,0)			:- a(renameOp(Op1,Op2,Spec2),Spec1).
 cost(renamePred(Pred1,Pred2,Spec2),Spec1,0)		:- a(renamePred(Pred1,Pred2,Spec2),Spec1).
 cost(renameSort(Sort1,Sort2,Spec2),Spec1,0)		:- a(renameSort(Sort1,Sort2,Spec2),Spec1).
-% Cost of generalisation options is always 0. TODO: Generalising a sort should cost something, depending on the sort or the operator priority. 
-cost(generalizeOpSort(Op,Pos),Spec,0)			:-	a(generalizeOpSort(Op,Pos),Spec).
-cost(generalizePredSort(Pred,Pos),Spec,0)		:-	a(generalizePredSort(Pred,Pos),Spec).
 
 
 %%% Start to iterate over t.
-#program cumulativeGeneralize(t).
+#program cumulative(t).
 
 %%%% Action preconditions %%%%%
 
@@ -116,16 +108,6 @@ poss(renameSort(Sort1,Sort2,Spec2),Spec1,t) :- 	a(renameSort(Sort1,Sort2,Spec2),
 												specProvidesVocabulary(Spec2).
 
 
-%%% Generalise Operator Sort
-poss(generalizeOpSort(Op,Pos),Spec,t) :- 	a(generalizeOpSort(Op,Pos),Spec), opHasSort(Spec,Op,SortChild,Pos,t), 
-											hasParentSort(Spec,SortChild,_,t).
-
-%%% Generalise PRedicate Sort
-poss(generalizePredSort(Pred,Pos),Spec,t) :- 	a(generalizePredSort(Pred,Pos),Spec), predHasSort(Spec,Pred,SortChild,Pos,t), 
-												hasParentSort(Spec,SortChild,_,t).
-
-
-
 %%%% Equality of conceptual spaces %%%%
 %% equal(Spec,Spec,t) 		:- 	spec(Spec).
 equal(Spec1,Spec2,t) 	:- 	not notEqual(Spec1,Spec2,t), spec(Spec1), spec(Spec2).
@@ -149,7 +131,7 @@ axNotEquivalent(Spec1,Spec2,Ax1,t)		:- hasAxiom(Spec1,Ax1,t), 	spec(Spec2), 0{ax
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Determine removability of elements. This is static and hence belongs to the base part of the LP.
-#program baseGeneralize.
+#program base.
 % Only non-data elements with a priority != -1 can be removed. (Setting priority to -1 is a workaround to manually define non-removable elements in a spec.)
 removableOp(Spec,Op) 		:- isNonDataOp(Spec,Op), not opHasPriority(Spec,Op,-1).
 removablePred(Spec,Pred) 	:- predHasPriority(Spec,Pred,P), P != -1.
@@ -157,7 +139,7 @@ removableSort(Spec,Sort) 	:- isNonDataSort(Spec,Sort), not sortHasPriority(Spec,
 removableAx(Spec,Ax) 		:- isNonDataAx(Spec,Ax), not axHasPriority(Spec,Ax,-1).
 
 %%%% Inertia rules for sorts, operators, predicates and axioms. This is dynamic and we need to iterate over t, hence we have a cumulative part again.
-#program cumulativeGeneralize(t).
+#program cumulative(t).
 hasOp(Spec,Op,t+1) 		:- 	hasOp(Spec,Op,t), 		not exec(rmOp(Op),Spec,t), 		not exec(renameOp(Op,_,_),Spec,t).
 hasPred(Spec,Pred,t+1) 	:- 	hasPred(Spec,Pred,t), 	not exec(rmPred(Pred),Spec,t), 	not exec(renamePred(Pred,_,_),Spec,t).		
 hasSort(Spec,Sort,t+1) 	:- 	hasSort(Spec,Sort,t), 	not exec(rmSort(Sort),Spec,t), 	not exec(renameSort(Sort,_,_),Spec,t).		

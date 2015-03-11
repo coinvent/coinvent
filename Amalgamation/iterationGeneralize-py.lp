@@ -19,6 +19,7 @@ from gringo import *
 from settings import *
 from langCasl import *
 from blendFunctions import *
+from auxFunctions import *
 
 print "starting generalisation"
 
@@ -32,11 +33,14 @@ blends = []
 maxCost = sys.maxint
 
 # This is called if a model is found.
-def onModelGeneralize(model):
-    global inputSpaces, maxCost, blends
+def onModelGeneralize(model):    
+    global inputFile, maxCost, blends
+    lpFileName = inputFile.split(".")[0]+".lp"
 
-    printModel(model)
-    return 
+    print "Found generalisation:"
+    modelStr = getModel(model)
+    print modelStr
+    
     [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends)
     
     if blendingGeneralizationCost <= maxCost and blendingGeneralizationCost < sys.maxint:
@@ -45,10 +49,12 @@ def onModelGeneralize(model):
         print "Found blend with a cheaper or equal generalization cost of  " + str(maxCost) + "."
         # raw_input()
 
-def printModel(model):
-    print "Model found: \n"
+def getModel(model):
+    print "%% Generalisation model is as follows : \n"
+    mStr = ''
     for a in model.atoms():
-        print a
+        mStr += str(a)+".\n"    
+    return mStr
 
 
 ## The function main is called by clingo. It implements the main iteration loop.
@@ -76,7 +82,7 @@ def main(prg):
     parts = []
 
     ## We append the base1 part of the Logic Program. (See e.g. generalize.lp to see which part this is.)
-    parts.append(("baseGeneralize", []))
+    parts.append(("base", []))
     
     # These external options are currentl not working. They are intended to disallow generalization operations for particuar domains to improve searhc performance. For now, to realise this, (de)comment respective rules in generalize.lp file manually.
     
@@ -91,14 +97,14 @@ def main(prg):
         # Abort after the max. number of iterations 
         if stepGeneralize > imax: break
         # Append the cumulative part for the particular step (slice) of the program.
-        parts.append(("cumulativeGeneralize", [stepGeneralize]))
+        parts.append(("cumulative", [stepGeneralize]))
         # # Ground the new slice
         prg.ground(parts)
         parts = []
         # Release the query1(t) atom from the last slice (step-1) from the program. 
-        prg.release_external(Fun("queryGeneralize", [stepGeneralize-1]))
+        prg.release_external(Fun("query", [stepGeneralize-1]))
         # Add the atom query1(t) of this slice to the program. 
-        prg.assign_external(Fun("queryGeneralize", [stepGeneralize]), True)
+        prg.assign_external(Fun("query", [stepGeneralize]), True)
 
         # Find Stable Models for this generalization iteration
         ret = prg.solve(None, onModelGeneralize)

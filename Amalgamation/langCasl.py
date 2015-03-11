@@ -567,9 +567,12 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
     inputSpaces = copy.deepcopy(originalInputSpaces)
     generalizations = {}
     lastSpecName = ''
+    
     for spec in originalInputSpaces:
         generalizations[spec.name] = [spec]
         lastSpecName = spec.name
+
+
     # modify CASL data according to Answer Set atoms.
     acts = {}
     for atom in atoms:
@@ -592,48 +595,118 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
             for cSpec in inputSpaces:
                 # print cSpec.name.lower()
                 # remove operators, predicates and axioms
-                if cSpec.name.lower() == iSpace:  
+                if toLPName(cSpec.name,"spec") == iSpace:  
                     for act in acts[step][iSpace]:
                         if act["actType"] == "rmOp" :
                             for op in cSpec.ops:
-                                if toLPName(op.name) == act["argVect"][0]:
+                                if toLPName(op.name,"po") == act["argVect"][0]:
                                     cSpec.ops.remove(op)
+                            # print "removing operator " + act["argVect"][0]
+                            # print cSpec.toCaslStr()
+                            # raw_input()
 
                         if act["actType"] == "renameOp" :
                             opFrom = act["argVect"][0]
                             opTo = act["argVect"][1]
                             for op in cSpec.ops:
-                                if toLPName(op.name) == opFrom:
+                                if toLPName(op.name,"po") == opFrom:
                                     cSpec.ops.remove(op)
-                            newOp = copy.deepcopy(op)
-                            newOp.name = toCaslName(opTo)
-                            cSpec.ops.append(newOp)
 
-                            # Get axioms that involve the operator and remove them. 
+                                    newOp = copy.deepcopy(op)
+                                    newOp.name = lpToCaslStr(opTo)
+                                    cSpec.ops.append(newOp)
+                                    break
+
+                            # Get axioms that involve the operator and rename the operator them. 
                             for ax in cSpec.axioms:
-                                # predsOpsSorts = ax.determinePredsOpsSorts()
-                                # print ax.axStr
-                                # print predsOpsSorts
-                                if op.name in ax.determinePredsOpsSorts():
+                                # if op.name in ax.determinePredsOpsSorts():
                                     # Add new updated axioms with changed operator names
-                                    newAxStr = re.sub("(?<!\w)"+opFrom+"(?!\w)", opTo, ax.axStr)
-                                    # newAx = copy.deepcopy(ax)
-                                    # newAx.axStr = newAxStr
-                                    # newAx.id = axMap[newAxStr]
-                                    # cSpec.axioms.remove(ax)
-                                    # cSpec.axioms.append(newAx)
-                                    ax.axStr = newAxStr
-                                    ax.id = axMap[newAxStr]
+                                newAxStr = re.sub("(?<!\w)"+opFrom+"(?!\w)", opTo, ax.axStr)
+                                ax.axStr = newAxStr
+                                # ax.id = axMap[newAxStr]
+
+                            print "renaming operator from " + lpToCaslStr(opFrom) + " to " + lpToCaslStr(opTo)
+                            print cSpec.toCaslStr()
+                            raw_input()
                             
                         if act["actType"] == "rmPred" :
                             for p in cSpec.preds:
-                                if toLPName(p.name) == act["argVect"][0]:
+                                if toLPName(p.name,"po") == act["argVect"][0]:
                                     cSpec.preds.remove(p)
+                        if act["actType"] == "renamePred" :
+                            pFrom = act["argVect"][0]
+                            pTo = act["argVect"][1]
+                            for p in cSpec.preds:
+                                if toLPName(p.name,"po") == pFrom:
+                                    cSpec.preds.remove(p)
+                                    
+                                    newPred = copy.deepcopy(p)
+                                    newPred.name = lpToCaslStr(pTo)
+                                    cSpec.preds.append(newPred)
+                                    break
+
+                            # Get axioms that involve the predicate and rename the predicate them. 
+                            for ax in cSpec.axioms:
+                                # if p.name in ax.determinePredsOpsSorts():
+                                    # Add new updated axioms with changed operator names
+                                newAxStr = re.sub("(?<!\w)"+lpToCaslStr(pFrom)+"(?!\w)", lpToCaslStr(pTo), ax.axStr)
+                                ax.axStr = newAxStr
+                                # ax.id = axMap[newAxStr]
+                            
+                            print "renaming predicate from " + pFrom + " to " + pTo
+                            print cSpec.toCaslStr()
+                            raw_input()
 
                         if act["actType"] == "rmSort" :
                             for srt in cSpec.sorts.keys():
-                                if toLPName(srt) == act["argVect"][0]:
+                                if toLPName(srt,"sort") == act["argVect"][0]:
                                     del cSpec.sorts[srt]
+
+                        if act["actType"] == "renameSort" :
+                            sFrom = act["argVect"][0]
+                            sTo = act["argVect"][1]
+                            # print "renaming a sort " + sFrom + " to " + sTo
+                            # print cSpec.sorts
+                            # rename sorts
+                            for s in cSpec.sorts:
+                                if toLPName(s.name,"sort") == sFrom:
+                                    cSpec.sorts.remove(s)
+                                    newSort = copy.deepcopy(s)
+                                    newSort.name = lpToCaslStr(sTo)
+                                    cSpec.sorts.append(newSort)
+                                    # print " new sort" 
+                                    # print newSort.toCaslStr()
+
+                            # change parent sorts
+                            for s in cSpec.sorts:
+                                if toLPName(s.parent,"sort") == sFrom:
+                                    s.parent = lpToCaslStr(sTo)
+                                    # cSpec.sorts.remove(s)
+
+                            # Get axioms that involve the sort and rename the sorts
+                            for ax in cSpec.axioms:
+                                newAxStr = re.sub("(?<!\w)"+lpToCaslStr(sFrom)+"(?!\w)", lpToCaslStr(sTo), ax.axStr)
+                                ax.axStr = newAxStr
+
+                            # change sorts in operators
+                            for op in cSpec.ops:
+                                # change domain sort. 
+                                if op.dom == lpToCaslStr(sFrom):
+                                    op.dom = newSort.name
+                                for n,opSort in enumerate(op.args):
+                                    if opSort == lpToCaslStr(sFrom):
+                                        op.args[n] = newSort.name
+
+                            # change sorts in predicates
+                            for p in cSpec.preds:
+                                # change domain sort. 
+                                for n,pSort in enumerate(p.args):
+                                    if pSort == lpToCaslStr(sFrom):
+                                        p.args[n] = newSort.name
+ 
+                            # print "renaming sort from " + sFrom + " to " + sTo
+                            # print cSpec.toCaslStr()
+                            # raw_input()
 
                         if act["actType"] == "rmAx" :
                             for a in cSpec.axioms:
@@ -644,7 +717,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                     thisCSpec.name = thisCSpec.name + "_gen_" + str(len(generalizations[thisCSpec.name]))
                     generalizations[cSpec.name].append(thisCSpec)
                     # print "generalization"
-                    # print thisCSpec.toStr()
+                    # print thisCSpec.toCaslStr()
                     # raw_input()
 
     # add one last generic cSpec

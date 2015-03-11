@@ -7,16 +7,21 @@ from itertools import *
 
 def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
 
+    blends = []
+    generalizationCost = sys.maxint
+
     # Parse model and execute actions on internal data structure to obtain the generalized inut spaces. 
     genInputSpaces = getGeneralizedSpaces(modelAtoms, inputSpaces)
 
-    # Get possible combinations of generalization combinations
-    blendCombis = getPossBlendCombis(genInputSpaces)    
 
-    # initialize output string for casl file
+
+    # # Get possible combinations of generalization combinations
+    blendCombis = getPossBlendCombis(modelAtoms)    
+
+    # # initialize output string for casl file
     cstr = ''
 
-    # First state generic spaces
+    # # First state generic spaces
     cstr = cstr + genInputSpaces["Generic"][0].toCaslStr()+"\n\n"
     # State all generalized input spaces:     
     for specName in genInputSpaces.keys():
@@ -31,30 +36,51 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                 a = str(atom)
                 if a[:4] == "exec":
                     act = getActFromAtom(a)
-                    if act["actType"]  != "renameOp":
-                        continue
-                    if act["iSpace"] != toLPName(specName):
-                        continue
-                    # Add renaming only if operator is in target spec.
-                    rnInOps = False
-                    for op in spec.ops:                        
-                        if act["argVect"][0] == op.name: 
-                            rnInOps = True
-                            break
-                    if rnInOps: 
-                        renamings[act["step"]] = act["argVect"]
+                    if act["actType"] == "renameOp":
+                        if act["iSpace"] != toLPName(specName,"spec"):
+                            continue
+                        # Add renaming only if operator is in target spec.
+                        rnInOps = False
+                        for op in spec.ops:                        
+                            if act["argVect"][0] == op.name: 
+                                rnInOps = True
+                                break
+                        if rnInOps: 
+                            renamings[act["step"]] = act["argVect"]
+                    if act["actType"] == "renamePred":
+                        if act["iSpace"] != toLPName(specName,"spec"):
+                            continue
+                        # Add renaming only if operator is in target spec.
+                        rnInPreds = False
+                        for p in spec.preds:                        
+                            if act["argVect"][0] == p.name: 
+                                rnInOps = True
+                                break
+                        if rnInPreds: 
+                            renamings[act["step"]] = act["argVect"]
+                    if act["actType"] == "renameSort":
+                        if act["iSpace"] != toLPName(specName,"spec"):
+                            continue
+                        # Add renaming only if operator is in target spec.
+                        rnInSorts = False
+                        for s in spec.sorts:                        
+                            if act["argVect"][0] == toLPName(s.name,"sort"): 
+                                rnInSorts = True
+                                break
+                        if rnInSorts: 
+                            renamings[act["step"]] = act["argVect"]
 
             if len(renamings.keys()) > 0:
                 cstr = cstr + " =  "
                 for step in sorted(renamings.keys()):
-                    cstr = cstr + renamings[step][1] + " |-> " + renamings[step][0] + ", "
+                    cstr = cstr + lpToCaslStr(renamings[step][1]) + " |-> " + lpToCaslStr(renamings[step][0]) + ", "
                 cstr = cstr[:-2]
 
                     # print act
                 # if atom.find("exec(renameOp(") != -1:
                     # atomSpec = 
             cstr = cstr + " end\n\n"
-
+    # raw_input()
     # State blends (colimit operation)
     for cost in sorted(blendCombis.keys()):
         print "Specifying blends with generalization cost of " + str(cost)
@@ -71,6 +97,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             cstr = cstr[:-1]
             cstr = cstr + " end\n\n"
     
+    # print cstr
     # First make sure file does not exists, and then write file. Try writing multiple times (this is necessary due to some strange file writing bug...)
     if os.path.isfile("amalgamTmp.casl"):
         os.system("rm amalgamTmp.casl")
@@ -85,6 +112,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             print "ERROR! file amalgamTmp.casl not yet written after "+ str(tries) + "tries. Aborting program... "
             exit(1)
     generalizationCost = sys.maxint
+
     for cost in sorted(blendCombis.keys()):
         consistent = -1
         print "Trying blends with generalization cost of " + str(cost)
@@ -147,9 +175,9 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
 
         if consistent != 1:
             generalizationCost == sys.maxint
-    raw_input()
-    os.system("rm *.tptp")
-    os.remove("amalgamTmp.casl")
+    # raw_input()
+    # os.system("rm *.tptp")
+    # os.remove("amalgamTmp.casl")
 
     return [blends,generalizationCost]
     
@@ -203,53 +231,24 @@ def writeBlends(blends):
     raw_input
 
 # Returns an array of possible Blend combinations and provides a generalization cost value for the combination
-def getPossBlendCombis(genInputSpaces):
-    maxGeneralizationsPerSpace = 0
-    for gisName in genInputSpaces:
-        if gisName == "Generic":
-            continue
-        maxGeneralizationsPerSpace = max(maxGeneralizationsPerSpace,len(genInputSpaces[gisName])-1)
-
-    numSpaces = len(genInputSpaces) -1 # The -1 is there because Generic Space does not count...
-    
-    # generate the list of all possible combinaions of generalization steps by using the cartesian product function.     
-    combiList = [list(combi) for combi in product(range(maxGeneralizationsPerSpace+1),repeat = numSpaces)]
-    # Now make these lists readable for the later processing by generating the "combis" dictionary which is organized by generalization cost. Also check if combi is valid. , i.e. if the number of generalizations in the possCombiList variable applied is valid. If valid add them to list of possible combis. 
-    possCombis = []
-    for combi in combiList:
-        thisCombi = {}
-        gisNum = 0
-        combiValid = True
-        for gisName in sorted(genInputSpaces.keys()):
-            if gisName == "Generic":
-                continue            
-            thisCombi[gisName] = combi[gisNum]
-            # Also check if this combination is valid. It may be, that for a particular input space there is no generalization at all, or less generalizations than for other input spaces.
-            if len(genInputSpaces[gisName]) <= combi[gisNum]:
-                combiValid = False
-                break
-            gisNum = gisNum + 1
-        
-        # Append this combi if it is valid. 
-        if combiValid:
-            possCombis.append(thisCombi)
-
+def getPossBlendCombis(modelAtoms):
+    # maxGeneralizationsPerSpace = 0
     combis = {}
-    for combi in possCombis:
-        # thisCombiCost = 0
-        minSpaceGenCost = sys.maxint
-        maxSpaceGenCost = 0
-        for iSpaceName in combi.keys():
-            cost = combi[iSpaceName]
-            minSpaceGenCost = min(cost,minSpaceGenCost)
-            maxSpaceGenCost = max(cost,maxSpaceGenCost)
-
-        finalCombiCost = maxSpaceGenCost * 10 + minSpaceGenCost
-
-        if finalCombiCost not in combis.keys():
-            combis[finalCombiCost] = []
-        combis[finalCombiCost].append(combi)
-
+    for atom in modelAtoms:
+        if str(atom).find("getPossBlendCombis") != 0:
+            continue
+        # combi is a pair of generalised specification names
+        combi = []
+        # combinedGenCost(spec_Boat,6,spec_House,2,38,7).
+        argItems = str(atom).split("(")[1].split(")")[0].split(",")
+        # print argItems
+        combi.append(argItems[0])
+        combi.append(argItems[2])
+        # cost is the cost of the combination
+        cost = int(argItems[4])
+        if cost in combis.keys():
+            combis[cost] = []
+        combis[cost].append(combi)
     return combis
 
    

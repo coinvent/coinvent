@@ -7,10 +7,11 @@
 %%%%%%%%%%%%%%%%%%%%%
 
 %%% The base program is iteration independent. These are just some auxiliary predicates.
-#program  baseGeneralize. 
+#program  base. 
+pathGenCost(Spec,0,1) :- spec(Spec).
 
 %%% Define steps
-#program cumulativeGeneralize(t).
+#program cumulative(t).
 s(t).
 
 %%% We have a total (or partial) priority order on predicates, operators and axioms, and generalisations should account for that order. Hence, we assign a cost to removal actions that coincides with the priority of the axiom, operator, predicate or sort to remove. This allows us to define when a generalisation action is optimal, i.e., when there is no cheaper action for which the preconditions are met.  Then we count the number of non-optimal generalisation operations as the number of operations that do not respect the priority order. This is used to prune the search space. 
@@ -40,14 +41,25 @@ specModified(I,t) :- exec(_,I,t).
 :- specModified(I,t), not specModified(I,T_before), T_before < t, s(T_before).
 
 %% %% Speedup 2: Allow only a limited number on non-optimal steps. 
-:- nonOptimalSteps(N,I,t), N >= 1.
+:- nonOptimalSteps(N,I,t), N > 0.
 
 %% %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
-#external queryGeneralize(t).
-:- queryGeneralize(t), notGenericReached(t).
-%% :- query1(t), exec(A,S,t).
-%% t < 3.
+#external query(t).
+:- query(t), notGenericReached(t).
 
+
+%%% TODO: The following can be improved. It consumes a lot of computation time. 
+pathGenCost(Spec,CBefore+CNow,t+1) 			:- 	exec(A,Spec,t), cost(A,Spec,CNow), pathGenCost(Spec,CBefore,t), isOptimal(A,Spec,t).
+pathGenCost(Spec,CBefore+CNowNonOpti,t+1) 	:- 	exec(A,Spec,t), cost(A,Spec,CNow), pathGenCost(Spec,CBefore,t), not isOptimal(A,Spec,t), 
+												CNowNonOpti = CNow * 2.
+
+combinedGenCost(Spec1,T1,Spec2,T2,C,t) 	:- 	C = C1 + @pow(C2,2), pathGenCost(Spec1,C1,T1),  pathGenCost(Spec2,C2,T2), genericReached(t), 
+											Spec1 != Spec2, C1 <= C2.
+
+combinedGenCost(Spec1,T1,Spec2,T2,C,t) 	:- combinedGenCost(Spec2,T2,Spec1,T1,C,t), genericReached(t).
+
+%% #show pathGenCost/3.
+#show combinedGenCost/6.
 #show s/1.
 %% #show removableAx/2.
 %% #show poss/3.
@@ -62,3 +74,15 @@ specModified(I,t) :- exec(_,I,t).
 %% #show a/2.
 %% #show notGenericReached/1.
 #show exec/3.
+
+
+
+
+
+
+
+
+
+
+
+hasEquivalenceClass(Spec,Id,t+1) :- Id = @getNewEqClass(Spec,IdOld,A), hasEquivalenceClass(Spec,IdOld,t), exec(A,Spec,t).

@@ -17,7 +17,7 @@ print "\n\n\n"
 # raw_input()
 # Generate the Logic Programming representation of the CASL input spaces. 
 lpRep = toLP(inputSpaces)
-lpRep = "#program baseGeneralize.\n\n" + lpRep
+lpRep = "#program base.\n\n" + lpRep
 lpFileName = fName.split(".")[0]+".lp"
 lpFile = open(lpFileName,'w')
 lpFile.write(lpRep)
@@ -28,5 +28,5 @@ print "Generated Logic Programming facts from CASL Spec."
 # Call apsrin to generate preferences LP file.
 # subprocess.call(["./asprin/asprin.parser", "preferences.lp", "./asprin/asprin.lib"])
 # Invoke clingo4 and run 
-subprocess.call(["./clingo4", "--number="+str(numModels), "iterationCore-py.lp", "caslInterface.lp", "generalize.lp", lpFileName])
+subprocess.call(["./clingo4", "--number="+str(numModels), "--quiet", "iterationGeneralize-py.lp", "caslInterface.lp", "generalize.lp", lpFileName])
 

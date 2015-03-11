@@ -1,4 +1,4 @@
-
+import math
 def toLPName(caslName,elemType):
 
     # This is just a dirty quickfix to use (infix) plus and minus operators. 
@@ -59,4 +59,13 @@ class Command(object):
             self.process.terminate()
             thread.join()
         return self.status, self.output, self.error
+
+
+def pow(n1,n2):
+    return int(math.pow(int(n1),int(n2)))
+
+# def getCombinedCost(c1,c2):
+#     ic1 = int(c1)
+#     ic2 = int(c2)
+#     return int(max(ic1,ic2) **2 + min(ic1,ic2))
 
