@@ -1,4 +1,5 @@
 import math
+import os, sys, time, subprocess, threading, shlex
 def toLPName(caslName,elemType):
 
     # This is just a dirty quickfix to use (infix) plus and minus operators. 

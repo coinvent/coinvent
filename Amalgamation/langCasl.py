@@ -621,13 +621,13 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                             for ax in cSpec.axioms:
                                 # if op.name in ax.determinePredsOpsSorts():
                                     # Add new updated axioms with changed operator names
-                                newAxStr = re.sub("(?<!\w)"+opFrom+"(?!\w)", opTo, ax.axStr)
+                                newAxStr = re.sub("(?<!\w)"+lpToCaslStr(opFrom)+"(?!\w)", lpToCaslStr(opTo), ax.axStr)
                                 ax.axStr = newAxStr
                                 # ax.id = axMap[newAxStr]
 
-                            print "renaming operator from " + lpToCaslStr(opFrom) + " to " + lpToCaslStr(opTo)
-                            print cSpec.toCaslStr()
-                            raw_input()
+                            # print "renaming operator from " + lpToCaslStr(opFrom) + " to " + lpToCaslStr(opTo)
+                            # print cSpec.toCaslStr()
+                            # raw_input()
                             
                         if act["actType"] == "rmPred" :
                             for p in cSpec.preds:
@@ -653,7 +653,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                 ax.axStr = newAxStr
                                 # ax.id = axMap[newAxStr]
                             
-                            print "renaming predicate from " + pFrom + " to " + pTo
+                            print "renaming predicate from " + lpToCaslStr(pFrom) + " to " + lpToCaslStr(pTo)
                             print cSpec.toCaslStr()
                             raw_input()
 
@@ -726,9 +726,9 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
     generalizations["Generic"] = [genSpec]    
 
     # print generalizations
-    for origS in generalizations.values():
-        for s in origS:
-            print s.toCaslStr()
+    # for origS in generalizations.values():
+    #     for s in origS:
+    #         print s.toCaslStr()
 
     return generalizations
 

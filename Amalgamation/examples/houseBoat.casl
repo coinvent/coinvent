@@ -60,6 +60,8 @@ spec House = Generic then
         ownerOf : House -> Person
         %% selectorOp : Thing * Person -> Value
         owner1 : Person
+        inhabitant1 : Inhabitant
+        mainTenant : House -> Inhabitant
         %% object1 : Thing
     %% preds    
         %% isInhabitant : Inhabitant * House
@@ -67,6 +69,7 @@ spec House = Generic then
     
 
     . ownerOf(house1) = owner1 %(Ax-AssignOwner:p:2)%
+    . mainTenant(house1) = inhabitant1 %(Ax-AssignMainTenant:p:2)%
     . prioDummyOp = prioDummyOp %(Thing:p:5--House:p:3--Person:p:3--Inhabitant:p:2--house1:p:2--ownerOf:p:3--owner1:p:2)%
     %% forall p:Person ; o : Thing . isBossOf(p,o)
     %% forall p:Person ; o,o2:Thing . exists o3 : Thing
