@@ -282,6 +282,10 @@ class CaslSpec:
         for ax in self.axioms:
             if ax.axStr == ". prioDummyOp = prioDummyOp":
                 continue
+            if ax.isDataAxiom == True:
+                continue
+            if ax.priority == -1:
+                continue
             oStr = oStr + ax.toLPStr(self.name) + "\n"        
 
         # print "opToCaslMap:"

@@ -36,12 +36,16 @@ a(rmAx(Ax),Spec) 		:- removableAx(Spec,Ax).
 % Renaming operators. Only non-data elements can be renamed.
 a(renameOp(Op1,Op2,Spec2),Spec1) 		:- 	hasOp(Spec1,Op1,1), hasOp(Spec2,Op2,1), Spec1 != Spec2, Op1 != Op2, 
 											isNonDataOp(Spec1,Op1), isNonDataOp(Spec2,Op2).
+
 % Renaming predicates.
 a(renamePred(Pred1,Pred2,Spec2),Spec1) 	:- 	hasPred(Spec1,Pred1,1), hasPred(Spec2,Pred2,1), Spec1 != Spec2, Pred1 != Pred2.
 
 % Renaming sorts.
 a(renameSort(Sort1,Sort2,Spec2),Spec1) 	:- 	hasSort(Spec1,Sort1,1), hasSort(Spec2,Sort2,1), Spec1 != Spec2, Sort1 != Sort2,
 											isNonDataSort(Spec1,Sort1), isNonDataSort(Spec2,Sort2).
+
+%%%% dummy action for doing nothing
+a(wait,Spec) :- spec(Spec).
 
 
 %%%% Cost of actions %%%%
@@ -55,6 +59,7 @@ cost(renameOp(Op1,Op2,Spec2),Spec1,0)			:- a(renameOp(Op1,Op2,Spec2),Spec1).
 cost(renamePred(Pred1,Pred2,Spec2),Spec1,0)		:- a(renamePred(Pred1,Pred2,Spec2),Spec1).
 cost(renameSort(Sort1,Sort2,Spec2),Spec1,0)		:- a(renameSort(Sort1,Sort2,Spec2),Spec1).
 
+%% cost(wait,Spec,0) :- a(wait,Spec).
 
 %%% Start to iterate over t.
 #program cumulative(t).
@@ -107,6 +112,13 @@ poss(renameSort(Sort1,Sort2,Spec2),Spec1,t) :- 	a(renameSort(Sort1,Sort2,Spec2),
 												not hasSort(Spec1,Sort2,t), not hasSort(Spec2,Sort1,t),
 												specProvidesVocabulary(Spec2).
 
+isRenamedTo(Spec2,t) :- exec(renameOp(_,_,Spec2),_,t).
+isRenamedTo(Spec2,t) :- exec(renamePred(_,_,Spec2),_,t).
+isRenamedTo(Spec2,t) :- exec(renameSort(_,_,Spec2),_,t).
+#show isRenamedTo/2.
+%% :- exec(renameOp(Op1,Op2,Spec2),Spec1,t) , not exec(wait,Spec2,t).
+%% :- exec(renamePred(Pred1,Pred2,Spec2),Spec1,t) , not exec(wait,Spec2,t).
+%% :- exec(renameSort(Sort1,Sort2,Spec2),Spec1,t) , not exec(wait,Spec2,t).
 
 %%%% Equality of conceptual spaces %%%%
 %% equal(Spec,Spec,t) 		:- 	spec(Spec).
@@ -231,7 +243,7 @@ axHasEquivalenceClass(Spec,Ax,EC,t+1) :- axHasEquivalenceClass(Spec,Ax,EC,t), no
 
 axHasEquivalenceClass(Spec,Ax,ECNew,t+1) :- 	axHasEquivalenceClass(Spec,Ax,ECOld,t), axChanged(Spec,Ax,Element,EleFrom,EleTo,t), 
 												hasAxiom(Spec,Ax,t), ECNew = @renameEleAndGetNewEqClass(ECOld,Element,EleFrom,EleTo).
-
+%% #show cost/3.
 %% #show axHasEquivalenceClass/4.
 %% #show axEquivalent/5.
 %% #show predEquivalent/4.

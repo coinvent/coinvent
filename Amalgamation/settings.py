@@ -21,8 +21,8 @@ minIterationsBlend = 1
 maxIterationsBlend = 20
 
 ###### Time limit for eprover and darwin consistency check in seconds CPU time
-eproverTimeLimit = 10
-darwinTimeLimit = 10
+eproverTimeLimit = 5
+darwinTimeLimit = 2
 
 ###### Path to the HETS executable ######
 hetsExe = 'hets'
@@ -46,9 +46,11 @@ hetsExe = 'hets'
 # inputFile = "examples/cadenceByAx.casl"
 # inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 
-inputFile = "examples/houseBoat.casl"
-inputSpaceNames = ["Boat","House"]
-# inputSpaceNames = ["House1","House2"]
+# inputFile = "examples/houseBoat.casl"
+# inputSpaceNames = ["Boat","House"]
+
+inputFile = "examples/LPNMR/cadenceBlendFusionTest.casl"
+inputSpaceNames = ["PhrygianCadence","PerfectCadence"]
 
 # inputFile = "examples/music/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
 # inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]

@@ -3,14 +3,14 @@ import os, sys, time, subprocess, threading, shlex
 def toLPName(caslName,elemType):
 
     # This is just a dirty quickfix to use (infix) plus and minus operators. 
-    s = caslName
-    if s == "__+__" or s == "+":
-       s =  "plus"
-    if s == "__-__" or s == "-":
-        s = "minus"
+    if caslName == "__+__" or caslName == "+":
+       caslName =  "plus"
+    if caslName == "__-__" or caslName == "-":
+        caslName = "minus"
 
-    s = elemType + "_"+caslName
-    return s
+    caslName = elemType + "_"+caslName
+
+    return caslName
 
 def lpToCaslStr(lpName):
     uScorePos = lpName.find("_")

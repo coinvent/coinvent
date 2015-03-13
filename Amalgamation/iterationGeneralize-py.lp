@@ -40,9 +40,9 @@ def onModelGeneralize(model):
     print "Found generalisation:"
     modelStr = getModel(model)
     print modelStr
-    
-    [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends)
-    
+    # return
+    [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends) 
+    print blendingGeneralizationCost  
     if blendingGeneralizationCost <= maxCost and blendingGeneralizationCost < sys.maxint:
         maxCost = blendingGeneralizationCost
         writeBlends(blends)
