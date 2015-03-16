@@ -102,7 +102,7 @@ class CaslPred:
     def __init__(self, name):
         self.name = name
         self.args = []
-        self.priority = 0
+        self.priority = 1
     
     @staticmethod
     def byStr(text):
@@ -137,7 +137,7 @@ class CaslOp:
         self.dom = ''
         # self.removable = 1
         self.isDataOp = False
-        self.priority = 0
+        self.priority = 1
     
     @staticmethod
     def byStr(text):
@@ -197,7 +197,7 @@ class CaslSort:
     def __init__(self, name):
         self.name = name
         self.parent = ""
-        self.priority = 0
+        self.priority = 1
         # self.removable = 1
         self.isDataSort = False
 
@@ -299,7 +299,7 @@ class CaslAx:
         self.name = name
         self.axStr = axStr
         self.isDataAxiom = False # THis determines whether only data operators (generated type constants) are part of this axiom. Typicallay, such axioms denote, e.g., that natural numbers are not equal, that the boolean true is not equal to false, or that the tones of a chord (which are data operators) are not equal. 
-        self.priority = 0
+        self.priority = 1
         self.eqClass = getEquivalenceClass(axStr)
         self.involvedPredsOps = {}
         self.involvedSorts = {}
@@ -466,7 +466,7 @@ def parseXml(xmlFile):
                         if sName in opAndSortPriorities[specName].keys():
                             sort.priority = opAndSortPriorities[specName][sName]
                         else:
-                            sort.priority = 0
+                            sort.priority = 1
 
                         thisSpec.sorts.append(sort)
                         
@@ -485,7 +485,7 @@ def parseXml(xmlFile):
                         if op.name in opAndSortPriorities[specName].keys():
                             op.priority = opAndSortPriorities[specName][op.name]
                         else:
-                            op.priority = 0
+                            op.priority = 1
 
                         thisSpec.ops.append(op)
                         
@@ -494,7 +494,7 @@ def parseXml(xmlFile):
                         if pred.name in opAndSortPriorities[specName].keys():
                             pred.priority = opAndSortPriorities[specName][pred.name]
                         else:
-                            pred.priority = 0
+                            pred.priority = 1
                         thisSpec.preds.append(pred)   
         # Add axioms
         for decAx in dgNode:
@@ -513,7 +513,7 @@ def parseXml(xmlFile):
                             ax = CaslAx(axCtr,name,axStr)
                             
                             # Check priority:
-                            priority = 0
+                            priority = 1
                             if name.find(":p:") != -1 and name.find("--") == -1:
                                 priority = int(name.split(":p:")[1].split(":")[0])                        
                             if 'priority' in entry.attrib.keys():
