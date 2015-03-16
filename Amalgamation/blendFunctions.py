@@ -6,9 +6,9 @@ from itertools import *
 
 
 def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
-
-    # blends = []
-    generalizationCost = sys.maxint
+    global blendCostPercentageAboveMinToKeep
+    # generalizationCost = sys.maxint
+    maxBlendCostToConsider = maxCost + int(float(maxCost) / float(100) * float(blendCostPercentageAboveMinToKeep))
 
     # Parse model and execute actions on internal data structure to obtain the generalized inut spaces. 
     genInputSpaces = getGeneralizedSpaces(modelAtoms, inputSpaces)
@@ -61,6 +61,8 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
     # raw_input()
     # State blends (colimit operation)
     for cost in sorted(blendCombis.keys()):
+        if cost > maxBlendCostToConsider:
+            continue
         print "Specifying blends with generalization cost of " + str(cost) 
         for combi in blendCombis[cost]:            
             cstr = cstr + "spec Blend"
@@ -101,8 +103,8 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
     for cost in sorted(blendCombis.keys()):
         
         print "Trying blends with generalization cost of " + str(cost)
-        if cost > maxCost:
-            print "cost "  +str(cost) + " > " + str(maxCost) + " too high, aborting..."
+        if cost > maxBlendCostToConsider:
+            print "cost "  +str(cost) + " > " + str(maxBlendCostToConsider) + " too high, aborting..."
             break
 
         # TODO: do not blend if generic space is reached. 
@@ -155,16 +157,18 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
                 # consistentFound = True
                 # If a better blend was found, delete all previous blends. 
                 if cost < maxCost:
-                    print "New min. cost: " + str(cost) + ". Resetting global list of blends."
-                    blends = []
                     maxCost = cost
+                    maxBlendCostToConsider = maxCost + int(float(maxCost) / float(100) * float(blendCostPercentageAboveMinToKeep))
+                    print "New min. cost: " + str(cost) + ". Resetting global list of blends and keeping only blends with a cost of at most " + str(maxBlendCostToConsider) + ", i.e., " + str(blendCostPercentageAboveMinToKeep) + "% above new minimum."
+                    newBlends = []
+                    # raw_input()
+                    for blend in blends:
+                        if blend['generalizationCost'] <= maxBlendCostToConsider:
+                            newBlends.append(blend) 
+                    blends = newBlends
+                    
                 blends.append(blendInfo)
-                
-    # if consistentFound == False:
-    #     print "No consistent blend was found..."
-    #     generalizationCost == sys.maxint
-    #     blends = []
-    # raw_input()
+
 
     os.system("rm *.tptp")
     os.remove("amalgamTmp.casl")

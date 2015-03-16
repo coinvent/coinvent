@@ -20,6 +20,10 @@ minIterationsBlend = 1
 ###### The maximal number of iterations for blending
 maxIterationsBlend = 20
 
+###### Percentage of blend cost above lowest blend cost found so far that we want to keep in the results. 0 means that we only keep the blends with the lowest score found so far, 100 means to consider blends with twice the cost, etc.. Setting this to sys.maxint means to consider all blends.
+blendCostPercentageAboveMinToKeep = 100
+# blendCostPercentageAboveMinToKeep = sys.maxint
+
 ###### Time limit for eprover and darwin consistency check in seconds CPU time
 eproverTimeLimit = 5
 darwinTimeLimit = 2
