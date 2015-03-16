@@ -142,11 +142,11 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
 
             thisCombiConsistent = checkConsistencyEprover(blendTptpName)
 
-            if thisCombiConsistent == -1:
-                print "Consistency could not be determined by eprover, trying darwin"                
-                thisCombiConsistent = checkConsistencyDarwin(blendTptpName)
-                if thisCombiConsistent == 0:
-                    os.system("echo \"eprover could not determine inconsistency but darwn could for blend " + blendTptpName + "\" > consistencyCheckFile.tmp")
+            # if thisCombiConsistent == -1:
+            #     print "Consistency could not be determined by eprover, trying darwin"                
+            #     thisCombiConsistent = checkConsistencyDarwin(blendTptpName)
+            #     if thisCombiConsistent == 0:
+            #         os.system("echo \"eprover could not determine inconsistency but darwn could for blend " + blendTptpName + "\" > consistencyCheckFile.tmp")
                         
             # if thisCombiConsistent == 1: # If we can show that the blend is consistent
             if thisCombiConsistent != 0: # If we can not show that the blend is inconsistent

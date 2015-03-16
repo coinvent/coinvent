@@ -129,12 +129,12 @@ spec GenericSpace =
 
 end
 
-interpretation I1: GenericSpace to PenOverDocumentIcon
-interpretation I2: GenericSpace to MagnifyingGlassOverHardDiskIcon
+%% interpretation I1 : GenericSpace to PenOverDocumentIcon
+%% interpretation I2 : GenericSpace to MagnifyingGlassOverHardDiskIcon
 
-interpretation I3: GenericSpace to PenOverDocumentIconGen
-interpretation I4: GenericSpace to MagnifyingGlassOverHardDiskIconGen
+%% interpretation I3 :  GenericSpace to PenOverDocumentIconGen
+%% interpretation I4 : GenericSpace to MagnifyingGlassOverHardDiskIconGen
 
-spec inconsistent_blend = combine I1,I2 
-spec generalised_blend = combine I3,I4 
+%% spec inconsistent_blend = combine I1,I2 
+%% spec generalised_blend = combine I3,I4 
 

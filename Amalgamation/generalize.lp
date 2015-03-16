@@ -29,9 +29,9 @@ genericReached(t) :- not notGenericReached(t).
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %% %% % Generate generalization search space. If the generic space is not yet reached, execute a generalization operation. 
-%% 0{exec(A,I,t) : a(A,I),  poss(A,I,t)}1 :- not genericReached(t), spec(I).
-0{exec(A,I,t) : a(A,I),  isOptimal(A,I,t)}1 :- not genericReached(t), spec(I).
-%% 1{exec(A,I,t) : a(A,I),  poss(A,I,t), spec(I)}1 :- not genericReached(t).
+0{exec(A,I,t) : a(A,I),  poss(A,I,t)}1 :- not genericReached(t), spec(I).
+%% 0{exec(A,I,t) : a(A,I),  isOptimal(A,I,t)}1 :- not genericReached(t), spec(I).
+
 
 
 %% %%%%%%%%%%%%%%%%%%%%
@@ -52,7 +52,7 @@ genericReached(t) :- not notGenericReached(t).
 %% :- exec(A,spec_PhrygianCadence,3), a(A,spec_PhrygianCadence).
 
 %% %% Speedup 2: Allow only a limited number on non-optimal steps. 
-%% :- nonOptimalSteps(N,I,t), N > 2.
+:- nonOptimalSteps(N,I,t), N > 1.
 
 %% %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query(t).
