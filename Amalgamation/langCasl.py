@@ -112,7 +112,7 @@ class CaslPred:
         return p
         
     def toCaslStr(self):
-        outStr = self.name + " : " 
+        outStr = "pred " + self.name + " : " 
         for s in self.args: outStr = outStr + s +" * " 
         outStr = outStr[:-3]
         outStr = outStr + "   %% prio:"+ str(self.priority)
@@ -160,7 +160,7 @@ class CaslOp:
         return op
     
     def toCaslStr(self):
-        outStr = self.name + " : " 
+        outStr = "op " + self.name + " : " 
         for s in self.args: outStr = outStr + s +" * " 
         outStr = outStr[:-3]
         if self.partial == False:
@@ -239,14 +239,14 @@ class CaslSpec:
             if s.name == "PriorityDummySort":
                 continue
             caslStr = caslStr + "\t " + s.toCaslStr() + "\n"
-        if len(self.ops) > 1 :
-            caslStr = caslStr + "\t ops \n" 
+        # if len(self.ops) > 0 :
+            # caslStr = caslStr + "\t ops \n" 
         for op in self.ops: 
             if op.name == "prioDummyOp":
                 continue
             caslStr = caslStr + "\t\t " + op.toCaslStr() +"\n"
-        if len(self.preds) > 0 :
-            caslStr = caslStr + "\t preds \n"
+        # if len(self.preds) > 0 :
+            # caslStr = caslStr + "\t preds \n"
         for p in self.preds: 
             caslStr = caslStr + "\t\t " + p.toCaslStr() +"\n"
         caslStr += "\n"
@@ -662,9 +662,10 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                             raw_input()
 
                         if act["actType"] == "rmSort" :
-                            for srt in cSpec.sorts.keys():
-                                if toLPName(srt,"sort") == act["argVect"][0]:
-                                    del cSpec.sorts[srt]
+                            for srt in cSpec.sorts:
+                                if toLPName(srt.name,"sort") == act["argVect"][0]:
+                                    # del cSpec.sorts[srt]
+                                    cSpec.sorts.remove(srt)
 
                         if act["actType"] == "renameSort" :
                             sFrom = act["argVect"][0]

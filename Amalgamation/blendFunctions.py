@@ -276,12 +276,16 @@ def getPossBlendCombis(modelAtoms):
    
 def checkConsistencyEprover(blendTptpName) :
         global eproverTimeLimit
-        resFile = open("consistencyRes.log", "w")
-        subprocess.call(["eprover","--auto" ,"--tptp3-format", "--cpu-limit="+str(eproverTimeLimit), blendTptpName], stdout=resFile)
-        resFile.close()
+        tries = 0
         while not os.path.isfile("consistencyRes.log") :
-            print ":::::::::::::::: file consistencyRes.log not yet written!!!!!!:::::::::::::::"
-            exit(0)
+            resFile = open("consistencyRes.log", "w")        
+            subprocess.call(["eprover","--auto" ,"--tptp3-format", "--cpu-limit="+str(eproverTimeLimit), blendTptpName], stdout=resFile)
+            resFile.close()
+            
+            if tries > 5:
+                print "ERROR!!! File consistencyRes.log not yet written by eprover after "+ str(tries) + " tries. Aborting..."
+                exit(0)
+            tries = tries + 1
 
         resFile = open("consistencyRes.log",'r')
         res = resFile.read()

@@ -56,6 +56,10 @@ hetsExe = 'hets'
 inputFile = "examples/LPNMR/cadenceBlendFusionTest.casl"
 inputSpaceNames = ["PhrygianCadence","PerfectCadence"]
 
+inputFile = "examples/LPNMR/naturalsAndLists.casl"
+inputSpaceNames = ["NatSuc","List"]
+
+
 # inputFile = "examples/music/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
 # inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]
 

@@ -23,9 +23,6 @@ lpFile.write(lpRep)
 lpFile.close()
 print "Generated Logic Programming facts from CASL Spec."
 
-
-# Call apsrin to generate preferences LP file.
-# subprocess.call(["./asprin/asprin.parser", "preferences.lp", "./asprin/asprin.lib"])
 # Invoke clingo4 and run 
 subprocess.call(["./clingo4", "--number="+str(numModels), "--quiet", "iterationGeneralize-py.lp", "caslInterface.lp", "generalize.lp", lpFileName])
 
