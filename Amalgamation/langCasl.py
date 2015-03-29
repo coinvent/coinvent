@@ -230,6 +230,8 @@ class CaslSpec:
         self.sorts = []
         self.axioms = []
         self.id = 0
+        self.genCost = 0
+        self.genValue = 0
 
     def toCaslStr(self):
         # caslStr = "CaslSpec:\n"
@@ -441,7 +443,7 @@ def parseXml(xmlFile):
                                     if len(prioInfoItem.split(":p:")) != 2:
                                         print "WARNING!!! priority information " + prioInfoItem + " in wrong format. Expecting <ElementName>:p:<priorityNumber>. Assigning priority 0 instead."
                                     # prioInfoItem is a strings of the form <ElementName>_<PriorityNumber>
-                                    thisPrioNumber = prioInfoItem.split(":p:")[1]
+                                    thisPrioNumber = int(prioInfoItem.split(":p:")[1])
                                     thisPrioElementName = prioInfoItem.split(":p:")[0]
                                     opAndSortPriorities[specName][thisPrioElementName] = thisPrioNumber
 
@@ -597,14 +599,18 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
     for step in sorted(acts.keys()):
         for iSpace in sorted(acts[step]):
             for cSpec in inputSpaces:
+                # print 
                 # print cSpec.name.lower()
                 # remove operators, predicates and axioms
                 if toLPName(cSpec.name,"spec") == iSpace:  
                     for act in acts[step][iSpace]:
+                        # print act
                         if act["actType"] == "rmOp" :
                             for op in cSpec.ops:
                                 if toLPName(op.name,"po") == act["argVect"][0]:
                                     cSpec.ops.remove(op)
+                                    cSpec.genCost = cSpec.genCost + op.priority
+                                    break
                             # print "removing operator " + act["argVect"][0]
                             # print cSpec.toCaslStr()
                             # raw_input()
@@ -619,36 +625,38 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                     newOp = copy.deepcopy(op)
                                     newOp.name = lpToCaslStr(opTo)
                                     cSpec.ops.append(newOp)
+                                    cSpec.genValue = cSpec.genValue + op.priority
                                     break
-
                             # Get axioms that involve the operator and rename the operator them. 
                             for ax in cSpec.axioms:
-                                # if op.name in ax.determinePredsOpsSorts():
-                                    # Add new updated axioms with changed operator names
                                 newAxStr = re.sub("(?<!\w)"+lpToCaslStr(opFrom)+"(?!\w)", lpToCaslStr(opTo), ax.axStr)
                                 ax.axStr = newAxStr
-                                # ax.id = axMap[newAxStr]
-
-                            # print "renaming operator from " + lpToCaslStr(opFrom) + " to " + lpToCaslStr(opTo)
-                            # print cSpec.toCaslStr()
-                            # raw_input()
+                        
+                        if act["actType"] == "renamedToOp" :
+                            opLPName = act["argVect"][0]
+                            for op in cSpec.ops:
+                                if toLPName(op.name,"po") == opLPName:
+                                    cSpec.genValue = cSpec.genValue + op.priority
+                                    break
                             
                         if act["actType"] == "rmPred" :
                             for p in cSpec.preds:
                                 if toLPName(p.name,"po") == act["argVect"][0]:
                                     cSpec.preds.remove(p)
+                                    cSpec.genCost = cSpec.genCost + p.priority
+                                    break
+
                         if act["actType"] == "renamePred" :
                             pFrom = act["argVect"][0]
                             pTo = act["argVect"][1]
                             for p in cSpec.preds:
                                 if toLPName(p.name,"po") == pFrom:
-                                    cSpec.preds.remove(p)
-                                    
+                                    cSpec.preds.remove(p)                                    
                                     newPred = copy.deepcopy(p)
                                     newPred.name = lpToCaslStr(pTo)
                                     cSpec.preds.append(newPred)
+                                    cSpec.genValue = cSpec.genValue + p.priority
                                     break
-
                             # Get axioms that involve the predicate and rename the predicate them. 
                             for ax in cSpec.axioms:
                                 # if p.name in ax.determinePredsOpsSorts():
@@ -657,15 +665,23 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                 ax.axStr = newAxStr
                                 # ax.id = axMap[newAxStr]
                             
-                            print "renaming predicate from " + lpToCaslStr(pFrom) + " to " + lpToCaslStr(pTo)
+                            print "renaming predicate from " + lpToCaslStr(pFrom) + " to " + lpToCaslStr(pTo) + ". Press key..."
                             print cSpec.toCaslStr()
                             raw_input()
+
+                        if act["actType"] == "renamedToPred" :
+                            pLPName = act["argVect"][0]
+                            for p in cSpec.preds:
+                                if toLPName(p.name,"po") == pLPName:
+                                    cSpec.genValue = cSpec.genValue + p.priority
+                                    break                                        
 
                         if act["actType"] == "rmSort" :
                             for srt in cSpec.sorts:
                                 if toLPName(srt.name,"sort") == act["argVect"][0]:
-                                    # del cSpec.sorts[srt]
                                     cSpec.sorts.remove(srt)
+                                    cSpec.genCost = cSpec.genCost + srt.priority
+                                    break
 
                         if act["actType"] == "renameSort" :
                             sFrom = act["argVect"][0]
@@ -679,6 +695,8 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                     newSort = copy.deepcopy(s)
                                     newSort.name = lpToCaslStr(sTo)
                                     cSpec.sorts.append(newSort)
+                                    cSpec.genValue = cSpec.genValue + s.priority
+                                    break
                                     # print " new sort" 
                                     # print newSort.toCaslStr()
 
@@ -686,6 +704,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                             for s in cSpec.sorts:
                                 if toLPName(s.parent,"sort") == sFrom:
                                     s.parent = lpToCaslStr(sTo)
+                                    break
                                     # cSpec.sorts.remove(s)
 
                             # Get axioms that involve the sort and rename the sorts
@@ -712,11 +731,20 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                             # print "renaming sort from " + sFrom + " to " + sTo
                             # print cSpec.toCaslStr()
                             # raw_input()
+                        if act["actType"] == "renamedToSort" :
+                            srtLPName = act["argVect"][0]
+                            for srt in cSpec.sorts:
+                                if toLPName(srt.name,"sort") == srtLPName:
+                                    cSpec.genValue = cSpec.genValue + srt.priority
+                                    break          
+
 
                         if act["actType"] == "rmAx" :
                             for a in cSpec.axioms:
                                 if str(a.id) == act["argVect"][0]:
                                     cSpec.axioms.remove(a)
+                                    cSpec.genCost = cSpec.genCost + a.priority
+                                    break
 
                     thisCSpec = copy.deepcopy(cSpec)
                     thisCSpec.name = thisCSpec.name + "_gen_" + str(len(generalizations[thisCSpec.name]))

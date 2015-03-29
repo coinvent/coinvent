@@ -8,6 +8,7 @@
 %% 		-- a(<act>) 					%% the declaration of an operation
 %%		-- poss(<act>,<spec>,t)			%% the language specific precondition of an operation
 %%		-- cost(<act>,<spec>,<cost>)	%% the cost of an action
+%%		-- val(<act>,<spec>,<cost>)		%% the value of an action
 %% INPUT:
 %% The module relies on the following axioms which are produced by the language-independent part of the amalgamation module:
 %% 1. Execution of an operation
@@ -36,13 +37,15 @@ a(rmAx(Ax),Spec) 		:- removableAx(Spec,Ax).
 % Renaming operators. Only non-data elements can be renamed.
 a(renameOp(Op1,Op2,Spec2),Spec1) 		:- 	hasOp(Spec1,Op1,1), hasOp(Spec2,Op2,1), Spec1 != Spec2, Op1 != Op2, 
 											isNonDataOp(Spec1,Op1), isNonDataOp(Spec2,Op2).
+a(renamedToOp(Op2),Spec2)				:-  a(renameOp(_,Op2,Spec2),_).											
 
 % Renaming predicates.
 a(renamePred(Pred1,Pred2,Spec2),Spec1) 	:- 	hasPred(Spec1,Pred1,1), hasPred(Spec2,Pred2,1), Spec1 != Spec2, Pred1 != Pred2.
-
+a(renamedToPred(Pred2),Spec2) 			:-  a(renamePred(Pred1,Pred2,Spec2),Spec1).
 % Renaming sorts.
 a(renameSort(Sort1,Sort2,Spec2),Spec1) 	:- 	hasSort(Spec1,Sort1,1), hasSort(Spec2,Sort2,1), Spec1 != Spec2, Sort1 != Sort2,
 											isNonDataSort(Spec1,Sort1), isNonDataSort(Spec2,Sort2).
+a(renamedToSort(Sort2),Spec2)			:- 	a(renameSort(Sort1,Sort2,Spec2),Spec1).
 
 %%%% Cost of actions %%%%
 % Cost of removal actions is equal to priority of the elements to be removed.  
@@ -50,10 +53,13 @@ cost(rmOp(Op),Spec,C) 		:- a(rmOp(Op),Spec), 		opHasPriority(Spec,Op,C).
 cost(rmPred(Pred),Spec,C) 	:- a(rmPred(Pred),Spec), 	predHasPriority(Spec,Pred,C).
 cost(rmSort(Sort),Spec,C) 	:- a(rmSort(Sort),Spec), 	sortHasPriority(Spec,Sort,C).
 cost(rmAx(Ax),Spec,C) 		:- a(rmAx(Ax),Spec), 		axHasPriority(Spec,Ax,C).
-% Cost of renaming actions is always 0.
-cost(renameOp(Op1,Op2,Spec2),Spec1,0)			:- a(renameOp(Op1,Op2,Spec2),Spec1).
-cost(renamePred(Pred1,Pred2,Spec2),Spec1,0)		:- a(renamePred(Pred1,Pred2,Spec2),Spec1).
-cost(renameSort(Sort1,Sort2,Spec2),Spec1,0)		:- a(renameSort(Sort1,Sort2,Spec2),Spec1).
+% Value of renaming actions is equal to priority.
+val(renameOp(Op1,Op2,Spec2),Spec1,V)		:- a(renameOp(Op1,Op2,Spec2),Spec1),			opHasPriority(Spec1,Op1,P),		V = P.
+val(renamedToOp(Op),Spec,V)					:- a(renamedToOp(Op),Spec),						opHasPriority(Spec,Op,P),		V = P.
+val(renamePred(Pred1,Pred2,Spec2),Spec1,V)	:- a(renamePred(Pred1,Pred2,Spec2),Spec1),		predHasPriority(Spec1,Pred1,P),	V = P.
+val(renamedToPred(Pred),Spec,V)				:- a(renamedToPred(Pred),Spec),					predHasPriority(Spec,Pred,P),	V = P.
+val(renameSort(Sort1,Sort2,Spec2),Spec1,V)	:- a(renameSort(Sort1,Sort2,Spec2),Spec1),		sortHasPriority(Spec1,Sort1,P),	V = P.
+val(renamedToSort(Sort),Spec,V)				:- a(renamedToSort(Sort),Spec),					sortHasPriority(Spec,Sort,P),	V = P.
 
 %%% Start to iterate over t.
 #program cumulative(t).
@@ -92,27 +98,21 @@ poss(renameOp(Op1,Op2,Spec2),Spec1,t) :- 	a(renameOp(Op1,Op2,Spec2),Spec1), hasO
 											not opSortsNotEquivalent(Spec1,Op1,Spec2,Op2,t), 
 											not hasOp(Spec1,Op2,t), not hasOp(Spec2,Op1,t),
 											specProvidesVocabulary(Spec2).
+poss(renamedToOp(Op2),Spec2,t) :- exec(renameOp(_,Op2,Spec2),_,t). 											
 
 %%% Rename Predicate
-poss(renamePred(Pred1,Pred2,Spec2),Spec1,t) :- 	a(renamePred(Pred1,Pred2,Spec2),Spec1), hasPred(Spec1,Pred1,t), hasPred(Spec2,Pred2,t), 
+poss(renamePred(Pred1,Pred2,Spec2),Spec1,t) :- 	a(renamePred(Pred1,Pred2,Spec2),Spec1), 
+												hasPred(Spec1,Pred1,t), hasPred(Spec2,Pred2,t), 
 												not predSortsNotEquivalent(Spec1,Pred1,Spec2,Pred2,t), 
 												not hasPred(Spec1,Pred2,t), not hasPred(Spec2,Pred1,t),
 												specProvidesVocabulary(Spec2).
-
+poss(renamedToPred(Pred2),Spec2,t) :- exec(renamePred(_,Pred2,Spec2),_,t). 																							
 %%% Rename Sort
-poss(renameSort(Sort1,Sort2,Spec2),Spec1,t) :- 	a(renameSort(Sort1,Sort2,Spec2),Spec1), hasSort(Spec1,Sort1,t), hasSort(Spec2,Sort2,t), 
-												%% TODO: in which way do sorts have to be equivalent when renaming them? Parent sorts equivalent? Child sorts equivalen? Both?
+poss(renameSort(Sort1,Sort2,Spec2),Spec1,t) :- 	a(renameSort(Sort1,Sort2,Spec2),Spec1), 
+												hasSort(Spec1,Sort1,t), hasSort(Spec2,Sort2,t), 
 												not hasSort(Spec1,Sort2,t), not hasSort(Spec2,Sort1,t),
 												specProvidesVocabulary(Spec2).
-
-isRenamedTo(Spec2,t) :- exec(renameOp(_,_,Spec2),_,t).
-isRenamedTo(Spec2,t) :- exec(renamePred(_,_,Spec2),_,t).
-isRenamedTo(Spec2,t) :- exec(renameSort(_,_,Spec2),_,t).
-%% #show isRenamedTo/2.
-%% :- exec(renameOp(Op1,Op2,Spec2),Spec1,t) , not exec(wait,Spec2,t).
-%% :- exec(renamePred(Pred1,Pred2,Spec2),Spec1,t) , not exec(wait,Spec2,t).
-%% :- exec(renameSort(Sort1,Sort2,Spec2),Spec1,t) , not exec(wait,Spec2,t).
-
+poss(renamedToSort(Sort2),Spec2,t) :- exec(renameSort(_,Sort2,Spec2),_,t). 																											
 %%%% Equality of conceptual spaces %%%%
 %% equal(Spec,Spec,t) 		:- 	spec(Spec).
 %% equal(Spec1,Spec2,t) 	:- 	not notEqual(Spec1,Spec2,t), spec(Spec1), spec(Spec2).
@@ -134,6 +134,11 @@ axNotEquivalent(Spec1,Spec2,Ax1,t)		:- hasAxiom(Spec1,Ax1,t), 	spec(Spec2), 0{ax
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Internal Language Specific Part %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Constraints on action execution.
+% If something is renamed, then, from perspective of the other specification it is renamed to this specification.
+exec(renamedToOp(Op2),Spec2,t) 		:-  exec(renameOp(Op1,Op2,Spec2),Spec1,t).	
+exec(renamedToPred(Pred2),Spec2,t) 	:-  exec(renamePred(Pred1,Pred2,Spec2),Spec1,t).	
+exec(renamedToSort(Sort2),Spec2,t) 	:-  exec(renameSort(Sort1,Sort2,Spec2),Spec1,t).	
 
 %%% Determine removability of elements. This is static and hence belongs to the base part of the LP.
 #program base.
@@ -183,12 +188,6 @@ predHasSort(Spec1,Pred2,Sort,Pos,t+1)		:-	predHasSort(Spec1,Pred1,Sort,Pos,t),	e
 axInvolvesPredOp(Spec1,Ax,Pred2,t+1) 		:- 	axInvolvesPredOp(Spec1,Ax,Pred1,t),		exec(renamePred(Pred1,Pred2,Spec2),Spec1,t).
 % Effects of renaming sorts on axioms (i.e., axInvolvesSort)
 axInvolvesSort(Spec1,Ax,Sort2,t+1) 			:- 	axInvolvesSort(Spec1,Ax,Sort1,t),		exec(renameSort(Sort1,Sort2,Spec2),Spec1,t).
-
-% Effects of generalizing operator sorts:
-%% opHasSort(Spec,Op,ParentSort,Pos,t+1) 		:-	opHasSort(Spec,Op,ChildSort,Pos,t),		exec(generalizeOpSort(Op,Sort),Spec,t), 
-%% 												hasParentSort(Spec,ChildSort,ParentSort,t).
-%% predHasSort(Spec,Pred,ParentSort,Pos,t+1) 	:- 	predHasSort(Spec,Pred,ChildSort,Pos,t),	exec(generalizePredSort(Pred,Sort),Spec,t), 
-%% 												hasParentSort(Spec,ChildSort,ParentSort,t).
 
 %%%% Equivalence of axioms, operators, predicates and sorts %%%%
 
@@ -243,19 +242,3 @@ axHasEquivalenceClass(Spec,Ax,EC,t+1) :- axHasEquivalenceClass(Spec,Ax,EC,t), no
 
 axHasEquivalenceClass(Spec,Ax,ECNew,t+1) :- 	axHasEquivalenceClass(Spec,Ax,ECOld,t), axChanged(Spec,Ax,Element,EleFrom,EleTo,t), 
 												hasAxiom(Spec,Ax,t), ECNew = @renameEleAndGetNewEqClass(ECOld,Element,EleFrom,EleTo).
-%% #show cost/3.
-%% #show axHasEquivalenceClass/4.
-%% #show axEquivalent/5.
-%% #show opEquivalent/4.
-%% #show hasSort/3.
-%% #show opSortsEquivalentAtPos/6.
-%% #show poss/3.
-%% #show notEqual/3.
-%% #show opNotEquivalent/4.
-%% #show hasOp/3.
-%% #show opSortsNotEquivalent/4.
-%% #show opSortsNotEquivalent/5.
-%% 
-%% #show sortEquivalent/4.
-%% #show a/2.
-%% #show s/1.

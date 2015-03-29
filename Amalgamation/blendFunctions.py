@@ -5,10 +5,13 @@ from langCasl import *
 from itertools import *
 
 
-def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
-    global blendCostPercentageAboveMinToKeep
+def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
+    global blendValuePercentageBelowMinToKeep
     # generalizationCost = sys.maxint
-    maxBlendCostToConsider = maxCost + int(float(maxCost) / float(100) * float(blendCostPercentageAboveMinToKeep))
+    if highestValue == -sys.maxint:
+        minBlendValueToConsider = -sys.maxint
+    else:
+        minBlendValueToConsider = highestValue - int(float(highestValue) / float(100) * float(blendValuePercentageBelowHighestValueToKeep))
 
     # Parse model and execute actions on internal data structure to obtain the generalized inut spaces. 
     genInputSpaces = getGeneralizedSpaces(modelAtoms, inputSpaces)
@@ -20,7 +23,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
     #         print spec.toCaslStr()
 
     # # Get possible combinations of generalization combinations
-    blendCombis = getPossBlendCombis(modelAtoms)    
+    blendCombis = getBlendCombiCost(genInputSpaces)
 
     # # initialize output string for casl file
     cstr = ''
@@ -60,20 +63,21 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
     
     # raw_input()
     # State blends (colimit operation)
-    for cost in sorted(blendCombis.keys()):
-        if cost > maxBlendCostToConsider:
+    for value in sorted(blendCombis.keys(),reverse=True):
+        if value < minBlendValueToConsider:
             continue
-        print "Specifying blends with generalization cost of " + str(cost) 
-        for combi in blendCombis[cost]:            
+        print "Specifying blends with generalization value of " + str(value) 
+        for combi in blendCombis[value]:            
             cstr = cstr + "spec Blend"
             for specName in combi.keys():
                 steps = combi[specName]
                 cstr = cstr + "_" + lpToCaslStr(specName) + "_" + str(steps)
-            cstr = cstr + "-c"+str(cost)+" = combine "
+            cstr = cstr + "-c"+str(value)+" = combine "
 
             for specName in combi.keys():
                 caslSpecName = lpToCaslStr(specName)
                 specList = genInputSpaces[caslSpecName]
+                # print specName
                 # print combi
                 # print int(combi[specName])
                 # print len(specList)
@@ -98,24 +102,24 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             print "ERROR! file amalgamTmp.casl not yet written after "+ str(tries) + "tries. Aborting program... "
             exit(1)
     # raw_input()
-    generalizationCost = sys.maxint
+    generalizationValue = -sys.maxint-1
     consistentFound = False
-    for cost in sorted(blendCombis.keys()):
+    for value in sorted(blendCombis.keys(),reverse=True):
         
-        print "Trying blends with generalization cost of " + str(cost)
-        if cost > maxBlendCostToConsider:
-            print "cost "  +str(cost) + " > " + str(maxBlendCostToConsider) + " too high, aborting..."
+        print "Trying blends with generalization value of " + str(value)
+        if value < minBlendValueToConsider:
+            print "value "  +str(value) + " < " + str(minBlendValueToConsider) + " too low, aborting..."
             break
 
         # TODO: do not blend if generic space is reached. 
         # isBestBlendCost = False
-        for combi in blendCombis[cost]:   
+        for combi in blendCombis[value]:   
             # thisCombiConsistent = -1
             blendName = "Blend" 
             for specName in combi.keys():
                 step = combi[specName]
                 blendName = blendName + "_" + lpToCaslStr(specName) + "_" + str(step)
-            blendName += "-c"+str(cost)
+            blendName += "-c"+str(value)
 
             print "Checking consistency of " + blendName + ""
             #generate tptp format of theory and call eprover to check consistency
@@ -153,17 +157,17 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
             # if thisCombiConsistent == 1: # If we can show that the blend is consistent
             if thisCombiConsistent != 0: # If we can not show that the blend is inconsistent
                 prettyBlendStr = prettyPrintBlend(genInputSpaces,combi,modelAtoms)
-                blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "generalizationCost" : cost}
+                blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "generalizationValue" : value}
                 # consistentFound = True
                 # If a better blend was found, delete all previous blends. 
-                if cost < maxCost:
-                    maxCost = cost
-                    maxBlendCostToConsider = maxCost + int(float(maxCost) / float(100) * float(blendCostPercentageAboveMinToKeep))
-                    print "New min. cost: " + str(cost) + ". Resetting global list of blends and keeping only blends with a cost of at most " + str(maxBlendCostToConsider) + ", i.e., " + str(blendCostPercentageAboveMinToKeep) + "% above new minimum."
+                if value > highestValue:
+                    highestValue = value
+                    minBlendValueToConsider = highestValue - int(float(highestValue) / float(100) * float(blendValuePercentageBelowHighestValueToKeep))
+                    print "New best value: " + str(value) + ". Resetting global list of blends and keeping only blends with a value of at least " + str(minBlendValueToConsider) + ", i.e., " + str(blendValuePercentageBelowHighestValueToKeep) + "% below new highest value of " + str(highestValue) + "."
                     newBlends = []
                     # raw_input()
                     for blend in blends:
-                        if blend['generalizationCost'] <= maxBlendCostToConsider:
+                        if blend['generalizationValue'] >= minBlendValToConsider:
                             newBlends.append(blend) 
                     blends = newBlends
                     
@@ -173,7 +177,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, maxCost, blends):
     os.system("rm *.tptp")
     os.remove("amalgamTmp.casl")
     
-    return [blends,maxCost]
+    return [blends,highestValue]
     
 def prettyPrintBlend(genInputSpaces,combi,modelAtoms):
 
@@ -252,26 +256,70 @@ def writeBlends(blends):
     raw_input
 
 # Returns an array of possible Blend combinations and provides a generalization cost value for the combination
-def getPossBlendCombis(modelAtoms):
-    # maxGeneralizationsPerSpace = 0
+def getBlendCombiCost(genInputSpaces):
+    # combis maps costs to a list of combinations of generalised input spaces.
     combis = {}
-    for atom in modelAtoms:
-        if str(atom).find("combinedGenCost") != 0:
+    for specName1 in genInputSpaces.keys():
+        if specName1 == "Generic":
             continue
-        # combi is a pair of generalised specification names
-        combi = {}
-        # combinedGenCost(spec_Boat,6,spec_House,2,38,7).
-        argItems = str(atom).split("(")[1].split(")")[0].split(",")
-        # print argItems
-        combi[argItems[0]] = int(argItems[1])-1
-        combi[argItems[2]] = int(argItems[3])-1
-        # cost is the cost of the combination
-        cost = int(argItems[4])
-        if cost not in combis.keys():
-            combis[cost] = []
-        if combi not in combis[cost]:
-            combis[cost].append(combi)
+        for specName2 in genInputSpaces.keys():
+            if specName2 == "Generic":
+                continue
+            if specName1 == specName2:
+                continue
+            # print "specs: " + specName1 + specName2
+
+            gs1Ctr = 0
+            for genSpace1 in genInputSpaces[specName1]:
+                gs2Ctr = 0
+                for genSpace2 in genInputSpaces[specName2]:
+                    combi = {}
+                    combi[toLPName(specName1,"spec")] =  gs1Ctr
+                    combi[toLPName(specName2,"spec")] =  gs2Ctr
+                    generalizationCost = genSpace1.genCost + genSpace2.genCost
+                    mergeNamesBonus = genSpace1.genValue + genSpace2.genValue
+                    balancePenalty = abs(genSpace1.genCost - genSpace2.genCost)
+                    value = mergeNamesBonus - generalizationCost - balancePenalty
+                    if value not in combis.keys():
+                        combis[value] = []
+                    combis[value].append(copy.deepcopy(combi))
+                    # print value
+                    gs2Ctr = gs2Ctr + 1
+                gs1Ctr = gs1Ctr + 1
+        # TODO: This only works for two input spaces.
+        # Have to break here, because otherwise blends will be specified twice. I.e., the combi S1_5 and S2_3 plus the combi S2_3 and S1_5 will be produced.
+        break
+    # print "combis:"
+    # print combis[-30]
+    # exit(1)
     return combis
+
+
+
+
+
+
+# Returns an array of possible Blend combinations and provides a generalization cost value for the combination
+# def getPossBlendCombis(modelAtoms):
+#     # maxGeneralizationsPerSpace = 0
+#     combis = {}
+#     for atom in modelAtoms:
+#         if str(atom).find("combinedGenCost") != 0:
+#             continue
+#         # combi is a pair of generalised specification names
+#         combi = {}
+#         # combinedGenCost(spec_Boat,6,spec_House,2,38,7).
+#         argItems = str(atom).split("(")[1].split(")")[0].split(",")
+#         # print argItems
+#         combi[argItems[0]] = int(argItems[1])-1
+#         combi[argItems[2]] = int(argItems[3])-1
+#         # cost is the cost of the combination
+#         cost = int(argItems[4])
+#         if cost not in combis.keys():
+#             combis[cost] = []
+#         if combi not in combis[cost]:
+#             combis[cost].append(combi)
+#     return combis
 
    
 def checkConsistencyEprover(blendTptpName) :
@@ -283,7 +331,7 @@ def checkConsistencyEprover(blendTptpName) :
             resFile.close()
             
             if tries > 5:
-                print "ERROR!!! File consistencyRes.log not yet written by eprover after "+ str(tries) + " tries. Aborting..."
+                print "ERROR!!! File consistencyRes.log not written by eprover after "+ str(tries) + " tries. Aborting..."
                 exit(0)
             tries = tries + 1
 
@@ -294,14 +342,14 @@ def checkConsistencyEprover(blendTptpName) :
         os.system("rm consistencyRes.log")
 
         if res.find("# No proof found!") != -1 or res.find("# Failure: Resource limit exceeded") != -1:
-            print "Eprover: No consistency proof found with eprover"
+            print "Eprover: No consistency proof found."
             return -1
 
         if res.find("SZS status Unsatisfiable") != -1:
-            print "Eprover: Blend inconsistent"
+            print "Eprover: Blend inconsistent."
             return 0
         
-        print "Eprover: Blend consistent"
+        print "Eprover: Blend consistent."
         return 1
 
 def checkConsistencyDarwin(blendTptpName) :
@@ -337,7 +385,7 @@ def getRenamingsFromModelAtoms(modelAtoms,specFrom,specTo,origCaslSpecName):
             act = getActFromAtom(a)
             if act["iSpace"] != toLPName(origCaslSpecName,"spec"):
                 continue
-                print "iSpace equal"
+            
             if act["actType"] == "renameOp":
                 # print "renameOp happens"
                 # Add renaming only if operator is in target spec.
@@ -368,8 +416,8 @@ def getRenamingsFromModelAtoms(modelAtoms,specFrom,specTo,origCaslSpecName):
                         break
                 if rnToExists and rnFromExists: 
                     renamings[act["step"]] = act["argVect"]
-            if act["actType"] == "renameSort":
-                
+            
+            if act["actType"] == "renameSort":                
                 # Add renaming only if operator is in target spec.
                 rnToExists = False
                 for s in specTo.sorts:                        

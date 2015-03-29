@@ -30,23 +30,23 @@ inputSpaces = []
 blends = []
 
 # Global variable to store the max. allowed cost for a blend. 
-maxCost = sys.maxint
+highestValue = -sys.maxint
 
 # This is called if a model is found.
 def onModelGeneralize(model):    
-    global inputFile, maxCost, blends
+    global inputFile, highestValue, blends
     lpFileName = inputFile.split(".")[0]+".lp"
 
     print "Found generalisation:"
     modelStr = getModel(model)
     print modelStr
     # return
-    [blends,blendingGeneralizationCost] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, maxCost, blends) 
-    print blendingGeneralizationCost  
-    if blendingGeneralizationCost <= maxCost and blendingGeneralizationCost < sys.maxint:
-        maxCost = blendingGeneralizationCost
+    [blends,blendingGeneralizationValue] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, highestValue, blends) 
+    print blendingGeneralizationValue  
+    if blendingGeneralizationValue >= highestValue and blendingGeneralizationValue > -sys.maxint:
+        highestValue = blendingGeneralizationValue
         writeBlends(blends)
-        print "Found blend with a cheaper or equal generalization cost of  " + str(maxCost) + "."
+        print "Found blend with a better or equal generalization value of  " + str(highestValue) + "."
         # raw_input()
 
 def getModel(model):
