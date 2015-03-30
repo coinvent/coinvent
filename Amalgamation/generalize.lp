@@ -29,8 +29,6 @@ notGenericReached(t) :- spec(Spec1), spec(Spec2), notEqual(Spec1,Spec2,t), Spec1
 %% 0{exec(A,Spec,t) : a(A,Spec),  poss(A,Spec,t)}1 :- notGenericReached(t), spec(Spec).
 0{exec(A,Spec,t) : a(A,Spec),  isOptimal(A,Spec,t)}1 :- notGenericReached(t), spec(Spec).
 
-
-
 %% %%%%%%%%%%%%%%%%%%%%
 %% %%% Testing Part %%%
 %% %%%%%%%%%%%%%%%%%%%%
@@ -42,6 +40,9 @@ specModified(Spec,t) :- exec(_,Spec,t).
 
 %% %% Speedup 2: Allow only a limited number on non-optimal steps. 
 :- nonOptimalSteps(N,Spec,t), N > 0.
+
+%% This is to speedup the demo for naturals and lists:
+%% :- exec(renameOp(po_app,Op,Spec),spec_List,t), Op != po_times, spec(Spec).
 
 %% %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query(t).

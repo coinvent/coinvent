@@ -68,11 +68,11 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
             continue
         print "Specifying blends with generalization value of " + str(value) 
         for combi in blendCombis[value]:            
-            cstr = cstr + "spec Blend"
+            cstr = cstr + "spec Blend" + "_v"+str(value)+ "_"
             for specName in combi.keys():
                 steps = combi[specName]
                 cstr = cstr + "_" + lpToCaslStr(specName) + "_" + str(steps)
-            cstr = cstr + "-c"+str(value)+" = combine "
+            cstr = cstr + " = combine "
 
             for specName in combi.keys():
                 caslSpecName = lpToCaslStr(specName)
@@ -115,11 +115,11 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
         # isBestBlendCost = False
         for combi in blendCombis[value]:   
             # thisCombiConsistent = -1
-            blendName = "Blend" 
+            blendName = "Blend"  + "_v"+str(value)+ "_"
             for specName in combi.keys():
                 step = combi[specName]
                 blendName = blendName + "_" + lpToCaslStr(specName) + "_" + str(step)
-            blendName += "-c"+str(value)
+            # blendName += "-v"+str(value)
 
             print "Checking consistency of " + blendName + ""
             #generate tptp format of theory and call eprover to check consistency
@@ -167,7 +167,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
                     newBlends = []
                     # raw_input()
                     for blend in blends:
-                        if blend['generalizationValue'] >= minBlendValToConsider:
+                        if blend['generalizationValue'] >= minBlendValueToConsider:
                             newBlends.append(blend) 
                     blends = newBlends
                     
