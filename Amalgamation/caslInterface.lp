@@ -35,15 +35,15 @@ a(rmSort(Sort),Spec) 	:- removableSort(Spec,Sort).
 a(rmAx(Ax),Spec) 		:- removableAx(Spec,Ax).
 
 % Renaming operators. Only non-data elements can be renamed.
-a(renameOp(Op1,Op2,Spec2),Spec1) 		:- 	hasOp(Spec1,Op1,1), hasOp(Spec2,Op2,1), Spec1 != Spec2, Op1 != Op2, 
+a(renameOp(Op1,Op2,Spec2),Spec1) 		:- 	hasOp(Spec1,Op1,0), hasOp(Spec2,Op2,0), Spec1 != Spec2, Op1 != Op2, 
 											isNonDataOp(Spec1,Op1), isNonDataOp(Spec2,Op2).
 a(renamedToOp(Op2),Spec2)				:-  a(renameOp(_,Op2,Spec2),_).											
 
 % Renaming predicates.
-a(renamePred(Pred1,Pred2,Spec2),Spec1) 	:- 	hasPred(Spec1,Pred1,1), hasPred(Spec2,Pred2,1), Spec1 != Spec2, Pred1 != Pred2.
+a(renamePred(Pred1,Pred2,Spec2),Spec1) 	:- 	hasPred(Spec1,Pred1,0), hasPred(Spec2,Pred2,0), Spec1 != Spec2, Pred1 != Pred2.
 a(renamedToPred(Pred2),Spec2) 			:-  a(renamePred(Pred1,Pred2,Spec2),Spec1).
 % Renaming sorts.
-a(renameSort(Sort1,Sort2,Spec2),Spec1) 	:- 	hasSort(Spec1,Sort1,1), hasSort(Spec2,Sort2,1), Spec1 != Spec2, Sort1 != Sort2,
+a(renameSort(Sort1,Sort2,Spec2),Spec1) 	:- 	hasSort(Spec1,Sort1,0), hasSort(Spec2,Sort2,0), Spec1 != Spec2, Sort1 != Sort2,
 											isNonDataSort(Spec1,Sort1), isNonDataSort(Spec2,Sort2).
 a(renamedToSort(Sort2),Spec2)			:- 	a(renameSort(Sort1,Sort2,Spec2),Spec1).
 

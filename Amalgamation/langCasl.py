@@ -119,10 +119,10 @@ class CaslPred:
         return outStr    
 
     def toLPStr(self, specName) :
-        oStr = "hasPred("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+",1).\n"
+        oStr = "hasPred("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+",0).\n"
         argCtr = 1
         for arg in self.args:
-            oStr = oStr + "predHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(arg,"sort")+",arg"+str(argCtr)+",1).\n"
+            oStr = oStr + "predHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(arg,"sort")+",arg"+str(argCtr)+",0).\n"
             argCtr = argCtr + 1        
         # if self. == True:
             # oStr = oStr + "removablePred("+toLPName(specName,"spec")+","+toLPName(self.name)+").\n"
@@ -178,12 +178,12 @@ class CaslOp:
         return outStr 
 
     def toLPStr(self,specName):
-        oStr = "hasOp("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+",1).\n"
+        oStr = "hasOp("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+",0).\n"
         argCtr = 1
         for arg in self.args:
-            oStr = oStr + "opHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(arg,"sort")+",arg"+str(argCtr)+",1).\n"
+            oStr = oStr + "opHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(arg,"sort")+",arg"+str(argCtr)+",0).\n"
             argCtr = argCtr + 1
-        oStr = oStr + "opHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(self.dom,"sort")+",domain,1).\n"
+        oStr = oStr + "opHasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+","+toLPName(self.dom,"sort")+",domain,0).\n"
         if self.isDataOp == False:
             oStr = oStr + "isNonDataOp("+toLPName(specName,"spec")+","+toLPName(self.name,"po")+").\n"
         else:
@@ -211,9 +211,9 @@ class CaslSort:
         return outStr
 
     def toLPStr(self,specName):
-        oStr = "hasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+",1).\n"
+        oStr = "hasSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+",0).\n"
         if self.parent != "":
-            oStr = oStr + "hasParentSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+","+toLPName(self.parent,"sort")+",1).\n"
+            oStr = oStr + "hasParentSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+","+toLPName(self.parent,"sort")+",0).\n"
         if self.isDataSort == False:
             oStr = oStr + "isNonDataSort("+toLPName(specName,"spec")+","+toLPName(self.name,"sort")+").\n"
         else:
@@ -321,8 +321,8 @@ class CaslAx:
         if self.axStr.find("generated type") != -1:
             return ""
         oStr = "\n%% Axiom " + self.name + " %%\n"
-        oStr += "hasAxiom("+toLPName(specName,"spec")+","+str(self.id)+",1).\n"
-        oStr += "axHasEquivalenceClass("+toLPName(specName,"spec")+","+str(self.id)+","+str(self.eqClass)+",1).\n"
+        oStr += "hasAxiom("+toLPName(specName,"spec")+","+str(self.id)+",0).\n"
+        oStr += "axHasEquivalenceClass("+toLPName(specName,"spec")+","+str(self.id)+","+str(self.eqClass)+",0).\n"
         if self.isDataAxiom == False:
             oStr = oStr + "isNonDataAx("+toLPName(specName,"spec") +","+str(self.id)+").\n"
         else:
@@ -330,9 +330,9 @@ class CaslAx:
         oStr = oStr + "axHasPriority("+toLPName(specName,"spec") +","+str(self.id)+","+str(self.priority)+").\n"
         
         for po in self.involvedPredsOps:
-            oStr += "axInvolvesPredOp("+toLPName(specName,"spec") +","+str(self.id)+","+toLPName(po,"po")+",1).\n"
+            oStr += "axInvolvesPredOp("+toLPName(specName,"spec") +","+str(self.id)+","+toLPName(po,"po")+",0).\n"
         for s in self.involvedSorts:
-            oStr += "axInvolvesSort("+toLPName(specName,"spec") +","+str(self.id)+","+toLPName(s,"sort")+",1).\n"
+            oStr += "axInvolvesSort("+toLPName(specName,"spec") +","+str(self.id)+","+toLPName(s,"sort")+",0).\n"
 
         return oStr
 

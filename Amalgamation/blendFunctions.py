@@ -142,7 +142,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
                 print "Done generating tptp"
                 # This is a hack because hets sometimes seems to not generate all .tptp files. So we just try again and again until its working. 
                 tries = tries + 1
-                if tries > 5:
+                if tries > 15:
                     print "ERROR: File "+blendTptpName+" not yet written correctly "+ str(tries) + " times! Aborting..."
                     exit(1)
 

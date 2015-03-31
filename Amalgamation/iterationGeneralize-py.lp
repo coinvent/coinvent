@@ -75,8 +75,8 @@ def main(prg):
     imin   = minIterationsGeneralize
     imax   = maxIterationsGeneralize
     
-    ## We start at step 1.
-    stepGeneralize = 1
+    ## We start at step 0.
+    stepGeneralize = 0
     
     ## The parts of the logic program to be grounded are declared with an empty sequence. 
     parts = []
@@ -114,7 +114,7 @@ def main(prg):
                 
 
         # If Stable Models are found and we are beyond the minimal number of slices, break loop.
-        if stepGeneralize >= imin and (ret == SolveResult.SAT): break
+        if stepGeneralize >= (imin-1) and (ret == SolveResult.SAT): break
         stepGeneralize = stepGeneralize+1
 
 
