@@ -168,7 +168,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
                 blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "generalizationValue" : value}
                 
                 #ROBERTO
-                blendsOutFileEwen.write('demo_tptp/'blendTptpName+'\n')
+                blendsOutFileEwen.write('demo_tptp/'+blendTptpName+'\n')
                 os.system("mv "+blendTptpName+" demo_tptp/")
 
                 # consistentFound = True
