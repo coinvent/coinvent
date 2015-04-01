@@ -263,6 +263,7 @@ def writeBlends(blends):
     os.system("rm Blend_*.casl")
     os.system("rm Blend_*.th")
     bNum = 0
+    blendFilesList = ''
     for blend in blends:
         blendStr = blend["prettyHetsStr"]
         fName = blend["blendName"] + "_b_"+str(bNum)+".casl"
@@ -270,48 +271,51 @@ def writeBlends(blends):
         outFile.write(blendStr)
         outFile.close()
         tries = 0
-        # while True:
-        subprocess.call([hetsExe, "-o th", fName])
-        thName = fName[:-5]+"_Blend.th"
-        # thFileSize = 0
-        # if os.path.isfile(thName):
-            # thFileSize = os.stat(thName).st_size
+        while True:
+            subprocess.call([hetsExe, "-o th", fName])
+            thName = fName[:-5]+"_Blend.th"
+            thFileSize = 0
+            if os.path.isfile(thName):
+                thFileSize = os.stat(thName).st_size
 
-            # if tries > 15:
-            #     print "ERROR: file " + thName + " not yet written in " + str(tries) + " times ! Aborting..."
-            #     exit(1)                
-            # tries = tries + 1
-            
+            if tries > 15:
+                print "ERROR: file " + thName + " not yet written in " + str(tries) + " times ! Aborting..."
+                exit(1)                
+            tries = tries + 1            
 
-            # if thFileSize == 0:
-            #     continue
+            if thFileSize != 0:
+                break
 
-        # bFile = open(thName,"r")
-        # explicitBlendStr = bFile.read()
-        # bFile.close()
+        bFile = open(thName,"r")
+        explicitBlendStr = bFile.read()
+        bFile.close()
         # remove first two lines and rename explicit blend spec
-        # lineBreakPos = explicitBlendStr.find("\n")
-        # explicitBlendStr = explicitBlendStr[lineBreakPos+1:]
-        # lineBreakPos = explicitBlendStr.find("\n")
-        # explicitBlendStr = explicitBlendStr[lineBreakPos+1:]
-        # explicitBlendStr = "\n\n\nspec BlendExplicit = \n" + explicitBlendStr + "\n end"
+        lineBreakPos = explicitBlendStr.find("\n")
+        explicitBlendStr = explicitBlendStr[lineBreakPos+1:]
+        lineBreakPos = explicitBlendStr.find("\n")
+        explicitBlendStr = explicitBlendStr[lineBreakPos+1:]
+        explicitBlendStr = "\n\n\nspec BlendExplicit = \n" + explicitBlendStr + "\n end\n"
 
-        # outFile = open(fName,"r")
-        # fullBlendStr = outFile.read()
-        # outFile.close()
+        outFile = open(fName,"r")
+        fullBlendStr = outFile.read()
+        outFile.close()
 
-        # fullBlendStr = fullBlendStr + explicitBlendStr 
+        fullBlendStr = fullBlendStr + explicitBlendStr 
 
-        # outFile = open(fName,"w")
-        # outFile.write(fullBlendStr)
-        # outFile.close()
+        outFile = open(fName,"w")
+        outFile.write(fullBlendStr)
+        outFile.close()
 
         os.system("cp " + thName + " " + thName[:-3]+".casl")
         os.system("rm *.th")
+        blendFilesList += thName[:-3]+".casl\n"
         
         bNum = bNum + 1
 
-    raw_input
+    # raw_input
+    fileListFile = open("blendFiles.txt","w")
+    fileListFile.write(blendFilesList)
+    fileListFile.close()
 
 # Returns an array of possible Blend combinations and provides a generalization cost value for the combination
 def getBlendCombiCost(genInputSpaces):

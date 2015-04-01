@@ -6,7 +6,7 @@ inputFile = "examples/minimal.casl"
 inputSpaceNames = ["S1","S2"]
 
 ###### The number of models to be generated (0 for all models)
-numModels = 1
+numModels = 10
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -53,8 +53,8 @@ hetsExe = 'hets'
 # inputFile = "examples/houseBoat.casl"
 # inputSpaceNames = ["Boat","House"]
 
-inputFile = "examples/LPNMR/cadenceBlendFusionTest.casl"
-inputSpaceNames = ["PhrygianCadence","PerfectCadence"]
+# inputFile = "examples/LPNMR/cadenceBlendFusionTest.casl"
+# inputSpaceNames = ["PhrygianCadence","PerfectCadence"]
 
 inputFile = "examples/LPNMR/naturalsAndLists.casl"
 inputSpaceNames = ["NatSuc","List"]
