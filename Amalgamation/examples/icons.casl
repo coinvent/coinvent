@@ -136,5 +136,4 @@ end
 %% interpretation I4 : GenericSpace to MagnifyingGlassOverHardDiskIconGen
 
 %% spec inconsistent_blend = combine I1,I2 
-%% spec generalised_blend = combine I3,I4 
-
+%% spec generalised_blend = combine I3,I4
