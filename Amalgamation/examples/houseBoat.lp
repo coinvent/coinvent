@@ -188,6 +188,3 @@ axInvolvesPredOp(spec_House,5,po_inhabitant1,1).
 axInvolvesPredOp(spec_House,5,po_house1,1).
 axInvolvesPredOp(spec_House,5,po_mainTenant,1).
 
-
-
-
