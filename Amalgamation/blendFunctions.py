@@ -31,6 +31,13 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
     # # First state generic spaces
     cstr = cstr + genInputSpaces["Generic"][0].toCaslStr()+"\n\n"
     # State the mappings with inheritance
+
+    ##ROBERTO
+    if os.path.isfile("demo_files_tptp.txt"):
+        os.system("rm demo_files_tptp.txt")
+        os.system("rm demo_tptp/*")
+    blendsOutFileEwen = open('demo_files_tptp.txt',"a")
+    
     
     for specName in genInputSpaces.keys():
         if specName == "Generic":            
@@ -156,11 +163,20 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
                         
             # if thisCombiConsistent == 1: # If we can show that the blend is consistent
             if thisCombiConsistent != 0: # If we can not show that the blend is inconsistent
+                
                 prettyBlendStr = prettyPrintBlend(genInputSpaces,combi,modelAtoms)
                 blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "generalizationValue" : value}
+                
+                #ROBERTO
+                blendsOutFileEwen.write('demo_tptp/'blendTptpName+'\n')
+                os.system("mv "+blendTptpName+" demo_tptp/")
+
                 # consistentFound = True
                 # If a better blend was found, delete all previous blends. 
                 if value > highestValue:
+                    #print 'tptpfile name is '+blendTptpName;
+                    
+        
                     highestValue = value
                     minBlendValueToConsider = highestValue - int(float(highestValue) / float(100) * float(blendValuePercentageBelowHighestValueToKeep))
                     print "New best value: " + str(value) + ". Resetting global list of blends and keeping only blends with a value of at least " + str(minBlendValueToConsider) + ", i.e., " + str(blendValuePercentageBelowHighestValueToKeep) + "% below new highest value of " + str(highestValue) + "."
@@ -173,7 +189,7 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
                     
                 blends.append(blendInfo)
 
-
+    blendsOutFileEwen.close()
     os.system("rm *.tptp")
     os.remove("amalgamTmp.casl")
     
