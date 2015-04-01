@@ -150,6 +150,10 @@ removableAx(Spec,Ax) 		:- isNonDataAx(Spec,Ax), not axHasPriority(Spec,Ax,-1).
 
 %%%% Inertia rules for sorts, operators, predicates and axioms. This is dynamic and we need to iterate over t, hence we have a cumulative part again.
 #program cumulative(t).
+%% hasOp(Spec,Op,t) 		:- opHasSort(Spec,Op,_,_,t).
+%% hasPred(Spec,Pred,t) 	:- predHasSort(Spec,Pred,_,_,t).
+%% hasSort(Spec,Sort,t)	:- hasParentSort(Spec,_,Sort,t).
+%% hasSort(Spec,Sort,t)	:- hasParentSort(Spec,Sort,_,t).
 hasOp(Spec,Op,t+1) 		:- 	hasOp(Spec,Op,t), 		not exec(rmOp(Op),Spec,t), 		not exec(renameOp(Op,_,_),Spec,t).
 hasPred(Spec,Pred,t+1) 	:- 	hasPred(Spec,Pred,t), 	not exec(rmPred(Pred),Spec,t), 	not exec(renamePred(Pred,_,_),Spec,t).		
 hasSort(Spec,Sort,t+1) 	:- 	hasSort(Spec,Sort,t), 	not exec(rmSort(Sort),Spec,t), 	not exec(renameSort(Sort,_,_),Spec,t).		
