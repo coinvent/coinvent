@@ -60,8 +60,8 @@ spec NatSuc = SemSys then
       %%  . plus(zero,x) = x              %(Ax-zeroPlusEqual:p:5)%                                                      %% remove
       %%  . times(s(canonical_element,x),y) = plus(y,times(x,y))    %(Ax-timesPlusRel:p:3)%                             %% remove
 
-      %% . times(fact(x),y) = qfact(x,y)  %(Ax-heurekaLemmaNat:p:20)% %% This is the Eureka lemma that we know is correct for naturals and that we want  to obtain by blending for lists.
-       . fact(x) = qfact(x,zero)          %(targetTheorem_Nat:p:20)% %% This is the target theorem that we want to prove using the Eureka lemma
+      . times(fact(x),y) = qfact(x,y)  %(Ax-heurekaLemmaNat:p:20)% %% This is the Eureka lemma that we know is correct for naturals and that we want  to obtain by blending for lists.
+       . fact(x) = qfact(x,zero)          %(targetTheoremNat:p:20)% %% This is the target theorem that we want to prove using the Eureka lemma
 
     %% This is our dummy lemma to set priorities of operators, predicats and sorts
     . prioDummyOp = prioDummyOp %(Element:p:17--Nat:p:16--zero:p:15--s:p:14--times:p:13--fact:p:10--qfact:p:10--canonical_element:p:1--plus:p:6)%

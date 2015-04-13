@@ -30,15 +30,8 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
 
     # # First state generic spaces
     cstr = cstr + genInputSpaces["Generic"][0].toCaslStr()+"\n\n"
-    # State the mappings with inheritance
 
-    ##ROBERTO
-    if os.path.isfile("demo_files_tptp.txt"):
-        os.system("rm demo_files_tptp.txt")
-        os.system("rm demo_tptp/*")
-    blendsOutFileEwen = open('demo_files_tptp.txt',"a")
-    
-    
+    # State the mappings with inheritance        
     for specName in genInputSpaces.keys():
         if specName == "Generic":            
             continue
@@ -167,10 +160,6 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
                 prettyBlendStr = prettyPrintBlend(genInputSpaces,combi,modelAtoms)
                 blendInfo = {"combi" : combi, "prettyHetsStr" : prettyBlendStr, "blendName" : blendName, "generalizationValue" : value}
                 
-                #ROBERTO
-                blendsOutFileEwen.write('demo_tptp/'+blendTptpName+'\n')
-                os.system("mv "+blendTptpName+" demo_tptp/")
-
                 # consistentFound = True
                 # If a better blend was found, delete all previous blends. 
                 if value > highestValue:
@@ -189,7 +178,6 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
                     
                 blends.append(blendInfo)
 
-    blendsOutFileEwen.close()
     os.system("rm *.tptp")
     os.remove("amalgamTmp.casl")
     
@@ -213,7 +201,11 @@ def prettyPrintBlend(genInputSpaces,combi,modelAtoms):
         lastSpec = None
         numGeneralizations = 0
         for spec in genInputSpaces[iSpaceName]:
-            cstr = cstr + spec.toCaslStr()+"\n\n"
+            cstr += "%% Spec values: \n%% Information value: "
+            cstr += str(spec.infoValue)
+            cstr += "\n%% Compression value: "
+            cstr += str(spec.compressionValue) + "\n"
+            cstr += spec.toCaslStr()+"\n\n"
             # define view to previous spec. 
             viewToPrevSpecStr = ''
             if lastSpecName != '':
@@ -306,9 +298,10 @@ def writeBlends(blends):
         outFile.write(fullBlendStr)
         outFile.close()
 
-        os.system("cp " + thName + " " + thName[:-3]+".casl")
+        # os.system("cp " + thName + " " + thName[:-3]+".casl")
         os.system("rm *.th")
-        blendFilesList += thName[:-3]+".casl\n"
+        # blendFilesList += thName[:-3]+".casl\n"
+        blendFilesList += fName
         
         bNum = bNum + 1
 
@@ -317,7 +310,7 @@ def writeBlends(blends):
     fileListFile.write(blendFilesList)
     fileListFile.close()
 
-# Returns an array of possible Blend combinations and provides a generalization cost value for the combination
+# Returns an array of possible Blend combinations and provides a blend value for the combination
 def getBlendCombiCost(genInputSpaces):
     # combis maps costs to a list of combinations of generalised input spaces.
     combis = {}
@@ -338,10 +331,10 @@ def getBlendCombiCost(genInputSpaces):
                     combi = {}
                     combi[toLPName(specName1,"spec")] =  gs1Ctr
                     combi[toLPName(specName2,"spec")] =  gs2Ctr
-                    generalizationCost = genSpace1.genCost + genSpace2.genCost
-                    mergeNamesBonus = genSpace1.genValue + genSpace2.genValue
-                    balancePenalty = abs(genSpace1.genCost - genSpace2.genCost)
-                    value = mergeNamesBonus - generalizationCost - balancePenalty
+                    informationValue = genSpace1.infoValue + genSpace2.infoValue
+                    compressionValue = genSpace1.compressionValue + genSpace2.compressionValue
+                    balancePenalty = abs(genSpace1.infoValue - genSpace2.infoValue)
+                    value = compressionValue + informationValue - balancePenalty
                     if value not in combis.keys():
                         combis[value] = []
                     combis[value].append(copy.deepcopy(combi))
