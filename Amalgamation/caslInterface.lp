@@ -154,23 +154,28 @@ removableAx(Spec,Ax) 		:- isNonDataAx(Spec,Ax), not axHasPriority(Spec,Ax,-1).
 %% hasPred(Spec,Pred,t) 	:- predHasSort(Spec,Pred,_,_,t).
 %% hasSort(Spec,Sort,t)	:- hasParentSort(Spec,_,Sort,t).
 %% hasSort(Spec,Sort,t)	:- hasParentSort(Spec,Sort,_,t).
-hasOp(Spec,Op,t+1) 		:- 	hasOp(Spec,Op,t), 		not exec(rmOp(Op),Spec,t), 		not exec(renameOp(Op,_,_),Spec,t).
-hasPred(Spec,Pred,t+1) 	:- 	hasPred(Spec,Pred,t), 	not exec(rmPred(Pred),Spec,t), 	not exec(renamePred(Pred,_,_),Spec,t).		
-hasSort(Spec,Sort,t+1) 	:- 	hasSort(Spec,Sort,t), 	not exec(rmSort(Sort),Spec,t), 	not exec(renameSort(Sort,_,_),Spec,t).		
-hasAxiom(Spec,Ax,t+1) 	:- 	hasAxiom(Spec,Ax,t), 	not exec(rmAx(Ax),Spec,t).
+noninertial(Spec,Ax,t)		:- 	exec(rmAx(Ax),Spec,t).
+noninertial(Spec,Op,t)		:- 	exec(rmOp(Op),Spec,t).
+noninertial(Spec,Op,t)		:- 	exec(renameOp(Op,_,_),Spec,t).
+noninertial(Spec,Pred,t)	:-	exec(rmPred(Pred),Spec,t).
+noninertial(Spec,Pred,t)	:- 	exec(renamePred(Pred,_,_),Spec,t).
+noninertial(Spec,Sort,t)	:-	exec(rmSort(Sort),Spec,t).
+noninertial(Spec,Sort,t)	:-	exec(renameSort(Sort,_,_),Spec,t).		
 
-axInvolvesPredOp(Spec,Ax,Op,t+1) 		:- 	axInvolvesPredOp(Spec,Ax,Op,t), 	not exec(renameOp(Op,_,_),Spec,t).
-axInvolvesPredOp(Spec,Ax,Pred,t+1) 		:- 	axInvolvesPredOp(Spec,Ax,Pred,t), 	not exec(renamePred(Pred,_,_),Spec,t).		
-axInvolvesSort(Spec,Ax,Sort,t+1) 		:- 	axInvolvesSort(Spec,Ax,Sort,t), 	not exec(renameSort(Sort,_,_),Spec,t).		
 
-hasParentSort(Spec,Sort_child,Sort,t+1) :- hasParentSort(Spec,Sort_child,Sort,t),	not exec(renameSort(Sort,_,_),Spec,t).
-hasParentSort(Spec,Sort,Sort_par,t+1) 	:- hasParentSort(Spec,Sort,Sort_par,t), 	not exec(renameSort(Sort,_,_),Spec,t).
-opHasSort(Spec,Op,Sort,Pos,t+1) 		:- 	opHasSort(Spec,Op,Sort,Pos,t), 			not exec(renameOp(Op,_,_),Spec,t),
-																					not exec(rmOp(Op),Spec,t),
-																					not exec(renameSort(Sort,_,_),Spec,t).
-predHasSort(Spec,Pred,Sort,Pos,t+1) 	:- 	predHasSort(Spec,Pred,Sort,Pos,t), 		not exec(renamePred(Pred,_,_),Spec,t),
-																					not exec(rmPred(Pred),Spec,t),
-																					not exec(renameSort(Sort,_,_),Spec,t).
+hasAxiom(Spec,Ax,t+1) 	:- 	hasAxiom(Spec,Ax,t), 	not noninertial(Spec,Ax,t).
+hasOp(Spec,Op,t+1) 		:- 	hasOp(Spec,Op,t), 		not noninertial(Spec,Op,t).
+hasPred(Spec,Pred,t+1) 	:- 	hasPred(Spec,Pred,t), 	not noninertial(Spec,Pred,t).
+hasSort(Spec,Sort,t+1) 	:- 	hasSort(Spec,Sort,t), 	not noninertial(Spec,Sort,t).
+
+axInvolvesPredOp(Spec,Ax,PredOp,t+1)	:- axInvolvesPredOp(Spec,Ax,PredOp,t),	not noninertial(Spec,PredOp,t), not noninertial(Spec,Ax,t).
+axInvolvesSort(Spec,Ax,Sort,t+1) 		:- axInvolvesSort(Spec,Ax,Sort,t), 		not noninertial(Spec,Sort,t), 	not noninertial(Spec,Ax,t).
+
+hasParentSort(Spec,Sort_child,Sort,t+1) :- hasParentSort(Spec,Sort_child,Sort,t),	not noninertial(Spec,Sort,t).
+hasParentSort(Spec,Sort,Sort_par,t+1) 	:- hasParentSort(Spec,Sort,Sort_par,t), 	not noninertial(Spec,Sort,t).
+
+opHasSort(Spec,Op,Sort,Pos,t+1) 		:- 	opHasSort(Spec,Op,Sort,Pos,t), 	   not noninertial(Spec,Op,t), not noninertial(Spec,Sort,t).
+predHasSort(Spec,Pred,Sort,Pos,t+1) 	:- 	predHasSort(Spec,Pred,Sort,Pos,t), not noninertial(Spec,Pred,t), not noninertial(Spec,Sort,t).
 
 
 %%%% Effect axioms of renamings for sorts, operators, predicates and axioms (i.e. quantifications and atoms in axioms)
