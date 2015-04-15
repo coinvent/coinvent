@@ -298,20 +298,19 @@ class CaslSpec:
 
 class CaslAx:    
 
-    def __init__(self, id, name, axStr):
-        self.id = id
+    def __init__(self, name, axStr):
+        self.id = getEquivalenceClass(axStr)
         self.name = name
         self.axStr = axStr
-        self.isDataAxiom = False # THis determines whether only data operators (generated type constants) are part of this axiom. Typicallay, such axioms denote, e.g., that natural numbers are not equal, that the boolean true is not equal to false, or that the tones of a chord (which are data operators) are not equal. 
+        self.isDataAxiom = False # This determines whether only data operators (generated type constants) are part of this axiom. Typicallay, such axioms denote, e.g., that natural numbers are not equal, that the boolean true is not equal to false, or that the tones of a chord (which are data operators) are not equal. 
         self.priority = 1
-        self.eqClass = getEquivalenceClass(axStr)
         self.involvedPredsOps = {}
         self.involvedSorts = {}
         self.fromAxStr(axStr)
 
     def getCaslAnnotationStr(self):
         aStr = ''
-        aStr += "\t%("+self.name+")%\t%priority(" + str(self.priority) + ")%\t %%id:"+str(self.id) + "\teqClass: "+str(self.eqClass)
+        aStr += "\t%("+self.name+")%\t%priority(" + str(self.priority) + ")%\t %%id:"+str(self.id) 
         if self.isDataAxiom:
             aStr += "\t(data axiom)"
         return  aStr
@@ -324,7 +323,6 @@ class CaslAx:
             return ""
         oStr = "\n%% Axiom " + self.name + " %%\n"
         oStr += "hasAxiom("+toLPName(specName,"spec")+","+str(self.id)+",0).\n"
-        oStr += "axHasEquivalenceClass("+toLPName(specName,"spec")+","+str(self.id)+","+str(self.eqClass)+",0).\n"
         if self.isDataAxiom == False:
             oStr = oStr + "isNonDataAx("+toLPName(specName,"spec") +","+str(self.id)+").\n"
         else:
@@ -405,8 +403,6 @@ def parseXml(xmlFile):
     tree = ET.parse(xmlFile)
     # print "End calling parseXml method"
     dGraph = tree.getroot()
-    ctr = 0  
-    axCtr = 0 
     dataOps = {}
     dataSorts = {}
     opAndSortPriorities = {}
@@ -514,7 +510,7 @@ def parseXml(xmlFile):
                             axStr = subEntry.text
                             if axStr == '':
                                 continue
-                            ax = CaslAx(axCtr,name,axStr)
+                            ax = CaslAx(name,axStr)
                             
                             # Check priority:
                             priority = 1
@@ -534,7 +530,6 @@ def parseXml(xmlFile):
                                 ax.isDataAxiom = True
 
                             thisSpec.axioms.append(copy.deepcopy(ax))
-                    axCtr = axCtr + 1
 
         specs.append(copy.deepcopy(thisSpec))
     return specs
@@ -814,20 +809,29 @@ def getNewAxIdOpRename(axId,op1,op2):
 
 def getEquivalenceClass(axStr):
     global axEqClasses
+    # print "Equivalence Class of " + str(axStr) + " is "
+    eqClass = -1
+    for exEqClass in axEqClasses.keys():
+        if isEquivalent(axStr,axEqClasses[exEqClass]):
+            eqClass = exEqClass
+            break
+    if eqClass == -1:
+        eqClass = len(axEqClasses)
+        axEqClasses[eqClass] = axStr
 
-    for eqClassId in axEqClasses.keys():
-        if isEquivalent(axStr,axEqClasses[eqClassId]):
-            return eqClassId
+    # print eqClassId
+    if eqClass == 4:
+        print "Axiom 4: " + axStr
+    if eqClass == 2:
+        print "Axiom 2: " + axStr 
 
-    newEqClassId = len(axEqClasses)
-    axEqClasses[newEqClassId] = axStr
-    return newEqClassId
+    return eqClass
 
 
-def renameEleAndGetNewEqClass(eqClassId,element,eleFrom,eleTo):
+def renameEleAndGetNewAxId(axId,eleFrom,eleTo):
     global axEqClasses
 
-    axStr = axEqClasses[int(eqClassId)]
+    axStr = axEqClasses[int(axId)]
     # print "renaming " + str(eleFrom) + " to " + str(eleTo) + " in axiom " + str(axStr)
     newAxStr = re.sub("(?<!\w)"+lpToCaslStr(str(eleFrom))+"(?!\w)",lpToCaslStr(str(eleTo)),axStr)
     # print " result " + newAxStr

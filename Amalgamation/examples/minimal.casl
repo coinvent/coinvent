@@ -1,6 +1,11 @@
-spec Symbols =
-    %% sort Value
-    free type Value ::= v1 | v2
+spec SemSys = 
+  sort PriorityDummySort
+  op prioDummyOp : PriorityDummySort
+end
+
+spec Symbols = SemSys then 
+    sort Value
+    %% free type Value ::= v1 | v2
 end
 
 spec Generic = Symbols then
@@ -17,6 +22,7 @@ spec S1 = Generic then
         %% v2 : Value
     
     . f = v1 %(Ax1-1:p:2)% %priority(2)%
+    . prioDummyOp = prioDummyOp %(v1:p:6)%
     %% . g = v2 %(Ax1-2:p:3)% %priority(3)%
 end
 
@@ -26,15 +32,16 @@ spec S2 = Generic then
         %% v1 : Value
     %% . g = v2 %(Ax2-1:p:2)% %priority(2)%
     . f = v2 %(Ax2-1:p:4)% %priority(4)%
+    . prioDummyOp = prioDummyOp %(v2:p:4)%
 end
 
-spec TestSpec2 = Generic then
-    preds   p1 : Value
-            p2 : Value
-    %% . f = v1 %priority(1)%
-    %% . g = v2
-    %% . h = v1
-end
+%% spec TestSpec2 = Generic then
+%%     preds   p1 : Value
+%%             p2 : Value
+%%     %% . f = v1 %priority(1)%
+%%     %% . g = v2
+%%     %% . h = v1
+%% end
 
 
 %% spec TestSpec1 = Generic then    
