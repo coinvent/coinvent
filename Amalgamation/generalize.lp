@@ -34,9 +34,9 @@ notGenericReached(t) :- spec(Spec1), spec(Spec2), notEqual(Spec1,Spec2,t), Spec1
 %%%%%%%%%%%%%%%%%%%%
 
 %% Domain-independent heuristics:
-%% Speedup 1: No "gaps" on operation steps: if no operation happens at a step for a certain spec, then no operations will happen in the future anymore. This has to be disabled if using a generation rule which only applies one operation per step in total. It also might cause problems in cases where something has first to be removed and then to be renamed, because renaming must always happen simultaneously.
-%% specModified(Spec,t) :- exec(_,Spec,t).
-%% :- specModified(Spec,t), not specModified(Spec,T_before), T_before < t, s(T_before).
+%% Speedup 1: No "gaps" on operation steps: if no operation happens at a step for a certain spec, then no operations will happen in the future anymore. This has to be disabled if using a generation rule which only applies one operation per step in total. It also might cause problems in cases where something has first to be removed and then to be renamed.
+specModified(Spec,t) :- exec(_,Spec,t).
+:- specModified(Spec,t), not specModified(Spec,T_before), T_before < t, s(T_before), poss(_,Spec,T_before).
 
 %% Speedup 2: Allow only a limited number on non-optimal steps. 
 :- nonOptimalSteps(N,Spec,t), N > 0.

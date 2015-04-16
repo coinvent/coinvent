@@ -6,7 +6,7 @@ inputFile = "examples/minimal.casl"
 inputSpaceNames = ["S1","S2"]
 
 ###### The number of models to be generated (0 for all models)
-numModels = 10
+numModels = 1
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -19,7 +19,7 @@ blendValuePercentageBelowHighestValueToKeep = 0
 # blendValuePercentageBelowHighestValueToKeep = 100
 
 ###### Time limit for eprover and darwin consistency check in seconds CPU time
-eproverTimeLimit = 2
+eproverTimeLimit = 5
 darwinTimeLimit = 2
 
 ###### Path to the HETS executable ######
