@@ -633,7 +633,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
             for cSpec in inputSpaces:
                 # remove operators, predicates and axioms
                 if toLPName(cSpec.name,"spec") == iSpace:  
-                    compressionValue = 0
+                    newCompressionValue = 0
                     infoValue = 0
                     genCost = 0
                     for act in acts[step][iSpace]:
@@ -655,7 +655,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                     newOp = copy.deepcopy(op)
                                     newOp.name = lpToCaslStr(opTo)
                                     cSpec.ops.append(newOp)
-                                    compressionValue += op.priority
+                                    newCompressionValue += op.priority
                                     # cSpec.compressionValue = cSpec.compressionValue + op.priority
                                     # Also add priority of operator to which we rename to compression value
                                     specToName = lpToCaslStr(act["argVect"][2])
@@ -663,7 +663,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                         if specTo.name == specToName:  
                                             for tmpOpTo in specTo.ops:
                                                 if tmpOpTo.name == lpToCaslStr(opTo):
-                                                    compressionValue += tmpOpTo.priority
+                                                    newCompressionValue += tmpOpTo.priority
                                                     # cSpec.compressionValue = cSpec.compressionValue + tmpOpTo.priority
                                                     break
                                             break
@@ -697,7 +697,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                     newPred.name = lpToCaslStr(pTo)
                                     cSpec.preds.append(newPred)
                                     # cSpec.compressionValue = cSpec.compressionValue + p.priority
-                                    compressionValue += p.priority
+                                    newCompressionValue += p.priority
                                     # Also add priority of predicate to which we rename to compression value
                                     specToName = lpToCaslStr(act["argVect"][2])
                                     for specTo in originalInputSpaces:                                        
@@ -705,7 +705,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                             for tmpPredTo in specTo.preds:
                                                 if tmpPredTo.name == lpToCaslStr(pTo):
                                                     # cSpec.compressionValue = cSpec.compressionValue + tmpPredTo.priority
-                                                    compressionValue += tmpPredTo.priority
+                                                    newCompressionValue += tmpPredTo.priority
                                                     break
                                             break
                                     break
@@ -748,7 +748,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                     newSort.name = lpToCaslStr(sTo)
                                     cSpec.sorts.append(newSort)
                                     # cSpec.compressionValue = cSpec.compressionValue + s.priority
-                                    compressionValue += s.priority
+                                    newCompressionValue += s.priority
                                     
                                     # Also add priority of sort to which we rename to compression value
                                     specToName = lpToCaslStr(act["argVect"][2])
@@ -757,7 +757,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                             for tmpSortTo in specTo.sorts:
                                                 if tmpSortTo.name == lpToCaslStr(sTo):
                                                     # cSpec.compressionValue = cSpec.compressionValue + tmpSortTo.priority
-                                                    compressionValue += tmpSortTo.priority
+                                                    newCompressionValue += tmpSortTo.priority
                                                     break
                                             break
                                     break
@@ -804,12 +804,11 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                     cSpec.axioms.remove(a)
                                     # cSpec.genCost = cSpec.genCost + a.priority
                                     break
-                    
+                    cSpec.compressionValue += newCompressionValue
                     thisCSpec = copy.deepcopy(cSpec)
                     thisCSpec.name = thisCSpec.name + "_gen_" + str(len(generalizations[thisCSpec.name]))
                     thisCSpec.totalSteps = step
-                    thisCSpec.compressionValue = compressionValue
-                    # thisCSpec.thisSteps = len(generalizations[cSpec.name])
+                    # thisCSpec.compressionValue = compressionValue
                     generalizations[cSpec.name].append(thisCSpec)
                     # print "generalization"
                     # print thisCSpec.toCaslStr()
@@ -827,7 +826,7 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
         for spec in specList:
             spec.setInfoValue()
              
-            # print spec.toCaslStr()
+            print spec.toCaslStr()
     # exit(1)
 
     return generalizations

@@ -18,17 +18,20 @@ end
 
 spec S1 = Generic then  
     sorts ThisSort1
-    %% ops 
+    ops 
+        o1 : ThisSort1
         %% v1 : Value  
         %% v2 : Value
     
-    . f = v1 %(Ax1-1:p:2)% %priority(2)%
+    . f = v1 %(Ax1-1:p:4)% %priority(4)%
     . prioDummyOp = prioDummyOp %(v1:p:6)%
     %% . g = v2 %(Ax1-2:p:3)% %priority(3)%
 end
 
 spec S2 = Generic then   
     sorts ThisSort2 
+    ops 
+        o2 : ThisSort2
     %% ops 
         %% v2 : Value    
         %% v1 : Value

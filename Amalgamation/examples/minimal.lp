@@ -22,6 +22,11 @@ opHasSort(spec_S1,po_f,sort_Value,domain,0).
 isNonDataOp(spec_S1,po_f).
 opHasPriority(spec_S1,po_f,1).
 
+hasOp(spec_S1,po_o1,0).
+opHasSort(spec_S1,po_o1,sort_ThisSort1,domain,0).
+isNonDataOp(spec_S1,po_o1).
+opHasPriority(spec_S1,po_o1,1).
+
 hasOp(spec_S1,po_v1,0).
 opHasSort(spec_S1,po_v1,sort_Value,domain,0).
 isDataOp(spec_S1,po_v1).
@@ -35,11 +40,11 @@ opHasPriority(spec_S1,po_v2,0).
 %% predicates %%
 %% axioms %%
 
-%% Axiom Ax1-1:p:2 %%
+%% Axiom Ax1-1:p:4 %%
 hasAxiom(spec_S1,0,0).
 axHasEquivalenceClass(spec_S1,0,0,0).
 isNonDataAx(spec_S1,0).
-axHasPriority(spec_S1,0,2).
+axHasPriority(spec_S1,0,4).
 axInvolvesPredOp(spec_S1,0,po_v1,0).
 axInvolvesPredOp(spec_S1,0,po_f,0).
 
@@ -67,6 +72,11 @@ hasOp(spec_S2,po_f,0).
 opHasSort(spec_S2,po_f,sort_Value,domain,0).
 isNonDataOp(spec_S2,po_f).
 opHasPriority(spec_S2,po_f,1).
+
+hasOp(spec_S2,po_o2,0).
+opHasSort(spec_S2,po_o2,sort_ThisSort2,domain,0).
+isNonDataOp(spec_S2,po_o2).
+opHasPriority(spec_S2,po_o2,1).
 
 hasOp(spec_S2,po_v1,0).
 opHasSort(spec_S2,po_v1,sort_Value,domain,0).

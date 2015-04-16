@@ -333,7 +333,7 @@ def getBlendCombiCost(genInputSpaces):
                     combi[toLPName(specName2,"spec")] =  gs2Ctr
                     informationValue = genSpace1.infoValue + genSpace2.infoValue
                     compressionValue = genSpace1.compressionValue + genSpace2.compressionValue
-                    balancePenalty = abs(genSpace1.infoValue - genSpace2.infoValue)
+                    balancePenalty = int(abs(genSpace1.infoValue - genSpace2.infoValue)/2)
                     value = compressionValue + informationValue - balancePenalty
                     if value not in combis.keys():
                         combis[value] = []
