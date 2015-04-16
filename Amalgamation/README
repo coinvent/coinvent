@@ -5,7 +5,7 @@
 ************************************************************************
 
 ** OVERVIEW **
-This is the amalgamation system which is the core of the blending process. The current state (02.01.15) is a vertical prototype of the COINVENT system which is motivated mostly by the efforts on the IJCAI paper. It should run with some music examples by end of January. Starting from Mid-February (after IJCAI paper) we will improve this prototype to achieve language-independence, etc. 
+This is the amalgamation system which is the core of the blending process. The current state (10.03.15) is a vertical prototype of the COINVENT system which is motivated mostly by the efforts on the IJCAI paper and the follow-up LPNMR paper. It should run with some music examples by end of January, and some more difficult exaples that allow for blending different CASL signatures by end of March.
 It currently works with CASL only, and relies on HETS (via commandline-call) to compute colimits. In future versions it will rely also on language modules to have language-independence, and HDTP to improve generalization search. 
 
 ** MODULE FILE STRUCTURE **
@@ -22,8 +22,12 @@ It currently works with CASL only, and relies on HETS (via commandline-call) to 
 - Answer Set Programming code:
 	- iterationCore-py.lp
 		This is a Logic Programming file containting the main iteration loops as a python script. 
+	- caslInterface.lp
+		This contains casl specific rules that are an interface to the main amalgamation search programs called generalize.lp. and blending.lp
 	- generalize.lp
 		This contains the core search rules to generalize towards the generic space. 
+	- blending.lp
+		This contains the core search rules to create blends. 
 
 - Clingo binary
 	- clingo4 is the 64bit binary of clingo v.4.4.0. I complied it with python and lua support. 
@@ -35,22 +39,21 @@ It currently works with CASL only, and relies on HETS (via commandline-call) to 
 
 ** GET STARTED **
 The module will only run on a linux-based 64bit distribution, because of the clingo4 binary. If you want to run on another system (e.g. Mac), you have to get your own clingo4 binary. I suggest to use a Virtual Machine instead.
-To run the blending, adjust the var "lp_path" in iterationCore-py.lp to the absolute path of your system and execute "run-blending.py" using python. By default it will do the cadence blending example specified in cadenceByAx.casl. To run another example, adopt settings.py.
+To run the blending, execute "run-blending.py" using python. By default it will do a house boat blending example specified in houseBoat.casl. To run another example, adopt the file settings.py.
 
 If you want to do other blendings, modify the settings.py as follows:
 	+ change the "fName" var and provide the CASL file that contains two specifications to blend.
 	+ modify the "specsToBlend" variable and enter the two specs in the casl file that are to be blended. 
-	+ the searchControlFile var is optional (but should at least be an empty string) and intended to be used as an ad-hoc solution to guide the ASP search.
+	+ Priorities of axioms can be encoded in the axiom names by adding a substring ":p:<number>".
+	+ Priorities of operators, predicates and sorts can be encoded in the name of a dummy-axiom that has the string ". prioDummyOp = prioDummyOp", by adding a substring "--<Sort, operator or predicate name>_p<number>", to the name of the dummy predicate. This requires to have a dummySort "PrioDummySort" and a dummy operator "prioDummyOperator" in each case Spec. If the axiom ". prioDummyOp = prioDummyOp" is not found in a specfication, then prioritis will always be 0.
+	+ A priority of "-1" means that the axiom, operator, predicate or sort is fixed and not removable. 
+	
 
 ** Important limitations and TODOs ** 
-	+ Operator and predicate names must be disjoint in each specification, i.e. a operator name can 
-	not be a predicate name. Furthermore, overloading is not supported. otherwise this will result in errors. 
-	+ Generalizing sorts currently under development. You have to keep sort specifications equal for all input specs. 
-		TODO: In generalize.lp formulate predicates noPredHasSort3 and noOpHasSort/3.
-	+ Timeout with darwin problem solving not working. 
+	+ Operator,  predicate and sort names must be disjoint in each specification, i.e. a operator name can 
+	not be a predicate name or a sort name. Furthermore, overloading of operators or predicates is not supported. Otherwise this will result in unpredictable behavior.
+	+ Logical Equivalence of axioms is currently determined by syntactic equivalence. This is of course a much stronger form of equivalence and a serious limitation of the system.
 	+ IMPORTANT (from category theoretical point of view): If predicates or operator names are equal in different input specifications, they are considered to be equal. 
-	+ IMPORTANT (from category theoretical point of view): Only identity mappings are considered so far between specs. We will have a much richer generalization process when using also non-id mappings.
-	+ Sorts are determined only by predicates and operators. I have to think whether they should also be determined by axioms, as e.g. in the monks blend example. 
-	+ Generalization can currently happen by removing axioms, operators and predicates from a CASL inut spec. If operators and predicates are removed, all axioms that involve the operator or predicate are removed as well. For some examples, it is required to restrict these ways of generalization by only removing axioms, or only removing predicates / operators. This restriction currently has to be done in the generalize.lp file manually. I'll set up an option for this in the settings soon! 
+	+ 0-ary predicates currently cause unpredictable behavior and are not supported.
 
 

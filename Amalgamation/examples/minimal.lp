@@ -1,80 +1,74 @@
-#program base1.
+#program base.
 
-spec(s1).
-hasId(s1,0).
-hasOp(s1,f,1).
-opHasSort(s1,f,value).
-removable(s1,f).
-priority(s1,f,1).
-hasOp(s1,g,1).
-opHasSort(s1,g,value).
-removable(s1,g).
-priority(s1,g,1).
-hasOp(s1,v1,1).
-opHasSort(s1,v1,value).
-priority(s1,v1,1).
-hasOp(s1,v2,1).
-opHasSort(s1,v2,value).
-priority(s1,v2,1).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% spec S1 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-hasAxiom(s1,1,1).
-axInvolvesPredOp(1,f).
-axInvolvesPredOp(1,v1).
-removable(s1,1).
-priority(s1,1,1).
+spec(spec_S1).
+hasId(spec_S1,0).
 
-hasAxiom(s1,2,1).
-axInvolvesPredOp(2,v1).
-axInvolvesPredOp(2,v2).
-priority(s1,2,1).
+%% sorts %%
+hasSort(spec_S1,sort_Value,0).
+isNonDataSort(spec_S1,sort_Value).
+sortHasPriority(spec_S1,sort_Value,1).
 
-hasAxiom(s1,3,1).
-priority(s1,3,1).
-hasSort(s1,value,1).
-removable(s1,value).
-priority(s1,value,1).
+%% operators %%
+hasOp(spec_S1,po_f,0).
+opHasSort(spec_S1,po_f,sort_Value,domain,0).
+isNonDataOp(spec_S1,po_f).
+opHasPriority(spec_S1,po_f,1).
 
+hasOp(spec_S1,po_v1,0).
+opHasSort(spec_S1,po_v1,sort_Value,domain,0).
+isNonDataOp(spec_S1,po_v1).
+opHasPriority(spec_S1,po_v1,6).
+
+%% predicates %%
+%% axioms %%
+
+%% Axiom Ax1-1:p:2 %%
+hasAxiom(spec_S1,0,0).
+isNonDataAx(spec_S1,0).
+axHasPriority(spec_S1,0,2).
+axInvolvesPredOp(spec_S1,0,po_v1,0).
+axInvolvesPredOp(spec_S1,0,po_f,0).
 
 
-spec(s2).
-hasId(s2,1).
-hasOp(s2,f,1).
-opHasSort(s2,f,value).
-removable(s2,f).
-priority(s2,f,1).
-hasOp(s2,g,1).
-opHasSort(s2,g,value).
-removable(s2,g).
-priority(s2,g,1).
-hasOp(s2,v1,1).
-opHasSort(s2,v1,value).
-priority(s2,v1,1).
-hasOp(s2,v2,1).
-opHasSort(s2,v2,value).
-priority(s2,v2,1).
 
-hasAxiom(s2,4,1).
-axInvolvesPredOp(4,f).
-axInvolvesPredOp(4,v2).
-removable(s2,4).
-priority(s2,4,8).
 
-hasAxiom(s2,5,1).
-axInvolvesPredOp(5,g).
-axInvolvesPredOp(5,v2).
-removable(s2,5).
-priority(s2,5,10).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% spec S2 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-hasAxiom(s2,2,1).
-axInvolvesPredOp(2,v1).
-axInvolvesPredOp(2,v2).
-priority(s2,2,1).
+spec(spec_S2).
+hasId(spec_S2,1).
 
-hasAxiom(s2,3,1).
-priority(s2,3,1).
-hasSort(s2,value,1).
-removable(s2,value).
-priority(s2,value,1).
+%% sorts %%
+hasSort(spec_S2,sort_Value,0).
+isNonDataSort(spec_S2,sort_Value).
+sortHasPriority(spec_S2,sort_Value,1).
+
+%% operators %%
+hasOp(spec_S2,po_f,0).
+opHasSort(spec_S2,po_f,sort_Value,domain,0).
+isNonDataOp(spec_S2,po_f).
+opHasPriority(spec_S2,po_f,1).
+
+hasOp(spec_S2,po_v2,0).
+opHasSort(spec_S2,po_v2,sort_Value,domain,0).
+isNonDataOp(spec_S2,po_v2).
+opHasPriority(spec_S2,po_v2,4).
+
+%% predicates %%
+%% axioms %%
+
+%% Axiom Ax2-1:p:4 %%
+hasAxiom(spec_S2,2,0).
+isNonDataAx(spec_S2,2).
+axHasPriority(spec_S2,2,4).
+axInvolvesPredOp(spec_S2,2,po_v2,0).
+axInvolvesPredOp(spec_S2,2,po_f,0).
+
 
 
 

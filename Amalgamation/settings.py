@@ -6,7 +6,7 @@ inputFile = "examples/minimal.casl"
 inputSpaceNames = ["S1","S2"]
 
 ###### The number of models to be generated (0 for all models)
-numModels = 10
+numModels = 1
 
 ###### The minimal number of iterations for generalization
 minIterationsGeneralize = 1
@@ -14,15 +14,13 @@ minIterationsGeneralize = 1
 ###### The maximal number of iterations for generalization
 maxIterationsGeneralize = 20
 
-###### The minimal number of iterations for blending
-minIterationsBlend = 1
-
-###### The maximal number of iterations for blending
-maxIterationsBlend = 20
+###### Percentage of blend value below the currently highest value found so far that we want to keep in the results. 0 means that we only keep the blends with the highest value found so far, 100 means to consider all blends.
+blendValuePercentageBelowHighestValueToKeep = 25
+# blendValuePercentageBelowHighestValueToKeep = 100
 
 ###### Time limit for eprover and darwin consistency check in seconds CPU time
-eproverTimeLimit = 10
-darwinTimeLimit = 10
+eproverTimeLimit = 5
+darwinTimeLimit = 2
 
 ###### Path to the HETS executable ######
 hetsExe = 'hets'
@@ -46,8 +44,20 @@ hetsExe = 'hets'
 # inputFile = "examples/cadenceByAx.casl"
 # inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 
-# inputFile = "examples/subSortTest.casl"
-# inputSpaceNames = ["S1","S2"]
+# inputFile = "examples/houseBoat.casl"
+# inputSpaceNames = ["Boat","House"]
 
-inputFile = "examples/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
-inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]
+# inputFile = "examples/LPNMR/cadenceBlendFusionTest.casl"
+# inputSpaceNames = ["PhrygianCadence","PerfectCadence"]
+
+inputFile = "examples/LPNMR/naturalsAndLists.casl"
+inputSpaceNames = ["NatSuc","List"]
+# inputSpaceNames = ["List","NatSuc"]
+
+
+# inputFile = "examples/music/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
+# inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]
+
+
+# inputFile = "examples/icons.casl"
+# inputSpaceNames = ["PenOverDocumentIcon","MagnifyingGlassOverHardDiskIcon"]
