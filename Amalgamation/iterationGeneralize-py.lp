@@ -40,7 +40,7 @@ def onModelGeneralize(model):
     print "Found generalisation:"
     modelStr = getModel(model)
     print modelStr
-    return
+    # return
     [blends,blendingGeneralizationValue] = findLeastGeneralizedBlends(model.atoms(), inputSpaces, highestValue, blends) 
     # print blendingGeneralizationValue  
     if blendingGeneralizationValue >= highestValue and blendingGeneralizationValue > -sys.maxint:
