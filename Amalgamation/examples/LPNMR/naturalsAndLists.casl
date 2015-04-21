@@ -36,7 +36,7 @@ end
 %% end
 
 
-spec NatSuc = SemSys then
+spec NatSucCanonical = SemSys then
    sort Element
    sort Nat   
    op zero:Nat                    %% maps to nil  / null
@@ -67,6 +67,35 @@ spec NatSuc = SemSys then
     . prioDummyOp = prioDummyOp %(Element:p:17--Nat:p:16--zero:p:15--s:p:14--times:p:13--fact:p:10--qfact:p:10--canonical_element:p:1--plus:p:6)%
 end
 
+spec NatSuc = SemSys then
+   sort Nat   
+   op zero:Nat                    %% maps to nil  / null
+   op s: Nat -> Nat     %% maps to cons / constructor
+   op times : Nat * Nat -> Nat    %% maps to app  / auxfunc
+   op fact: Nat -> Nat            %% maps to rev  / recfunc
+   op qfact: Nat * Nat -> Nat     %% maps to qref / qrecfunc
+   op plus : Nat * Nat -> Nat     %% remove
+   
+   forall x,y:Nat
+       %% These axioms have a similar (but not necessarily equivalent) analogous partner axiom in spec List
+       . times(zero,x) = zero                 %(Ax-multizerozero:p:2)%                             %% remove
+       . qfact(zero,x) = x                    %(Ax-qfactzerozero:p:9)%
+       . plus(s(x),y) = s(plus(x,y))          %(Ax-plusSucc:p:3)%  %% remove
+       . fact(zero) = s(zero)                 %(Ax-factZeroSuccZero:p:4)%          %% remove
+       . fact(s(x)) = times(fact(x),s(x))  %(Ax_multiplyNumberWithFactorial:p:1)% %% remove
+       . qfact(s(x),y) = times(qfact(x,s(x)),y)  %(Ax_qfacttimessucc:p:2)%        %% remove
+       . not (s(x) = zero) %(Ax_succNotZero:p:8)%
+       %% The following axioms have no similar analogous partner in spec List 
+       . plus(zero,x) = x              %(Ax-zeroPlusEqual:p:5)%                                                      %% remove
+       . times(s(x),y) = plus(y,times(x,y))    %(Ax-timesPlusRel:p:3)%                             %% remove
+
+      . times(fact(x),y) = qfact(x,y)  %(Ax-heurekaLemmaNat:p:20)% %% This is the Eureka lemma that we know is correct for naturals and that we want  to obtain by blending for lists.
+       . fact(x) = qfact(x,zero)          %(targetTheoremNat:p:20)% %% This is the target theorem that we want to prove using the Eureka lemma
+
+    %% This is our dummy lemma to set priorities of operators, predicats and sorts
+    . prioDummyOp = prioDummyOp %(Nat:p:16--zero:p:15--s:p:4--times:p:13--fact:p:12--qfact:p:11--plus:p:6)%
+end
+
 
 
 %%% 
@@ -83,15 +112,14 @@ spec List = SemSys then
        . qrev(nil,x) = x                            %(Ax-qrevnilxx:p:4)%
        . app(cons(h,x),y) = cons(h,app(x,y))       %% remove
        . rev(nil) = nil                            %% remove
-       %% . not app(nil,x) = nil %(Ax-testing:p:4)% %% testing
-       %% . rev(cons(h,x)) = app(rev(x),cons(h,nil))  %% remove -- This is similar to axiom (Ax_multiplyNumberWithFactorial), but can not be mapped because it contains nil in the last element of its rhs, not x       
-       %% . qrev(cons(h,x),y) = qrev(x,cons(h,y))     %% remove
-       %% . not (cons(h,x) = nil)                      %(Ax_consNotNil:p:3)%
+       . rev(cons(h,x)) = app(rev(x),cons(h,nil))  %% remove -- This is similar to axiom (Ax_multiplyNumberWithFactorial), but can not be mapped because it contains nil in the last element of its rhs, not x       
+       . qrev(cons(h,x),y) = qrev(x,cons(h,y))     %% remove
+       . not (cons(h,x) = nil)                      %(Ax_consNotNil:p:3)%
        %% . app(rev(x),y) = qrev(x,y) %(Ax-heurekaLemmaLists:p:20)% %% This is the eureka lemma that we want to have for lists.
        . rev(x) = qrev(x,nil)      %(Ax-targetTheoremLists:p:20)% %% This is the target theorem of that we know it's correct for naturals, and that we want to "translate" to the theory of lists.
 
        %% This is our dummy lemma to set priorities of operators, predicats and sorts
-     . prioDummyOp = prioDummyOp %(El:p:17--L:p:16--nil:p:15--cons:p:14--app:p:13--rev:p:10--qrev:p:10--h:p:10)%
+     . prioDummyOp = prioDummyOp %(El:p:17--L:p:16--nil:p:15--cons:p:4--app:p:13--rev:p:10--qrev:p:10--h:p:10)%
 end
 
 

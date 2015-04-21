@@ -146,13 +146,8 @@ def findLeastGeneralizedBlends(modelAtoms, inputSpaces, highestValue, blends):
                     print "ERROR: File "+blendTptpName+" not yet written correctly "+ str(tries) + " times! Aborting..."
                     exit(1)
 
-            thisCombiConsistent = checkConsistencyEprover(blendTptpName)
+            thisCombiConsistent = checkConsistency(blendTptpName)
 
-            # if thisCombiConsistent == -1:
-            #     print "Consistency could not be determined by eprover, trying darwin"                
-            #     thisCombiConsistent = checkConsistencyDarwin(blendTptpName)
-            #     if thisCombiConsistent == 0:
-            #         os.system("echo \"eprover could not determine inconsistency but darwn could for blend " + blendTptpName + "\" > consistencyCheckFile.tmp")
                         
             # if thisCombiConsistent == 1: # If we can show that the blend is consistent
             if thisCombiConsistent != 0: # If we can not show that the blend is inconsistent
@@ -376,7 +371,20 @@ def getBlendCombiCost(genInputSpaces):
 #             combis[cost].append(combi)
 #     return combis
 
-   
+def checkConsistency(blendTptpName):
+    consistent = checkConsistencyEprover(blendTptpName)
+
+    if consistent == -1:
+        print "Consistency could not be determined by eprover, trying darwin"                
+        consistent = checkConsistencyDarwin(blendTptpName)
+        if consistent == 0 or consistent == 1:
+            # os.system("echo \"eprover could not determine inconsistency but darwn could for blend " + blendTptpName + "\" > consistencyCheckFile.tmp")
+            print("eprover could not determine (in)consistency but darwn could for blend " + blendTptpName + ". Result: " + str(consistent) + ". Press key to continue.")
+            raw_input()
+
+    return consistent
+
+
 def checkConsistencyEprover(blendTptpName) :
         global eproverTimeLimit
         tries = 0

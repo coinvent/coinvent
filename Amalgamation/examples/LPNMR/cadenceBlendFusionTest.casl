@@ -11,18 +11,18 @@ spec Symbols = SemSys then
  op __+__ : Note * Note -> Note
  op suc : Note -> Note 
  
- . suc(0) = 1 %(AxSucc0:p:100:r:0)%
- . suc(1) = 2 %(AxSucc1:p:100:r:0)%
- . suc(2) = 3 %(AxSucc2:p:100:r:0)%
- . suc(3) = 4 %(AxSucc3:p:100:r:0)%
- . suc(4) = 5 %(AxSucc4:p:100:r:0)%
- . suc(5) = 6 %(AxSucc5:p:100:r:0)%
- . suc(6) = 7 %(AxSucc6:p:100:r:0)%
- . suc(7) = 8 %(AxSucc7:p:100:r:0)%
- . suc(8) = 9 %(AxSucc8:p:100:r:0)%
- . suc(9) = x %(AxSucc9:p:100:r:0)%
- . suc(x) = x1 %(AxSucc10:p:100:r:0)%
- . suc(x1) = 0 %(AxSucc11:p:100:r:0)%
+ . suc(0) = 1 %(AxSucc0:p:-1)%
+ . suc(1) = 2 %(AxSucc1:p:-1)%
+ . suc(2) = 3 %(AxSucc2:p:-1)%
+ . suc(3) = 4 %(AxSucc3:p:-1)%
+ . suc(4) = 5 %(AxSucc4:p:-1)%
+ . suc(5) = 6 %(AxSucc5:p:-1)%
+ . suc(6) = 7 %(AxSucc6:p:-1)%
+ . suc(7) = 8 %(AxSucc7:p:-1)%
+ . suc(8) = 9 %(AxSucc8:p:-1)%
+ . suc(9) = x %(AxSucc9:p:-1)%
+ . suc(x) = x1 %(AxSucc10:p:-1)%
+ . suc(x1) = 0 %(AxSucc11:p:-1)%
 
     . not 0 = 1
     . not 0 = 2
@@ -36,10 +36,10 @@ spec Symbols = SemSys then
     . not 0 = x
     . not 0 = x1
  forall c, d: Note 
-    . suc(c) = 0 <=> c = x1         %(AxSucc0-11:p:100:r:0)%
-    . suc(c) = suc(d) <=> c = d     %(AxSuccEql:p:100:r:0)%
-    . c + 0 = c                     %(AxSuccDontKnow:p:100:r:0)%
-    . c + suc(d) = suc(c+d)         %(AxSuccAdd:p:100:r:0)%
+    . suc(c) = 0 <=> c = x1         %(AxSucc0-11:p:-1)%
+    . suc(c) = suc(d) <=> c = d     %(AxSuccEql:p:-1)%
+    . c + 0 = c                     %(AxSuccDontKnow:p:-1)%
+    . c + suc(d) = suc(c+d)         %(AxSuccAdd:p:-1)%
 end
 
 spec Chord = Symbols then 
@@ -53,28 +53,26 @@ spec Chord = Symbols then
     %% There must be a root note which is played, i.e., an absolute note.
     forall c:Chord . exists n:Note
       . root(c) = n /\ hasAbsNote(c,n)  %(exOneRootThatMustBePlayed:p:-1)% 
+    forall c:Chord, n:Note
+      . root(c) = n => hasAbsNote(c,n)  %(rootMustBePlayed:p:-1)% 
 
     %% Relate absolute and relative notes
-    forall c:Chord,n:Note    
-       . hasRelNote(c,n) <=> hasAbsNote(c,(root(c)+n))         %(reltoabs_note:p:-1)%
+    forall c:Chord,n:Note, r:Note
+      . root(c) = r => (hasRelNote(c,n) <=> hasAbsNote(c,r+n))   %(reltoabs_alt:p:-1)%    
+       %% . hasRelNote(c,n) <=> hasAbsNote(c,(root(c)+n))         %(reltoabs:p:-1)%    
+       %% . hasAbsNote(c,n) <=> hasRelNote(c,(root(c)+n))         %(abstorel:p:-1)%    
     
-    forall c: Chord . not (root(c) = 1 /\ hasAbsNote(c,7) /\ hasRelNote(c,7)) %(dis1:p:-1)%
-    forall c: Chord . not (root(c) = 1 /\ hasAbsNote(c,2)) %(dis2:p:-1)%
-    forall c: Chord . not (root(c) = 1 /\ hasAbsNote(c,4) /\ hasRelNote(c,4)) %(dis3:p:-1)%
-
-
-    forall c: Chord
-      . not (root(c) = 1 /\ hasAbsNote(c,7) /\ hasRelNote(c,6))
     %% Define forbidden dissonances
     forall n:Note, c:Chord
+    %% One haftone away from the root is often quite dissonant
+    . not hasRelNote(c,1)                       %(dis_second:p:-1)%
     %% Two notes that can be interpreted as major and minor 3rd
     . not (hasRelNote(c,3) /\ hasRelNote(c,4))  %(dis_minorMajorThird:p:-1)%
     %% Two notes that can be interpreted as perfect and diminished 5th
-    . not (hasRelNote(c,7) /\ hasRelNote(c,6))  %(dis_perfectDimFifth:p:-1)%
-    %% One haftone away from the root is often quite dissonant
-    . not hasRelNote(c,1)                       %(dis_second:p:-1)%
+    . not (hasRelNote(c,7) /\ hasRelNote(c,6))  %(dis_perfectDimFifth:p:-1)%    
     %% A minor 7th (rel 10) with a major 6th (rel 9) is pretty dissonant
     . not (hasRelNote(c,x) /\ hasRelNote(c,9)) %(dis_seventhsixth:p:-1)%
+    
 end
 
 spec G7 = 
@@ -82,15 +80,15 @@ spec G7 =
   Chord then
   op c:Chord
 
-  . hasAbsNote(c,7)  %(Ax-absg7:p:1)%   %%remove 
-  . hasAbsNote(c,x1) %(Ax-absg11:p:3)%  %%remove
-  . hasAbsNote(c,2)  %(Ax-absg2:p:1)%   
+  . hasAbsNote(c,7)  %(Ax-absg7:p:1)%   %%remove for tritone
+  . hasAbsNote(c,x1) %(Ax-absg11:p:3)%  
+  . hasAbsNote(c,2)  %(Ax-absg2:p:1)%   %%remove for tritone
   . hasAbsNote(c,5)  %(Ax-absg5:p:2)%  
-  . root(c) = 7      %(Ax-rootg7:p:1)%  
+  . root(c) = 7      %(Ax-rootg7:p:2)%  
   . hasRelNote(c,0)  %(Ax-relg0:p:3)%   
   . hasRelNote(c,4)  %(Ax-relg4:p:3)%   
-  . hasRelNote(c,7)  %(Ax-relg7:p:0)%   
-  . hasRelNote(c,x)  %(Ax-relg10:p:2)% 
+  . hasRelNote(c,7)  %(Ax-relg7:p:2)%   
+  . hasRelNote(c,x)  %(Ax-relg10:p:3)% 
 end
 
 spec Bbmin = 
@@ -98,13 +96,13 @@ spec Bbmin =
   Chord then
   op c:Chord
   
-  . hasAbsNote(c,x)  %(Ax-absb10:p:1)%
-  . hasAbsNote(c,1)  %(Ax-absb1:p:3)% %%remove
+  . hasAbsNote(c,x)  %(Ax-absb10:p:1)% %%remove for tritone
+  . hasAbsNote(c,1)  %(Ax-absb1:p:3)% 
   . hasAbsNote(c,5)  %(Ax-absb5:p:2)%  
   . root(c) = x     %(Ax-rootb10:p:2)%
   . hasRelNote(c,0)  %(Ax-relb0:p:2)% 
-  . hasRelNote(c,3)  %(Ax-relb3:p:1)% %%remove
-  . hasRelNote(c,7)  %(Ax-relbb7:p:0)% 
+  . hasRelNote(c,3)  %(Ax-relb3:p:1)% %%remove for tritone
+  . hasRelNote(c,7)  %(Ax-relb7:p:1)% 
         
 end
 
@@ -140,7 +138,7 @@ spec PerfectCadence = Progression then
     . hasSucc(c1Perfect,c2Perfect)  %(succPerfect:p:30)%
     . isInitialChord(c1Perfect)     %(initialChordPerfect:p:30)%
     . isTerminalChord(c2Perfect)    %(terminalChordPerfect:p:30)%
-    . prioDummyOp = prioDummyOp %(c1Perfect:p:-1--c2Perfect:p:-1)%
+    . prioDummyOp = prioDummyOp %(c1Perfect:p:40--c2Perfect:p:40)%
 end
 
 spec PhrygianCadence = Progression then 
@@ -150,8 +148,38 @@ spec PhrygianCadence = Progression then
     . hasSucc(c1Phrygian,c2Phrygian)  %(succPhrygian:p:30)%
     . isInitialChord(c1Phrygian)      %(initialPhrygian:p:30)%
     . isTerminalChord(c2Phrygian)     %(terminalPhrygian:p:30)%
-    . prioDummyOp = prioDummyOp %(c1Perfect:p:-1--c2Perfect:p:-1)%
+    . prioDummyOp = prioDummyOp %(c1Phrygian:p:40--c2Phrygian:p:40)%
 end
+
+%% Tritone:
+%% Db7
+%% Root: 1
+%% rel:
+%%   0
+%%   4
+%%   7
+%%   x
+%% abs:
+%%   1
+%%   5
+%%   8
+%%   x1
+
+
+%%% Results:
+%% c1:
+%% root: 7
+%% rel:
+%%   4 
+%%   x 
+%%   0
+%% abs:
+%%   x1  
+%%   1   
+%%   5   
+
+
+
 
 %% The generic space for the fusion is a progression with two successive chords, where the first one is undefined
 spec GenericFusion = Progression then     
