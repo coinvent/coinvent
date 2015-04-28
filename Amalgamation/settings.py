@@ -16,47 +16,31 @@ maxIterationsGeneralize = 20
 
 ###### Percentage of blend value below the currently highest value found so far that we want to keep in the results. 0 means that we only keep the blends with the highest value found so far, 100 means to consider all blends.
 blendValuePercentageBelowHighestValueToKeep = 0
-# blendValuePercentageBelowHighestValueToKeep = 100
 
 ###### Time limit for eprover and darwin consistency check in seconds CPU time
-eproverTimeLimit = 5
-darwinTimeLimit = 5
+eproverTimeLimit = 4
+darwinTimeLimit = 0.1
+
 
 ###### Path to the HETS executable ######
 hetsExe = 'hets'
 # hetsExe = '/media/psf/Home/svn/coinvent/Amalgamation/hetsPrio' # This is the experimental version with priorities by Mihai.
 
 
-############################
-###### CASL-specific #######
-############################
-
-###### For generalization, determine whether removal of axioms, sorts, predicates and operators are allowed atomic generalization actions. For certain domains it may be useful to use only a subset of generalization operations.
-# TODO: THis is currently not working... For now (de)-comment respective LP rules in generalize.lp file to select generalization operations
-# rmAxAllowed = True
-# rmPredAllowed = True
-# rmOpAllowed = True
-# rmSortAllowed = True
-
 ###################################################################
 
 ## Here is space to quickly overwrite the above settings for debugging purposes.
-# inputFile = "examples/cadenceByAx.casl"
-# inputSpaceNames = ["Perfect7Cadence","PhrygianCadence"]
 
-# inputFile = "examples/houseBoat.casl"
+# inputFile = "examples/LPNMR/houseBoat.casl"
 # inputSpaceNames = ["Boat","House"]
 
-inputFile = "examples/LPNMR/cadenceBlendFusionTest.casl"
-inputSpaceNames = ["PhrygianCadence","PerfectCadence"]
+# inputFile = "examples/LPNMR/cadenceBlendFusionTest.casl"
+# inputSpaceNames = ["PhrygianCadence","PerfectCadence"]
 
 # inputFile = "examples/LPNMR/naturalsAndLists.casl"
 # inputSpaceNames = ["NatSuc","List"]
 
+inputFile = "examples/metaphorTest.casl"
+inputSpaceNames = ["EvilCreature","Fire"]
 
-# inputFile = "examples/music/PerfectAndPhrygianToBackdoor_BGKnowledgeLater.casl"
-# inputSpaceNames = ["CPhrygianCadence","CPerfectCadence"]
 
-
-# inputFile = "examples/icons.casl"
-# inputSpaceNames = ["PenOverDocumentIcon","MagnifyingGlassOverHardDiskIcon"]

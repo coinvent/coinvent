@@ -27,6 +27,7 @@ notGenericReached(t) :- spec(Spec1), spec(Spec2), notEqual(Spec1,Spec2,t), Spec1
 
 %% %% % Generate generalization search space. If the generic space is not yet reached, execute a generalization operation. 
 %% 0{exec(A,Spec,t) : a(A,Spec),  poss(A,Spec,t)}1 :- notGenericReached(t), spec(Spec).
+%% This is much faster, but also much more restrictive:
 0{exec(A,Spec,t) : a(A,Spec),  isOptimal(A,Spec,t)}1 :- notGenericReached(t), spec(Spec).
 
 %%%%%%%%%%%%%%%%%%%%
@@ -34,20 +35,20 @@ notGenericReached(t) :- spec(Spec1), spec(Spec2), notEqual(Spec1,Spec2,t), Spec1
 %%%%%%%%%%%%%%%%%%%%
 
 %% Domain-independent heuristics:
-%% Speedup 1: No "gaps" on operation steps: if no operation happens at a step for a certain spec, then no operations will happen in the future anymore. This has to be disabled if using a generation rule which only applies one operation per step in total. It also might cause problems in cases where something has first to be removed and then to be renamed.
+%% Speedup 1: No "gaps" on operation steps if a generalisation is possible to fill the gap: if no operation happens at a step for a certain spec, even though an operation would be possible, then no operations will happen in the future anymore. This has to be disabled if using a generation rule which only applies one operation per step in total. It also might cause problems in cases where something has first to be removed and then to be renamed.
 specModified(Spec,t) :- exec(_,Spec,t).
 :- specModified(Spec,t), not specModified(Spec,T_before), T_before < t, s(T_before), poss(_,Spec,T_before).
 
 %% Speedup 2: Allow only a limited number on non-optimal steps. 
-:- nonOptimalSteps(N,Spec,t), N > 0.
-
-%% This is to speedup the demo for naturals and lists:
-%% :- exec(renameOp(po_app,Op,Spec),spec_List,t), Op != po_times, spec(Spec).
+%% :- nonOptimalSteps(N,Spec,t), N > 3.
 
 %% Disable models where the generic space is not yet reached. The external atom query(t) is induced into the Logic Program externally in the iterationCore-py.lp main loop.
 #external query(t).
 :- query(t), notGenericReached(t).
 
+
+
 #show s/1.
 #show notGenericReached/1.
 #show exec/3.
+%% #show poss/3.

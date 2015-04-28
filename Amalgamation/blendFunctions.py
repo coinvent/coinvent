@@ -377,10 +377,10 @@ def checkConsistency(blendTptpName):
     if consistent == -1:
         print "Consistency could not be determined by eprover, trying darwin"                
         consistent = checkConsistencyDarwin(blendTptpName)
-        if consistent == 0 or consistent == 1:
+        # if consistent == 0 or consistent == 1:
             # os.system("echo \"eprover could not determine inconsistency but darwn could for blend " + blendTptpName + "\" > consistencyCheckFile.tmp")
-            print("eprover could not determine (in)consistency but darwn could for blend " + blendTptpName + ". Result: " + str(consistent) + ". Press key to continue.")
-            raw_input()
+            # print("eprover could not determine (in)consistency but darwn could for blend " + blendTptpName + ". Result: " + str(consistent) + ". Press key to continue.")
+            # raw_input()
 
     return consistent
 

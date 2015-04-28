@@ -115,7 +115,7 @@ class CaslPred:
         outStr = "pred " + self.name + " : " 
         for s in self.args: outStr = outStr + s +" * " 
         outStr = outStr[:-3]
-        outStr = outStr + "   %% prio:"+ str(self.priority)
+        outStr = outStr + "\t%% prio:"+ str(self.priority)
         return outStr    
 
     def toLPStr(self, specName) :
@@ -249,11 +249,11 @@ class CaslSpec:
         for op in self.ops: 
             if op.name == "prioDummyOp":
                 continue
-            caslStr = caslStr + "\t\t " + op.toCaslStr() +"\n"
+            caslStr = caslStr + "\t " + op.toCaslStr() +"\n"
         # if len(self.preds) > 0 :
             # caslStr = caslStr + "\t preds \n"
         for p in self.preds: 
-            caslStr = caslStr + "\t\t " + p.toCaslStr() +"\n"
+            caslStr = caslStr + "\t " + p.toCaslStr() +"\n"
         caslStr += "\n"
         for ax in self.axioms: 
             if ax.axStr == ". prioDummyOp = prioDummyOp":
@@ -437,7 +437,7 @@ def parseXml(xmlFile):
         specName = dgNode.attrib['refname']
         thisSpec = CaslSpec(specName)
         thisSpec.id = len(specs)
-        print "found spec " + specName
+        # print "found spec " + specName
         
 
         # First scan axioms to get the following meta-information:
@@ -497,9 +497,16 @@ def parseXml(xmlFile):
                         if sort.name == "PriorityDummySort":
                             sort.priority = 0
 
-                        thisSpec.sorts.append(sort)
-                        
-                            # thisSpec.sorts[pSort].childs.append(sName)
+                        sortExists = False
+                        # Check if this sort already exists, possibly without parent sort assignment. 
+                        for exSort in thisSpec.sorts:
+                            if exSort.name == sort.name:
+                                sortExists = True
+                                if sort.parent != '' and exSort.parent == '':
+                                    exSort.parent = sort.parent
+                                break
+                        if sortExists == False:
+                            thisSpec.sorts.append(sort)
                         
                     if entry.attrib['kind'] == 'op':
                         op = CaslOp.byStr(entry.text)
@@ -717,9 +724,9 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                 ax.axStr = newAxStr
                                 # ax.id = axMap[newAxStr]
                             
-                            print "renaming predicate from " + lpToCaslStr(pFrom) + " to " + lpToCaslStr(pTo) + ". Press key..."
-                            print cSpec.toCaslStr()
-                            raw_input()
+                            # print "renaming predicate from " + lpToCaslStr(pFrom) + " to " + lpToCaslStr(pTo) + ". Press key..."
+                            # print cSpec.toCaslStr()
+                            # raw_input()
 
                         # if act["actType"] == "renamedToPred" :
                             # pLPName = act["argVect"][0]
@@ -738,16 +745,14 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                         if act["actType"] == "renameSort" :
                             sFrom = act["argVect"][0]
                             sTo = act["argVect"][1]
-                            # print "renaming a sort " + sFrom + " to " + sTo
-                            # print cSpec.sorts
-                            # rename sorts
+                            print "renaming sort " + sFrom + " to " + sTo
                             for s in cSpec.sorts:
                                 if toLPName(s.name,"sort") == sFrom:
                                     cSpec.sorts.remove(s)
                                     newSort = copy.deepcopy(s)
                                     newSort.name = lpToCaslStr(sTo)
                                     cSpec.sorts.append(newSort)
-                                    # cSpec.compressionValue = cSpec.compressionValue + s.priority
+                                    
                                     newCompressionValue += s.priority
                                     
                                     # Also add priority of sort to which we rename to compression value
@@ -760,14 +765,16 @@ def getGeneralizedSpaces(atoms, originalInputSpaces):
                                                     newCompressionValue += tmpSortTo.priority
                                                     break
                                             break
+
                                     break
 
-                            # change parent sorts
+
+                            # change parent sorts of other sorts in this spec. (TODO: Is this necessary??)
                             for s in cSpec.sorts:
                                 if toLPName(s.parent,"sort") == sFrom:
                                     s.parent = lpToCaslStr(sTo)
                                     break
-                                    # cSpec.sorts.remove(s)
+                            
 
                             # Get axioms that involve the sort and rename the sorts
                             for ax in cSpec.axioms:

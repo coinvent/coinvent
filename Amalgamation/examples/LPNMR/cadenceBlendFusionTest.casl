@@ -71,7 +71,7 @@ spec Chord = Symbols then
     %% Two notes that can be interpreted as perfect and diminished 5th
     . not (hasRelNote(c,7) /\ hasRelNote(c,6))  %(dis_perfectDimFifth:p:-1)%    
     %% A minor 7th (rel 10) with a major 6th (rel 9) is pretty dissonant
-    . not (hasRelNote(c,x) /\ hasRelNote(c,9)) %(dis_seventhsixth:p:-1)%
+    . not (hasRelNote(c,x) /\ hasRelNote(c,9))  %(dis_seventhsixth:p:-1)%
     
 end
 
