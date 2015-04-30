@@ -1,5 +1,5 @@
 from langCasl import *
-import os
+import os, sys
 import subprocess
 
 from settings import *
@@ -23,6 +23,13 @@ lpFile.write(lpRep)
 lpFile.close()
 print "Generated Logic Programming facts from CASL Spec."
 
+is_64bits = sys.maxsize > 2**32
+
 # Invoke clingo4 and run 
-subprocess.call(["./clingo4", "--number="+str(numModels), "--quiet", "iterationGeneralize-py.lp", "caslInterface.lp", "generalize.lp", lpFileName])
+if is_64bits:
+	print "Running on 64 bit..."
+	subprocess.call(["./64bit/./clingo4", "--number="+str(numModels), "--quiet", "iterationGeneralize-py.lp", "caslInterface.lp", "generalize.lp", lpFileName])
+else:
+	print "Running on 32 bit..."
+	subprocess.call(["./32bit/./clingo4", "--number="+str(numModels), "--quiet", "iterationGeneralize-py.lp", "caslInterface.lp", "generalize.lp", lpFileName])	
 
