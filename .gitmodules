@@ -1,0 +1,3 @@
+[submodule "Amalgamation"]
+	path = Amalgamation
+	url = git@github:meppe/Amalgamation.git
