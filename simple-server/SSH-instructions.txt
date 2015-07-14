@@ -1,0 +1,15 @@
+
+Because this is a VM inside of an actual machine, you'll need to modify your SSH commands slightly.
+
+First, copy both SSH keys into your ~/.ssh folder.
+
+To SSH into your VM, you'll need to use the following command:
+
+ssh -p 3022 -i ~/.ssh/ewen@Coinvent-Ewen ewen@frank.soda.sh
+
+That should get you in.
+
+To SCP up a directory from your local machine to the server, use eg:
+
+scp -r -P 3022 -i ~/.ssh/ewen@Coinvent-Ewen simple-server ewen@frank.soda.sh:~/simple-server
+

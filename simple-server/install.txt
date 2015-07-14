@@ -22,7 +22,7 @@ Status: This is just a dummy Java server! It doesn't do anything (yet).
 
 From the coinvent/integration+UI directory:
 
-	java -classpath web/WEB-INF/classes:web/WEB-INF/lib/* org.coinvent.web.SimpleServerMain
+	java -classpath web/WEB-INF/classes:web/WEB-INF/lib/* org.coinvent.SimpleServer
 
 Then try opening these urls in your browser:
 
