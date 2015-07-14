@@ -5,14 +5,12 @@ Status: This is just a dummy Java server! It doesn't do anything (yet).
 
 ## Pre-requisites
 
-Requires:
-
- - Java version 7, which should be installed on a standard Linux box.
- - Eclipse: TODO download instructions for Eclipse
+ - Java version 7+, which should be installed on a standard Linux box.
+ - Eclipse
 
 ## Installation
 
-1. Compile the code in Eclipse. TODO an ant file instead, so Eclipse isn't needed.
+1. Compile the code in Eclipse.
 	1. Start Eclipse
 	2. Import the project:
 		1. Import -> Existing project. Then select the simple-server directory
@@ -28,4 +26,6 @@ From the coinvent/integration+UI directory:
 
 Then try opening these urls in your browser:
 
-http://localhost:8300/static/hello.html
+1. Get a static file: http://localhost:8300/static/hello.html
+2. Run a command: http://localhost:8300/cmd/ls.json?dir=web/static
+

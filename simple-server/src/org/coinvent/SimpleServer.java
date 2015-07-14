@@ -3,16 +3,6 @@ package org.coinvent;
 import java.io.File;
 import java.util.logging.Level;
 
-import javax.servlet.http.HttpServlet;
-
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-
-import com.winterwell.utils.containers.SharedStatic;
-import com.winterwell.utils.io.ArgsParser;
-
-import winterwell.utils.Printer;
 import winterwell.utils.Utils;
 import winterwell.utils.gui.GuiUtils;
 import winterwell.utils.reporting.Log;
@@ -22,6 +12,8 @@ import winterwell.utils.time.TUnit;
 import winterwell.utils.web.WebUtils;
 import winterwell.web.app.FileServlet;
 import winterwell.web.app.JettyLauncher;
+
+import com.winterwell.utils.io.ArgsParser;
 
 /**
  * Run this! It starts up a web-server.
@@ -50,7 +42,6 @@ public class SimpleServer {
 		CoinventConfig config = new CoinventConfig();
 		File props = new File("config/ServerConfig.properties");		
 		config = ArgsParser.parse(config, args, props, null);
-		SharedStatic.put(CoinventConfig.class, config);
 		
 		// Log file - if not already set by run()
 		assert logFile==null;

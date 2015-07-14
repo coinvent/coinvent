@@ -10,14 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.winterwell.utils.io.FileUtils;
-import com.winterwell.utils.web.WebUtils2;
-
-import winterwell.utils.StrUtils;
 import winterwell.utils.reporting.Log;
 import winterwell.web.WebEx;
 import winterwell.web.app.FileServlet;
 import winterwell.web.app.WebRequest;
+
+import com.winterwell.utils.web.WebUtils2;
 
 /**
  * Route requests to dynamically created {@link AServlet} objects.
@@ -124,6 +122,12 @@ public class DynamicHttpServlet extends HttpServlet {
 
 	Map<String,Class> path2servletClass = new HashMap();
 	
+	/**
+	 * Map path to class, looking in {@link #BASE_PACKAGE_FOR_SERVLETS} -- which is this package.
+	 * @param path
+	 * @return
+	 * @throws Exception
+	 */
 	IServlet getServlet(String path) throws Exception {
 		Class sc = path2servletClass.get(path);
 		if (sc!=null) return (IServlet) sc.newInstance();

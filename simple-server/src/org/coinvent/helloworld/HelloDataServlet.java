@@ -4,12 +4,17 @@ import java.io.IOException;
 
 import org.coinvent.IServlet;
 
-import com.winterwell.utils.web.WebUtils2;
-
 import winterwell.utils.containers.ArrayMap;
 import winterwell.web.ajax.JsonResponse;
 import winterwell.web.app.WebRequest;
 
+import com.winterwell.utils.web.WebUtils2;
+
+/**
+ * Say hello when called. Try it out at: http://localhost:8300/helloworld/helloData.json
+ * @author daniel
+ *
+ */
 public class HelloDataServlet implements IServlet {
 
 	@Override
