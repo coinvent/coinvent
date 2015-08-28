@@ -37,6 +37,8 @@ public class SimpleServer {
 		return config;
 	}
 
+	
+	
 	public static void main(String[] args) {
 		// Load config, if we have any
 		CoinventConfig config = new CoinventConfig();
@@ -57,6 +59,7 @@ public class SimpleServer {
 		if (GuiUtils.isInteractive()) {
 			Log.i("init", "Open links in local browser...");
 			WebUtils.display(WebUtils.URI("http://localhost:"+config.port+"/static/helloworld/index.html"));
+						
 		}
 	}
 
