@@ -1,10 +1,13 @@
 package org.coinvent;
 
 import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.coinvent.HdtpRequests.ActiveType;
 
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.io.Option;
-import java.util.Hashtable;
+
 
 public class CoinventConfig {
 
@@ -18,15 +21,15 @@ public class CoinventConfig {
 	public String baseUrl = "http://localhost:"+port;
 	
 	private static int counter;
-	private static Hashtable<Integer,Process> processes;
+	private static ConcurrentHashMap<Integer,ProcessActivePair> processes;
 	
 	public CoinventConfig()
 	{
-		processes = new Hashtable<Integer,Process>();
+		processes = new ConcurrentHashMap<Integer,ProcessActivePair>();
 		counter = 1;
 	}
 	
-	public synchronized static Process getProc(int id)
+	public static ProcessActivePair getProc(int id)
 	{
 		// could do something cleverer here 
 		// throw an exception or something
@@ -38,11 +41,25 @@ public class CoinventConfig {
 			return null;
 	}
 	
-	public synchronized static int setProc(Process proc)
+	public static int setProc(Process process)
 	{
 		int id = counter;
+		ProcessActivePair pa = new ProcessActivePair();
+		pa.process = process;
+	    pa.active = ActiveType.OPEN;
 		counter++;
-		processes.put(id,proc);
+		processes.put(id,pa);
 	    return id;
+	}
+	
+	public static void setProcClosed(int id)
+	{
+	   if (processes.containsKey(id))
+	   {
+		   ProcessActivePair pa = processes.get(id);
+		   pa.active = ActiveType.CLOSED;
+		   processes.put(id,pa);
+	   }
+	
 	}
 }

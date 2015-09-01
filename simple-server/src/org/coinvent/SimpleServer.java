@@ -58,7 +58,7 @@ public class SimpleServer {
 		// Open test view?
 		if (GuiUtils.isInteractive()) {
 			Log.i("init", "Open links in local browser...");
-			WebUtils.display(WebUtils.URI("http://localhost:"+config.port+"/static/helloworld/index.html"));
+			WebUtils.display(WebUtils.URI("http://localhost:"+config.port+"/static/hdtpfront/index.html"));
 						
 		}
 	}
