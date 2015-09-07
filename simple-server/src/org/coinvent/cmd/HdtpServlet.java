@@ -105,12 +105,16 @@ public class HdtpServlet implements IServlet {
 		String request = webRequest.get("request");
 		String input_file1 = webRequest.get("input1");
 		String input_file2 = webRequest.get("input2");
+		String analogy_name = webRequest.get("name");
 		
-		
+		if (analogy_name == null)
+		{
+		   analogy_name="generated";
+		}
 		
 		String output = "";
 		String error = "";
-		String cmd = "load_analogy(multipletest,A),gen_simple_casl(A),get_char(':')";
+		String cmd = "gen_simple_casl(analogy("+analogy_name+","+input_file1+","+input_file2+")),get_char(':')";
 		int id = 0;
 		String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s /home/ewen/HDTP_coinvent/hdtp.pro -t \""+cmd+"\"";
 		
