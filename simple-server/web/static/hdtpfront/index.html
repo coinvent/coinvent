@@ -27,7 +27,7 @@ function gen_space() {
   if ($("#closecb").is(':checked'))
   {
      $.get(
-      'http://localhost:8300/cmd/hdtp.json?request=close&id='+id)
+      '/cmd/hdtp.json?request=close&id='+id)
     .then(function(a,b) {
 	$("textarea#generic_space").val(a.cargo.output);
 $("textarea#error").val(a.cargo.error);
@@ -38,7 +38,7 @@ $("textarea#error").val(a.cargo.error);
   {if (id=="") 
   {    
   $.get(
-      'http://localhost:8300/cmd/hdtp.json?request=start&input1='+input1+'&input2='+input2)
+      '/cmd/hdtp.json?request=start&input1='+input1+'&input2='+input2)
     .then(function(a,b) {
 	$("textarea#generic_space").val(a.cargo.output);
 $("textarea#error").val(a.cargo.error);
@@ -47,7 +47,7 @@ $("textarea#error").val(a.cargo.error);
    } else
    {
      $.get(
-      'http://localhost:8300/cmd/hdtp.json?request=next&input1='+input1+'&input2='+input2+'&id='+id)
+      '/cmd/hdtp.json?request=next&input1='+input1+'&input2='+input2+'&id='+id)
     .then(function(a,b) {
 	$("textarea#generic_space").val(a.cargo.output);
 $("textarea#error").val(a.cargo.error);
