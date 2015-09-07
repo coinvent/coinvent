@@ -14,7 +14,7 @@
 	<link rel="stylesheet/less" type="text/css" href="/static/css/coinvent.less">
 	<script src="/static/lib/less.js" type="text/javascript"></script>
       
-<script src="/static/lib/jquery.min.js" type="text/javascript"></script>
+
 <script>
 function gen_space() {
     
@@ -74,7 +74,8 @@ function gen_space() {
    <center><textarea id = "generic_space"></textarea></center>
 
   <script>
-      document.getElementById("input_space1").defaultValue="";
+      document.getElementById("input_space1").defaultValue="domain('house',[a(b,c),d(e,f)])";
+ 	document.getElementById("input_space2").defaultValue="domain('t',[g(h,i),j(k,l)])";
 </script> 
 
 
