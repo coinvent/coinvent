@@ -109,7 +109,7 @@ public class HdtpServlet implements IServlet {
 		
 		if (analogy_name == null)
 		{
-		   analogy_name="generated";
+		   analogy_name="\"generated\"";
 		}
 		
 		String output = "";
@@ -160,10 +160,15 @@ public class HdtpServlet implements IServlet {
 		        id = Integer.parseInt(idString);
 		        
 		    	pa = CoinventConfig.getProc(id);
+		    	if (pa != null){
 		    	proc = pa.process;
 		    	active = pa.active;
-			    procstr = "";
+			    procstr = "";}
+		    	else
+		    	 {	proc= null;
+		    	  }
 		    	}
+		    	
 		    	catch (NumberFormatException e){
 		    		System.out.println("Id not valid");
 		    	}
