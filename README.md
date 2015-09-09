@@ -62,6 +62,21 @@ cloning a git repository from a url, installing half a dozen
 dependencies, then compiling it from source -- or at the other end
 of the scale, it could be a one-line apt-get for an ubuntu package.
 
+## Quickstart
+
+```
+git clone git@github.com:coinvent/coinvent.git
+git submodule init
+git submodule update
+sudo apt-get install python2.7 python2.7-dev lua5.1 lua5.1-policy-dev
+```
+
+```
+cd Amalgamation
+python run-blend.py
+```
+
+[More to come.]
 
 ## Documentation: To be kept alongside the component it documents, here in github.
 
