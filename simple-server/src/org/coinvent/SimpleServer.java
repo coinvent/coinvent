@@ -56,11 +56,11 @@ public class SimpleServer {
 		app.run();
 		
 		// Open test view?
-		/*if (GuiUtils.isInteractive()) {
+		if (GuiUtils.isInteractive()) {
 			Log.i("init", "Open links in local browser...");
 			WebUtils.display(WebUtils.URI("http://localhost:"+config.port+"/static/hdtpfront/index.html"));
 						
-			}*/
+			}
 	}
 
 	public void run() {

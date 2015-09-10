@@ -6,12 +6,12 @@ package org.coinvent.cmd;
 
 
 
-import org.coinvent.HdtpRequests.ActiveType;
+import org.coinvent.ProcessActiveTriple.ActiveType;
 import org.coinvent.HdtpRequests.HdtpRequest;
 import org.coinvent.HdtpRequests.ReadType;
 import org.coinvent.IServlet;
 import org.coinvent.CoinventConfig;
-import org.coinvent.ProcessActivePair;
+import org.coinvent.ProcessActiveTriple;
 
 import winterwell.utils.Proc;
 import winterwell.utils.containers.ArrayMap;
@@ -119,7 +119,7 @@ public class HdtpServlet implements IServlet {
 		String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s /home/ewen/HDTP_coinvent/hdtp.pro -t \""+cmd+"\"";
 		
 		System.out.println(procstr);
-		ProcessActivePair pa = null;
+		ProcessActiveTriple pa = null;
 		Process proc = null;
 		ActiveType active = ActiveType.PENDING;
 		
@@ -229,7 +229,7 @@ public class HdtpServlet implements IServlet {
 			case CLOSE:
 				if (active == ActiveType.OPEN)
 				{
-				    output = getRequestOutput(":",reader,writer,ReadType.NOREAD);
+				    output = getRequestOutput("n\n",reader,writer,ReadType.NOREAD);
 				    proc.destroy();
 				   CoinventConfig.setProcClosed(id);
 				}

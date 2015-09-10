@@ -1,9 +1,13 @@
 package org.coinvent;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.coinvent.HdtpRequests.ActiveType;
+import org.coinvent.ProcessActiveTriple.ActiveType;
+
+
 
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.io.Option;
@@ -21,15 +25,15 @@ public class CoinventConfig {
 	public String baseUrl = "http://localhost:"+port;
 	
 	private static int counter;
-	private static ConcurrentHashMap<Integer,ProcessActivePair> processes;
+	private static ConcurrentHashMap<Integer,ProcessActiveTriple> processes;
 	
 	public CoinventConfig()
 	{
-		processes = new ConcurrentHashMap<Integer,ProcessActivePair>();
+		processes = new ConcurrentHashMap<Integer,ProcessActiveTriple>();
 		counter = 1;
 	}
 	
-	public static ProcessActivePair getProc(int id)
+	public static ProcessActiveTriple getProc(int id)
 	{
 		// could do something cleverer here 
 		// throw an exception or something
@@ -44,11 +48,14 @@ public class CoinventConfig {
 	public static int setProc(Process process)
 	{
 		int id = counter;
-		ProcessActivePair pa = new ProcessActivePair();
+		ProcessActiveTriple pa = new ProcessActiveTriple();
 		pa.process = process;
 	    pa.active = ActiveType.OPEN;
+	    Date date = new Date();
+	    pa.timestamp = new Timestamp(date.getTime());
 		counter++;
 		processes.put(id,pa);
+		ProcessActiveTriple.killDead(processes);
 	    return id;
 	}
 	
@@ -56,7 +63,7 @@ public class CoinventConfig {
 	{
 	   if (processes.containsKey(id))
 	   {
-		   ProcessActivePair pa = processes.get(id);
+		   ProcessActiveTriple pa = processes.get(id);
 		   pa.active = ActiveType.CLOSED;
 		   processes.put(id,pa);
 	   }
