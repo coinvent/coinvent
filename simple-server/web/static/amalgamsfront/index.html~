@@ -33,7 +33,7 @@ function amalgams() {
      $.get(
       '/cmd/amalgams.json?request=close&id='+id)
     .then(function(a,b) {
-	$("textarea#output").val(a.cargo.blend);
+	$("textarea#output1").val(a.cargo.blend);
 $("textarea#error").val(a.cargo.error);
   $("textarea#id").val(a.cargo.id);
 	});
@@ -44,7 +44,7 @@ $("textarea#error").val(a.cargo.error);
   $.post(
       "/cmd/amalgams.json",{request:"start",space_name1:spname1,space_name2:spname2,content:input1})
     .done(function(data) {
-	$("textarea#output").val(data.cargo.blend);
+	$("textarea#output1").val(data.cargo.blend);
 $("textarea#error").val(data.cargo.error);
   $("textarea#id").val(data.cargo.id);
 	});
@@ -53,7 +53,7 @@ $("textarea#error").val(data.cargo.error);
      $.post(
       "/cmd/amalgams.json",{request:"next",space_name1:spname1,content:input1,space_name2:spname2,id:id})
     .then(function(a) {
-	$("textarea#output").val(a.cargo.blend);
+	$("textarea#output1").val(a.cargo.blend);
 $("textarea#error").val(a.cargo.error);
   $("textarea#id").val(a.cargo.id);
 	});
@@ -112,7 +112,7 @@ Space name: <textarea id = "space_name2"></textarea>
   
   
      <p></p> <button onclick="amalgams()">Calculate Generic Space</button> <p></p>
-   <textarea id = "output"></textarea>
+   <textarea id = "output1"></textarea>
 
   <script>
       document.getElementById("input_space1").defaultValue="enter text";

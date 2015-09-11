@@ -76,20 +76,63 @@ public class AmalgamsServlet implements IServlet {
 	 
   }
 	
-	private String getRequestOutput(String request, BufferedReader reader, BufferedWriter writer, ReadType r)
+	private String getRequestOutput(String request, BufferedReader tempreader, BufferedReader reader, BufferedWriter writer, ReadType r)
 	{
 		 try {
 			 
 				 writer.write(request);
 				 writer.flush();
 			  
+				 
+				 
+
+					
+					// "Other blend? (n)"
+					// "Finished"
+					
+					
+				
+					
+				 
+				 
 		  String output = "";
 			
 		  switch (r)
 		  {
 		  case READ:
-			String outln = "";
-		
+			
+			String outln = tempreader.readLine();
+			
+			while (outln != null)
+			{
+				System.out.println(outln);
+				
+				if (outln.trim().equals("Other blend? (n)"))
+				{
+					break;
+					}
+				else
+				if (outln.trim().equals("Finished"))
+				{
+					output="{}";
+					break;
+					}
+				/*else if (outln.trim().equals("SATISFIABLE"))
+				{
+					break;
+				}*/
+				else
+				{
+				outln = tempreader.readLine();
+				}
+			}
+			
+			
+			outln="";
+			
+			if (output != "{}")
+			{
+			
 			while ((outln = reader.readLine()) != null)
 			{
 				//System.out.println ("Stdout: " + outln);
@@ -101,7 +144,7 @@ public class AmalgamsServlet implements IServlet {
 					
 								  	
 				
-			}
+			}}
 			break;
 		  
 		  default:
@@ -171,7 +214,7 @@ public class AmalgamsServlet implements IServlet {
 		  
 		  //work out order here....
 		  
-		  String procstr = "cd /home/ewen/coinvent/Amalgamation;/usr/bin/python /home/ewen/coinvent/Amalgamation/run-blending.py"; 
+		  String procstr = "cd /home/ewen/Amalgamation;/usr/bin/python /home/ewen/Amalgamation/run-blending.py"; 
 		
 		if (!(idString != null))
 		{
@@ -228,15 +271,15 @@ public class AmalgamsServlet implements IServlet {
 		String error = "";
 		
 		//write input file
-		PrintWriter pwriter = new PrintWriter("/home/ewen/coinvent/Amalgamation/content.casl","UTF-8");
+		PrintWriter pwriter = new PrintWriter("/home/ewen/Amalgamation/content.casl","UTF-8");
 		pwriter.println(content);
 		pwriter.close();
 		//write settings file
 		String file_post = "numModels = 1\nminIterationsGeneralize=1\nmaxIterationsGeneralize=20\n" +
-				"eproverTimeLimit=4\ndarwinTimeLimit=0.1\nhetsExe=\'hets\'\n";
-		String file_content = "inputFile=\"/home/ewen/coinvent/Amalgamation/content.casl\"\ninputSpaceNames = [\""+
+				"eproverTimeLimit=4\ndarwinTimeLimit=0.1\nhetsExe=\'hets\'\nblendValuePercentageBelowHighestValueToKeep=0\nuseHetsAPI=0\nhetsUrl='http://localhost:8000/'";
+		String file_content = "inputFile=\"/home/ewen/Amalgamation/content.casl\"\ninputSpaceNames = [\""+
 		space_name1+"\",\""+space_name2+"\"]\n"+file_post;
-		pwriter=  new PrintWriter("/home/ewen/coinvent/Amalgamation/settings.py");
+		pwriter=  new PrintWriter("/home/ewen/Amalgamation/settings.py");
 		pwriter.println(file_content);
 		pwriter.close();
 		
@@ -256,11 +299,12 @@ public class AmalgamsServlet implements IServlet {
 			InputStream stdout = proc.getInputStream();
 			OutputStream stdin = proc.getOutputStream();
 		
+			BufferedReader tempreader = new BufferedReader(new InputStreamReader(stdout));
 			BufferedReader reader = new BufferedReader(new FileReader("/home/ewen/coinvent/Amalgamation/blend.json"));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
 		
 		
-			
+			System.out.println(procstr);
 			    
 			switch (req)
 			{ 
@@ -276,7 +320,7 @@ public class AmalgamsServlet implements IServlet {
 		      }
 		      else
 		    	  {
-		    	  output = getRequestOutput(procstr+"\n",reader,writer,ReadType.READ);
+		    	  output = getRequestOutput(procstr+"\n",tempreader,reader,writer,ReadType.READ);
 		    	  
 		    	  }
 			  break;
@@ -284,7 +328,12 @@ public class AmalgamsServlet implements IServlet {
 			case NEXT:
 			    if (active == ActiveType.OPEN)
 			    { 
-				output = getRequestOutput("\n",reader,writer,ReadType.READ);
+				output = getRequestOutput("\n",tempreader,reader,writer,ReadType.READ);
+				//this means Finished has been reached
+				if (output.trim().equals("{}"))
+				{CoinventConfig.setProcClosed(id);}
+				
+				
 			    }
 			    else if (active == ActiveType.PENDING)
 			    {
@@ -300,7 +349,7 @@ public class AmalgamsServlet implements IServlet {
 			case CLOSE:
 				if (active == ActiveType.OPEN)
 				{
-				    output = getRequestOutput(":",reader,writer,ReadType.NOREAD);
+				    output = getRequestOutput(":",tempreader,reader,writer,ReadType.NOREAD);
 				    proc.destroy();
 				   CoinventConfig.setProcClosed(id);
 				}
@@ -341,6 +390,7 @@ public class AmalgamsServlet implements IServlet {
 	    
 	    
 	    ArrayMap cargo = appendAmalgamsCargo(output,error,id);
+	    
 		//ArrayMap cargo = new ArrayMap("output", output);
 		out = new JsonResponse(webRequest,cargo);
 	

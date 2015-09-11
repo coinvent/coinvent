@@ -42,7 +42,7 @@ import com.winterwell.utils.web.WebUtils2;
 public class HdtpServlet implements IServlet {
 	
 	
-	private ArrayMap getHdtpCargo(int id,String output,String error)
+	private ArrayMap<String,String> getHdtpCargo(int id,String output,String error)
 	{
 		
 		//HashMap map = new HashMap();
@@ -63,32 +63,51 @@ public class HdtpServlet implements IServlet {
 			 writer.flush();
 		  String output = "";
 			
+		  
+		  
+		  
+		  
+		  
+		  
 		  switch (r)
 		  {
 		  case READ:
 			String outln = reader.readLine();
-		
+	
+			
+			
+			
 			while (outln != null)
 			{
-				System.out.println ("Stdout: " + outln);
+				System.out.println ("FStdout: " + outln);
 				outln = reader.readLine();
 			  
-				if (outln.trim().equals(""))
+				if (outln.trim().equals("FINISHED"))
+				{
+					output="";
+					break;
+				}
+				else if (outln.trim().equals("NEXT"))
 				{
 					break;
 				}
-				else	
+				else
 				{
 					output += outln;
-				}				  	
+				}			
+				
 				
 			}
+			
+			
+			
 			break;
 		  
 		  default:
 			output = "Process Closed";
 			break;
 		  }
+		
 		  return output;
 		 } catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -114,10 +133,10 @@ public class HdtpServlet implements IServlet {
 		
 		String output = "";
 		String error = "";
-		String cmd = "gen_simple_casl(analogy("+analogy_name+","+input_file1+","+input_file2+")),get_char(':')";
+		String cmd = "((parse_casl(\'"+input_file1+"\n"+input_file2+"\',Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
 		int id = 0;
 		String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s /home/ewen/HDTP_coinvent/hdtp.pro -t \""+cmd+"\"";
-		
+		//swipl --quiet -G0 -T0 -L0 -s hdtp.pro -t "parse_casl('spec source = . a end spec target = . b end',Hdtp),gen_simple_casl(Hdtp),get_char(':')"
 		System.out.println(procstr);
 		ProcessActiveTriple pa = null;
 		Process proc = null;
@@ -257,7 +276,7 @@ public class HdtpServlet implements IServlet {
 				break;
 			}
 			
-			ArrayMap cargo = getHdtpCargo(id,output,error);
+			ArrayMap<String,String> cargo = getHdtpCargo(id,output,error);
 			//arraymap output???
 			//ArrayMap cargo = new ArrayMap("output", output+"\nid = "+Integer.toString(id));
 		out = new JsonResponse(webRequest,cargo);
@@ -268,7 +287,7 @@ public class HdtpServlet implements IServlet {
 			
 		else
 		{	
-			ArrayMap cargo = getHdtpCargo(id,"","invalid_id");
+			ArrayMap<String,String> cargo = getHdtpCargo(id,"","invalid_id");
 			//ArrayMap cargo = new ArrayMap("output", "id not valid: id = "+Integer.toString(id));
 			out = new JsonResponse(webRequest,cargo);
 		}

@@ -26,9 +26,9 @@ function gen_space() {
 
   if ($("#closecb").is(':checked'))
   {
-     $.get(
-      '/cmd/hdtp.json?request=close&id='+id)
-    .then(function(a,b) {
+     $.post(
+      '/cmd/hdtp.json',{request:"close",id:"id"})
+    .done(function(a) {
 	$("textarea#generic_space").val(a.cargo.output);
 $("textarea#error").val(a.cargo.error);
   $("textarea#id").val(a.cargo.id);
@@ -37,18 +37,18 @@ $("textarea#error").val(a.cargo.error);
   else 
   {if (id=="") 
   {    
-  $.get(
-      '/cmd/hdtp.json?request=start&input1='+input1+'&input2='+input2)
-    .then(function(a,b) {
+  $.post(
+      '/cmd/hdtp.json',{request:"start",input1:input1,input2:input2})
+    .then(function(a) {
 	$("textarea#generic_space").val(a.cargo.output);
 $("textarea#error").val(a.cargo.error);
   $("textarea#id").val(a.cargo.id);
 	});
    } else
    {
-     $.get(
-      '/cmd/hdtp.json?request=next&input1='+input1+'&input2='+input2+'&id='+id)
-    .then(function(a,b) {
+     $.post(
+      '/cmd/hdtp.json',{request:"next",input1:input1,input2:input2,id:id})
+    .post(function(a) {
 	$("textarea#generic_space").val(a.cargo.output);
 $("textarea#error").val(a.cargo.error);
   $("textarea#id").val(a.cargo.id);
