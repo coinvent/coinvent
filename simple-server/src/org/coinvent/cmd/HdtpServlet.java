@@ -125,7 +125,18 @@ public class HdtpServlet implements IServlet {
 		String input_file1 = webRequest.get("input1");
 		String input_file2 = webRequest.get("input2");
 		String analogy_name = webRequest.get("name");
+		String demo_type = webRequest.get("demo");
 		
+		if (demo_type != null)
+		{
+			String s= "spec Base = sort Artifact; sort Location; sort Agent; pred is_located_on: Artifact * Location; ops artifact: Artifact; agent: Agent; location: Location; end interpretation I1: Base to Boat = Artifact |-> Boat,Location |-> BodyofWater,Agent |-> Person,is_located_on |-> is_located_on,artifact |-> boat,agent |-> person,location |-> bodyofwater interpretation I2: Base to House = Artifact |-> House,Location |-> Plot,Agent |-> Person,is_located_on |-> is_located_on,artifact |-> house,agent |-> person, location |-> plot spec blend = combine I1, I2";
+			ArrayMap<String,String> cargo = getHdtpCargo(0,s,"demo output");
+			//ArrayMap cargo = new ArrayMap("output", "id not valid: id = "+Integer.toString(id));
+			out = new JsonResponse(webRequest,cargo);
+		    WebUtils2.sendJson(out,webRequest);
+		}
+		else
+		{
 		if (analogy_name == null)
 		{
 		   analogy_name="\"generated\"";
@@ -276,6 +287,9 @@ public class HdtpServlet implements IServlet {
 				break;
 			}
 			
+			
+			
+			
 			ArrayMap<String,String> cargo = getHdtpCargo(id,output,error);
 			//arraymap output???
 			//ArrayMap cargo = new ArrayMap("output", output+"\nid = "+Integer.toString(id));
@@ -291,7 +305,8 @@ public class HdtpServlet implements IServlet {
 			//ArrayMap cargo = new ArrayMap("output", "id not valid: id = "+Integer.toString(id));
 			out = new JsonResponse(webRequest,cargo);
 		}
-		WebUtils2.sendJson(out,webRequest);
+		
+		WebUtils2.sendJson(out,webRequest);}
 	}
 		
 		
