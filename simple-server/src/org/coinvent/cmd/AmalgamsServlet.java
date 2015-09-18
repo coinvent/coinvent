@@ -300,7 +300,7 @@ public class AmalgamsServlet implements IServlet {
 			OutputStream stdin = proc.getOutputStream();
 		
 			BufferedReader tempreader = new BufferedReader(new InputStreamReader(stdout));
-			BufferedReader reader = new BufferedReader(new FileReader("/home/ewen/coinvent/Amalgamation/blend.json"));
+			BufferedReader reader = new BufferedReader(new FileReader("/home/ewen/Amalgamation/blend.json"));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
 		
 		
