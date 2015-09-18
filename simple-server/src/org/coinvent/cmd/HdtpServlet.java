@@ -125,9 +125,9 @@ public class HdtpServlet implements IServlet {
 		String input_file1 = webRequest.get("input1");
 		String input_file2 = webRequest.get("input2");
 		String analogy_name = webRequest.get("name");
-		String demo_type = webRequest.get("demo");
+		//String demo_type = webRequest.get("demo");
 		
-		if (demo_type != null)
+		if ((request != null) && (request.trim().equals("demo")))
 		{
 			String s= "spec Base = sort Artifact; sort Location; sort Agent; pred is_located_on: Artifact * Location; ops artifact: Artifact; agent: Agent; location: Location; end interpretation I1: Base to Boat = Artifact |-> Boat,Location |-> BodyofWater,Agent |-> Person,is_located_on |-> is_located_on,artifact |-> boat,agent |-> person,location |-> bodyofwater interpretation I2: Base to House = Artifact |-> House,Location |-> Plot,Agent |-> Person,is_located_on |-> is_located_on,artifact |-> house,agent |-> person, location |-> plot spec blend = combine I1, I2";
 			ArrayMap<String,String> cargo = getHdtpCargo(0,s,"demo output");
