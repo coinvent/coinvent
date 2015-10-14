@@ -94,6 +94,7 @@ public class HdtpServlet implements IServlet {
 				else
 				{
 					output += outln;
+					output += "\n";
 				}			
 				
 				

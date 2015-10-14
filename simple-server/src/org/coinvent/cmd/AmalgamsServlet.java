@@ -176,10 +176,6 @@ public class AmalgamsServlet implements IServlet {
 		{
 			if (exists_gen.trim().equals("true"))
 			{
-				exists_generic_space = true;
-			}
-			else
-			{
 				exists_generic_space = false;
 			}
 		} 

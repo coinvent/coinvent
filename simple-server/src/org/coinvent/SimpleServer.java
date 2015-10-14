@@ -60,7 +60,13 @@ public class SimpleServer {
 			Log.i("init", "Open links in local browser...");
 			WebUtils.display(WebUtils.URI("http://localhost:"+config.port+"/static/hdtpfront/index.html"));
 		}			*/
-			}
+		
+		
+		
+		
+		
+	   
+	}
 
 	public void run() {
 		// Spin up a Jetty server with reflection-based routing to servlets

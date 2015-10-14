@@ -106,8 +106,8 @@ $("textarea#error").val(a.cargo.error);
    <center><textarea id = "generic_space"></textarea></center>
 
   <script>
-      document.getElementById("input_space1").defaultValue="domain('house',[a(b,c),d(e,f)])";
- 	document.getElementById("input_space2").defaultValue="domain('t',[g(h,i),j(k,l)])";
+      document.getElementById("input_space1").defaultValue="spec Boat = sorts BodyofWater, Person, Boat; preds is_navigated_by:  Person * Boat; is_located_on: Boat * BodyofWater; meansofTransportation: Boat; ops boat: Boat; bodyofwater: BodyofWater; person: Person; . is_located_on(boat,bodyofwater);. is_navigated_by(person,boat); . meansofTransportation(boat); end";
+ 	document.getElementById("input_space2").defaultValue="spec House = sorts Plot, Person, House; preds is_inhabited_by:  Person * House; is_located_on: House * Plot; servesasResidence: House; ops house: House; plot: Plot; person: Person; . is_located_on(house,plot); . is_inhabited_by(person,house); . servesasResidence(house); end";
 </script> 
 
 
