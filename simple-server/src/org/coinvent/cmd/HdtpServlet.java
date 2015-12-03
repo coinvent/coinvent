@@ -126,7 +126,7 @@ public class HdtpServlet implements IServlet {
 		String input_file1 = webRequest.get("input1");
 		String input_file2 = webRequest.get("input2");
 		String analogy_name = webRequest.get("name");
-		String url = webRequest.get("url");
+		String url = webRequest.get("wget");
 		//String demo_type = webRequest.get("demo");
 		
 		
