@@ -126,7 +126,12 @@ public class HdtpServlet implements IServlet {
 		String input_file1 = webRequest.get("input1");
 		String input_file2 = webRequest.get("input2");
 		String analogy_name = webRequest.get("name");
+		String url = webRequest.get("url");
 		//String demo_type = webRequest.get("demo");
+		
+		
+		
+		
 		
 		if ((request != null) && (request.trim().equals("demo")))
 		{
@@ -145,6 +150,16 @@ public class HdtpServlet implements IServlet {
 		
 		String output = "";
 		String error = "";
+		if ((url != null) && url.trim().equals("yes"))
+		{
+			input_file1 = Wget.wget(input_file1);
+			input_file2 = Wget.wget(input_file2);			
+		}
+		input_file1 = input_file1.replace("\n","").replace("\r","");
+		input_file2 = input_file2.replace("\n","").replace("\r","");
+		input_file1 = input_file1.replace("/\\","->");
+		input_file2 = input_file2.replace("/\\","->");
+		
 		String cmd = "((parse_casl(\'"+input_file1+"\n"+input_file2+"\',Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
 		int id = 0;
 		String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s /home/ewen/HDTP_coinvent/hdtp.pro -t \""+cmd+"\"";
@@ -174,8 +189,7 @@ public class HdtpServlet implements IServlet {
 		    else req = HdtpRequest.NOACTION;
 		
 		
-		if (!(idString != null))
-		{
+	
 			if (req == HdtpRequest.NEW)
 			{
 			ProcessBuilder builder = new ProcessBuilder("/bin/bash");
@@ -184,7 +198,7 @@ public class HdtpServlet implements IServlet {
 			id = CoinventConfig.setProc(proc);
 			// don't set active yet - only when retrieved....
 			}
-		}
+		
 		else
 		{
 		    try {
