@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/static/img/favicon.ico">
+
+    <title>Theme Template for Bootstrap</title>
+<link href="/static/css/hdtpfront.css" rel="stylesheet">	
+	<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet/less" type="text/css" href="/static/css/coinvent.less">
+	<script src="/static/lib/less.js" type="text/javascript"></script>
+      
+
+<script>
+function gen_space() {
+    
+    var input1 = document.getElementById('input_space1').value;
+    var input2 = document.getElementById('input_space2').value;
+    var id = document.getElementById('id').value;
+
+   id = id.trim();
+
+  if ($("#closecb").is(':checked'))
+  {
+     $.post(
+      '/cmd/hdtp.json',{request:"close",id:"id"})
+    .done(function(a) {
+	$("textarea#generic_space").val(a.cargo.output);
+$("textarea#error").val(a.cargo.error);
+  $("textarea#id").val(a.cargo.id);
+	});
+  }
+  else 
+  {if (id=="") 
+  {    
+  $.post(
+      '/cmd/hdtp.json',{request:"start",wget:"yes",input1:input1,input2:input2})
+    .then(function(a) {
+	$("textarea#generic_space").val(a.cargo.output);
+$("textarea#error").val(a.cargo.error);
+  $("textarea#id").val(a.cargo.id);
+	});
+   } else
+   {
+     $.post(
+      '/cmd/hdtp.json',{request:"next",input1:input1,input2:input2,id:id})
+    .then(function(a) {
+	$("textarea#generic_space").val(a.cargo.output);
+$("textarea#error").val(a.cargo.error);
+  $("textarea#id").val(a.cargo.id);
+	});
+   }}
+ 
+}
+</script>
+
+  </head>
+
+  <body role="document">
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Hdtp Request</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav><!-- ./navbar -->
+
+    <div id='main-container' class="container" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+     <!-- <div class="jumbotron" id='MainContent'>
+        This text should change...
+      </div>
+      <div class="jumbotron">
+      	AJAX call to HelloDataServlet -- it says: <p id='ServerSays'>...</p>      	
+      </div> -->
+
+    
+   <textarea id ="input_space1"></textarea>
+
+   <textarea id ="input_space2"></textarea>
+   <p></p>
+   Process id: <textarea id = "id"></textarea>
+   <textarea id = "error"></textarea>
+   Close? <input type="checkbox" id="closecb">
+     <p></p> <button onclick="gen_space()">Calculate Generic Space</button> <p></p>
+   <center><textarea id = "generic_space"></textarea></center>
+
+  <script>
+      document.getElementById("input_space1").defaultValue="http://ontohub.org/test_blending/atom2";
+ 	document.getElementById("input_space2").defaultValue="http://ontohub.org/test_blending/solar2";
+</script> 
+
+
+
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="/static/lib/jquery.min.js" type="text/javascript"></script>
+	<script src="/static/lib/bootstrap.min.js" type="text/javascript"></script>
+	<script src="/static/lib/underscore-min.js" type="text/javascript"></script>
+    <script src="/static/lib/SJTest.js" type="text/javascript"></script>
+    <script src="/static/lib/console.js" type="text/javascript"></script>
+    <script src="/static/lib/Templates.js" type="text/javascript"></script>
+    <script src="hdtpfront.js" type="text/javascript"></script>
+  </body>
+</html>
