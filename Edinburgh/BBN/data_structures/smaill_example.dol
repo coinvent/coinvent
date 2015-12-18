@@ -26,7 +26,7 @@ spec Fatlist =
      free type Fatlist ::=
 	Nil | Cons(S,Fatlist)
        | Append(Fatlist,Fatlist) 
-
+end
 
 view I1: Gen to List = 
      S |-> S,
