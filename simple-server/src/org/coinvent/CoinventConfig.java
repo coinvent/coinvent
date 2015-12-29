@@ -25,6 +25,8 @@ public class CoinventConfig {
 	public String baseUrl = "http://localhost:"+port;
 	
 	private static int counter;
+	
+	@Deprecated // This isn't config -- move it to be with the Servlet
 	private static ConcurrentHashMap<Integer,ProcessActiveTriple> processes;
 	
 	public CoinventConfig()

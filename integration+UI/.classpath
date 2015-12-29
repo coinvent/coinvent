@@ -16,12 +16,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/mailapi.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/mime-util.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/winterwell.utils.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/winterwell.web.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/gson.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/bob.jar"/>
 	<classpathentry kind="lib" path="/middleware/xstream/xstream.jar" sourcepath="/middleware/xstream/src.zip"/>
 	<classpathentry kind="lib" path="/middleware/xstream/xmlpull-1.1.3.1.jar"/>
 	<classpathentry kind="lib" path="/middleware/xstream/xpp3_min-1.1.4c.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.bob"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.utils"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/winterwell.web"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

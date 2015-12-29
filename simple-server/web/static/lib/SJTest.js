@@ -1,5 +1,5 @@
 /**
- * SJTest
+ * SJTest - version 0.3.2
  * @author Daniel Winterstein (http://winterstein.me.uk)
  * 
  * Requires: nothing!
@@ -8,7 +8,6 @@
  * 
  *  - jQuery (or zepto)
  *  - Bootstrap 
- *  - Winterwell's assert.js
  * 
  * Will create if absent:
  * 
@@ -157,7 +156,7 @@ ATest.prototype.toString = function() {
 var SJTest = SJTest || {};
 
 /** What version of SJTest is this? */
-SJTest.version = '0.3.1';
+SJTest.version = '0.3.2';
 
 /**
  * If true, isDone() will return false.
@@ -167,11 +166,10 @@ SJTest.version = '0.3.1';
  */
 SJTest.wait = SJTest.wait || false;
 
-
-	/**
-	 * If true (the default), use inline styles to improve the standard
-	 * display. Set to false if you want to take charge of styling yourself.
-	 */
+/**
+ * If true (the default), use inline styles to improve the standard
+ * display. Set to false if you want to take charge of styling yourself.
+ */
 if (SJTest.styling===undefined) SJTest.styling = true;
 /**
  * Used with all console.log output, for easy filtering.
@@ -421,14 +419,24 @@ SJTest._displayTest = function(test) {
  * An assert function.
  * Error handling can be overridden by replacing SJTest.assertFailed()
  * @param betrue
- *            If true, do nothing. If false, console.error and throw an Error.
+ *            If true (or any truthy value), do nothing. If falsy, console.error and throw an Error.
+ *            HACK: As a special convenience, the empty jQuery result (ie a jquery select which find nothing) is considered to be false! 
  *            For testing jQuery selections: Use e.g. $('#foo').length
  * @param msg
  *            Message on error. This can be an object (which will be logged to console as-is, 
  *            and converted to a string for the error).
+ * @returns betrue on success. This allows assert() to be used as a transparent wrapper.
+ * E.g. you might write <code>var x = assert(mything.propertyWhichMustExist);</code>           
  */
 SJTest.assert = function(betrue, msg) {
-	if (betrue) return;
+	if (betrue) {
+		if (betrue.jquery && betrue.length===0) {
+			// empty jquery selection - treat as false
+			if ( ! msg) msg = "empty jquery selection";
+		} else {
+			return betrue;
+		}
+	}
 	SJTest.assertFailed(msg);
 };
 /**
@@ -437,8 +445,8 @@ SJTest.assert = function(betrue, msg) {
 SJTest.assertFailed = function(msg) {
 	if (msg) console.error("assert", msg);
 	// A nice string?
-	var smsg = SJTestUtils.str(msg);
-	throw new Error("assert: "+smsg);
+	var smsg = SJTestUtils.str(msg || "no info");
+	throw new Error("assert-failed: "+smsg);
 };
 
 

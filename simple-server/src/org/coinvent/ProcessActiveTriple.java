@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.coinvent.HdtpRequests.ActiveType;
 
+@Deprecated
 public class ProcessActiveTriple {
 	
 	
