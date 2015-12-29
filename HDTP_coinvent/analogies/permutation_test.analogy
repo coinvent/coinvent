@@ -1,0 +1,7 @@
+analogy(permutation_test,domain('none', 
+[x:a(x:b,x:c),
+ x:a(x:d,x:e)
+  ]),
+  domain('none',[x:r(x:c,x:b),
+   x:r(x:e,x:d)
+  ])).

@@ -1,0 +1,22 @@
+analogy('walkiscol',
+	domain('collection',
+	[
+add(none,one),
+add(one,two),
+add(three,four),
+add(two,three),
+ren(four,three),
+ren(one,none),
+ren(three,two),
+ren(two,one)
+	]),
+	domain('path',
+	[
+fwd(a,b), %1
+fwd(b,c), %2
+fwd(c,d), %4
+bwd(b,a), %6
+bwd(c,b), %7
+bwd(d,c)  %5
+	])
+).

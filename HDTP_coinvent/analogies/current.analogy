@@ -1,0 +1,13 @@
+analogy('s',
+        domain('house', 
+        [
+        a(b,c),
+        d(e,f)
+        ]),
+
+        domain('t',
+        [
+        g(h,i),
+        j(k,l)
+        ])
+).

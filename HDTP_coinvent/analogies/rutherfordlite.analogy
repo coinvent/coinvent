@@ -1,0 +1,9 @@
+analogy('rutherfordlite',
+    domain('none',[s:mass(o:sun) > s:mass(o:planet),
+                   s:distance(o:sun,o:planet) > s:0, 
+                   s:force(f:gravitation,o:planet,o:sun) > s:0
+                  ]),
+    domain('none',[s:force(f:coulomb,o:electron,o:nucleus) > s:0,
+                   s:distance(o:electron,o:nucleus) > s:0,
+                   s:mass(o:nucleus) > s:mass(o:electron)
+                  ])).

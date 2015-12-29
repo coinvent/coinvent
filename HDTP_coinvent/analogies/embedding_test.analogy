@@ -1,0 +1,7 @@
+analogy(embedding_test,
+    domain('none',[x:a(x:r(x:b,x:c,x:d)),
+                   x:a(x:r(x:b,x:c,x:d))
+                  ]),
+    domain('none',[x:l(x:b,x:c,x:d),
+                   x:l(x:b,x:c,x:d)
+                  ])).

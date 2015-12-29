@@ -1,0 +1,3 @@
+subst(   [mode('distance',permutation,keep),
+          cost('distance',permutation,free)
+         ]).

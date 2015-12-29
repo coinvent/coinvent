@@ -1,0 +1,20 @@
+analogy('math',
+        domain('domain1',
+        [
+          shorter(S1_1,S1_2) <-> longer(S1_2,S1_1),
+          extend(S2_1,S2_2,S2_3) <-> chop(S2_3,S2_2,S2_1),
+          shorter(S3_1,S3_2) ; S3_1 = S3_2 ; longer(S3_1,S3_2),
+          shorter(S4_1,S4_2) -> not(shorter(S4_2,S4_1)),
+          not(longer(unitSeg,S5_1)),
+          (extend(S6_1,S6_2,S6_3)) -> ( longer(S6_3,S6_2) , longer(S6_3,S6_1) ) 
+        ]),
+        domain('domain2', 
+        [ closer(P1_1,P1_2) <-> farther(P1_2,P1_1),
+          moveRight(P2_1,P2_2,P2_3) <-> moveLeft(P2_3,P2_2,P2_1),
+          closer(P3_1,P3_2) ; (P3_1 = P3_2) ; farther(P3_1,P3_2),
+          closer(P4_1,P4_2) -> not(closer(P4_2,P4_1)),
+          not(farther(origin,P5_1)),
+          (moveRight(P6_1,P6_2,P6_3), not(P6_2=origin)) -> ( farther(P6_3,P6_2), farther(P6_3,P6_1)),
+          moveRight(P7_1,origin,P7_3) -> (P7_1=P7_3)
+        ])
+).

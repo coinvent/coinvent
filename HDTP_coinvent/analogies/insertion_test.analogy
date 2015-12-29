@@ -1,0 +1,7 @@
+analogy(insertion_test,
+    domain('none',[x:a(x:b,x:y),
+                   x:a(x:c,x:y)
+                  ]),
+    domain('none',[x:r(x:b),
+                   x:r(x:c)
+                  ])).

@@ -1,0 +1,13 @@
+analogy('collection',
+        domain('collection', 
+            [
+        % facts
+        % laws
+  ]),
+
+        domain('collection',
+            [
+        % facts
+        % laws            
+   ])
+).

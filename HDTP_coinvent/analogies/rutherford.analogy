@@ -1,0 +1,14 @@
+analogy('rutherford',
+        domain('physics',[s:mass(o:sun) > s:mass(o:planet),
+                          s:distance(o:sun,o:planet) > s:0,
+                          yellow(o:sun),
+                          s:force(f:gravitation,o:planet,o:sun) > s:0,
+                          f:f_anti(f:gravitation) = f:centrifugal,
+                          (s:distance(o:_x,o:_y) > s:0,
+                          s:force(f:_f,o:_y,o:_x) > s:0 -> s:force(f:f_anti(f:_f),o:_x,o:_y) < s:0 ),
+                          (s:force(f:centrifugal,o:_x1,o:_y1) < s:0, s:mass(o:_y1) > s:mass(o:_x1) -> revolve(o:_x1,o:_y1))
+                         ]),
+        domain('physics',[s:force(f:coulomb,o:electron,o:nucleus) > s:0,
+                          s:distance(o:electron,o:nucleus) > s:0,
+                          s:mass(o:nucleus) > s:mass(o:electron)
+                         ])).

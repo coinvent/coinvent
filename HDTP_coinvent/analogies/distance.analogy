@@ -1,0 +1,5 @@
+analogy(test, 
+    domain('physics',[f(a,b),distance(a,b)
+                  ]),
+    domain('physics',[f(c,d),distance(d,c)
+                  ])).

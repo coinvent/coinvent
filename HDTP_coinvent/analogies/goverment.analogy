@@ -1,0 +1,20 @@
+analogy('goverment',
+        domain('government', 
+            [
+        % facts
+            sign_laws(i:president),
+            chief(i:chancelor,c:government),
+            elect(c:people,c:parlament),
+            elect(c:parlament,i:chancelor)
+  ]),
+
+        domain('government',
+            [
+        % facts
+            sign_laws(i:president),
+            chief(i:president,c:government),
+            elect(c:people,c:congress),
+            elect(c:people,i:president)
+            
+   ])
+).

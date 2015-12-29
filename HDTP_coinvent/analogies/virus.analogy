@@ -1,0 +1,60 @@
+analogy('virus',
+        domain('none', 
+[accomodate(o:human,o:host_cell),
+accomodate(o:host_cell,o:virus),
+attack(o:virus,o:host_cell),
+accomodate(o:human,o:immune_system),
+fight(o:immune_system,o:virus),
+destroy(o:immune_system,o:virus),
+damage(o:virus,o:human),
+destroy(o:virus,o:human),
+accomodate(o:carrier,o:host_cell),
+transmit(o:carrier,o:virus),
+%??? exist(o:human),
+%??? exist(o:virus),
+
+%laws
+
+% if human infected, virus damages human
+(attack(o:virus,o:host_cell),
+ accomodate(o:human,o:host_cell)
+  -> damage(o:virus,o:human)),
+
+% if human infected, virus damages human after incubation period
+% (attack(o:virus,o:host_cell,t:infection_time),
+%  accomodate(o:human,o:host_cell))
+% -> damage(o:virus,o:human,t:break_out_time)),
+
+% virus damages human and potentially kills human
+(damage(o:virus,o:human)
+ -> destroy(o:virus,o:human),
+    not_exist(o:virus)),
+     
+% if human infected, immune system fights virus    
+(attack(o:virus,o:host_cell),
+ accomodate(o:human,o:host_cell),
+ accomodate(o:human,o:immune_system)
+ -> fight(o:immune_system,o:virus)),
+
+% immune system fights virus and potentially kills virus
+(fight(o:immune_system,o:virus)
+ -> destroy(immune_system,o:virus),
+  not_exist(o:virus)),
+
+% an attacked host_cell accomodates the virus
+(attack(o:virus,o:host_cell)
+ -> accomodate(o:host_cell,o:virus)),
+
+% carrier needed for transmission of virus
+(accomodate(o:carrier,o:host_cell),
+ accomodate(o:host_cell,o:virus)
+ -> transmit(o:carrier,o:virus)),
+
+% transmission is requirement for reproduction
+ (transmit(o:carrier,o:virus)
+ -> reproduce(o:virus))
+  ]),
+  domain('none',
+  [damage(o:computer_virus,o:computer)
+   ])
+).

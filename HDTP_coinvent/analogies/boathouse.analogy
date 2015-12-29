@@ -1,0 +1,19 @@
+analogy('boathouse',
+        domain('house', 
+        [
+        % facts
+        need(protection,resident),
+        on(house,land),
+        lives(resident,house)
+        % laws
+        ]),
+
+        domain('boat',
+        [
+        % facts
+        need(protection,boat),
+        on(boat,water),
+        rides(passenger,boat)
+        % laws
+        ])
+).

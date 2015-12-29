@@ -1,0 +1,10 @@
+analogy('blend',
+        domain('domain1', 
+        [iterate(N,divide(D,N))=D,
+         iterate(N1,iterate(M1,D1))=iterate(M1,iterate(N1,D1))
+        ]),
+        domain('domain2',
+        [
+         fit_parts(N,split(N))=unit
+        ])
+).

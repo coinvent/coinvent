@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+echo "OUTPUT DUMMY:\n"
+echo $1
+echo $2

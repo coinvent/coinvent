@@ -1,0 +1,21 @@
+analogy('symmetry',
+        domain('domain1',
+        [
+          fwd(s_a,s_b),
+          fwd(s_b,s_c),
+          fwd(s_c,s_d),
+          fwd_fwd(s_a,s_c),
+          fwd_fwd(s_b,s_d),
+          fwd_fwd_fwd(s_a,s_d)
+        ]),
+        domain('domain1',
+        [
+          bwd(t_b,t_a),
+          bwd(t_c,t_b),
+          bwd(t_d,t_c),
+          bwd_bwd(t_c,t_a),
+          bwd_bwd(t_d,t_b),
+          bwd_bwd_bwd(t_d,t_a)
+        ])
+).
+
