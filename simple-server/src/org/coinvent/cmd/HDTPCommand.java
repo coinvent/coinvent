@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Arrays;
 
 import org.coinvent.CoinventConfig;
 import org.coinvent.ProcessActiveTriple;
@@ -19,6 +20,7 @@ import org.coinvent.ProcessActiveTriple.ActiveType;
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.Proc;
 
+import winterwell.utils.ShellScript;
 import winterwell.utils.Utils;
 import winterwell.utils.reporting.Log;
 
@@ -36,18 +38,26 @@ import winterwell.utils.reporting.Log;
 public class HDTPCommand {
 
 	String SWIPL = "/usr/bin/swipl";
-	File HDTP = new File("/home/ewen/HDTP_coinvent/hdtp.pro");
+	static File HDTP = new File(FileUtils.getWorkingDirectory(), "../HDTP_coinvent/hdtp.pro");
 	
 	File input1;
 	File input2;
-	
+		
 	Proc proc;
+	private Writer input;
+	private BufferedReader output;
 	
+	public HDTPCommand(File f1, File f2) {
+		this.input1 = f1;
+		this.input2 = f2;
+		assert f1.isFile() : f1;
+		assert f2.isFile() : f2;
+	}
+
 	void next() {
-		// send a line-break to the process
-		Writer input = proc.getInput();
+		// send a line-break to the process		
 		try {
-			input.write("\n");
+			getInput().write("\n");
 			input.flush();			
 		} catch (IOException e) {
 			throw Utils.runtime(e);
@@ -55,22 +65,65 @@ public class HDTPCommand {
 	}
 	
 	public void close() {
-		FileUtils.close(proc);
+		FileUtils.close(input);
+		FileUtils.close(output);
+		proc.destroy();
 		proc = null;
 	}
 	
-	void run() {
+	void run() throws IOException {
 		String cmd = "((read_casl(\\\""+input1.getAbsolutePath()+"\\\",\\\""+input2.getAbsolutePath()+"\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
-		String procstr = SWIPL+" --quiet -G0K -T0K -L0K -s "+HDTP.getAbsolutePath()+" -t \""+ cmd + "\"";
-		proc = new Proc(procstr);
-		proc.setRedirectErrorStream(true); // why??
-		proc.run();
+		String procstr = SWIPL+" --quiet -G0K -T0K -L0K -s "+HDTP.getCanonicalFile()+" -t \""+ cmd + "\"";
+		System.out.println(procstr);
+		proc = new ShellScript(procstr);
+//		ProcessBuilder proc = new ProcessBuilder(
+//				"/bin/bash");
+//		proc = new Proc(Arrays.asList(procstr.split(" ")));		
+		proc.redirectErrorStream(true); // why??
+//		proc.setEcho(true);
+
+		this.proc = proc.start();
+		
+//		Writer in = getInput();
+//		in.write(procstr);
+//		in.flush();
 	}
 	
-	public String getOutput() {
-		// wait??
-		String output = proc.getOutput();
-		return output;
+	private Writer getInput() {
+		if (input==null) {
+			input = 
+					proc.getInput(); 
+//					FileUtils.getWriter(proc.getOutputStream());
+		}
+		return input;
+	}
+
+	protected void finalize() throws Throwable {
+		try {
+			close();
+		} catch(Throwable ex) {
+			// ignore
+		}
+	}
+	
+	public String getOutput() throws IOException {
+//		if (output==null) {
+//			output = FileUtils.getReader(proc
+//					.getProcess()
+//					.getInputStream());
+//		}		
+//		String outln = "";		
+		while(true) {
+			String outs = proc.getOutput().trim();
+			if (outs.endsWith("NEXT") || outs.endsWith("FINISHED")) {
+				return outs;
+			}
+			if ( ! proc.isOutputting()) return outs;
+		}
+	}
+
+	public Proc getProc() {
+		return proc;
 	}
 
 }

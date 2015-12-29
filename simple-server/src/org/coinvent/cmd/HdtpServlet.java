@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 
 import com.winterwell.utils.web.WebUtils2;
+import com.winterwell.web.FakeBrowser;
 
 /**
  * A dummy servlet to demonstrate running a command.
@@ -119,8 +120,8 @@ public class HdtpServlet implements IServlet {
 				String output = "";
 				String error = "";
 				if ((url != null) && url.trim().equals("yes")) {
-					input_file1 = Wget.wget(input_file1);
-					input_file2 = Wget.wget(input_file2);
+					input_file1 = new FakeBrowser().getPage(input_file1);
+					input_file2 = new FakeBrowser().getPage(input_file2);
 				}
 				
 				// Martin trying to sort this out in HDTP - still an error as it is
@@ -143,7 +144,7 @@ public class HdtpServlet implements IServlet {
 				
 				String cmd = "((read_casl(\\\"/home/ewen/HDTP_coinvent/input1\\\",\\\"/home/ewen/HDTP_coinvent/input2\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
 				int id = 0;
-				String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s /home/ewen/HDTP_coinvent/hdtp.pro -t \""
+				String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s "+HDTPCommand.HDTP.getCanonicalPath()+" -t \""
 						+ cmd + "\"";
 			
 				System.out.println(procstr);

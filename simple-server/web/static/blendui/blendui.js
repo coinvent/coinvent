@@ -14,15 +14,26 @@ $(function() {
 
 		$('.doBlend').on('click',function(e){
 			e.preventDefault();
-			alert("Do Blend!");
+			$.get('/cmd/blend?action=hdtp')
+			.then(function(r){
+				console.warn(r);
+			});
 		});
+		
 		$('.doBlendNext').on('click',function(e){
 			e.preventDefault();
-			alert("Do Next Blend!");
+			$.get('/cmd/blend?action=next')
+			.then(function(r){
+				console.warn(r);
+			});
 		});
+		
 		$('.doBlendClose').on('click',function(e){
 			e.preventDefault();
-			
+			$.get('/cmd/blend?action=close')
+			.then(function(r){
+				console.warn(r);
+			});
 		});
 		
 	}); 
