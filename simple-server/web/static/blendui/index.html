@@ -40,15 +40,19 @@
 
     <div id='main-container' class="container" role="main">
 
-		<form class='well'>
+		<form>
 			<div class='flexbox'>
 				<div class='flexitem concept pad10'>
-					<h3>Concept 1</h3>
-					<div id='conceptEditor1'></div>
+					<div class='well'>
+						<h3>Concept 1</h3>
+						<div id='conceptEditor1'></div>
+					</div>
 				</div>
 				<div class='flexitem concept pad10'>
-					<h3>Concept 2</h3>
-					<div id='conceptEditor2'></div>
+					<div class='well'>
+						<h3>Concept 2</h3>
+						<div id='conceptEditor2'></div>
+					</div>
 				</div>
 			</div>
 			<div class='flexbox'>
@@ -56,6 +60,7 @@
 					<button class='btn btn-primary doBlend'>Calculate Generic Space</button>
 					<button class='btn doBlendNext' disabled="disabled">Next</button>
 					<button class='btn doBlendclose' disabled="disabled">Close</button>
+					<input type='hidden' name='pid' value=''>
 				</div>
 			</div>			
 		</form>   
@@ -64,9 +69,16 @@
 			<div class='flexitem'>
 				<h3>Output</h3>
 				<textarea name="output" class='form-control'></textarea>
-			</div>
+			</div>			
 		</div> 
-	   	
+				
+		<!-- <div class='well pad10'>
+			<form>
+				Name <input class='form-control' type='text'>
+				<button class='btn btn-default doSave'>Save</button>			
+			</form>
+		</div> -->		
+			   
     </div> <!-- /container -->
 
 
@@ -79,7 +91,6 @@
     <script src="/static/lib/SJTest.js" type="text/javascript"></script>
     <script src="/static/lib/console.js" type="text/javascript"></script>
     <script src="/static/lib/Templates.js" type="text/javascript"></script>
-    <script src="/static/lib/typeahead.bundle.js"></script>
     <script src="/static/blendui/blendui.js" type="text/javascript"></script>
     
     

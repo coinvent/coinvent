@@ -6,10 +6,12 @@ import org.coinvent.HdtpRequests.ReadType;
 import org.coinvent.IServlet;
 import org.coinvent.CoinventConfig;
 import org.coinvent.ProcessActiveTriple;
+import org.eclipse.jetty.io.BufferCache.CachedBuffer;
 
 import winterwell.utils.StrUtils;
 import winterwell.utils.Utils;
 import winterwell.utils.containers.ArrayMap;
+import winterwell.utils.containers.Cache;
 import winterwell.web.ajax.JsonResponse;
 import winterwell.web.app.WebRequest;
 
@@ -25,6 +27,7 @@ import java.io.BufferedWriter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.cache.CacheBuilder;
 import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.web.WebUtils2;
 import com.winterwell.web.FakeBrowser;
@@ -40,7 +43,11 @@ public class BlendServlet implements IServlet {
 
 	private HDTPCommand cmd;	
 	
-	static Map<String,HDTPCommand> pid2process = new ConcurrentHashMap();
+	static Map<String,HDTPCommand> pid2process = new Cache<String,HDTPCommand>(20) {
+		protected void onRemove(String key, HDTPCommand value) {
+			if (value!=null) value.close();
+		}
+	};
 	
 	@Override
 	public void doPost(WebRequest webRequest) throws Exception {
@@ -67,6 +74,7 @@ public class BlendServlet implements IServlet {
 				);
 		
 		JsonResponse jr = new JsonResponse(webRequest, cargo);
+		WebUtils2.sendJson(jr, webRequest);
 	}
 
 	private File getFile(WebRequest webRequest, String string) {
@@ -86,6 +94,7 @@ public class BlendServlet implements IServlet {
 		} 		
 		// save it
 		f = new File(FileUtils.getWorkingDirectory(), "uploaded_concepts/"+name);
+		f.getParentFile().mkdirs();
 		FileUtils.write(f, s);
 		
 		return f;

@@ -14,31 +14,44 @@ $(function() {
 
 		$('.doBlend').on('click',function(e){
 			e.preventDefault();
-			$.get('/cmd/blend?action=hdtp')
-			.then(function(r){
-				console.warn(r);
-			});
+			callBackend('hdtp');
 		});
 		
 		$('.doBlendNext').on('click',function(e){
 			e.preventDefault();
-			$.get('/cmd/blend?action=next')
-			.then(function(r){
-				console.warn(r);
-			});
+			callBackend('next');
 		});
 		
 		$('.doBlendClose').on('click',function(e){
 			e.preventDefault();
-			$.get('/cmd/blend?action=close')
-			.then(function(r){
-				console.warn(r);
-			});
+			callBackend('close');
 		});
 		
 	}); 
 
 });
+
+function getInput(name) {
+	return "TODO "+name;
+}
+
+function callBackend(action) {
+	var input1 = getInput('input1');
+	var input2 = getInput('input1');
+	var pid = $('input[name=pid]').val();
+	$.ajax({
+		url: '/cmd/blend',
+		data: {
+			action:action,
+			input1:input1,
+			input2:input2,
+			pid:pid
+		}
+	})
+	.then(function(a,b){
+		console.warn(a,b);
+	});
+}
 
 /** Let's call the server */
 $(function() {
