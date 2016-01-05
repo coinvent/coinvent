@@ -40,18 +40,18 @@
 
     <div id='main-container' class="container" role="main">
 
-		<form>
+		<form id='PickConceptsForm' class=''>
 			<div class='flexbox'>
 				<div class='flexitem concept pad10'>
 					<div class='well'>
 						<h3>Concept 1</h3>
-						<div id='conceptEditor1'></div>
+						<div id='conceptEditor1'>Loading...</div>
 					</div>
 				</div>
 				<div class='flexitem concept pad10'>
 					<div class='well'>
 						<h3>Concept 2</h3>
-						<div id='conceptEditor2'></div>
+						<div id='conceptEditor2'>Loading...</div>
 					</div>
 				</div>
 			</div>
@@ -67,8 +67,9 @@
 		
 		<div class='flexbox'>
 			<div class='flexitem'>
-				<h3>Output</h3>
-				<textarea name="output" class='form-control'></textarea>
+				<h3>Generic Space and Mapping</h3>
+        <div class='outputLoading loading'></div>
+				<textarea name="output" class='form-control' rows="20"></textarea>
 			</div>			
 		</div> 
 				
@@ -102,7 +103,8 @@
         <h4 class="modal-title">HDTP web front-end</h4>
       </div>
       <div class="modal-body">
-        <p>Developed by Ewen Maclean and Daniel Winterstein from the University of Edinburgh</p>
+        <p>HDTP by Martin Mohrmann</p>
+        <p>Client/server developed by Ewen Maclean and Daniel Winterstein from the University of Edinburgh</p>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->

@@ -25,19 +25,18 @@ import winterwell.utils.Utils;
 import winterwell.utils.reporting.Log;
 
 /**
- * Run HDTP
- * Status: Sketch! Waiting on getting the hdtp code!
+ * Run HDTP from within Java
  * 
  * @requires:
- *  - SWIProlog (swipl) installed at /usr/bin/swipl
- *  - HDTP installed at /home/ewen
+ *  - SWIProlog (swipl), which can be installed on Debian/Ubuntu/Mint via apt-get
+ *  - HDTP installed at ../HDTP_coinvent
  * 
  * @author daniel
- *
+ * @testedby {@link HDTPCommandTest}
  */
 public class HDTPCommand {
 
-	String SWIPL = "/usr/bin/swipl";
+	String SWIPL = "swipl";
 	static File HDTP = new File(FileUtils.getWorkingDirectory(), "../HDTP_coinvent/hdtp.pro");
 	
 	File input1;
@@ -67,7 +66,7 @@ public class HDTPCommand {
 	public void close() {
 		FileUtils.close(input);
 		FileUtils.close(output);
-		proc.destroy();
+		FileUtils.close(proc);
 		proc = null;
 	}
 	

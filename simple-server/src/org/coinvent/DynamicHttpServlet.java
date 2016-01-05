@@ -79,6 +79,7 @@ public class DynamicHttpServlet extends HttpServlet {
 			// Support cross-browser requests for all servlets!
 			WebUtils2.CORS(webRequest, true);
 
+			Thread.currentThread().setName(servlet.getClass().getSimpleName());
 			servlet.doPost(webRequest);
 			
 			// Error handling
