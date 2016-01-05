@@ -13,6 +13,7 @@ import winterwell.utils.StrUtils;
 import winterwell.utils.Utils;
 import winterwell.utils.containers.ArrayMap;
 import winterwell.utils.containers.Cache;
+import winterwell.utils.time.TUnit;
 import winterwell.utils.web.WebUtils;
 import winterwell.web.ajax.AjaxMsg;
 import winterwell.web.ajax.JsonResponse;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.cache.CacheBuilder;
@@ -59,6 +62,8 @@ public class BlendServlet implements IServlet {
 		}
 	};
 	
+	static Timer reaper = new Timer("reaper", true);
+	
 	@Override
 	public void doPost(WebRequest webRequest) throws Exception {		
 		if (webRequest.actionIs("list-concepts")) {
@@ -77,9 +82,7 @@ public class BlendServlet implements IServlet {
 		if (webRequest.actionIs("hdtp")) {
 			File f1 = getFile(webRequest, "input1");
 			File f2 = getFile(webRequest, "input2");
-			cmd = new HDTPCommand(f1, f2);
-			cmd.run();
-			pid2process.put(""+cmd.getProc().getProcessId(), cmd);
+			doNewHDTPProcess(f1, f2);
 		} else if (webRequest.actionIs("next")) {
 			String pid = webRequest.get("pid");
 			cmd = pid2process.get(pid);
@@ -106,6 +109,19 @@ public class BlendServlet implements IServlet {
 		
 		JsonResponse jr = new JsonResponse(webRequest, cargo);
 		WebUtils2.sendJson(jr, webRequest);
+	}
+
+	private void doNewHDTPProcess(File f1, File f2) throws IOException {
+		cmd = new HDTPCommand(f1, f2);
+		cmd.run();
+		pid2process.put(""+cmd.getProc().getProcessId(), cmd);
+		final HDTPCommand fcmd = cmd;
+		reaper.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				fcmd.close();			
+			}				
+		}, TUnit.HOUR.millisecs);
 	}
 
 	private void doListConcepts(WebRequest webRequest) throws IOException {
