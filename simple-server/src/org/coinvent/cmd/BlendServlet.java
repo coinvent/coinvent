@@ -49,6 +49,30 @@ import com.winterwell.web.WebEx;
  * 
  * Try: http://localhost:8300/static/blendui/index.html
  * 
+ * <h2>API</h2>
+ * 
+ * <h3>Call HDTP</h3>
+ * Endpoint: /cmd/blend<br>
+ * 
+ * Parameters:<br>
+ *
+ *  - action: hdtp or next, or close to close the HDTP process.<br>
+ *  - input1: a JSON-format object with properties {name, url, text}.<br> 
+ *  All properties are optional. If name and text are given, this defines a concept. If url is given, this is fetched.
+ *  If just name is given, this must match a previously stored concept.<br>
+ *  Tip: in javascript, use e.g. JSON.stringify({name:'MyConcept', text:'my concept spec'}) to make this.<br>
+ *  - input2: a JSON-format object  with properties {name, url, text}. See input1 for details.<br>
+ *  - pid: Process ID, as returned in the cargo from a action=hdtp call. Needed for action=next calls.
+ * 
+ * <p> 
+ * It is not essential to close processes (there is a reaper thread which will do so, and the cache will evict if it reaches a limit).
+ * However is is certainly good practice.
+ * 
+ * <h3>List Files</h3>
+ * /cmd/blend?action=list-concepts
+ * 
+ * 
+ * 
  * @author daniel
  * 
  */
@@ -102,10 +126,14 @@ public class BlendServlet implements IServlet {
 		}
 		String output = cmd==null? null : cmd.getOutput();
 		
-		ArrayMap cargo = new ArrayMap(
-				"pid", cmd==null? null : cmd.getProc().getProcessId(),
-				"output", output
+		ArrayMap cargo = new ArrayMap(				
+				"output", output				
 				);
+		if (cmd!=null) {
+			cargo.put("pid", cmd.getProc().getProcessId());
+			cargo.put("input1", new ArrayMap("text", FileUtils.read(cmd.getInput1())));
+			cargo.put("input2", new ArrayMap("text", FileUtils.read(cmd.getInput2())));
+		}
 		
 		JsonResponse jr = new JsonResponse(webRequest, cargo);
 		WebUtils2.sendJson(jr, webRequest);
@@ -126,6 +154,7 @@ public class BlendServlet implements IServlet {
 
 	private void doListConcepts(WebRequest webRequest) throws IOException {
 		File dir = getFile2("dummy").getParentFile();
+		if ( ! dir.exists()) dir.mkdirs();
 		String[] files = dir.list();
 		List cargo = new ArrayList();
 		for(String f : files) {

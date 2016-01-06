@@ -32,7 +32,7 @@ import winterwell.utils.reporting.Log;
  *  - SWIProlog (swipl), which can be installed on Debian/Ubuntu/Mint via apt-get
  *  - HDTP installed at ../HDTP_coinvent
  * 
- * @author daniel
+ * @author daniel, ewen
  * @testedby {@link HDTPCommandTest}
  */
 public class HDTPCommand {
@@ -42,7 +42,14 @@ public class HDTPCommand {
 	
 	File input1;
 	File input2;
-		
+	
+	public File getInput1() {
+		return input1;
+	}
+	public File getInput2() {
+		return input2;
+	}
+	
 	Proc proc;
 	private Writer input;
 	private BufferedReader output;
@@ -79,25 +86,14 @@ public class HDTPCommand {
 		String cmd = "((read_casl(\\\""+input1.getAbsolutePath()+"\\\",\\\""+input2.getAbsolutePath()+"\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
 		String procstr = SWIPL+" --quiet -G0K -T0K -L0K -s "+HDTP.getCanonicalFile()+" -t \""+ cmd + "\"";
 		System.out.println(procstr);
-		proc = new ShellScript(procstr);
-//		ProcessBuilder proc = new ProcessBuilder(
-//				"/bin/bash");
-//		proc = new Proc(Arrays.asList(procstr.split(" ")));		
-		proc.redirectErrorStream(true); // why??
-//		proc.setEcho(true);
-
+		proc = new ShellScript(procstr);		
+		proc.redirectErrorStream(true);
 		this.proc = proc.start();
-		
-//		Writer in = getInput();
-//		in.write(procstr);
-//		in.flush();
 	}
 	
 	private Writer getInput() {
 		if (input==null) {
-			input = 
-					proc.getInput(); 
-//					FileUtils.getWriter(proc.getOutputStream());
+			input = proc.getInput(); 
 		}
 		return input;
 	}
