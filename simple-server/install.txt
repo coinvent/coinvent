@@ -17,15 +17,18 @@ Status: This is just a dummy Java server! It doesn't do anything (yet).
 		2. You should now have a project, which will compile the code.
 		3. Test: there should be sub-directories and .class files in web/WEB-INF/classes
 
-
 ## Run
 
-From the coinvent/integration+UI directory:
+From the simple-server directory:
 
-	java -classpath web/WEB-INF/classes:web/WEB-INF/lib/* org.coinvent.SimpleServer
+	java -classpath web/WEB-INF/classes:web/WEB-INF/lib/* org.coinvent.SimpleServer	
 
 Then try opening these urls in your browser:
 
+### Local?
 1. Get a static file: http://localhost:8300/static/hello.html
 2. Run a command: http://localhost:8300/cmd/ls.json?dir=web/static
+
+### Remote?
+1. Run a command: http://148.251.85.37:8300/cmd/ls.json?dir=web/static
 

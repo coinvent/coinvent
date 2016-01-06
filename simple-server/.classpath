@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="build"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/gson.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-continuation.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/jetty-http.jar"/>
@@ -18,8 +19,9 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/xpp3_min-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/xstream.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/guava.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF/lib/winterwell.utils.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/winterwell.web.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/bob.jar" sourcepath="web/WEB-INF/lib/bob.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/winterwell.utils.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>

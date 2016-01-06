@@ -21,6 +21,7 @@ import com.winterwell.utils.io.FileUtils;
 import com.winterwell.utils.Proc;
 
 import winterwell.utils.ShellScript;
+import winterwell.utils.StrUtils;
 import winterwell.utils.Utils;
 import winterwell.utils.reporting.Log;
 
@@ -53,7 +54,11 @@ public class HDTPCommand {
 		assert f2.isFile() : f2;
 	}
 
-	void next() {
+	/**
+	 * Advance to the next solution
+	 */
+	public void next() {
+		proc.clearOutput();
 		// send a line-break to the process		
 		try {
 			getInput().write("\n");
@@ -70,7 +75,7 @@ public class HDTPCommand {
 		proc = null;
 	}
 	
-	void run() throws IOException {
+	public void run() throws IOException {
 		String cmd = "((read_casl(\\\""+input1.getAbsolutePath()+"\\\",\\\""+input2.getAbsolutePath()+"\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
 		String procstr = SWIPL+" --quiet -G0K -T0K -L0K -s "+HDTP.getCanonicalFile()+" -t \""+ cmd + "\"";
 		System.out.println(procstr);
@@ -106,15 +111,12 @@ public class HDTPCommand {
 	}
 	
 	public String getOutput() throws IOException {
-//		if (output==null) {
-//			output = FileUtils.getReader(proc
-//					.getProcess()
-//					.getInputStream());
-//		}		
-//		String outln = "";		
 		while(true) {
 			String outs = proc.getOutput().trim();
 			if (outs.endsWith("NEXT") || outs.endsWith("FINISHED")) {
+				// trim the end
+				outs = StrUtils.pop(outs, "NEXT");
+				outs = StrUtils.pop(outs, "FINISHED");
 				return outs;
 			}
 			if ( ! proc.isOutputting()) return outs;

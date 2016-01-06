@@ -74,17 +74,18 @@ public class HDTPCommandTest {
 		
 		cmd.run();
 		
-		String out = cmd.getOutput();
+		String out = cmd.getOutput().trim();
 		System.out.println("Output: "+out);
 		assert ! out.isEmpty();
 		
 		cmd.next();
 		cmd.next();
 		
-		String out2 = cmd.getOutput();
+		String out2 = cmd.getOutput().trim();
 		assert ! out2.isEmpty();
-		System.out.println("Output2: "+out2);
+		System.out.println("Output2: ***"+out2+"***");
 		assert ! out.equals(out2);
+		assert ! out.contains(out2);
 	}
 
 
