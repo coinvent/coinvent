@@ -30,7 +30,7 @@ public class PublishCoinventSimpleServer extends BuildTask {
 		
 		// NB: use tmux on the server to go into a persistent screen
 		
-		RSyncTask rsync = new RSyncTask(projectDir.getAbsolutePath(), "ewen@frank.soda.sh:~/simple-server", true);
+		RSyncTask rsync = new RSyncTask(projectDir.getAbsolutePath()+"/", "ewen@frank.soda.sh:~/simple-server", false);
 //		rsync.addArg("-e 'ssh -p 3022 -i ~/.ssh/ewen@Coinvent-Ewen'");
 		rsync.run();
 	}
