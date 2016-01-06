@@ -64,6 +64,18 @@ import com.winterwell.web.WebEx;
  *  - input2: a JSON-format object  with properties {name, url, text}. See input1 for details.<br>
  *  - pid: Process ID, as returned in the cargo from a action=hdtp call. Needed for action=next calls.
  * 
+ * Returns: JSON-format object<br>
+ * <pre>
+ * {
+ * 	success:boolean,
+ *  cargo: {
+ *  	output: string,
+ *  	input1: {text: string},
+ *  	input2: {text: string},
+ *  	pid: string
+ *  	}
+ * }
+ * </pre>
  * <p> 
  * It is not essential to close processes (there is a reaper thread which will do so, and the cache will evict if it reaches a limit).
  * However is is certainly good practice.
