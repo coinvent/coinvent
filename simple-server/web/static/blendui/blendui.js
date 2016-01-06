@@ -68,6 +68,7 @@ function callBackend(action) {
 		console.warn(a,b);
 		$('.doBlend').attr('disabled',false);
 		$('.doBlendNext').attr('disabled',false);
+		$('.doBlendclose').attr('disabled',false);
 		var output = ""+a.cargo.output;
 		$('.outputLoading').hide();
 		$('textarea[name=output]').removeClass('loading');
