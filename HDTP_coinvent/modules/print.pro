@@ -38,11 +38,11 @@ print_casl_mapping(preanalogy(Cost,_Source,_Target,Generalisation,_Transfer)):-
     nl,
     format('%Generalisation~d mapping ~w to ~w Cost = ~d',[Gen_number,S_domain_name,T_domain_name,Cost]),nl,
     nl,
-    format('view mapping~d_1: Generalisation~d to ~w =',[Gen_number,Gen_number,S_domain_name]),nl,
+    format('view mapping~d_1 : Generalisation~d to ~w =',[Gen_number,Gen_number,S_domain_name]),nl,
     filter_symbol_mappings(Mappings_sort,Mappings_symbols),
     print_casl_mapping_source(Mappings_symbols),nl,
     nl,
-    format('view mapping~d_2: Generalisation~d to ~w =',[Gen_number,Gen_number,T_domain_name]),nl,
+    format('view mapping~d_2 : Generalisation~d to ~w =',[Gen_number,Gen_number,T_domain_name]),nl,
     print_casl_mapping_target(Mappings_symbols),nl,
     format('spec blend = combine mapping~d_1, mapping~d_2',[Gen_number,Gen_number]),nl,
     nl.
