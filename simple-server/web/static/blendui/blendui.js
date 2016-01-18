@@ -66,18 +66,28 @@ function callBackend(action) {
 	})
 	.then(function(a,b){
 		console.warn(a,b);
-		$('.doBlend').attr('disabled',false);
-		$('.doBlendNext').attr('disabled',false);
-		$('.doBlendclose').attr('disabled',false);
 		var output = ""+a.cargo.output;
-		$('.outputLoading').hide();
-		$('textarea[name=output]').removeClass('loading');
 		$('textarea[name=output]').val(output);
 		if (a.cargo.pid) {
 			$('input[name=pid]').val(a.cargo.pid);
 		}
+		if ( ! output) {
+			// Fail :(
+			alert("Sadly this blend failed.");
+		}
+	})
+	.fail(function(e){
+		console.warn(e);
+		alert("Sadly the server request failed.");
+	})
+	.always(function(){
+		$('.doBlend').attr('disabled',false);
+		$('.doBlendNext').attr('disabled',false);
+		$('.doBlendclose').attr('disabled',false);		
+		$('.outputLoading').hide();
+		$('textarea[name=output]').removeClass('loading');
 	});
-}
+} // ./callBackend()
 
 /** Let's call the server */
 $(function() {
