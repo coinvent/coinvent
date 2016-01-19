@@ -115,6 +115,24 @@ public class BlendServlet implements IServlet {
 			return;
 		}
 		
+		if (webRequest.actionIs("save")) {
+			String name = webRequest.get("blendname");
+			if (name==null)
+			{name = Utils.getRandomString(6)+".txt";}
+			if (name.length() > 120) {
+				name = StrUtils.ellipsize(name,80)+"_gen";
+				}
+			name = name.replaceAll("/", "_");
+			if (name != "")
+				{
+					File f = getFile2(name);
+					f.getParentFile().mkdirs();
+					FileUtils.write(f, webRequest.get("blend"));
+			}
+			
+		}
+		
+		
 		if (webRequest.actionIs("hdtp")) {
 			File f1 = getFile(webRequest, "input1");
 			File f2 = getFile(webRequest, "input2");
@@ -142,9 +160,12 @@ public class BlendServlet implements IServlet {
 				"output", output				
 				);
 		if (cmd!=null) {
+			String i1 = FileUtils.read(cmd.getInput1());
+			String i2 = FileUtils.read(cmd.getInput2());
 			cargo.put("pid", cmd.getProc().getProcessId());
-			cargo.put("input1", new ArrayMap("text", FileUtils.read(cmd.getInput1())));
-			cargo.put("input2", new ArrayMap("text", FileUtils.read(cmd.getInput2())));
+			cargo.put("input1", new ArrayMap("text", i1));
+			cargo.put("input2", new ArrayMap("text", i2));
+			cargo.put("theory",new ArrayMap("text",i1+"\n\n"+i2));
 		}
 		
 		JsonResponse jr = new JsonResponse(webRequest, cargo);

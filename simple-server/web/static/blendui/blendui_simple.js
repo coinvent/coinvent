@@ -35,11 +35,7 @@ $(function() {
 			e.preventDefault();
 			callBackend('close');
 		});
-
-		$('.doSave').on('click',function(e){
-			e.preventDefault();
-			callSave();
-		});
+		
 	}); 
 
 });
@@ -51,24 +47,6 @@ function getInput(name) {
 			url: $tab.find('.form-control[name=url]').val()
 			};
 }
-
-function callSave() {
-    var blendname = $('input[name=blendname]').val();
-    var blend = $('textarea[name=output]').val();
-    $.ajax({
-	url: '/cmd/blend',
-	data: {
-		action:"save",
-		blendname: blendname,
-		blend: blend
-		}
-        })
-	.then(function(a,b)
-	{
-		window.location.reload();
-	});		
-}
-
 
 function callBackend(action) {
 	var input1 = getInput('input1');
@@ -88,31 +66,28 @@ function callBackend(action) {
 	})
 	.then(function(a,b){
 		console.warn(a,b);
+		var output = ""+a.cargo.output;
+		$('textarea[name=output]').val(output);
+		if (a.cargo.pid) {
+			$('input[name=pid]').val(a.cargo.pid);
+		}
+		if ( ! output) {
+			// Fail :(
+			alert("Sadly this blend failed.");
+		}
+	})
+	.fail(function(e){
+		console.warn(e);
+		alert("Sadly the server request failed.");
+	})
+	.always(function(){
 		$('.doBlend').attr('disabled',false);
 		$('.doBlendNext').attr('disabled',false);
-		var output = "" + a.cargo.input1.text +"\n\n"+ 
-			a.cargo.input2.text +"\n\n"+ a.cargo.output;
+		$('.doBlendclose').attr('disabled',false);		
 		$('.outputLoading').hide();
-		if (a.cargo.pid) {
-		$('input[name=pid]').val(a.cargo.pid);
-		}
-		pid = $('input[name=pid]').val();
-		$.ajax({
-			url: '/cmd/HETS',
-   			data: {
-				action: 'full-theories',
-				contents:output,
-				pid: pid
-				}
-			})
-			.then(function(c,d){
-			console.warn(c,d);
-			$('textarea[name=output]').removeClass('loading'); 
-			$('textarea[name=output]').val(c.cargo.blend);	
-			$('iframe[id=svg]').attr("src",c.cargo.svg);
-			});
+		$('textarea[name=output]').removeClass('loading');
 	});
-}
+} // ./callBackend()
 
 /** Let's call the server */
 $(function() {

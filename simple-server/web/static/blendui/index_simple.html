@@ -57,7 +57,7 @@
 			</div>
 			<div class='flexbox'>
 				<div class='well pad10'>
-					<button class='btn btn-primary doBlend'>Compute Blend</button>
+					<button class='btn btn-primary doBlend'>Calculate Generic Space</button>
 					<button class='btn doBlendNext' disabled="disabled">Next</button>
 					<button class='btn doBlendclose' disabled="disabled">Close</button>
 					<input type='hidden' name='pid' value=''>
@@ -67,24 +67,18 @@
 		
 		<div class='flexbox'>
 			<div class='flexitem'>
-				<h3>Computed Blend</h3>
+				<h3>Generic Space and Mapping</h3>
         <div class='outputLoading loading'></div>
 				<textarea name="output" class='form-control' rows="20"></textarea>
 			</div>			
 		</div> 
-			
-		<div class='flexbox'>
-			<div class='well pad10'>
-			   	<iframe id="svg" width="100%" height="300"></iframe>
-			</div>
-		</div>
-	
-		<div class='well pad10'>
+				
+		<!-- <div class='well pad10'>
 			<form>
-				Name for Blend <input name='blendname' class='form-control' type='text'>
+				Name <input class='form-control' type='text'>
 				<button class='btn btn-default doSave'>Save</button>			
 			</form>
-		</div> 		
+		</div> -->		
 			   
     </div> <!-- /container -->
 
@@ -98,7 +92,7 @@
     <script src="/static/lib/SJTest.js" type="text/javascript"></script>
     <script src="/static/lib/console.js" type="text/javascript"></script>
     <script src="/static/lib/Templates.js" type="text/javascript"></script>
-    <script src="/static/blendui/blendui_withhets.js" type="text/javascript"></script>
+    <script src="/static/blendui/blendui.js" type="text/javascript"></script>
     
     
     <div id='aboutModal' class="modal fade" tabindex="-1" role="dialog">
