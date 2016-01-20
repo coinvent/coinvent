@@ -71,7 +71,7 @@ public class HETSCommand {
 	    substr = substr.replaceAll("<br />","");
 	    substr = substr.replaceAll("<small><em>","");
 	    substr = substr.replaceAll("</em></small>","");
-	    StringEscapeUtils.unescapeHtml4(substr);
+	    substr = StringEscapeUtils.unescapeHtml4(substr);
 		return "spec blend = \n"+substr+";\nend";
 	}
 	

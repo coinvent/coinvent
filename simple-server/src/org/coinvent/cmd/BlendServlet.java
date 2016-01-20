@@ -72,6 +72,7 @@ import com.winterwell.web.WebEx;
  *  	output: string,
  *  	input1: {text: string},
  *  	input2: {text: string},
+ *      theory: {text: string},
  *  	pid: string
  *  	}
  * }
