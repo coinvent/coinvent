@@ -166,7 +166,7 @@ public class BlendServlet implements IServlet {
 			cargo.put("pid", cmd.getProc().getProcessId());
 			cargo.put("input1", new ArrayMap("text", i1));
 			cargo.put("input2", new ArrayMap("text", i2));
-			cargo.put("theory",new ArrayMap("text",i1+"\n\n"+i2));
+			cargo.put("theory",new ArrayMap("text",i1+"\n\n"+i2+"\n\n"+output));
 		}
 		
 		JsonResponse jr = new JsonResponse(webRequest, cargo);
