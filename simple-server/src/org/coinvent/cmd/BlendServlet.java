@@ -26,8 +26,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.util.ArrayList;
@@ -92,6 +95,8 @@ import com.winterwell.web.WebEx;
 public class BlendServlet implements IServlet {
 
 	private HDTPCommand cmd;	
+	private HETSCommand hetscmd;
+	
 	
 	static Map<String,HDTPCommand> pid2process = new Cache<String,HDTPCommand>(20) {
 		protected void onRemove(String key, HDTPCommand value) {
@@ -134,7 +139,7 @@ public class BlendServlet implements IServlet {
 		}
 		
 		
-		if (webRequest.actionIs("hdtp")) {
+		if (webRequest.actionIs("hdtp")||webRequest.actionIs("hets")) {
 			File f1 = getFile(webRequest, "input1");
 			File f2 = getFile(webRequest, "input2");
 			doNewHDTPProcess(f1, f2);
@@ -156,6 +161,65 @@ public class BlendServlet implements IServlet {
 			}
 		}
 		String output = cmd==null? null : cmd.getOutput();
+		if (webRequest.actionIs("hets")) {
+			String pid = Integer.toString((cmd.getProc().getProcessId()));
+			hetscmd = new HETSCommand();
+			hetscmd.setlocalfile("/web/static/hetsfile"+pid+".dol");
+			// For testing
+			//hetscmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"2195"+".dol");
+			hetscmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+pid+".dol");
+			File file = new File(FileUtils.getWorkingDirectory(), hetscmd.getlocalfile());
+			String i1 = FileUtils.read(cmd.getInput1());
+			String i2 = FileUtils.read(cmd.getInput2());
+			FileUtils.write(file, (i1+"\n\n"+i2+"\n\n"+output) );
+			
+			try {
+				//InetAddress IP = InetAddress.getLocalHost();
+				//System.out.println(IP.getHostAddress());
+				String hetsurlstring = ("http://pollux.informatik.uni-bremen.de:8000/dg/"+(hetscmd.getlocalurl())+"/auto?format=dol");
+				URL url = new URL(hetsurlstring);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setRequestMethod("GET");
+				conn.setRequestProperty("Accept","application/json");
+				
+				if (conn.getResponseCode() != 200) {
+				  throw new RuntimeException("Failed : HTTP error code : " 
+						  + conn.getResponseCode());
+			}
+			 BufferedReader br = new BufferedReader(new InputStreamReader(
+					 (conn.getInputStream())));
+			 String line = "";
+			 output = "";
+			 while ((line = br.readLine()) != null) {
+				 output += line;
+			 }
+			 
+		
+			//put into cargo response... 
+			 conn.disconnect();
+			 // parse output to get casl back...
+		     ArrayMap cargo  = HETSCommand.parseHetsResponse(output);
+			 //do webrequestthing
+			
+				
+				
+				JsonResponse jr = new JsonResponse(webRequest, cargo);
+				WebUtils2.sendJson(jr, webRequest);
+			 
+			 
+			 
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+					
+			
+		} else {
+		
+		
+		
+		
 		
 		ArrayMap cargo = new ArrayMap(				
 				"output", output				
@@ -170,7 +234,7 @@ public class BlendServlet implements IServlet {
 		}
 		
 		JsonResponse jr = new JsonResponse(webRequest, cargo);
-		WebUtils2.sendJson(jr, webRequest);
+		WebUtils2.sendJson(jr, webRequest);}
 	}
 
 	private void doNewHDTPProcess(File f1, File f2) throws IOException {
