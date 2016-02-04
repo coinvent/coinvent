@@ -49,6 +49,7 @@ function getInput(name) {
 }
 
 function callBackend(action) {
+	var username = window.username;
 	var input1 = getInput('input1');
 	var input2 = getInput('input2');
 	$('.doBlend').attr('disabled','disabled');
@@ -58,6 +59,7 @@ function callBackend(action) {
 	$.ajax({
 		url: '/cmd/blend',
 		data: {
+			username:username,
 			action:action,
 			input1: JSON.stringify(input1),
 			input2: JSON.stringify(input2),

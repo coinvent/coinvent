@@ -1,36 +1,4 @@
 
-<template id='ConceptEditorOLD'>	
-	
-	<div class='form-group'>
-		<label>Previously defined?</label>
-		<select name="<%=context.name%>" class='form-control'>
-			<option>Foo</option>
-			<option>Bar</option>		
-		</select>
-	</div>
-	
-	<div class='form-group'>
-		<label>Or from url?</label> 
-		<input name="<%=context.name%>" class='form-control'>
-	</div>	
-	
-	<div class='form-group'>
-		<label>Or define a new concept?</label>
-		
-		<div class='form-group'>
-		Name: 
-			<input name="<%=context.name%>" class='form-control'>
-		</div>
-		<div class='form-group'> 	
-			Definition:
-				<textarea name="<%=context.name%>" class='form-control'></textarea>
-		</div>
-	</div>
-	
-</template>
-
-<div>
-
 <template id='ConceptEditor'>	
 <div id='ConceptEditor<%=name%>'>
   <ul class="nav nav-tabs" role="tablist">
