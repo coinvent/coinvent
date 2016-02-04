@@ -8,3 +8,10 @@
 *.aux
 *.log
 *.ps
+
+# No pdf by default - use -f if needed #
+*.pdf
+
+# Working Files #
+*~
+*#
