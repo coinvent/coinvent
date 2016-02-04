@@ -9,8 +9,9 @@
 *.log
 *.ps
 
-# No pdf by default - use -f if needed #
+# No pdf or zip by default - use -f if needed #
 *.pdf
+*.zip
 
 # Working Files #
 *~
