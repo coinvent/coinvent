@@ -85,10 +85,9 @@ operator(Ops) --> opnames(Names),blanks,":",blanks,opsignature(Sig),{findall(op(
 opnames([Name|Names]) --> opname(Name),blanks,",",!,blanks,prednames(Names).
 opnames([Name]) --> predname(Name).
 
-opname(Name) --> "__",blanks,opsymbol(Name),blanks,"__",!.
+opname(Name) --> "__",blanks,opsymbol(InfixName),blanks,"__",!,{atomic_list_concat(["__",InfixName,"__"],Name)}.
 opname(Name) --> identifier(Name).
 
-opsymbol('=>') --> "if".
 opsymbol(Atom) --> string_without(" \r\n\t_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'",Codes),{atom_codes(Atom,Codes)}.
 
 opsignature(Signature->Sort) --> signature(Signature),blanks,"->",blanks,identifier(Sort),!.
@@ -107,7 +106,7 @@ prednames([Name|Names]) --> predname(Name),blanks,",",!,blanks,prednames(Names).
 prednames([Name]) --> predname(Name).
 
 
-predname(Name) --> "__",blanks,opsymbol(Name),blanks,"__",!.
+predname(Name) --> "__",blanks,opsymbol(InfixName),blanks,"__",!,{atomic_list_concat(["__",InfixName,"__"],Name)}.
 predname(Name) --> identifier(Name).
 
 signature([Sort|Sorts]) --> identifier(Sort),blanks,"*",blanks,signature(Sorts).

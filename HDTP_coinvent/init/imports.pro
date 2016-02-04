@@ -24,7 +24,7 @@
 :- use_module(unify_hooks(cost_f)).
 :- use_module(unify_hooks(number_predicates)).
 :- use_module(unify_hooks(sig)).
-
+:- use_module(unify_hooks(caslname)).
 
 % import modules and make specific predicates available in user namespace
 :- use_module(modules(configure)).

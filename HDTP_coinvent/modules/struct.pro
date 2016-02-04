@@ -35,6 +35,15 @@ sig_inject([Var|T],Sig):-
 
 sig_inject([Var|T],Sig):-
     get_attr(Var,name,Name),
+    atomic_list_concat(["__",Name,"__"],OpName),
+    sigmember(OpName,Type,Sig),!,
+    put_attr(Var,sig,Type),
+    put_attr(Var,caslname,OpName),
+    sig_inject(T,Sig).
+
+
+sig_inject([Var|T],Sig):-
+    get_attr(Var,name,Name),
     casl_symbol(Name),!,
     put_attr(Var,sig,'$casl_symbol'),
     sig_inject(T,Sig).

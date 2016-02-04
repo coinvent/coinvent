@@ -1,0 +1,112 @@
+logic OWL
+
+%% What means what:
+%% - General: these examples consider only two chord cadences, with a pre-final
+%% and a final chord
+%% - PF_: refers to the pre-final chord
+%% - F_ : refers to the final chord
+%% - R_ : refers to the root of a chord
+%% - B_ : refers to the bass of a chord
+%% - unison, P5, etc.: relations between notes
+%%
+%% Examples:
+%% - ObjectProperty: PF_BR_unison: the bass and the root of the pre-final
+%% chord are unisons.
+%% - ObjectProperty: REL_PFRoot_FRoot: the pre-final and final chord roots have
+%% some generic relation (could be unison, P5, m2 or whatever...)
+
+
+%% define ontology perf7cadXTRM ========================
+ontology perf7cadXTRM =
+	Class: PFdom7
+	Class: Fmaj
+	Class: FBass
+	Class: PFBass
+	Class: PFRoot
+	Class: FRoot
+	ObjectProperty: roots_P5
+		Domain: PFRoot
+		Range: FRoot
+	ObjectProperty: PF_BR_unison
+		Domain: PFRoot
+		Range: PFBass
+	ObjectProperty: F_RB_unison
+		Domain: FRoot
+		Range: FBass
+	ObjectProperty: basses_P5
+		Domain: PFBass
+		Range: FBass
+end
+
+%% define ontology phrygcadXTRM ========================
+ontology phrygcadXTRM =
+	Class: PFmin
+	Class: F5th
+	Class: FBass
+	Class: PFBass
+	Class: PFRoot
+	Class: FRoot
+	ObjectProperty: roots_m7
+		Domain: PFRoot
+		Range: FRoot
+	ObjectProperty: PF_BR_M6
+		Domain: PFRoot
+		Range: PFBass
+	ObjectProperty: F_RB_unison
+		Domain: FRoot
+		Range: FBass
+	ObjectProperty: basses_m2
+		Domain: PFBass
+		Range: FBass
+end
+
+%% define ontology genericXTRM =============================
+ontology genericXTRM =
+	Class: PFType
+	Class: FType
+	Class: FBass
+	Class: PFBass
+	Class: PFRoot
+	Class: FRoot
+	ObjectProperty: REL_PFRoot_FRoot
+		Domain: PFRoot
+		Range: FRoot
+	ObjectProperty: REL_PFRoot_PFBass
+		Domain: PFRoot
+		Range: PFBass
+	ObjectProperty: REL_FRoot_FBass
+		Domain: FRoot
+		Range: FBass
+	ObjectProperty: REL_PFBass_FBass
+		Domain: PFBass
+		Range: FBass
+%% define interpretations ==============================
+
+interpretation I1 : genericXTRM to perf7cadXTRM = 
+	PFType |-> PFdom7,
+	FType |-> Fmaj,
+	PFRoot |-> PFRoot,
+	PFBass |-> PFBass,
+	FRoot |-> FRoot,
+	FBass |-> FBass,
+	REL_PFRoot_FRoot |-> roots_P5,
+	REL_PFBass_FBass |-> basses_P5,
+	REL_PFRoot_PFBass |-> PF_BR_unison,
+	REL_FRoot_FBass |-> F_RB_unison
+
+interpretation I2 : genericXTRM to phrygcadXTRM = 
+	PFType |-> PFmin,
+	FType |-> F5th,
+	PFRoot |-> PFRoot,
+	PFBass |-> PFBass,
+	FRoot |-> FRoot,
+	FBass |-> FBass,
+	REL_PFRoot_FRoot |-> roots_m7,
+	REL_PFBass_FBass |-> basses_m2,
+	REL_PFRoot_PFBass |-> PF_BR_M6,
+	REL_FRoot_FBass |-> F_RB_unison
+
+
+%% do blending =========================================
+ ontology Colimit = 
+	combine I1, I2
