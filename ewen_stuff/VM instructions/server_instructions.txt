@@ -1,0 +1,35 @@
+
+A skeleton Java server to run things on the VM.
+
+The files are in github, under coinvent/simple-server
+ie. https://github.com/coinvent/coinvent/simple-server
+See simple-server/install.txt
+
+To run the server:
+ssh in
+screen
+java -classpath web/WEB-INF/classes:web/WEB-INF/lib/* org.coinvent.SimpleServer
+
+Then you can access it at eg.
+
+http://148.251.85.37:8300/helloworld/helloData.json
+http://148.251.85.37:8300/cmd/ls?dir=web
+
+(these should work right now, as it is running)
+
+To write some custom command handling, you want to copy LsServlet.java
+to eg HetsServlet.java, and modify it to run your command.
+
+Test it locally by running SimpleServer in Eclipse, and looking at
+http://localhost:8300/cmd/hets
+
+Then scp the code up into place e.g.
+scp -r -P 3022 -i ~/.ssh/ewen@Coinvent-Ewen my-local-dir/simple-server
+ewen@frank.soda.sh:~/simple-server
+
+ssh in and restart the process.
+
+Then
+http://148.251.85.37:8300/cmd/hets?key=value&key2=value2
+would run it.
+

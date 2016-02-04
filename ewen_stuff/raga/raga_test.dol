@@ -1,0 +1,64 @@
+spec Symbols = 
+%%  Note can be interpreted as an absolute note
+%%  Or an interval
+    free type Note ::= s | r | g | m | p | d | n
+    free type Alteration ::= pure | 1 | 2
+    free type Element ::= pair(note:Note;alteration:Alteration)
+    . forall e: Element
+        . forall n1:Note
+            . forall a:Alteration   
+                .  (n1 = s \/ n = p) => (e = pair(n1,pure))
+    . forall e1: Element, e2: Element
+          . forall n1,n2:Note 
+               .forall a1,a2: Alteration. 
+                  ((e1 = pair(n1,a1)) /\ (e2= pair(n2,a2)) /\ (e1 = e2)) => ((n1 = n2) /\ (a1 = a2))
+end
+
+
+spec Raga = 
+Symbols then
+    sort Raga 
+    preds    
+        hasElement : Raga * Element
+    . forall c:Raga,e1,e2:Element
+       . forall n1:Note
+          . forall a1,a2: Alteration
+             . (hasElement(c,e1) /\ 
+                 (e1 = pair(n1,a1)) /\
+                   (e2 = pair(n1,a2)) /\
+                     (not (a1 = a2)))
+                     => (not hasElement(c,e2))
+end
+
+spec Raga1 = 
+  Raga then
+  op raga1:Raga
+  . hasElement(raga1,pair(s,pure))  
+  . hasElement(raga1,pair(r,2))  
+  . hasElement(raga1,pair(g,1))  
+  . hasElement(raga1,pair(m,2))  
+  . hasElement(raga1,pair(p,1))  
+  . hasElement(raga1,pair(d,2))  
+  . hasElement(raga1,pair(n,2))    
+end
+
+spec Raga2 = 
+  Raga then
+  op raga2:Raga
+  . hasElement(raga2,pair(s,pure))  
+  . hasElement(raga2,pair(r,2))  
+  . hasElement(raga2,pair(g,1))  
+  . hasElement(raga2,pair(m,2))  
+  . hasElement(raga2,pair(p,1))  
+  . hasElement(raga2,pair(d,2))  
+  . hasElement(raga2,pair(n,1))    
+end
+
+spec Generic = Raga
+
+
+interpretation GtoR1: Generic to Raga1 
+
+interpretation GtoR2: Generic to Raga2 
+
+spec NewRaga = combine GtoR1,GtoR2

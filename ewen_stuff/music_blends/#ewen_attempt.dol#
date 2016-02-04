@@ -1,0 +1,74 @@
+logic OWL
+
+%% What means what:
+%% - General: these examples consider only two chord cadences, with a pre-final
+%% and a final chord
+%% - PF_: refers to the pre-final chord
+%% - F_ : refers to the final chord
+%% - R_ : refers to the root of a chord
+%% - B_ : refers to the bass of a chord
+%% - unison, P5, etc.: relations between notes
+%%
+%% Examples:
+%% - ObjectProperty: PF_BR_unison: the bass and the root of the pre-final
+%% chord are unisons.
+%% - ObjectProperty: REL_PFRoot_FRoot: the pre-final and final chord roots have
+%% some generic relation (could be unison, P5, m2 or whatever...)
+
+
+%% define ontology perf7cadXTRM ========================
+ontology perf7cadXTRM =
+	
+	Class: Cadence
+
+	Class: ChordQuality
+	Class: dom7Chord
+		SubClassOf: ChordQuality
+	Class: majorChord
+		SubClassOf: ChordQuality
+		
+        Class: NoteSet  
+        Class: CoreNoteSet
+                 SubClassOf: NoteSet
+
+        ObjectProperty: FinalChord
+               Domain: Cadence
+               Range: NoteSet
+
+        ObjectProperty: PreFinalChord
+               Domain: Cadence
+               Range: NoteSet
+
+
+        ObjectProperty: hasPFChordQuality
+		Domain: Cadence
+		Range: ChordQuality
+	ObjectProperty: hasFChordQuality
+		Domain: Cadence
+		Range: ChordQuality
+		
+	ObjectProperty: isTonic
+		Domain: Cadence
+		Range:  NoteSet
+	ObjectProperty: isBass
+		Domain: Cadence
+		Range: NoteSet
+	ObjectProperty: isThird
+		Domain: Cadence
+		Range: NoteSet
+	ObjectProperty: isFifth
+		Domain: Cadence
+		Range: NoteSet
+        ObjectProperty: isSeventh
+		Domain: Cadence
+                Range: NoteSet
+        ObjectProperty: Extension
+                Domain: Cadence
+                Range: NoteSet 
+  
+         Class: perf7cad 
+                 SubClassOf: Cadence
+             that has 
+
+
+end

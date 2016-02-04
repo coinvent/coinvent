@@ -1,0 +1,120 @@
+% No particular journal style is being used so far...
+
+\documentclass[10pt,twoside,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{ae}
+
+\selectlanguage{english}
+
+\textwidth 6in
+\oddsidemargin 0in
+\evensidemargin 0in
+\topmargin -0.25in
+\textheight 9in
+
+\renewcommand{\baselinestretch}{1.5}
+
+\newcommand{\setn}{{\sf I\hspace{-.3ex}N}}
+
+\newcommand\comment[1]{{\color{red}#1}}
+
+\begin{document}
+
+\begin{center}\Large\bf
+Title: Computational creativity in music through conceptual blending
+
+Authors: Max, Ewen, Emilios, Alan (?)
+\end{center}
+
+\begin{abstract}
+	Not yet.
+\end{abstract}
+
+% Section 1. Introduction
+\section{Introduction}\label{sec:introduction}
+
+Overview of creative systems, referencing approaches that have hitherto been used. One or two paragraphs about Boden's categorisation of creativity, preparing the ground for shortly describing combinational creativity and conceptual blending. Emphasise that this paper describes actual implementations of blending examples in music, that indicate the creativity potential of the utilised algorithms. \comment{Emilios and Max.}
+
+\section{Conceptual blending: from theory to a creative generative system}
+
+General overview of Fauconier and Turner's approach and the fact that it has primarily been used for analysing creative content rather than creating new things. Goguen's category theory proposal. \comment{Max and Emilios.}
+
+\subsection{A formal model for conceptual blending}
+
+The COINVENT formal model. \comment{Max.}
+
+\subsection{Implementation of the formal model}
+
+Algorithmic and technical things about the ``COBBLE''. \comment{Ewen and Max.}
+
+
+\section{Musical creativity through conceptual blending in practice}
+
+Overview of the examples that follow. Highlight the fact that these examples cover a wide range of music topics. \comment{Max.}
+
+\subsection{Blending chord transitions for extending the creative capabilities of melodic harmonisation}
+
+Refer to the optimised optimality principles for distinguishing the good blends. Also present cadence blending through transition blending. Give a short description of extending Markov transition tables for solving problems like tonality modulations. Include the indications obtained by the subjective experiments on cadence blending. \comment{Max and Emilios. Is the MATLAB implementation enough? If yes, we can begin writing text right away.}
+
+\subsection{Blending musical form: the sonata rondo example}
+
+A paragraph describing sonata rondo form and the fact that this form is indeed a conceptual blend invented by humas. Presentation of a gramar formalism for the sonata rondo form. \comment{Allan. Do we need a COBBLE implementation on that, or we can simply refer to the methodology?}
+
+\subsection{Extending musical creativity through cross-domain blending}
+
+A paragraph describing that humans create metaphors and blends all the time -- a fact that makes them more creative. Metaphors: people relate geometric elements with sound, a fact that allows them to descrive audio events intuitively (e.g. pitch height with geometric height -- Antovic). Additionally, people concepts from alien conceptual spaces and inject them into musical settings, pushing their creativity to unknown territories (e.g. Coltrain changes). \comment{Ewen.}
+
+\subsubsection{Blending group theory with chord progressions}
+%Present group theory and chord changes blend. \comment{Ewen.}
+
+The methodology we present here for conceptual blending exploits the
+power of signature morphisms, meaning input theories can be from very
+different domains. As an example of cross-domain blending we consider
+here a simple blend of chord and cadence theory, with a theory of
+cyclical groups from mathematics.
+
+\paragraph{Cyclical Groups}
+
+In mathematics a group is characterised by a set of objects, with a
+binary operation obeying the following rules:
+\begin{eqnarray*}
+&a&\\
+&b&\\
+&c&\\
+&d&
+\end{eqnarray*}
+
+\paragraph{A theory of Chords}
+
+How we model chords.
+
+
+\paragraph{A theory of Cadences}
+
+How we model cadences.
+
+\paragraph{A theory of Progressions}
+
+How we model progressions...
+
+
+\paragraph{Blending progressions with Cyclical Groups}
+
+Talk about search process....
+
+\subsubsection{Blending geometry with pitch motion}
+Also refer to Xenakis's composition. Present parallel voice leading blend. \comment{Ewen, Max, Alan.}
+
+
+\section{Conclusions}
+
+\comment{Emilios and Max.}
+
+
+
+\end{document}

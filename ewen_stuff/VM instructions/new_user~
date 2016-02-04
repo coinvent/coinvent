@@ -1,0 +1,14 @@
+Step 01 SSH into your VM as yourself
+Step 02 sudo su joe
+Step 03 ssh-keygen
+<just accept the defaults for the prompts>
+
+Step 04 cp /home/joe/.ssh/id_rsa.pub /home/ewen/joe@Coinvent-Joe
+
+(possibly need to sudo there)
+
+Step 05 <from another terminal session on your local computer>  scp -P 3022 -i ~/.ssh/ewen@Coinvent-Ewen ewen@frank.soda.sh:/joe@Coinvent-Joe ~/Desktop
+<this command will copy the key and put it on your Desktop>
+
+Then Joe has SSH access to his user account on your VM.  and can use the command that you wanted to use, as long as he puts that SSH key into his own .ssh folder (or equivalent if using daft like putty or cygwin)
+
