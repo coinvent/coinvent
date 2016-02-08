@@ -2,11 +2,39 @@
 %%from Basic/StructuredDatatypes get List
 %%from Basic/Numbers get Nat
 
+spec NatSuc = 
+   sort Nat
+   sort Element
+   op canonical_element: Element
+   ops zero:Nat
+       s: Element * Nat -> Nat
+   op fact: Nat -> Nat
+   op qfact: Nat * Nat -> Nat
+   op plus : Nat * Nat -> Nat
+   op times : Nat * Nat -> Nat
+   op 4: Nat
+   op xii: Nat	 
+   pred __ < __: Nat * Nat
+   forall x,y:Nat
+     . exists a: Nat . s(canonical_element,x) = a
+     . not (s(canonical_element,x) = zero)      %% remove this in GEN
+      . fact(zero) = s(canonical_element,zero)  %% remove this in GEN
+      . fact(s(canonical_element,x)) = times(s(canonical_element,x),fact(x))  %% remove this in GEN
+      . qfact(s(canonical_element,x),y) = times(qfact(x,s(canonical_element,x)),y) %% remove this in GEN
+      . qfact(zero,x) = x 
+      . fact(x) = qfact(x,s(canonical_element,zero))    %implied
+      . times(fact(x),y) = qfact(x,y)  %lemma required to prove this
+      . plus(zero,x) = x
+      . plus(s(canonical_element,x),y) = s(canonical_element,plus(x,y))
+      . times(zero,y) = zero  %remove this in gen
+      . times(s(canonical_element,x),y) = plus(y,times(x,y)) %remove this in gen
+end
+
 spec List = 
   sort El
   sort L
      op nil:L 
-     op cons: El*L -> L
+     op cons: El * L -> L
      op app: L * L -> L
      op rev: L -> L
      op qrev: L * L -> L
@@ -100,7 +128,7 @@ end
 
 spec PerfCadence =  Chord then
    sort Perf
-   op p:Perf
+   op p:Perf	 
    op croot: Perf -> Note
    op pre:Perf -> Chord		
    op rootpre:Perf -> Note
@@ -118,37 +146,44 @@ spec PerfCadence =  Chord then
    . rootpost(p) = croot(p)
 end
 
+spec ListProg = List with El |-> Perf, L |-> LP
+spec ListNote = List with El |-> Note, L |-> LN
+spec ListChord = List with El |-> Chord, L |-> LC
+
+
+
 
 spec Progression = 
-  PerfCadence then
-  List[sort Note] then
-  List[sort Chord] then 
-  List[sort Perf] then
+  PerfCadence then 
+  ListProg then
+  ListNote then
+  ListChord then	   
   op c1,c2:Chord
   op p: Perf
-  op lin:List[Note]
-  op lout:List[Chord]
-  op calc_prog: List[Note] -> List[Perf]
-  op calc_chord: List[Perf] -> List[Chord]
-  . calc_prog([]) = []
-  forall h:Note, t:List[Note]. calc_prog(h::t) = p::calc_prog(t)
-  . calc_chord([]) = []
-  forall h:Perf, t:List[Perf]. calc_chord(h::t) =
-    pre(p)::(post(p)::calc_chord(t))
+  op lin:LN
+  op lout:LC 
+  op calc_prog: LN -> LP
+  op calc_chord: LP -> LC
+  . calc_prog(nil) = nil
+  forall h:Note, t:LN. calc_prog(cons(h,t)) = cons(p,calc_prog(t))
+  . calc_chord(nil) = nil
+  forall h:Perf, t:LP. calc_chord(cons(h,t)) =
+    cons(pre(p),(cons(post(p),calc_chord(t))))
   . lout = calc_chord(calc_prog(lin))
 end
 
-spec CyclicGroup = Nat then
+spec CyclicGroup =  NatSuc then
  sort G < Nat
- then List[sort G] then
- op subseq: List[G]
+ then List with El |-> G, L |-> ListG
+ then
+ op subseq: ListG
  op binop: G * G -> G
  op ident: G
  op inv: G -> G
  pred gen: G
  op size: Nat
  op power: G * Nat -> G
- op calc_subseq: G * G -> List[G]
+ op calc_subseq: G * G -> ListG
  forall x,y,z:G
  . binop(x,binop(y,z)) = binop(binop(x,y),z) %assoc
  . forall x,y:G. exists n:Nat.
@@ -159,23 +194,23 @@ spec Cyc12 = CyclicGroup then
  op nongen: G
  op seqall: G
  . nongen = 4 as G
- . seqall = 12 as G
+ . seqall = xii as G
  . subseq = calc_subseq(nongen,seqall)
 end
 
 spec Gen =  
    sort H
-   then List[sort H] then
-   op l: List[H]
+   then ListChord then
+   op l: LC
 end
 
 
-view I1: Gen to Progression =
+view I1 : Gen to Progression =
    H |-> Chord,
    l |-> lout
 
-view I2: Gen to Cyc12 =
-   H |-> G,
-   l |-> subseq
+%[view I2 : Gen to Cyc12 =]%
+%[   H |-> G,]%
+%[   l |-> subseq]%
 
-spec Blend = combine I1,I2
+%[spec Blend = combine I1,I2]%
