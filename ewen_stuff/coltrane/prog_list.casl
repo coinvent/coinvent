@@ -1,6 +1,3 @@
-%% This gives 24 stable models with 0 non-optimal steps
-%%from Basic/StructuredDatatypes get List
-%%from Basic/Numbers get Nat
 
 spec NatSuc = 
    sort Nat
@@ -128,48 +125,44 @@ end
 
 spec PerfCadence =  Chord then
    sort Perf
-   op p:Perf	 
+   op p:Perf	  
    op croot: Perf -> Note
-   op pre:Perf -> Chord		
+   op pre:Perf * Note -> Chord
+   op pre: Perf -> Chord
    op rootpre:Perf -> Note
-   op post:Perf -> Chord
+   op post:Perf * Note -> Chord
+   op post: Perf -> Chord	 
    op rootpost:Perf -> Note
-   . hasRelNote(pre(p),0)  %(Ax-relb0:p:2)% 
-   . hasRelNote(pre(p),4)  %(Ax-relb3:p:1)%
-   . hasRelNote(pre(p),7)  %(Ax-relbb7:p:0)% 
-   . hasRelNote(pre(p),x)  %(Ax-relbb7:p:0)% 
-   . hasRelNote(post(p),0)  %(Ax-relb0:p:2)% 
-   . hasRelNote(post(p),4)  %(Ax-relb3:p:1)%
-   . hasRelNote(post(p),7)  %(Ax-relbb7:p:0)% 
-   . hasRelNote(post(p),x1)  %(Ax-relbb7:p:0)% 
+   forall n:Note 
+   . hasRelNote(pre(p,n),0)  %(Ax-relb0:p:2)% 
+   . hasRelNote(pre(p,n),4)  %(Ax-relb3:p:1)%
+   . hasRelNote(pre(p,n),7)  %(Ax-relbb7:p:0)% 
+   . hasRelNote(pre(p,n),x)  %(Ax-relbb7:p:0)% 
+   . hasRelNote(post(p,n),0)  %(Ax-relb0:p:2)% 
+   . hasRelNote(post(p,n),4)  %(Ax-relb3:p:1)%
+   . hasRelNote(post(p,n),7)  %(Ax-relbb7:p:0)% 
+   . hasRelNote(post(p,n),x1)  %(Ax-relbb7:p:0)% 
    . rootpre(p) = croot(p) + 7
    . rootpost(p) = croot(p)
+   . (pre(p,n) = pre(p)) <=> (croot(p) = n)
+   . (post(p,n) = post(p)) <=> (croot(p) = n)   
 end
 
-spec ListProg = List with El |-> Perf, L |-> LP
 spec ListNote = List with El |-> Note, L |-> LN
 spec ListChord = List with El |-> Chord, L |-> LC
 
-
-
-
 spec Progression = 
   PerfCadence then 
-  ListProg then
   ListNote then
   ListChord then	   
   op c1,c2:Chord
   op p: Perf
   op lin:LN
   op lout:LC 
-  op calc_prog: LN -> LP
-  op calc_chord: LP -> LC
+  op calc_prog: LN -> LC
   . calc_prog(nil) = nil
-  forall h:Note, t:LN. calc_prog(cons(h,t)) = cons(p,calc_prog(t))
-  . calc_chord(nil) = nil
-  forall h:Perf, t:LP. calc_chord(cons(h,t)) =
-    cons(pre(p),(cons(post(p),calc_chord(t))))
-  . lout = calc_chord(calc_prog(lin))
+  forall h:Note, t:LN. calc_prog(cons(h,t)) = cons(pre(p,h),cons(post(p,h),calc_prog(t)))
+  . lout = calc_prog(lin)
 end
 
 spec CyclicGroup =  NatSuc then
@@ -200,17 +193,17 @@ end
 
 spec Gen =  
    sort H
-   then ListChord then
-   op l: LC
+   then ListNote then
+   op l: LN
 end
 
 
 view I1 : Gen to Progression =
    H |-> Chord,
-   l |-> lout
+   l |-> lin
 
-%[view I2 : Gen to Cyc12 =]%
-%[   H |-> G,]%
-%[   l |-> subseq]%
+view I2 : Gen to Cyc12 =
+   H |-> G,
+   l |-> subseq
 
-%[spec Blend = combine I1,I2]%
+spec Blend = combine I1,I2
