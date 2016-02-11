@@ -18,15 +18,9 @@ $(function() {
 	$.when(fTemplates)
 		.then(function() {		
 		
-		/*$('#PickConceptsForm').removeClass('loading');*/
-		/*** **/
-		/*var prev = fConcepts.responseJSON.cargo;
-		console.log("context=", {name:'input1', previous:prev});
-		$('#conceptEditor1').html(templates.ConceptEditor({name:'input1', previous:prev}));
-		$('#conceptEditor2').html(templates.ConceptEditor({name:'input2', previous:prev}));
-		$('.outputLoading').hide();*/
+	
 
-        //load_st(num);
+        load_st(num);
 
 
 		$('#l_their_suggestion').hide();
@@ -92,9 +86,6 @@ function load_st(num)  {
         })
 	.then(function(a,b)
 	{
-// source theorem, target theorem, source theory, target theory, source lemma, target lemma, sourceid, targetid, result
-           
-
 
 		console.warn(c,d);
 	    $('textarea[name=tlemma]').val(c.cargo.tlemma);
