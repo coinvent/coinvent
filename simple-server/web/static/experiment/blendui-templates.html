@@ -1,0 +1,47 @@
+
+<template id='ConceptEditor'>	
+<div id='ConceptEditor<%=name%>'>
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#prev<%=name%>" aria-controls="prev<%=name%>" role="tab" data-toggle="tab">Previously Defined?</a></li>
+    <li role="presentation"><a href="#byurl<%=name%>" aria-controls="byurl<%=name%>" role="tab" data-toggle="tab">Or from url?</a></li>
+    <li role="presentation"><a href="#bytext<%=name%>" aria-controls="bytext<%=name%>" role="tab" data-toggle="tab">Or enter text?</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="prev<%=name%>">
+    	<div class='form-group'>
+	    	Name:
+	    	<select name="name" class='form-control'>
+	    		<script>
+	    		for(var i=0; i<previous.length; i++) {
+	    			print("<option value='"+previous[i]+"'>"+previous[i]+"</option>");
+	    		}
+	    		//
+	    		</script>
+			</select>			
+			<!-- HACK: provide a delete-all button -->
+			<div class='pull-right pad10'>
+				<%= name=='input2'? "<a class='btn btn-danger btn-xs' onclick='return confirm(\"Delete all cached concepts! Are you sure?\")' href='/cmd/blend?action=DELETE-ALL'>delete all</a>" : "" %>
+			</div>
+		</div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="byurl<%=name%>">
+    	<div class='form-group'>
+    		Url:
+    		<input name="url" class='form-control'>    	
+    	</div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="bytext<%=name%>">
+    	<div class='form-group'>
+			Name: 
+			<input name="name" class='form-control'>
+		</div>
+		<div class='form-group'> 	
+			Definition:
+			<textarea name="text" class='form-control'></textarea>
+		</div>
+    </div>
+  </div><!-- ./tab-content -->
+</div>
+</template>
