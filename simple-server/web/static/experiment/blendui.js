@@ -4,6 +4,7 @@ var num = 0;
 var result = true;
 var currentname = '';
 
+
 $(function() {
 
 	//var fConcepts = $.get('/cmd/blend?action=list-concepts');
@@ -26,7 +27,7 @@ $(function() {
 		$('#conceptEditor2').html(templates.ConceptEditor({name:'input2', previous:prev}));
 		$('.outputLoading').hide();*/
 
-        //load_st(num);
+        load_st(num);
 
 
 		$('#l_their_suggestion').hide();
@@ -49,7 +50,11 @@ $(function() {
 		
 		$('.doNext').on('click',function(e){
 			e.preventDefault();
-			callNext();
+			if (!callNext())
+			{
+				return false;
+			}
+
 		});
 		
 	}); 
@@ -70,13 +75,13 @@ function save_st()
 $.ajax({
 	url: '/cmd/experiment',
 	data: {
-		action:"save",
-	        result:res;
-	    suggestion:$('#their_suggestion').val();
-	    correctness:$('#correctness').val();
-	    proveability:$('#proveability').val();
-	    amended_suggestion:$('#amended_suggestion').val();
-	    helpful:$('#helpful').val();
+			action:"save",
+	        result:res,
+	    	suggestion:$('#their_suggestion').val(),
+	    	correctness:$('#correctness').val(),
+	    	proveability:$('#proveability').val(),
+	    	amended_suggestion:$('#amended_suggestion').val(),
+	    	helpful:$('#helpful').val()
 	    }
         });
 }
@@ -84,25 +89,26 @@ $.ajax({
 
 function load_st(num)  {
  $.ajax({
-	url: '/cmd/experiment',
+	url: '/cmd/Experiment',
 	data: {
 		action:"get",
-		current:num
+		current:(num.toString())
 			}
         })
-	.then(function(a,b)
+	.then(function(c,d)
 	{
 // source theorem, target theorem, source theory, target theory, source lemma, target lemma, sourceid, targetid, result
            
 
 
 		console.warn(c,d);
-	    $('textarea[name=tlemma]').val(c.cargo.tlemma);
-	     $('textarea[name=slemma]').val(c.cargo.slemma);
+	    
+	    $('textarea[name=slemma]').val(c.cargo.slemma);
 	    $('textarea[name=ttheorem]').val(c.cargo.ttheorem);
 	    $('textarea[name=stheorem]').val(c.cargo.stheorem);
 	    $('textarea[name=stheory]').val(c.cargo.stheory);
 	    $('textarea[name=ttheory]').val(c.cargo.ttheory);
+	    currentname=c.cargo.tlemma;
 		result = (c.cargo.result =="yes");
 	   });		
     
@@ -123,8 +129,10 @@ function callNext()
     if (num==1)
     {
     	//Go to finished page....
-    	window.location.href = 'localhost:8300/static/experiment/thanks.html';
-
+    	window.event.returnValue = false;
+    	window.location.href='localhost:8300/static/experiment/thanks.html';
+    	window.alert("Thanks for participating!");
+        return false;
     }
     else{
     	save_st();
@@ -142,12 +150,14 @@ function callNext()
 		$('#l_helpful').hide();
 		$('#helpful').hide();	
 		$('#nextbtn').hide();	
+		return true;b
 	}
 
 }
 
 function callBackend()
 {
+	st();
    if (result)
   {
      $('#l_correctness').toggle();
