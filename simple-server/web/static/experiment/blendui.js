@@ -65,12 +65,19 @@ function st()
 
 function save_st()
 {
+    var res;
+    if (result){res = "Analogy"}else{res="NoAnalogy"};
 $.ajax({
 	url: '/cmd/experiment',
 	data: {
 		action:"save",
-		//all form data
-			}
+	        result:res;
+	    suggestion:$('#their_suggestion').val();
+	    correctness:$('#correctness').val();
+	    proveability:$('#proveability').val();
+	    amended_suggestion:$('#amended_suggestion').val();
+	    helpful:$('#helpful').val();
+	    }
         });
 }
 
@@ -86,11 +93,16 @@ function load_st(num)  {
 	.then(function(a,b)
 	{
 // source theorem, target theorem, source theory, target theory, source lemma, target lemma, sourceid, targetid, result
-
+           
 
 
 		console.warn(c,d);
-		$('textarea[name=tlemma]').val(c.cargo.tlemma);  
+	    $('textarea[name=tlemma]').val(c.cargo.tlemma);
+	     $('textarea[name=slemma]').val(c.cargo.slemma);
+	    $('textarea[name=ttheorem]').val(c.cargo.ttheorem);
+	    $('textarea[name=stheorem]').val(c.cargo.stheorem);
+	    $('textarea[name=stheory]').val(c.cargo.stheory);
+	    $('textarea[name=ttheory]').val(c.cargo.ttheory);
 		result = (c.cargo.result =="yes");
 	   });		
     
@@ -125,7 +137,7 @@ function callNext()
 		$('#correctness').hide();	
 		$('#l_proveability').hide();
 		$('#proveability').hide();	
-    	$('#l_amended_suggestion').hide();
+         	$('#l_amended_suggestion').hide();
 		$('#amended_suggestion').hide();
 		$('#l_helpful').hide();
 		$('#helpful').hide();	
