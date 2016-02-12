@@ -1,0 +1,7 @@
+file_id::example
+source_location::/web/static/experiment_files/sthyexample.txt
+target_location::/web/static/experiment_files/tthyexample.txt
+source_theorem::forall x:Nat. sum(x)=qsum(x,0)
+target_theorem::forall x:List. rev(x)=qrev(x,nil)
+source_lemma::forall x,y:Nat. sum(x)+y=qsum(x,y)
+target_lemma::forall x,y:List app(rev(x),y)=qrev(x,y)

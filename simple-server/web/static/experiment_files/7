@@ -1,0 +1,7 @@
+file_id:7
+source_location:/web/static/experiment_files/sthy1.txt
+target_location:/web/static/experiment_files/tthy1.txt
+source_theorem:st1
+target_theorem:tt1
+source_lemma:sl1
+target_lemma:tl1

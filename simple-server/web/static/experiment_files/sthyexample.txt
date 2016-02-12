@@ -1,0 +1,15 @@
+spec NatSuc = 
+   sort Nat
+   op 0:Nat
+   s: Nat -> Nat
+   op sum: Nat -> Nat
+   op qsum: Nat * Nat -> Nat
+   op __ + __ : Nat * Nat -> Nat
+   forall x,y:Nat  
+      . sum(zero) = zero
+      . sum(s(x)) = s(x)+sum(x)  
+      . qsum(s(x),y) = qsum(x,s(x)+y) 
+      . qsum(0,x) = x 
+      . 0 + x = x
+      . s(x) + y = s(x+y)
+end
