@@ -154,7 +154,7 @@ function callNext()
     	
     	//window.alert("Thanks for participating!");
     	save_st();
-    	window.location.href='http://localhost:8300/static/experiment/thanks.html';
+    	window.location.href='/static/experiment/thanks.html';
         return false;
     }
     else{
