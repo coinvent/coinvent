@@ -1,7 +1,7 @@
-file_id:2
-source_location:/web/static/experiment_files/sthy2.txt
-target_location:/web/static/experiment_files/tthy2.txt
-source_theorem:st2
-target_theorem:tt2
-source_lemma:sl2
-target_lemma:tl2
+file_id::2
+source_location::/web/static/experiment_files/sthy2.txt
+target_location::/web/static/experiment_files/tthy2.txt
+source_theorem::forall x:List. rev(rev(x))=x
+target_theorem::forall x:Tree. mirror(mirror(x))=x
+source_lemma::forall x,y:List.  rev(app(x,rev(y))) = app(y,rev(x))
+target_lemma::forall x,y: Tree; p:P.  mirror(join(mirror(x),p,y) = join(x,p,mirror(y))

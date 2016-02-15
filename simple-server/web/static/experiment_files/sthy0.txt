@@ -1,7 +1,18 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf340
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
-
-\f0\fs24 \cf0 Source Theory 0}
+spec NatSuc = 
+   sort Nat
+   op 0:Nat
+   s: Nat -> Nat
+   op sum: Nat -> Nat
+   op qsum: Nat * Nat -> Nat
+   op __ + __ : Nat * Nat -> Nat
+   op __ * __ : Nat * Nat -> Nat
+   forall x,y:Nat  
+      . fact(zero) = s(zero)
+      . fact(s(x)) = s(x)*fact(x)  
+      . qfact(s(x),y) = qsum(x,s(x)*y) 
+      . qfact(0,x) = x 
+      . 0 + x = x
+      . s(x) + y = s(x+y)
+      . 0 * x = 0
+      . s(x) * y = y + (x*y)
+end
