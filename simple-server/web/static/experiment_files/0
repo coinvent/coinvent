@@ -2,6 +2,6 @@ file_id::0
 source_location::/web/static/experiment_files/sthy0.txt
 target_location::/web/static/experiment_files/tthy0.txt
 source_theorem::forall x:Nat.  fact(x) = qfact(x,1)
-target_theorem::forall x,y:Nat.  exp(x,y) = qfact(x,y,1)
+target_theorem::forall x,y:Nat.  exp(x,y) = qexp(x,y,1)
 source_lemma::forall x,y:Nat. fact(x) * y = qfact(x,y)
 target_lemma::forall x,y,z:Nat.  exp(x,y) * z = qexp(x,y,z)
