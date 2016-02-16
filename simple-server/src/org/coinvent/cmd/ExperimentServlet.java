@@ -220,10 +220,11 @@ public class ExperimentServlet implements IServlet {
 				 String proveability = webRequest.get("proveability");
 				 String amended_suggestion = webRequest.get("amended_suggestion");
 				 String helpful = webRequest.get("helpful");
+				 String creative = webRequest.get("creative");
 				 
 				 String all = "file_id = "+file_id+"\nresult = "+result+"\ntheir_suggestion = "+
 						 "\ncorrectness = "+correctness+"\nproveability = "+proveability+"\namdended_suggestion = "+
-						 amended_suggestion + "\nhelpul = "+helpful+"\n\n\n------------------------\n\n\n";
+						 amended_suggestion + "\nhelpful = "+helpful+"\ncreative = "+creative+"\n\n\n------------------------\n\n\n";
 				 
 				 try {
 					 

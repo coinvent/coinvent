@@ -37,7 +37,10 @@ $(function() {
 		$('#amended_suggestion').hide();
 		$('#l_helpful').hide();
 		$('#helpful').hide();	
+		$('#l_creative').hide();
+		$('#creaive').hide();
 		$('#nextbtn').hide();	
+
 		/*** WIRING **/
 
 		$('.doBlend').on('click',function(e){
@@ -99,7 +102,8 @@ $.ajax({
 	    	correctness:$('#correctness').val(),
 	    	proveability:$('#proveability').val(),
 	    	amended_suggestion:$('#amended_suggestion').val(),
-	    	helpful:$('#helpful').val()
+	    	helpful:$('#helpful').val(),
+	    	creative:$('#creative').val()
 	    }
         });
 }
@@ -147,7 +151,7 @@ function getInput(name) {
 
 function callNext()
 {
-    if (num==5)
+    if (num==6)
     {
     	//Go to finished page....
     	//window.event.returnValue = false;
@@ -179,6 +183,9 @@ function callNext()
 		$('#l_helpful').hide();
 		$('#helpful').hide();	
 		$('#helpful').val('');
+		$('#l_creative').hide();
+		$('#creative').hide();	
+		$('#creative').val('');
 		$('#nextbtn').hide();	
 		return true;
 	}
@@ -197,7 +204,9 @@ function callBackend()
    $('#l_amended_suggestion').toggle();
    $('#amended_suggestion').toggle();
    $('#l_helpful').toggle();
-   $('#helpful').toggle();		
+   $('#helpful').toggle();
+   $('#l_creative').toggle();
+   $('#creative').toggle();				
    $('#nextbtn').toggle(); 
   } 
   else
