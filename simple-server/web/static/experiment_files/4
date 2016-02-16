@@ -1,7 +1,7 @@
-file_id:4
-source_location:/web/static/experiment_files/sthy1.txt
-target_location:/web/static/experiment_files/tthy1.txt
-source_theorem:st1
-target_theorem:tt1
-source_lemma:sl1
-target_lemma:tl1
+file_id::4
+source_location::/web/static/experiment_files/sthy4.txt
+target_location::/web/static/experiment_files/tthy4.txt
+source_theorem::forall l:List. rotate(l,len(l) = l
+target_theorem::forall t:Tree. rotate(t,allpos(t)) = mirror(t)
+source_lemma::forall l,m:List.  rotate(app(l,m),len(l)) = app(m,l)
+target_lemma::forall t1,t2: Tree; p:Poslist.  rotate(join(t1,p,t2),p) = join(mirror(t1),p,t2)

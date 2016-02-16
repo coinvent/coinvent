@@ -61,23 +61,24 @@ import java.net.InetAddress;
 
 public class ExperimentServlet implements IServlet {
 
+    	private static final int NUM_EXPERIMENTS = 6;
 		private InputFiles[] inputfile;
 	    Random randomNum;
 		private void setupInputFiles() {
 			
 			File l = FileUtils.getWorkingDirectory();
 			String path = l.getAbsolutePath();
-			inputfile=new InputFiles[10];
+			inputfile=new InputFiles[NUM_EXPERIMENTS];
 			inputfile[0] = new InputFiles(path+"/web/static/experiment_files/0");
 			inputfile[1] = new InputFiles(path+"/web/static/experiment_files/1");
 			inputfile[2] = new InputFiles(path+"/web/static/experiment_files/2");
 			inputfile[3] = new InputFiles(path+"/web/static/experiment_files/3");
 			inputfile[4] = new InputFiles(path+"/web/static/experiment_files/4");
 			inputfile[5] = new InputFiles(path+"/web/static/experiment_files/5");
-			inputfile[6] = new InputFiles(path+"/web/static/experiment_files/6");
+		/*	inputfile[6] = new InputFiles(path+"/web/static/experiment_files/6");
 			inputfile[7] = new InputFiles(path+"/web/static/experiment_files/7");
 			inputfile[8] = new InputFiles(path+"/web/static/experiment_files/8");
-			inputfile[9] = new InputFiles(path+"/web/static/experiment_files/9");
+			inputfile[9] = new InputFiles(path+"/web/static/experiment_files/9");*/
 			
 		}
 		
@@ -85,11 +86,11 @@ public class ExperimentServlet implements IServlet {
 			randomNum=new Random();
 			if (s == null)
 			{
-			    return randomNum.nextInt(10);
+			    return randomNum.nextInt(NUM_EXPERIMENTS);
 			}
 			
-		    Integer[] stat_inps = new Integer[10];
-		    for (int i=0;i<10;i++){
+		    Integer[] stat_inps = new Integer[NUM_EXPERIMENTS];
+		    for (int i=0;i<NUM_EXPERIMENTS;i++){
 		    	stat_inps[i] = i;
 		    }
 			for (String n : s.split(" ")) {

@@ -1,0 +1,14 @@
+spec Tree = 
+  List then
+  sort T
+     op tnil:T 
+     op tcons: El * T * T -> T
+     op rem: El * T -> T
+     op rem: T * T -> T
+     forall t,tl,t1,t2: T; d,h: El;
+       . rem_tels(nil,t) = t
+       . rem_tels(cons(h,tl),t) = rem_tels(tl,rem(h,t))
+       . rem(h,tnil) = tnil
+       . not (h=d) => rem(h,tcons(d,t1,t2)) = tcons(d,rem(h,t1),rem(h,t2))
+       . (h=d) => rem(h,tcons(d,t1,t2)) = tnil
+end

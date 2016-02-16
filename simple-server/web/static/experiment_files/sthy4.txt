@@ -1,0 +1,16 @@
+spec List = 
+  NatSuc then
+  sort El
+  sort L
+     op nil:L 
+     op cons: El * L -> L
+     op app: L * L -> L
+     op rotate: L * Nat -> L
+     op lenght: L -> Nat
+     forall x,y: L; h,h':El
+       . app(nil,x) = x
+       . app(cons(h,x),y) = cons(h,app(x,y))
+       . rotate(cons(h,x),y) = rotate(x,cons(x,y))
+       . length(nil) = 0
+       . length(cons(h::x)) = s(length(x))
+end

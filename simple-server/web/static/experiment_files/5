@@ -1,7 +1,7 @@
-file_id:5
-source_location:/web/static/experiment_files/sthy1.txt
-target_location:/web/static/experiment_files/tthy1.txt
-source_theorem:st1
-target_theorem:tt1
-source_lemma:sl1
-target_lemma:tl1
+file_id::5
+source_location::/web/static/experiment_files/sthy5.txt
+target_location::/web/static/experiment_files/tthy5.txt
+source_theorem::forall t:List.  rev(t) = qrev(t,nil)
+target_theorem::forall m,n:Nat.  exp(m,n) = qrev(m,n,1)
+source_lemma::forall t,l: List. rev(t)<>l=qrev(t,l)
+target_lemma::forall m,n,p:Nat. exp(m,n)+p = qexp(m,n,p)
