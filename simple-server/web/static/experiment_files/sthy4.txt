@@ -12,7 +12,7 @@ spec List =
        . app(cons(h,x),y) = cons(h,app(x,y))
        . rotate(l,0) = l
        . rotate(nil,n) = nil
-       . rotate(cons(h,x),(s(n)) = rotate(app(x,cons(h::nil)),n)
+       . rotate(cons(h,x),(s(n)) = rotate(app(x,cons(h,nil)),n)
        . length(nil) = 0
-       . length(cons(h::x)) = s(length(x))
+       . length(cons(h,x)) = s(length(x))
 end
