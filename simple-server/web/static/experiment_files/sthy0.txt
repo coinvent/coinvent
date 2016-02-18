@@ -7,7 +7,7 @@ spec NatSuc =
    op __ + __ : Nat * Nat -> Nat
    op __ * __ : Nat * Nat -> Nat
    forall x,y:Nat  
-      . fact(zero) = s(zero)
+      . fact(0) = s(0)
       . fact(s(x)) = s(x)*fact(x)  
       . qfact(s(x),y) = qsum(x,s(x)*y) 
       . qfact(0,x) = x 

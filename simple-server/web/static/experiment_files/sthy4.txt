@@ -10,7 +10,7 @@ spec List =
      forall x,y: L; h,h':El; n:Nat
        . app(nil,x) = x
        . app(cons(h,x),y) = cons(h,app(x,y))
-       . rotate(l,0) = l
+       . rotate(x,0) = x
        . rotate(nil,n) = nil
        . rotate(cons(h,x),(s(n)) = rotate(app(x,cons(h,nil)),n)
        . length(nil) = 0

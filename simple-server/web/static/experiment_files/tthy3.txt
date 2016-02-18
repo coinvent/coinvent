@@ -6,7 +6,7 @@ spec Tree =
      op rem: El * T -> T
      op rem: T * T -> T
      pred mem: El * L
-     forall t,tl,t1,t2: T; d,h: El;
+     forall t,tl,t1,t2: T; d,h: El
        . rem_tels(nil,t) = t
        . rem_tels(cons(h,tl),t) = rem_tels(tl,rem(h,t))
        . rem(h,tnil) = tnil

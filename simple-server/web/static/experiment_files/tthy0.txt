@@ -7,7 +7,7 @@ spec NatSuc =
    op __ + __ : Nat * Nat -> Nat
    op __ * __ : Nat * Nat -> Nat
    forall x,y,z:Nat  
-      . exp(x,zero) = s(zero)
+      . exp(x,0) = s(0)
       . exp(x,s(y)) = x * exp(x,y)  
       . qexp(x,s(y),z) = qexp(x,y,y*z) 
       . qexp(x,0,z) = z
