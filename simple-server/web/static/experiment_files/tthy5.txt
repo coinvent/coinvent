@@ -2,15 +2,15 @@ spec NatSuc =
    sort Nat
    op 0:Nat
    s: Nat -> Nat
-   op sum: Nat -> Nat
-   op qsum: Nat * Nat -> Nat
+   op exp: Nat -> Nat
+   op qexp: Nat * Nat -> Nat
    op __ + __ : Nat * Nat -> Nat
    op __ * __ : Nat * Nat -> Nat
    forall x,y:Nat  
       . exp(x,zero) = s(zero)
       . exp(x,s(y)) = x * exp(x,y)  
-      . qfact(s(x),y) = qsum(x,s(x)*y) 
-      . qfact(0,x) = x 
+      . qexp(x,s(y),z) = qexp(x,y,y*z) 
+      . qexp(x,0,z) = z
       . 0 + x = x
       . s(x) + y = s(x+y)
       . 0 * x = 0

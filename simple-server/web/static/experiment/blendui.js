@@ -38,7 +38,7 @@ $(function() {
 		$('#l_helpful').hide();
 		$('#helpful').hide();	
 		$('#l_creative').hide();
-		$('#creaive').hide();
+		$('#creative').hide();
 		$('#nextbtn').hide();	
 
 		/*** WIRING **/
