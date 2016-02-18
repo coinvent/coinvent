@@ -6,11 +6,13 @@ spec List =
      op cons: El * L -> L
      op app: L * L -> L
      op rotate: L * Nat -> L
-     op lenght: L -> Nat
-     forall x,y: L; h,h':El
+     op length: L -> Nat
+     forall x,y: L; h,h':El; n:Nat.
        . app(nil,x) = x
        . app(cons(h,x),y) = cons(h,app(x,y))
-       . rotate(cons(h,x),y) = rotate(x,cons(x,y))
+       . rotate(l,0) = l
+       . rotate(nil,n) = nil
+       . rotate(cons(h,x),(s(n)) = rotate(app(x,cons(h::nil)),n)
        . length(nil) = 0
        . length(cons(h::x)) = s(length(x))
 end
