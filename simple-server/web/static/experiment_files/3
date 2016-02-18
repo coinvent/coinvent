@@ -4,4 +4,4 @@ target_location::/web/static/experiment_files/tthy3.txt
 source_theorem::forall x:List.  rem_els(x,x) = nil
 target_theorem::forall x:Tree.  rem_tels(x,x) = tnil
 source_lemma::forall x,y,z: List. rem_els(x,app(y,z)) = app(rem_els(x,y),rem_els(x,z))
-target_lemma::forall x,y,z: Tree; d:El. rem_tels(x,tcons(d,y,z)) = tcons(d,rem_tels(x,y),rem_tels(x,z))
+target_lemma::forall x:List; y,z: Tree; d:El. not (mem(d,x)) => rem_tels(x,tcons(d,y,z)) = tcons(d,rem_tels(x,y),rem_tels(x,z))
