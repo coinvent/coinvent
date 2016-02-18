@@ -2,11 +2,11 @@ spec NatSuc =
    sort Nat
    op 0:Nat
    s: Nat -> Nat
-   op exp: Nat -> Nat
-   op qexp: Nat * Nat -> Nat
+   op exp: Nat * Nat -> Nat
+   op qexp: Nat * Nat * Nat -> Nat
    op __ + __ : Nat * Nat -> Nat
    op __ * __ : Nat * Nat -> Nat
-   forall x,y:Nat  
+   forall x,y,z:Nat  
       . exp(x,zero) = s(zero)
       . exp(x,s(y)) = x * exp(x,y)  
       . qexp(x,s(y),z) = qexp(x,y,y*z) 
