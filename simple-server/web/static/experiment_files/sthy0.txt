@@ -2,8 +2,8 @@ spec NatSuc =
    sort Nat
    op 0:Nat
    s: Nat -> Nat
-   op sum: Nat -> Nat
-   op qsum: Nat * Nat -> Nat
+   op fact: Nat -> Nat
+   op qfact: Nat * Nat -> Nat
    op __ + __ : Nat * Nat -> Nat
    op __ * __ : Nat * Nat -> Nat
    forall x,y:Nat  
