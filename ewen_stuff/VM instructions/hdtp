@@ -1,0 +1,42 @@
+Hi,
+
+some first version with small changes.
+
+I had more but there are still some problems with them so here is
+a version that at least:
+
+- gives casl like output for renamings
+- continously produces answers
+
+instead of the hdtp predicate there is now a gen_simple_casl predicate
+
+usage:
+testcasl2:-load_analogy('multipletest',Analogy),disable(maprules),enable(one_to_one),gen_simple_casl(Analogy)
+
+where multipletest was just the file with the analogy as usual.
+
+this just does the mapping with renaming and no transfer.
+
+when given an answer it will print true at the end.
+Which is prologs way of saying there might be more answers.
+If a ; character is supplied it will generate the next mapping.
+
+The last mapping could be e.g.:
+
+interpretation mapping: house to t =
+%Cost = 12
+false.
+
+which is the empty mapping. There might be a better way to represent this.
+
+The false here means prolog has no more answers.
+
+gen_simple_casl(Limit,Analogy) works too where Limit is a Cost Limit number.
+
+One thing i can add if its needed is another predicate that does not ask for a key to generate the next answer but just keeps
+on generating answers until none are left anymore. Would that be useful?
+
+Im will be employed (still have to get the contract) from 1.7 on as a researcher in osnabrueck.
+
+Cheers,
+Martin

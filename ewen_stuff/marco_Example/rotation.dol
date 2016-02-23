@@ -1,0 +1,115 @@
+logic CASL
+
+spec Magnitude = 
+  sort X
+  preds 
+    __ > __: X*X
+  ops
+    zerosize:X
+   forall x,y,z:X
+       . (not (zerosize = x)) => x > zerosize 
+       . (x > y) /\ (y > z) => (x > z)
+end
+
+spec Rotation180 =
+  sorts Elem,Size
+
+  preds 
+    left: Elem
+    right: Elem    
+
+  %[sort Size = {x:Elem. right(x)}]%
+
+  ops 
+    origin: Elem
+    rotate: Elem * Elem -> Elem
+    size: Elem -> Size
+ forall x:Elem
+    . left(x) <=> right(rotate(origin,x)) 
+    . size(rotate(origin,x)) = size(x) 
+    . rotate(origin,origin) = origin
+    . (not left(origin)) /\ (not right(origin))
+    . (not (x=origin)) => not (left(x) /\ right(x))
+    . not (x=origin) => (left(x) \/ right(x))
+end
+
+
+spec Line =
+  Magnitude with X |-> Dist then 
+  sort X 
+  preds 
+    rightof: X * X 
+    leftof: X * X
+  op 
+   distance: X * X -> Dist
+  forall x,y:X
+    . rightof(x,y) <=> leftof(y,x)
+    . (not rightof(x,x)) /\ (not leftof(x,x))
+    . distance(x,y) = distance(y,x)
+    . distance(x,x) = zerosize
+end
+
+spec GenericNatLine =
+  sort X
+end
+
+
+
+
+spec NatSuc = 
+   sort Num
+   ops zero:Num
+       __ + __: Num * Num -> Num
+       suc: Num -> Num
+   pred 
+      __ < __: Num * Num
+
+forall x,y,z: Num
+     . not (x<x)
+     . x<y /\ y < z => x<z
+     . x<y \/ x = y \/ y<x
+     . x<y <=> (suc(x) = y \/ exists sx:Num.
+                     suc(x)= sx /\ sx < y)
+     . suc(x) = y /\ suc(x) = z => y = z
+     . suc(x) = suc(y) => x=y
+     . exists a: Num . suc(x) = a
+     . not (suc(x) = zero)
+     . suc(x) = y => zero < y
+     . x<y => suc(x) < suc(y)
+     . zero + y = y
+     . suc(x) + y = suc(x+y)
+end
+
+interpretation IG1: GenericNatLine to NatSuc = 
+  X |-> Num
+
+interpretation IG2: GenericNatLine to Line = 
+  X |-> X
+
+spec Numberline= combine IG1, IG2
+   with 
+     zero |-> zz,
+     X |-> TT  
+
+
+spec Generic = 
+  sort Z
+  ops
+     fulchrum: Z
+end
+
+
+interpretation I1: Generic to Rotation180 =
+   fulchrum |-> origin,
+   Z |-> Elem
+
+
+interpretation I2: Generic to Numberline =
+   fulchrum |-> zz,
+   Z |-> TT
+
+spec Blend = combine I1,I2 with 
+   rotate |-> minus,
+   size |-> modulus,
+   left |-> isnegative,
+   right |-> ispositive

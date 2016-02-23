@@ -1,0 +1,57 @@
+\begin{hetcasl}
+\KW{library} \Id{rotation}\\
+\\
+\KW{logic} \SId{CASL}\\
+\\
+\SPEC \=\SIdIndex{Rotation180} \Ax{=}\\
+\> \KW{free} \KW{type} \=\Id{Side} \Ax{:}\Ax{:}\=\Ax{=} \Id{left} \AltBar{} \Id{right}\\
+\> \SORTS \=\Id{Elem}, \Id{Size}\\
+\> \OPS \=\Id{origin} \Ax{:} \Id{Elem};\\
+\>\> \Id{side} \Ax{:} \=\Id{Elem} \Ax{\rightarrow} \Id{Side};\\
+\>\> \Id{rotate} \Ax{:} \=\Id{Elem} \Ax{\times} \Id{Elem} \Ax{\rightarrow} \Id{Elem};\\
+\>\> \Id{size} \Ax{:} \=\Id{Elem} \Ax{\rightarrow} \Id{Size};\\
+\>\> \Id{flip} \Ax{:} \=\Id{Side} \Ax{\rightarrow} \Id{Side}\\
+\> \Ax{\forall} \=\Id{y} \Ax{:} \Id{Side} \\
+\> \Ax{\bullet} \=\Id{flip}(\Id{left}) \Ax{=} \Id{right}\\
+\> \Ax{\bullet} \=\Id{flip}(\Id{right}) \Ax{=} \Id{left}\\
+\> \Ax{\forall} \=\Id{x} \Ax{:} \Id{Elem} \\
+\> \Ax{\bullet} \=\Id{size}(\Id{rotate}(\=\Id{x}, \Id{origin})) \Ax{=} \Id{size}(\Id{x})\\
+\> \Ax{\bullet} \=\Id{side}(\Id{rotate}(\=\Id{x}, \Id{origin})) \Ax{=} \Id{flip}(\Id{side}(\Id{rotate}(\=\Id{x}, \Id{origin})))\\
+\KW{end}\\
+\\
+\SPEC \=\SIdIndex{NatSuc} \Ax{=}\\
+\> \SORT \Id{Num}\\
+\> \OPS \=\Id{zero} \Ax{:} \Id{Num};\\
+\>\> \Ax{\_\_}\Ax{+}\Ax{\_\_} \Ax{:} \=\Id{Num} \Ax{\times} \Id{Num} \Ax{\rightarrow} \Id{Num};\\
+\>\> \Id{suc} \Ax{:} \=\Id{Num} \Ax{\rightarrow} \Id{Num}\\
+\> \PRED \=\Ax{\_\_}\Ax{<}\Ax{\_\_} \Ax{:} \=\Id{Num} \Ax{\times} \Id{Num}\\
+\> \Ax{\forall} \=\Id{x}, \Id{y}, \Id{z} \Ax{:} \Id{Num} \\
+\> \Ax{\bullet} \Ax{\neg} \=\Id{x} \Ax{<} \Id{x}\\
+\> \Ax{\bullet} \=\Id{x} \Ax{<} \Id{y} \Ax{\wedge} \=\Id{y} \Ax{<} \Id{z} \Ax{\Rightarrow} \=\Id{x} \Ax{<} \Id{z}\\
+\> \Ax{\bullet} \=\Id{x} \Ax{<} \Id{y} \Ax{\vee} \=\Id{x} \Ax{=} \Id{y} \Ax{\vee} \=\Id{y} \Ax{<} \Id{x}\\
+\> \Ax{\bullet} \=\Id{x} \Ax{<} \Id{y} \Ax{\Leftrightarrow} \=\Id{suc}(\Id{x}) \Ax{=} \Id{y} \Ax{\vee} \=\Ax{\exists} \Id{sx} \Ax{:} \Id{Num} \Ax{\bullet} \=\Id{suc}(\Id{x}) \Ax{=} \Id{sx} \Ax{\wedge} \=\Id{sx} \Ax{<} \Id{y}\\
+\> \Ax{\bullet} \=\Id{suc}(\Id{x}) \Ax{=} \Id{y} \Ax{\wedge} \=\Id{suc}(\Id{x}) \Ax{=} \Id{z} \Ax{\Rightarrow} \=\Id{y} \Ax{=} \Id{z}\\
+\> \Ax{\bullet} \=\Id{suc}(\Id{x}) \Ax{=} \Id{suc}(\Id{y}) \Ax{\Rightarrow} \=\Id{x} \Ax{=} \Id{y}\\
+\> \Ax{\bullet} \=\Ax{\exists} \Id{a} \Ax{:} \Id{Num} \Ax{\bullet} \=\Id{suc}(\Id{x}) \Ax{=} \Id{a}\\
+\> \Ax{\bullet} \Ax{\neg} \=\Id{suc}(\Id{x}) \Ax{=} \Id{zero}\\
+\> \Ax{\bullet} \=\Id{suc}(\Id{x}) \Ax{=} \Id{y} \Ax{\Rightarrow} \=\Id{zero} \Ax{<} \Id{y}\\
+\> \Ax{\bullet} \=\Id{x} \Ax{<} \Id{y} \Ax{\Rightarrow} \=\Id{suc}(\Id{x}) \Ax{<} \Id{suc}(\Id{y})\\
+\> \Ax{\bullet} \=\Id{zero} \Ax{+} \Id{y} \Ax{=} \Id{y}\\
+\> \Ax{\bullet} \=\Id{suc}(\Id{x}) \Ax{+} \Id{y} \Ax{=} \Id{suc}(\=\Id{x} \Ax{+} \Id{y})\\
+\KW{end}\\
+\\
+\SPEC \=\SIdIndex{Generic} \Ax{=}\\
+\> \SORT \Id{X}\\
+\> \OP \=\Id{fulchrum} \Ax{:} \Id{X}\\
+\KW{end}\\
+\\
+\VIEW \=\SId{I1} \Ax{:} \SId{Generic} \KW{to} \SId{Rotation180} \Ax{=} \=\Id{fulchrum} \Ax{\mapsto} \Id{origin}\\
+\KW{end}\\
+\\
+\VIEW \=\SId{I2} \Ax{:} \SId{Generic} \KW{to} \SId{NatSuc} \Ax{=} \=\Id{fulchrum} \Ax{\mapsto} \Id{zero}\\
+\KW{end}\\
+\\
+\SPEC \=\SIdIndex{Blend} \Ax{=}\\
+\> \KW{combine} \=\Id{I1}, \Id{I2}\\
+\KW{end}
+\end{hetcasl}

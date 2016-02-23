@@ -242,6 +242,12 @@ name_atom_follow_flinks(Var,Name):-
 name_atom_follow_flinks(Var,Name):-
     name_atom(Var,Name),!.    
 
+casl_name_atom(Var,Name):-
+    get_attr(Var,caslname,Name),!.
+
+casl_name_atom(Var,Name):-
+    name_atom(Var,Name).
+
 name_atom(Var,Name):-
     get_attr(Var,name,Name),!.
 
@@ -321,9 +327,9 @@ extract_mappings([Var|Vars],[mapping(Svarnameatom,Svarf,Var,Tvarf,Tvarnameatom)|
     get_attr(Var,source_link,Svar),
     get_attr(Var,target_link,Tvar),
     get_attr(Svar,reverse_link,f_reverse(Svarf)),
-    name_atom(Svarf,Svarnameatom),
+    casl_name_atom(Svarf,Svarnameatom),
     get_attr(Tvar,reverse_link,f_reverse(Tvarf)),
-    name_atom(Tvarf,Tvarnameatom),!,
+    casl_name_atom(Tvarf,Tvarnameatom),!,
     extract_mappings(Vars,Mappings).
 
 extract_mappings([Var|Vars],[mapping(Svar,Var,Tvar)|Mappings]):-

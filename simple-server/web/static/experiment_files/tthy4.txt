@@ -1,0 +1,26 @@
+spec Tree = 
+  sort El
+  sort T
+  sort P
+  sort Poslist
+  free type Pel ::= l | r
+     op tnil:T 
+     op pnil:P
+     op pcons: Pel * P -> P
+     op tcons: El * T * T -> T
+     op join: T * P * T -> T
+     op mirror: T -> T
+     op rotate: T * P -> T
+     op allpos: T -> Poslist
+     pred valid: P * T
+     forall t,tl,tr: T; p,p',pt:P; d:El
+       . join(t,pnil,tnil) = t
+       . valid(p,tl) => join(t,pcons(l,p'),tcons(d,tl,tr)) = tcons(d,join(t,p',tl),tr)
+       . valid(p,tr) => join(t,pcons(r,p'),tcons(d,tl,tr)) = tcons(d,tl,join(t,p',tr))
+       . mirror(tnil) = tnil
+       . mirror(tcons(d,tl,tr)) = tcons(d,mirror(tr),mirror(tl))
+       . rotate(tnil,p) = tnil
+       . rotate(tcons(d,tl,tr),pnil) =tcons(d,tr,tl)
+       . rotate(tcons(d,tl,tr),pcons(l,pt)) = tcons(d,rotate(tl,pt),tr)
+       . rotate(tcons(d,tl,tr),pcons(r,pt)) = tcons(d,tl,rotate(tl,pt))
+end

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/static/img/favicon.ico">
+
+    <title>CoInvent Blend UI</title>
+	
+	<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet/less" type="text/css" href="/static/css/coinvent.less">
+	<script src="/static/lib/less.js" type="text/javascript"></script>      
+  </head>
+
+  <body role="document">
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">CoInvent</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">HETS</a></li>
+            <li><a href="#aboutModal" data-toggle="modal" data-target="#aboutModal">About</a></li>            
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav><!-- ./navbar -->
+
+    <div id='main-container' class="container" role="main">
+
+	<h3>Instructions</h3>
+
+  <div class='flexbox'>
+    <div class='flexitem'>
+      This experiment is designed to show the user some lemmas which are used to prove certain tricky theorems. It is best viewed on a <b>chrome</b> browser if possible. The theorems in question are referred to as <b>source theorems</b>. These theorems are proveable, but only with the assistance of the creative lemma given by the <b>source lemma</b>. <br></br>
+      The system will show you in one area of the screen a simple theory expressed in simply typed first order logic (CASL to be precise) labelled "Source Theory", and underneath the source theorem and lemma. Both the source theorem and source lemma are known to be proveable, and source lemma is known to be a valid generalisation which facilitates the proof of the source theorem.<br></br>
+      In the area of the screen labelled "Target Theory", another theory is shown. A new theorem is stated called the <b>target theorem</b>. This theorem is also known to be proveable, but there is initially no suggestion given as to what a creative lemma may be which would facilitate the proof of the theorem. Once you press the button labelled "Generate Analogous Lemma", a suggestion will be given in the box labelled "Target Lemma". There may be a target lemma given (you can resize the box if necessary), or the box may inform you that no target lemma has been invented. <br></br>
+      You are then presented with a set of questions depending on whether a suggestion was given:<p></p>
+      <table>
+      <tr><td><b>Is the target lemma true?</b></td><td>Please answer yes, no or don't know.</td></tr>
+      <tr><td><b>Do you think this target lemma will help prove the target theorem?</b></td><td>Please answer yes, no or don't know.</td></tr>
+      <tr><td><b>Do you have a better suggestion for a target lemma?</b></td><td>If you have a good idea for a creative lemma to help prove the target theorem please enter it.</td></tr>
+      <tr><td><b>Was the system helpful?</b></td><td>Do you think the target lemma given would help you to formulate a useful lemma for the theory? i.e. do you think it was better than having to invent a target lemma for yourself?</td></tr>
+      <tr><td><b>Was the target lemma creative?</b></td><td>Do you think inventing the target lemma displayed creativity?</td></tr>
+      <tr><td><b>What is your suggestion?</b></td><td>In the event no target lemma is given you are invited to provide a suggestion for a target lemma if you can think of one.</td></tr>
+    </table>
+    </div>
+    <p></p>
+  </div>
+      <div class='flexbox' id="nextbtn">
+        <div class='well pad10'>
+          <button id ="nextbtn" class='btn btn-primary doNext'>Start Experiment</button>
+        </div>
+      </div>		
+		</form>   
+		
+		
+				
+
+
+		<!-- <div class='well pad10'>
+			<form>
+				Name <input class='form-control' type='text'>
+				<button class='btn btn-default doSave'>Save</button>			
+			</form>
+		</div> -->		
+			   
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="https://code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
+	<script src="/static/lib/bootstrap.min.js" type="text/javascript"></script>
+	<script src="/static/lib/underscore-min.js" type="text/javascript"></script>
+    <script src="/static/lib/SJTest.js" type="text/javascript"></script>
+    <script src="/static/lib/console.js" type="text/javascript"></script>
+    <script src="/static/lib/Templates.js" type="text/javascript"></script>
+    <script src="/static/experiment_unsupervised/blendui.js" type="text/javascript"></script>
+    
+    
+    <div id='aboutModal' class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">HDTP web front-end</h4>
+      </div>
+      <div class="modal-body">
+        <p>HDTP by Martin Mohrmann</p>
+        <p>Client/server developed by Ewen Maclean and Daniel Winterstein from the University of Edinburgh</p>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+  </body>
+</html>

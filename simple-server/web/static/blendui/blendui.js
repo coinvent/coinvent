@@ -35,7 +35,11 @@ $(function() {
 			e.preventDefault();
 			callBackend('close');
 		});
-		
+
+		$('.doSave').on('click',function(e){
+			e.preventDefault();
+			callSave();
+		});
 	}); 
 
 });
@@ -48,7 +52,26 @@ function getInput(name) {
 			};
 }
 
+function callSave() {
+    var blendname = $('input[name=blendname]').val();
+    var blend = $('textarea[name=output]').val();
+    $.ajax({
+	url: '/cmd/blend',
+	data: {
+		action:"save",
+		blendname: blendname,
+		blend: blend
+		}
+        })
+	.then(function(a,b)
+	{
+		window.location.reload();
+	});		
+}
+
+
 function callBackend(action) {
+	var username = window.username;
 	var input1 = getInput('input1');
 	var input2 = getInput('input2');
 	$('.doBlend').attr('disabled','disabled');
@@ -58,6 +81,7 @@ function callBackend(action) {
 	$.ajax({
 		url: '/cmd/blend',
 		data: {
+			username:username,
 			action:action,
 			input1: JSON.stringify(input1),
 			input2: JSON.stringify(input2),
@@ -68,14 +92,27 @@ function callBackend(action) {
 		console.warn(a,b);
 		$('.doBlend').attr('disabled',false);
 		$('.doBlendNext').attr('disabled',false);
-		$('.doBlendclose').attr('disabled',false);
-		var output = ""+a.cargo.output;
+		var output = "" + a.cargo.input1.text +"\n\n"+ 
+			a.cargo.input2.text +"\n\n"+ a.cargo.output;
 		$('.outputLoading').hide();
-		$('textarea[name=output]').removeClass('loading');
-		$('textarea[name=output]').val(output);
 		if (a.cargo.pid) {
-			$('input[name=pid]').val(a.cargo.pid);
+		$('input[name=pid]').val(a.cargo.pid);
 		}
+		pid = $('input[name=pid]').val();
+		$.ajax({
+			url: '/cmd/HETS',
+   			data: {
+				action: 'full-theories',
+				contents:output,
+				pid: pid
+				}
+			})
+			.then(function(c,d){
+			console.warn(c,d);
+			$('textarea[name=output]').removeClass('loading'); 
+			$('textarea[name=output]').val(c.cargo.blend);	
+			$('iframe[id=svg]').attr("src",c.cargo.svg);
+			});
 	});
 }
 

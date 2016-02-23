@@ -109,10 +109,10 @@ public class HDTPCommand {
 	public String getOutput() throws IOException {
 		while(true) {
 			String outs = proc.getOutput().trim();
-			if (outs.endsWith("NEXT") || outs.endsWith("FINISHED")) {
+			if (outs.endsWith("\'NEXT\'") || outs.endsWith("\'FINISHED\'")) {
 				// trim the end
-				outs = StrUtils.pop(outs, "NEXT");
-				outs = StrUtils.pop(outs, "FINISHED");
+				outs = StrUtils.pop(outs, "\'NEXT\'");
+				outs = StrUtils.pop(outs, "\'FINISHED\'");
 				return outs;
 			}
 			if ( ! proc.isOutputting()) return outs;

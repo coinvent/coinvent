@@ -1,0 +1,7 @@
+file_id::5
+source_location::/web/static/experiment_files/sthy5.txt
+target_location::/web/static/experiment_files/tthy5.txt
+source_theorem::forall t:List.  rev(t) = qrev(t,nil)
+target_theorem::forall m,n:Nat.  exp(m,n) = qexp(m,n,1)
+source_lemma::forall t,l: List. app(rev(t),l)=qrev(t,l)
+target_lemma::forall m,n,p:Nat. exp(m,n)+p = qexp(m,n,p)
