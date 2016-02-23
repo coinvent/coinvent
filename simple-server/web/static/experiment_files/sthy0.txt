@@ -9,7 +9,7 @@ spec NatSuc =
    forall x,y:Nat  
       . fact(0) = s(0)
       . fact(s(x)) = s(x)*fact(x)  
-      . qfact(s(x),y) = qsum(x,s(x)*y) 
+      . qfact(s(x),y) = qfact(x,s(x)*y) 
       . qfact(0,x) = x 
       . 0 + x = x
       . s(x) + y = s(x+y)

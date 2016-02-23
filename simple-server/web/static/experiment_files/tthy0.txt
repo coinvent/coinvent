@@ -9,7 +9,7 @@ spec NatSuc =
    forall x,y,z:Nat  
       . exp(x,0) = s(0)
       . exp(x,s(y)) = x * exp(x,y)  
-      . qexp(x,s(y),z) = qexp(x,y,y*z) 
+      . qexp(x,s(y),z) = qexp(x,y,x*z) 
       . qexp(x,0,z) = z
       . 0 + x = x
       . s(x) + y = s(x+y)
