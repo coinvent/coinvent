@@ -8,6 +8,7 @@ import org.coinvent.CoinventConfig;
 import org.coinvent.ProcessActiveTriple;
 
 import winterwell.utils.containers.ArrayMap;
+import winterwell.utils.reporting.Log;
 import winterwell.web.ajax.JsonResponse;
 import winterwell.web.app.WebRequest;
 
@@ -147,6 +148,7 @@ public class HdtpServlet implements IServlet {
 				String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s "+HDTPCommand.HDTP.getCanonicalPath()+" -t \""
 						+ cmd + "\"";
 			
+				Log.d(getClass().getSimpleName(), procstr);
 				System.out.println(procstr);
 				ProcessActiveTriple pa = null;
 				Process proc = null;
