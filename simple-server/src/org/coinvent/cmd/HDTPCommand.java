@@ -1,29 +1,17 @@
 package org.coinvent.cmd;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Arrays;
-
-import org.coinvent.CoinventConfig;
-import org.coinvent.ProcessActiveTriple;
-import org.coinvent.HdtpRequests.HdtpRequest;
-import org.coinvent.HdtpRequests.ReadType;
-import org.coinvent.ProcessActiveTriple.ActiveType;
-
-import com.winterwell.utils.io.FileUtils;
-import com.winterwell.utils.Proc;
 
 import winterwell.utils.ShellScript;
 import winterwell.utils.StrUtils;
 import winterwell.utils.Utils;
 import winterwell.utils.reporting.Log;
+
+import com.winterwell.utils.Proc;
+import com.winterwell.utils.io.FileUtils;
 
 /**
  * Run HDTP from within Java

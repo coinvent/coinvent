@@ -1,5 +1,7 @@
 import java.io.File;
 
+import org.coinvent.SimpleServer;
+
 import winterwell.bob.BuildTask;
 import winterwell.bob.tasks.GitTask;
 import winterwell.bob.tasks.JarTask;
@@ -17,6 +19,7 @@ public class PublishCoinventSimpleServer extends BuildTask {
 		// Jar
 		File jarFile = new File(projectDir, "simple-server.jar");
 		JarTask jar = new JarTask(jarFile, new File(projectDir, "web/WEB-INF/classes"));
+		jar.setManifestProperty(jar.MANIFEST_MAIN_CLASS, SimpleServer.class.getName());
 		jar.setAppend(false);
 		// Version = date Is this good or bogus?
 		Time vt = new Time();
@@ -29,6 +32,11 @@ public class PublishCoinventSimpleServer extends BuildTask {
 		// scp -r -P 3022 -i ~/.ssh/ewen@Coinvent-Ewen my-local-dir/simple-server ewen@frank.soda.sh:~/simple-server
 		
 		// NB: use tmux on the server to go into a persistent screen
+		
+		// Needs special .ssh/config file:
+//		host frank.soda.sh
+//			IdentityFile ~/.ssh/ewen@Coinvent-Ewen
+//			Port 3022
 		
 		RSyncTask rsync = new RSyncTask(projectDir.getAbsolutePath()+"/", "ewen@frank.soda.sh:~/simple-server", false);
 //		rsync.addArg("-e 'ssh -p 3022 -i ~/.ssh/ewen@Coinvent-Ewen'");

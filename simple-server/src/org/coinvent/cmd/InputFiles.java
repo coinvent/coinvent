@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
+import winterwell.utils.io.LineReader;
 
 import com.winterwell.utils.io.FileUtils;
 
@@ -52,11 +52,9 @@ public class InputFiles {
   
   
   public InputFiles(String filename){ 
-	  try
-	  {
-		  
-		  
-	  for (String line : Files.readAllLines(Paths.get(filename))) {
+//	  try
+//	  {		  		  
+	  for (String line : new LineReader(new File(filename))) { //Files.readAllLines(Paths.get(filename))) {
 		  String[] part = new String[6];
 		  part = line.split("::");
 		  switch (part[0])
@@ -85,16 +83,13 @@ public class InputFiles {
 		  default:
 			  break;
 		  }
-	  	}
-		
-	  }
-	  catch(IOException e) {
-			e.printStackTrace();
-			 
-		
-	  }
-	  
-	  
+	  }			  
+  // let it crash -- if there's a problem, we want to know
+//	  catch(IOException e) {
+//			e.printStackTrace();
+//			 
+//		
+//	  }	  	  
   }
   
 }
