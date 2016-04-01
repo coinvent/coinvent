@@ -65,7 +65,7 @@ public class HETSServlet implements IServlet {
 					String pid = webRequest.get("pid");
 					cmd.setlocalfile("/web/static/hetsfile"+pid+".dol");
 					// For testing
-					//cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"6253"+".dol");
+					//cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"10581"+".dol");
 					cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+pid+".dol");
 					File file = new File(FileUtils.getWorkingDirectory(), cmd.getlocalfile());
 					FileUtils.write(file, contents);
@@ -95,7 +95,7 @@ public class HETSServlet implements IServlet {
 					//put into cargo response... 
 					 conn.disconnect();
 					 // parse output to get casl back...
-				     ArrayMap cargo  = HETSCommand.parseHetsResponse(output);
+				     ArrayMap cargo  = HETSCommand.parseHetsResponse(output,cmd.getlocalurl());
 					 //do webrequestthing
 					
 						
