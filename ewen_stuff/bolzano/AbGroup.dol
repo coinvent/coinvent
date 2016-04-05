@@ -1,0 +1,6 @@
+spec Ab  = 
+   sort S;
+   op b: S*S -> S;
+   forall x,y:S
+   .  (b(x,y)=b(y,x));
+ end

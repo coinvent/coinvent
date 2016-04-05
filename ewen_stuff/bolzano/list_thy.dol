@@ -1,0 +1,20 @@
+spec List = 
+  sort Nat;
+  sort El;
+  sort L;
+     op 0: Nat;
+     op s: Nat -> Nat;
+     op nil:L;
+     op consp: El * L * L -> L;
+     op app: L * L -> L;
+     op rotate: L * Nat -> L;
+     op length: L -> Nat;
+     forall x,y,z: L; h,h':El; n:Nat
+       . (app(nil,x) = x);
+       . (app(consp(h,x,z),y) = consp(h,(app(x,y)),z));
+       . (rotate(x,0) = x);
+       . (rotate(nil,n) = nil);
+       . (rotate(consp(h,x,z),(s(n))) = rotate(app(x,cons(h,nil,z)),n))
+       . (length(nil) = 0)
+       . (length(cons(h,x,z)) = s(length(x)));
+end

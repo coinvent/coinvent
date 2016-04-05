@@ -1,0 +1,13 @@
+\contentsline {section}{\numberline {1}API usage}{1}{section.1}
+\contentsline {subsection}{\numberline {1.1}Blending with HDTP and HETS}{1}{subsection.1.1}
+\contentsline {subsubsection}{\numberline {1.1.1}Post parameters}{1}{subsubsection.1.1.1}
+\contentsline {subsubsection}{\numberline {1.1.2}JSON response}{1}{subsubsection.1.1.2}
+\contentsline {paragraph}{``list-concepts"}{1}{section*.3}
+\contentsline {paragraph}{``hdtp"}{2}{section*.4}
+\contentsline {paragraph}{``hets"}{2}{section*.5}
+\contentsline {subsection}{\numberline {1.2}Blending with Amalgams}{2}{subsection.1.2}
+\contentsline {subsubsection}{\numberline {1.2.1}Post parameters}{2}{subsubsection.1.2.1}
+\contentsline {subsubsection}{\numberline {1.2.2}JSON response}{3}{subsubsection.1.2.2}
+\contentsline {section}{\numberline {2}Local installation}{4}{section.2}
+\contentsline {section}{\numberline {3}User Interface}{5}{section.3}
+\contentsline {section}{\numberline {4}Worked Example}{6}{section.4}

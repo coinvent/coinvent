@@ -1,0 +1,95 @@
+\section{API usage}
+
+Here we describe the function and specification of the three different APIs implemented for the Coinvent project. We give examples in \S\ref{sec:example}
+
+\subsection{Blending with HDTP and HETS}
+
+
+
+The blend api can be installed locally or is running at the following address
+\begin{center}
+\url{http://148.251.85.37:8300/cmd/blend}
+\end{center}
+
+\subsubsection{Post parameters}
+
+The post options are as follows:
+\begin{description}
+\item[``action"]This is either
+\begin{description}
+\item[``hdtp"] This purely computes a generic space
+\item[``hets"] This computes a generic space and a blend
+\item[``next"] This gives the next answer for a given process id (pid)
+\item[``close"] This closes the given process (pid)
+\item[``list-concepts"] This returns a list of named concepts in the database
+\item[``save"] This saves a computed blend under a given name
+\item[``delete-all"] This deletes all saved concepts in the database
+\end{description}
+\item[``input1"] This defines an input concept. It has properties
+\begin{description}
+\item[``name"]  If this matches an existing concept name in the database this is used
+\item[``url"]  This is the url of an ontology - for example in ontohub
+\item[``text"]  If the name does not match a concept in the database, then the definition can be given in this field
+\end{description}
+\item[``input2"] See input 1
+\item[``pid"] This is the process id of a blend for which you want to get another answer from or close.
+\end{description}
+
+\subsubsection{JSON response}
+
+Depending on the action requested the response is different. Each response is listed here under the action request heading. For any other action request the response carries an empty cargo and simply returns the success status of the command.
+
+\paragraph{``list-concepts"}
+
+This returns a cargo field which is an array of names concepts in the database.
+
+\paragraph{``hdtp"}
+	
+The response cargo field is structured as follows:
+\begin{description}
+\item[``output"] This is the output from running HDTP on the two input theories, {\bf input1} and {\bf input2}.
+\item[``input1"] This is a copy of the input theory given by {\bf input1}
+\item[``input2"] This is a copy of the input theory given by {\bf input2}
+\item[``theory"] This is a file containing both input spaces and the morphisms and generic space calculated by HDTP.
+\item[``pid"] This is a process id by which the process can be referenced; for example to obtain subsequent results from HDTP.
+\end{description}
+ 
+\paragraph{``hets"}
+
+The response cargo field is structured as follows:
+\begin{description}
+\item[``blend"] This is the blend theory output calculated by HETS as the colimit of the two input theories given by {\bf input1} and {\bf input2} with respect to the generic space calculated by HDTP.
+\item[``theoryurl"] This is a url to the combined theory file produced by HETS
+\item[``theory"] This is the whole theory given in theoryurl
+\item[``origtheoryurl"] This is the url of the theory calculated and sent to HETS 
+\item[``pid"] This is the process if by which the process can be referenced.
+\end{description}
+
+
+\subsection{Blending with Amalgams}
+
+The amalgams api can be installed locally or is running at the following address
+\begin{center}
+\url{http://148.251.85.37:8300/cmd/amalgams}
+\end{center}
+
+\subsubsection{Post parameters}
+
+\begin{description}
+\item[``id"] This is the process id of an amalgams process.
+\item[``content"] This is a file with potentially many concepts defined in CASL.
+\item[``space\_name1"]  This is the name of a specification in the content field.
+\item[``space\_name2"] This is the name of a specification in the content field.
+\item[``generic\_space"] A generic space can be given to the system
+\item[``exists\_generic\_space"] This is a boolean which specifies if a generic space is given or should be calculated by amalgams
+\item[``request"] This can be one of
+\begin{description}
+\item[``start''] This starts a new amalgams process
+\item[``next"] This request the next answer from amalgams for a given process id
+\item[``close"] This closes the process with given process id
+\end{description}
+\end{description}
+
+\subsubsection{JSON response}
+
+The response field cargo returns the output blend from amalgams computed on the space names given in the post parameters, in a field ``output".
