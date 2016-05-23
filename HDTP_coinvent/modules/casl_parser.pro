@@ -26,18 +26,18 @@ spec(spec(Name,Decls)) -->
          "end".
 
 %spec_then(Decls) --> decl_list(Decls1),blanks,"then",!,blanks,spec_then(Decls2),{append(Decls1,Decls2,Decls)}.
-spec_then(Decls) --> decl_list(Decls).
+spec_then(Decls) --> decl_list([],Decls).
 
 %----
 
-decl_list(Decls) --> decl(Decls1),blanks,decl_list(Decls2),{append(Decls1,Decls2,Decls)}.
-decl_list([]) --> [].
+decl_list(Decls1,Decls4) --> decl(Decls1,Decls2),blanks,{append(Decls1,Decls2,Decls3)},decl_list(Decls3,Decls4).
+decl_list(Decls,Decls) --> [].
 
 %decl([Name]) --> identifier(Name),{not(Name='end')}.
-decl(Decls) --> sortdecl(Decls).
-decl(Decls) --> preddecl(Decls).
-decl(Decls) --> opsdecl(Decls).
-decl(Decls) --> formuladecl(Decls).
+decl(_,Decls) --> sortdecl(Decls).
+decl(_,Decls) --> preddecl(Decls).
+decl(_,Decls) --> opsdecl(Decls).
+decl(OpDecls,Decls) --> formuladecl(OpDecls,Decls).
 
 
 %----
@@ -57,21 +57,45 @@ vardecl(vars(Vars:([]->Sort))) --> var_list(Vars),blanks,":",!,blanks,identifier
 var_list([Var|Vars]) --> identifier(Var),blanks,",",!,blanks,var_list(Vars).
 var_list([Var]) --> identifier(Var).
 
-formuladecl([quantified(Q,Formulas)]) --> quantifier(Q),!,blanks,formula_list(Formulas),blanks,maybe(";").
-formuladecl(Formulas) --> formula_list(Formulas).
+formuladecl(OpDecls,[quantified(Q,Formulas)]) --> quantifier(Q),!,blanks,formula_list(OpDecls,Formulas),blanks,maybe(";").
+formuladecl(OpDecls,Formulas) --> formula_list(OpDecls,Formulas).
 
-formula_list([formula(F)|Formulas]) --> ".",blanks,formula(F),blanks,formula_list(Formulas),!.
-formula_list([formula(F)]) --> ".",blanks,formula(F),blanks,maybe(";").
+formula_list(OpDecls,[formula(F)|Formulas]) --> ".",blanks,formula(OpDecls,F),blanks,maybe(";"),blanks,formula_list(OpDecls,Formulas),!.
+formula_list(OpDecls,[formula(F)]) --> ".",blanks,formula(OpDecls,F),blanks,maybe(";").
 
-formula([quantified(Q,Formulas)]) --> quantifier(Q),blanks,".",!,blanks,formula(Formulas).
-formula(not(Formula)) --> "not",!,blanks,formula(Formula).
-formula(Formula) --> "(",blanks,formula(F1),blanks,opsymbol(Name),blanks,formula(F2),blanks,")",!,{Formula=..[Name,F1,F2]}.
-formula(Formula) --> identifier(Name),"(",!,blanks,arglist(Args),blanks,")",{Formula=..[Name|Args]}.
-formula(Formula) --> identifier(Formula).
-formula(Formula) --> "(",blanks,formula(Formula),blanks,")".
+formula(OpDecls,Formula) --> biformula(OpDecls,Formula).
 
-arglist([Arg|Args]) --> formula(Arg),blanks,",",!,blanks,arglist(Args).
-arglist([Arg]) --> formula(Arg).
+biformula(OpDecls,Formula) --> impformula(OpDecls,F), blanks, biformula_aux(OpDecls,F,Formula).
+biformula_aux(OpDecls,F1,Formula) --> "<=>",!, blanks, impformula(OpDecls,F2),{F3=..['<=>',F1,F2]}, blanks, biformula_aux(OpDecls,F3,Formula).
+biformula_aux(_OpDecls,F,F) --> {}.
+
+impformula(OpDecls,Formula) --> conformula(OpDecls,F), blanks, impformula_aux(OpDecls,F,Formula).
+impformula_aux(OpDecls,F1,Formula) --> "=>",!, blanks, conformula(OpDecls,F2),{F3=..['=>',F1,F2]}, blanks, impformula_aux(OpDecls,F3,Formula).
+impformula_aux(OpDecls,F1,Formula) --> "<= ",!, blanks, conformula(OpDecls,F2),{F3=..['=>',F2,F1]}, blanks, impformula_aux(OpDecls,F3,Formula).
+impformula_aux(_OpDecls,F,F) --> {}.
+
+conformula(OpDecls,Formula) --> eqformula(OpDecls,F), blanks, conformula_aux(OpDecls,F,Formula).
+conformula_aux(OpDecls,F1,Formula) --> "/\\",!, blanks, eqformula(OpDecls,F2),{F3=..['/\\',F1,F2]}, blanks, conformula_aux(OpDecls,F3,Formula).
+conformula_aux(OpDecls,F1,Formula) --> "\\/",!, blanks, eqformula(OpDecls,F2),{F3=..['\\/',F1,F2]}, blanks, conformula_aux(OpDecls,F3,Formula).
+conformula_aux(_OpDecls,F,F) --> {}.
+
+eqformula(OpDecls,Formula) --> opformula(OpDecls,F), blanks, eqformula_aux(OpDecls,F,Formula).
+eqformula_aux(OpDecls,F1,Formula) --> "= ",!,blanks, opformula(OpDecls,F2),{F3=..['=',F1,F2]}, blanks, eqformula_aux(OpDecls,F3,Formula).
+eqformula_aux(_OpDecls,F,F) --> {}.
+
+opformula(OpDecls,Formula) --> iformula(OpDecls,F), blanks, opformula_aux(OpDecls,F,Formula).
+opformula_aux(OpDecls,F1,Formula) --> opsymbol(Name)," ",{atomic_list_concat(["__",Name,"__"],OpName),(member(op(OpName,_),OpDecls);member(pred(OpName,_),OpDecls))},!,blanks,iformula(OpDecls,F2),{F3=..[Name,F1,F2]}, blanks, opformula_aux(OpDecls,F3,Formula).
+opformula_aux(_OpDecls,F,F) --> {}.
+
+
+%%iformula(OpDecls,[quantified(Q,Formulas)]) --> quantifier(Q),!,blanks,formula_list(OpDecls,Formulas).
+iformula(OpDecls,not(Formula)) --> "not",!,blanks,iformula(OpDecls,Formula).
+iformula(OpDecls,Formula) --> "(",blanks,formula(OpDecls,Formula),blanks,")".
+iformula(OpDecls,Formula) --> identifier(Name),"(",!,blanks,arglist(OpDecls,Args),blanks,")",{Formula=..[Name|Args]}.
+iformula(_OpDecls,Formula) --> identifier(Formula).
+
+arglist(OpDecls,[Arg|Args]) --> formula(OpDecls,Arg),blanks,",",!,blanks,arglist(OpDecls,Args).
+arglist(OpDecls,[Arg]) --> formula(OpDecls,Arg).
 
 %----
 
@@ -88,7 +112,7 @@ opnames([Name]) --> predname(Name).
 opname(Name) --> "__",blanks,opsymbol(InfixName),blanks,"__",!,{atomic_list_concat(["__",InfixName,"__"],Name)}.
 opname(Name) --> identifier(Name).
 
-opsymbol(Atom) --> string_without(" \r\n\t_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'",Codes),{atom_codes(Atom,Codes)}.
+opsymbol(Atom) --> string_without(" .;()\r\n\t_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'",Codes),{atom_codes(Atom,Codes)}.
 
 opsignature(Signature->Sort) --> signature(Signature),blanks,"->",blanks,identifier(Sort),!.
 opsignature([]->Sort) --> identifier(Sort).
@@ -114,15 +138,23 @@ signature([Sort]) --> identifier(Sort).
 
 %----
 
-%Todo: sort,sort,sort sort<sort
+sortdecl([]) -->  ("sorts";"sort"),blanks,identifier(_),blanks,"=",!,blanks,subsortdecl,maybe(";").
+sortdecl(Sorts) -->  ("sorts";"sort"),blanks,sort_listsemi(Sorts).
 
-sortdecl(Sorts) -->  ("sorts";"sort"),!,blanks,sort_listsemi(Sorts).
+sort_listsemi(Sorts) --> sort_list(Sorts1),blanks,";",blanks,sort_list(Sorts2),{append(Sorts1,Sorts2,Sorts)}.
+sort_listsemi(Sorts) --> sort_list(Sorts),blanks,";".
 
-sort_listsemi(Sorts) --> sort_listcomma(Sorts1),blanks,";",blanks,sort_listsemi(Sorts2),{append(Sorts1,Sorts2,Sorts)}.
-sort_listsemi(Sorts) --> sort_listcomma(Sorts),blanks,";".
+sort_list(Sorts) --> sort_listcomma(Sorts).
+sort_list([]) --> sort_listsubsort.
 
 sort_listcomma([sort(Sort)|Sorts]) --> identifier(Sort),blanks,",",blanks,sort_listcomma(Sorts).
 sort_listcomma([sort(Sort)]) --> identifier(Sort).
+
+sort_listsubsort --> identifier(_),blanks,",",blanks,sort_listsubsort.
+sort_listsubsort --> identifier(_),blanks,"<",blanks,identifier(_).
+
+
+subsortdecl --> "{",blanks,identifier(_),blanks,":",blanks,identifier(_),blanks,".",blanks,formula([],_),blanks,"}".
 
 %----
 
@@ -130,7 +162,7 @@ atom_without(EndCodes,Atom) --> string_without(EndCodes,Codes),{atom_codes(Atom,
 atom_nonblanks(Atom) --> nonblanks(Codes),{atom_codes(Atom,Codes)}.
 
 identifier(Atom) --> number(Atom),!.
-identifier(Atom) --> string_without(" =:;.+*,(){}\r\n\t",Codes),{atom_codes(Atom,Codes),not(Atom='')}.
+identifier(Atom) --> string_without(" \\/=:;.+*,(){}\r\n\t",Codes),{atom_codes(Atom,Codes),not(Atom='')}.
 
 maybe(Sign)-->Sign.
 maybe(_)-->[].
@@ -143,6 +175,7 @@ transform_spec([formula(Form)|T],Sig           ,[Form|F]):-!,transform_spec(T,Si
 transform_spec([pred(N,S)    |T],[sig(N,S)|Sig],F       ):-!,transform_spec(T,Sig,F).
 transform_spec([op(N,S)      |T],[sig(N,S)|Sig],F       ):-!,transform_spec(T,Sig,F).
 transform_spec([quantified(forall(VarDecl),QForms)|T],SigRet,FRet):-!,
+    %print(QForms),nl,
     collect_qvars(VarDecl,VSig,VarMap),
     convert_qforms(QForms,VSig,CSig,VarMap,CForms),
     append(CForms,F,FRet),
@@ -193,12 +226,12 @@ parse_casl(Casl,Hdtp) :-
 % hacked comment filter - not syntax aware
 filter_comments([],[]).
 
-% %% comments
+% comments
 filter_comments([37,37|Codes],NewCodes):-
     append(_,[10|CodesRest],Codes),!,
     filter_comments(CodesRest,NewCodes).
 
-% % comment %
+% comment
 filter_comments([37|Codes],NewCodes):-
     append(_,[37|CodesRest],Codes),!,
     filter_comments(CodesRest,NewCodes).
@@ -207,9 +240,8 @@ filter_comments([C|Codes],[C|NewCodes]):-
     filter_comments(Codes,NewCodes).
 
 
-%% % text %
-%% %%
-
+%
+%
 filter_codes([],[]).
 
 filter_codes([C|Codes],R):-
@@ -237,8 +269,9 @@ parse_casl_domain(String,domain(Name,Sig,Domain)) :-
     transform_spec(Spec,Sig,Domain).
 
 read_casl_domain(File,domain(Name,Sig,Domain)) :-
-    open(File,read,Stream),
+    catch(open(File,read,Stream),E,(print_message(error,E),halt)),
     read_stream_to_codes(Stream,CodesWithComments),
+    close(Stream),
     filter_comments(CodesWithComments,CodesWithLineEndings),
     filter_codes(CodesWithLineEndings,Codes),
     phrase(casl(Parse),Codes),!,
