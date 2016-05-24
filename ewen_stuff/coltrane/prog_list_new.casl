@@ -9,6 +9,7 @@ spec NatSuc =
    op qfact: Nat * Nat -> Nat
    op plus : Nat * Nat -> Nat
    op times : Nat * Nat -> Nat
+   op minus : Nat * Nat -> Nat	
    op 4: Nat
    op xii: Nat	 
    pred __ < __: Nat * Nat
@@ -174,21 +175,24 @@ spec CyclicGroup =  NatSuc then
  op ident: G
  op inv: G -> G
  pred gen: G
- op size: Nat
- op power: G * Nat -> G
- op calc_subseq: G * G -> ListG
+ op order: Nat
+ op calc_subseq: G -> ListG
+ op calc_subseq_r: G * G -> ListG    
  forall x,y,z:G
  . binop(x,binop(y,z)) = binop(binop(x,y),z) %assoc
- . forall x,y:G. exists n:Nat.
-     gen(y) => ((n<size) /\ power(y,n) = x)
+ . binop(x,ident) = x
+ . binop(x,inv(x)) = ident
+ . (order<plus(x,y)) => binop(x,y) = minus(plus(x,y),order)
+ . (x = y) => calc_subseq_r(x,y) = nil
+ . (not (x = y)) => calc_subseq_r(x,y) = cons(binop(x,y),(calc_subseq_r(x,binop(x,y))))
+ . calc_subseq(x) = calc_subseq_r(x,x) 
 end
 
 spec Cyc12 = CyclicGroup then
- op nongen: G
- op seqall: G
- . nongen = 4 as G
- . seqall = xii as G
- . subseq = calc_subseq(nongen,seqall)
+ op gen: G
+ . gen = 4 as G
+ . order = xii as G   
+ . subseq = calc_subseq(gen)
 end
 
 spec Gen =  
