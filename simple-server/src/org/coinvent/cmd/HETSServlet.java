@@ -65,8 +65,8 @@ public class HETSServlet implements IServlet {
 					String pid = webRequest.get("pid");
 					cmd.setlocalfile("/web/static/hetsfile"+pid+".dol");
 					// For testing
-					cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"27701"+".dol");
-					//cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+pid+".dol");
+					//cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"27701"+".dol");
+					cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+pid+".dol");
 					File file = new File(FileUtils.getWorkingDirectory(), cmd.getlocalfile());
 					FileUtils.write(file, contents);
 					
