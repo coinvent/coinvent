@@ -81,7 +81,7 @@ public class HDTPCommand {
 	}
 	
 	public void run() throws IOException {
-		String cmd = "((read_casl(\\\""+input1.getAbsolutePath()+"\\\",\\\""+input2.getAbsolutePath()+"\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
+		String cmd = "trace,notrace,((read_casl(\\\""+input1.getAbsolutePath()+"\\\",\\\""+input2.getAbsolutePath()+"\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
 		String procstr = SWIPL+" --quiet -G0K -T0K -L0K -s "+HDTP.getCanonicalFile()+" -t \""+ cmd + "\"";
 		Log.d(getClass().getSimpleName(), procstr);
 		proc = new ShellScript(procstr);		
