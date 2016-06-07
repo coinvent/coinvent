@@ -62,7 +62,7 @@ public class HETSCommand {
 		int startb = substr.indexOf("(")+1;
 		int endb = substr.indexOf(")");
 		String hetsident = substr.substring(startb,endb);
-		String baseurl =  "http://pollux.informatik.uni-bremen.de:8000/"+hetsident;
+		String baseurl =  "http://rest.hets.eu/"+hetsident;
 		String svg = baseurl+"?svg";
 		//wget from file again
 		
