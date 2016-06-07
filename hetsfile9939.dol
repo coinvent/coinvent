@@ -1,0 +1,114 @@
+spec Atom = 
+  sort Int;
+  op 0:Int;
+  op suc: Int -> Int;
+  op pre: Int -> Int;
+  pred __<=__ : Int * Int;
+  forall x,y : Int
+   . (0 <= 0)
+   . (not (0 <= pre(0)))
+   . ((0 <= x) => (0 <= suc(x)))
+   . ((not (0 <= x)) => (not (0 <= pre(x))))
+   . ((suc(x) <= y) <=> (x <= pre(y)))
+   . ((pre(x) <= y) <=> (x <= suc(y)));
+  pred __<__ : Int * Int;
+  forall x,y : Int . ((x < y) <=> ((x <= y) /\ (not (x=y)))); 
+  pred __>__ : Int * Int;
+  forall x,y : Int . ((x < y) <=> (y > x));  
+  sorts Object, Forces;
+  ops electron, nucleus : Object;
+  ops coulomb : Forces;
+  op mass : Object -> Int;
+  op distance : Object * Object -> Int;
+  op force : Forces * Object * Object -> Int;
+  .  (mass(nucleus) > mass(electron));
+  .  (distance(electron, nucleus) > 0);
+  .  (force(coulomb, electron, nucleus) > 0);
+end
+
+
+spec Solar =
+  sort Int;
+  op 0:Int;
+  op suc: Int -> Int;
+  op pre: Int -> Int;
+  pred __ <= __ : Int * Int;
+  forall x,y : Int
+   . (0 <= 0)
+   . ((0 <= x) => (0 <= suc(x)))
+   . ((suc(x) <= y) => (x <= pre(y)))
+   . ((pre(x) <= y) => (x <= suc(y)));
+  pred __<__ : Int * Int;
+  forall x,y : Int . ((x < y) <=> (x <= y));
+  pred __>__ : Int * Int;
+  forall x,y : Int . ((x < y) <=> (y > x));
+  sorts Object, Forces;
+  ops sun, planet : Object;
+  ops gravitation, centrifugal : Forces;
+  op mass : Object -> Int;
+  op distance : Object * Object -> Int;
+  op force : Forces * Object * Object -> Int;
+  op anti : Forces -> Forces;
+  pred revolve : Object * Object;
+  .  (mass(sun) > mass(planet));
+  .  (distance(sun, planet) > 0);
+  .  (force(gravitation, planet, sun) > 0);
+  .  (anti(gravitation) = centrifugal);
+  forall x,y : Object; f : Forces
+    . ((((distance(x,y) > 0) /\ (force(f,y,x) > 0))) => (force(anti(f), x, y) < 0));
+  forall x,y : Object
+    . (((force(centrifugal, x,y) < 0) /\ (mass(y) > mass(x))) => revolve(x,y));
+end
+
+
+spec Generalisation0 =
+sort Int ;
+op 0 : Int;
+pred <= : Int * Int ;
+pred < : Int * Int ;
+pred > : Int * Int ;
+sort Forces ;
+op G_G913050 : Forces;
+sort Object ;
+op G_G907842 : Object;
+op force : Forces * Object * Object-> Int ;
+op mass : Object-> Int ;
+op G_G907993 : Object;
+op suc : Int-> Int ;
+. <=(0,0) ;
+forall G_G910393 : Int . <=(0,G_G910393)=> <=(0,suc(G_G910393)) ;
+forall G_G908948 : Int  ; G_G908857 : Int . G_G908857<G_G908948<=>G_G908948>G_G908857 ;
+. mass(G_G907993)>mass(G_G907842) ;
+. force(G_G913050,G_G907842,G_G907993)>0 ;
+end
+
+%Generalisation0 mapping Atom to Solar Cost = 106
+
+view mapping0_1 : Generalisation0 to Atom =
+  0 |-> 0,
+  <= |-> __<=__,
+  < |-> __<__,
+  > |-> __>__,
+  G_G913050 |-> coulomb,
+  G_G907842 |-> electron,
+  force |-> force,
+  mass |-> mass,
+  G_G907993 |-> nucleus,
+  suc |-> suc
+
+
+view mapping0_2 : Generalisation0 to Solar =
+  0 |-> 0,
+  <= |-> __<=__,
+  < |-> __<__,
+  > |-> __>__,
+  G_G913050 |-> gravitation,
+  G_G907842 |-> planet,
+  force |-> force,
+  mass |-> mass,
+  G_G907993 |-> sun,
+  suc |-> suc
+
+spec blend = combine mapping0_1, mapping0_2
+
+
