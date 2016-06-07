@@ -2,7 +2,7 @@ package org.coinvent.cmd;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import winterwell.utils.containers.ArrayMap;
+import com.winterwell.utils.containers.ArrayMap;
 
 import com.winterwell.web.FakeBrowser;
 

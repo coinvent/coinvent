@@ -11,8 +11,8 @@ import java.net.URL;
 
 import org.coinvent.IServlet;
 
-import winterwell.utils.containers.ArrayMap;
-import winterwell.web.ajax.JsonResponse;
+import com.winterwell.utils.containers.ArrayMap;
+import com.winterwell.web.ajax.JsonResponse;
 import winterwell.web.app.WebRequest;
 
 import com.winterwell.utils.io.FileUtils;

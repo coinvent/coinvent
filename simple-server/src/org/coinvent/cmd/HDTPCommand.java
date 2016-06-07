@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
-import winterwell.utils.ShellScript;
-import winterwell.utils.StrUtils;
-import winterwell.utils.Utils;
+import com.winterwell.utils.ShellScript;
+import com.winterwell.utils.StrUtils;
+import com.winterwell.utils.Utils;
 import winterwell.utils.reporting.Log;
 
 import com.winterwell.utils.Proc;
@@ -38,6 +38,15 @@ public class HDTPCommand {
 		return input2;
 	}
 	
+	
+	
+	@Override
+	public String toString() {
+		return "HDTPCommand[proc="+proc+"]";
+	}
+
+
+
 	Proc proc;
 	private Writer input;
 	private BufferedReader output;
@@ -67,6 +76,7 @@ public class HDTPCommand {
 		FileUtils.close(input);
 		FileUtils.close(output);
 		FileUtils.close(proc);
+		Log.d("HDTP", "closed "+proc);
 		proc = null;
 	}
 	
