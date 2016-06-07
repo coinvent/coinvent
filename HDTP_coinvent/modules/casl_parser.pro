@@ -44,7 +44,11 @@ decl(OpDecls,Decls) --> formuladecl(OpDecls,Decls).
 %::= VAR ,..., VAR : SORT
 %::= QUANTIFIER VAR-DECL ;...; VAR-DECL "." FORMULA
 
-quantifier(Q) --> quantname(Name),!,blanks,vardecl_list(Vars),{Q=..[Name|[Vars]]}.
+quantifier_chain(Q) --> quantifier_chain_aux(Name,[],Vars),{nonvar(Name),Vars\=[],Q=..[Name,Vars]}.
+quantifier_chain_aux(Name,Vars1,Vars2) --> ".",blanks,quantifier(Name,Vars),!,blanks,{append(Vars1,Vars,Vars3)},quantifier_chain_aux(Name,Vars3,Vars2).
+quantifier_chain_aux(_Name,Vars,Vars) --> [].
+
+quantifier(Name,Vars) --> quantname(Name),!,blanks,vardecl_list(Vars).
 
 quantname(forall) --> "forall".
 quantname(exists) --> "exists".
@@ -57,11 +61,11 @@ vardecl(vars(Vars:([]->Sort))) --> var_list(Vars),blanks,":",!,blanks,identifier
 var_list([Var|Vars]) --> identifier(Var),blanks,",",!,blanks,var_list(Vars).
 var_list([Var]) --> identifier(Var).
 
-formuladecl(OpDecls,[quantified(Q,Formulas)]) --> quantifier(Q),!,blanks,formula_list(OpDecls,Formulas),blanks,maybe(";").
+formuladecl(OpDecls,[quantified(Q,Formulas)]) --> quantifier_chain(Q),!,blanks,formula_list(OpDecls,Formulas).
 formuladecl(OpDecls,Formulas) --> formula_list(OpDecls,Formulas).
 
-formula_list(OpDecls,[formula(F)|Formulas]) --> ".",blanks,formula(OpDecls,F),blanks,maybe(";"),blanks,formula_list(OpDecls,Formulas),!.
-formula_list(OpDecls,[formula(F)]) --> ".",blanks,formula(OpDecls,F),blanks,maybe(";").
+formula_list(OpDecls,[formula(F)|Formulas]) --> ".",blanks,formula(OpDecls,F),blanks,formula_list(OpDecls,Formulas),!.
+formula_list(OpDecls,[formula(F)]) --> ".",blanks,formula(OpDecls,F),blanks,";".
 
 formula(OpDecls,Formula) --> biformula(OpDecls,Formula).
 
@@ -71,7 +75,6 @@ biformula_aux(_OpDecls,F,F) --> {}.
 
 impformula(OpDecls,Formula) --> conformula(OpDecls,F), blanks, impformula_aux(OpDecls,F,Formula).
 impformula_aux(OpDecls,F1,Formula) --> "=>",!, blanks, conformula(OpDecls,F2),{F3=..['=>',F1,F2]}, blanks, impformula_aux(OpDecls,F3,Formula).
-impformula_aux(OpDecls,F1,Formula) --> "<= ",!, blanks, conformula(OpDecls,F2),{F3=..['=>',F2,F1]}, blanks, impformula_aux(OpDecls,F3,Formula).
 impformula_aux(_OpDecls,F,F) --> {}.
 
 conformula(OpDecls,Formula) --> eqformula(OpDecls,F), blanks, conformula_aux(OpDecls,F,Formula).

@@ -87,7 +87,6 @@
 \begin{center}{\bf Lemma Speculation}\end{center}
 \begin{itemize}
 \item{Proofs can invoke the "cut rule of inference"}
-$$f$$
 \item{Exploit other related theorems - known as "lemmas"}
 \item{Inventing lemmas requires {\bf creativity}}
 \end{itemize}
@@ -97,23 +96,40 @@ $$f$$
 
 \begin{frame}
 \begin{center}{\bf Lemma Example}\end{center}
-Example of generalising factorial to qfact?
-
+Given two functions for calculating factorial:
+\begin{eqnarray*}
+fact(0)&=&1\\
+fact(s(n))&=&s(n)\times fact(n)\\
+qfact(0,n)&=&n\\
+qfact(s(n),m)&=&qfact(n,s(n)\times m)
+\end{eqnarray*}
+Can we show
+$$
+\forall n:\mathbb{N}.\;fact(n) = qfact(n,1)
+$$
 \end{frame}
 
 \newpage
 
 \begin{frame}
 \begin{center}{\bf Lemma Example (contd.)}\end{center}
-
+No we can't (without horrendous subsequent induction steps)\mbox{}\\
+However, we can prove
+$$
+\forall m,n:\mathbb{N}\;fact(n) \times m = qfact(n,m)
+$$
+relatively easily. This is a generalisation of the original theorem.
 \end{frame}
 
 \newpage
 
 \begin{frame}
 \begin{center}{\bf Why is it necessary?}\end{center}
-induction results in failure
-
+\begin{itemize}
+\item induction fails
+\item representation change
+\item generalisation
+\end{itemize}
 \end{frame}
 
 \newpage
@@ -121,7 +137,6 @@ induction results in failure
 \begin{frame}
 \begin{center}{\bf Why is it so difficult?}\end{center}
 requires CREATIVITY
-
 \end{frame}
 
 \newpage
@@ -139,10 +154,59 @@ requires CREATIVITY
 \newpage
 
 \begin{frame}
+\begin{center}{\bf Example}\end{center}
+\begin{itemize}
+\item{Choose a source theorem and source lemma}
+\begin{eqnarray*}
+\forall n:\mathbb{N}.\;fact(n)&=&qfact(n,1)\\
+\forall m,n:\mathbb{N}.\;fact(n) \times m&=&qfact(n,m)\\
+\end{eqnarray*}
+\item{Identify a target theorem}
+\begin{eqnarray*}
+\forall n:\mathbb{N}.\;sum(n)&=&qsum(n,0)
+\end{eqnarray*}
+\end{itemize}
+\end{frame}
+
+
+\newpage
+
+\begin{frame}
+\begin{center}{\bf Example contd.}\end{center}
+\begin{itemize}
+\item use HDTP to identify morphisms:\mbox{}\\
+\begin{eqnarray*}
+sum&\leftrightarrow&fact\\
+qsum&\leftrightarrow&qfact
+\end{eqnarray*}
+\item{Computing colimit produces target lemma from source lemma}
+\item{Requires generalisation of input theories and blend}
+\item{Lemma computed in blend}
+$$
+\forall m,n:\mathbb{N}.\;qsum(n,m) = sum(n)+m
+$$
+\end{itemize}
+\end{frame}
+
+
+
+\newpage
+
+\begin{frame}
 \begin{center}{\bf More complex example}\end{center}
-List to tree
+Imagine a theory of lists with theorem
+$$
+rev(rev(x)) = x
+$$
+\noindent which requires a generalisation lemma such as
+$$
+rev(a @ rev(b)) = b & rev(a)
+$$
+\end{frame}
 
-
+\begin{frame}
+\begin{center}{\bf More complex example}\end{center}
+\includegraphics[width=\textwidth]{ltot.png}
 \end{frame}
 
 
