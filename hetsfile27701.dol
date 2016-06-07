@@ -1,0 +1,38 @@
+spec One =
+     sort S1;
+
+     op 1 : S1;
+
+     . 1 = 1;
+
+end
+
+
+spec Two =
+     sort S2;
+
+     op 0 : S2;
+
+     . 0 = 0;
+
+end
+
+
+spec Generalisation0 =
+sort S1_S2 ;
+op G_G4898 : S1_S2;
+. ( G_G4898 = G_G4898 ) ;
+end
+
+%Generalisation0 mapping One to Two Cost = 2
+
+view mapping0_1 : Generalisation0 to One =
+  G_G4898 |-> 1
+
+
+view mapping0_2 : Generalisation0 to Two =
+  G_G4898 |-> 0
+
+spec blend = combine mapping0_1, mapping0_2
+
+
