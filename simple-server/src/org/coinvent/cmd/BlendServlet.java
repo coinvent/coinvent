@@ -20,12 +20,13 @@ import org.eclipse.jetty.util.ajax.JSON;
 
 import winterwell.utils.StrUtils;
 import winterwell.utils.Utils;
-import winterwell.utils.containers.ArrayMap;
+import com.winterwell.utils.containers.ArrayMap;
 import winterwell.utils.containers.Cache;
+import winterwell.utils.reporting.Log;
 import winterwell.utils.time.TUnit;
 import winterwell.utils.web.WebUtils;
-import winterwell.web.ajax.AjaxMsg;
-import winterwell.web.ajax.JsonResponse;
+import com.winterwell.web.ajax.AjaxMsg;
+import com.winterwell.web.ajax.JsonResponse;
 import winterwell.web.app.WebRequest;
 
 import com.winterwell.utils.io.FileUtils;
@@ -231,6 +232,7 @@ public class BlendServlet implements IServlet {
 		reaper.schedule(new TimerTask(){
 			@Override
 			public void run() {
+				Log.d("reaper", "Close "+fcmd);
 				fcmd.close();			
 			}				
 		}, TUnit.HOUR.millisecs);

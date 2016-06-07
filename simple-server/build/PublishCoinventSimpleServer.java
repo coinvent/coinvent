@@ -6,7 +6,7 @@ import winterwell.bob.BuildTask;
 import winterwell.bob.tasks.GitTask;
 import winterwell.bob.tasks.JarTask;
 import winterwell.bob.tasks.RSyncTask;
-import winterwell.utils.io.FileUtils;
+import com.winterwell.utils.io.FileUtils;
 import winterwell.utils.time.Time;
 
 
@@ -32,6 +32,8 @@ public class PublishCoinventSimpleServer extends BuildTask {
 		// scp -r -P 3022 -i ~/.ssh/ewen@Coinvent-Ewen my-local-dir/simple-server ewen@frank.soda.sh:~/simple-server
 		
 		// NB: use tmux on the server to go into a persistent screen
+		// run with  
+		// java -cp simple-server.jar:web/WEB-INF/lib/* org.coinvent.SimpleServe
 		
 		// Needs special .ssh/config file:
 //		host frank.soda.sh
