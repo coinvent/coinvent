@@ -1,0 +1,55 @@
+\section{Example Usage} \label{sec:example}
+
+In this section we give some example usages of calling the APIs in common languages.
+
+\subsection{javascript}
+
+\begin{verbatim}
+var pid = $('input[name=pid]').val();
+	$.ajax({
+		url: '/cmd/blend',
+		data: {
+			action:action,
+			input1: JSON.stringify(input1),
+			input2: JSON.stringify(input2),
+			pid:pid
+		}
+	})
+	.then(function(a,b){
+		console.warn(a,b);
+		var output = ""+a.cargo.output;
+		$('textarea[name=output]').val(output);
+		if (a.cargo.pid) {
+			$('input[name=pid]').val(a.cargo.pid);
+		}
+		if ( ! output) {
+			// Fail :(
+			alert("Sadly this blend failed.");
+		}
+	})
+\end{verbatim}
+
+\subsection{Ruby}
+
+\begin{verbatim}
+require 'rest-client'
+require 'json'
+require 'uri'
+
+
+def execute_request()
+  post_params = {action: 'hdtp', input1: 
+    {url: ARGV[0]}.to_json, input2: {url: ARGV[1]}.to_json}
+  response = RestClient::Request.execute({method: :post,url:
+      "148.251.85.37:8300/cmd/blend",payload: post_params})
+    return response
+end
+
+x = execute_request()
+
+my_hash = JSON.parse(x)
+
+my_hash.each do |k,v|
+  puts k + ':' + v.to_s
+end
+\end{verbatim}

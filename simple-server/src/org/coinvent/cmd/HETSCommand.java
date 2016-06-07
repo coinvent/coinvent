@@ -53,7 +53,7 @@ public class HETSCommand {
 		return "spec blend = \n"+substr+";\nend";
 	}
 	
-	public static ArrayMap parseHetsResponse(String output) {
+	public static ArrayMap parseHetsResponse(String output, String localurl) {
 		
 		// look here for the response - then give back loads of urls as json....
 		int start = output.indexOf("<title>")+7;
@@ -79,6 +79,7 @@ public class HETSCommand {
 			cargo.put("blend", blend);
 			cargo.put("theoryurl", theoryurl);
 			cargo.put("theory", theory);
+			cargo.put("origtheoryurl", localurl);
 		
 		
 		return cargo;

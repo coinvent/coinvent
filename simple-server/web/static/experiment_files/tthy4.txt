@@ -6,21 +6,33 @@ spec Tree =
   free type Pel ::= l | r
      op tnil:T 
      op pnil:P
+     op ppcons: P * Poslist -> Poslist
+     op ppnil: Poslist
      op pcons: Pel * P -> P
      op tcons: El * T * T -> T
+     op papp: Poslist * Poslist -> Poslist
      op join: T * P * T -> T
      op mirror: T -> T
-     op rotate: T * P -> T
+     op rotate1: T * P -> T
+     op rotate: T * Poslist -> T
      op allpos: T -> Poslist
+     op allpos2: T * P -> Poslist
      pred valid: P * T
-     forall t,tl,tr: T; p,p',pt:P; d:El
+     forall t,tl,tr: T; p,p',pt:P; pl,pl',ptl: Poslist; d:El
+       . papp(ppnil,pl) = pl
+       . papp(ppcons(p,pl'),pl) = ppcons(p,papp(pl',pl))
        . join(t,pnil,tnil) = t
        . valid(p,tl) => join(t,pcons(l,p'),tcons(d,tl,tr)) = tcons(d,join(t,p',tl),tr)
        . valid(p,tr) => join(t,pcons(r,p'),tcons(d,tl,tr)) = tcons(d,tl,join(t,p',tr))
        . mirror(tnil) = tnil
        . mirror(tcons(d,tl,tr)) = tcons(d,mirror(tr),mirror(tl))
-       . rotate(tnil,p) = tnil
-       . rotate(tcons(d,tl,tr),pnil) =tcons(d,tr,tl)
-       . rotate(tcons(d,tl,tr),pcons(l,pt)) = tcons(d,rotate(tl,pt),tr)
-       . rotate(tcons(d,tl,tr),pcons(r,pt)) = tcons(d,tl,rotate(tl,pt))
+       . rotate1(tnil,p) = tnil
+       . rotate1(tcons(d,tl,tr),pnil) =tcons(d,tr,tl)
+       . rotate1(tcons(d,tl,tr),pcons(l,pt)) = tcons(d,rotate1(tl,pt),tr)
+       . rotate1(tcons(d,tl,tr),pcons(r,pt)) = tcons(d,tl,rotate1(tl,pt))
+       . rotate(t,ppnil) = t
+       . rotate(t,ppcons(p,ptl)) = rotate(rotate1(t,p),ptl)
+       . allpos(t) = allpos2(t,pnil)
+       . allpos2(tnil,p) = ppnil
+       . allpos2(tcons(d,tl,tr),p) = ppcons(pnil,papp(allpos2(tl,pcons(l,p)),allpos2(tr,pcons(r,p))))
 end

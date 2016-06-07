@@ -1,0 +1,16 @@
+spec List = 
+  sort El;
+  sort L;
+     op nil:L;
+     op cons: El * L -> L;
+     op app: L * L -> L;
+     op rev: L -> L;
+     op qrev: L * L -> L;
+     forall x,y: L; h:El
+       . (app(nil,x) = x)
+       . (app(cons(h,x),y) = cons(h,app(x,y)))
+       . (rev(nil) = nil)
+       . (rev(cons(h,x)) = app(rev(x),cons(h,nil)))
+       . (qrev(nil,x) = x)
+       . (qrev(cons(h,x),y) = qrev(x,cons(h,y)));
+end

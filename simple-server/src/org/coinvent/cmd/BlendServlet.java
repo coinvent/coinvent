@@ -153,7 +153,7 @@ public class BlendServlet implements IServlet {
 			hetscmd = new HETSCommand();
 			hetscmd.setlocalfile("/web/static/hetsfile"+pid+".dol");
 			// For testing
-			//hetscmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"2195"+".dol");
+			//hetscmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"10581"+".dol");
 			hetscmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+pid+".dol");
 			File file = new File(FileUtils.getWorkingDirectory(), hetscmd.getlocalfile());
 			String i1 = FileUtils.read(cmd.getInput1());
@@ -185,7 +185,7 @@ public class BlendServlet implements IServlet {
 			//put into cargo response... 
 			 conn.disconnect();
 			 // parse output to get casl back...
-		     ArrayMap cargo  = HETSCommand.parseHetsResponse(output);
+		     ArrayMap cargo  = HETSCommand.parseHetsResponse(output,hetscmd.getlocalurl());
 			 //do webrequestthing
 			
 				
