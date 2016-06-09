@@ -6,6 +6,9 @@ $(function() {
 
 	var fTemplates = loadTemplates('/static/blendui/blendui-templates.html');
 
+
+
+
 	console.log("f", fConcepts, fTemplates);
 
 	$.when(fConcepts, fTemplates)
@@ -17,6 +20,8 @@ $(function() {
 		console.log("context=", {name:'input1', previous:prev});
 		$('#conceptEditor1').html(templates.ConceptEditor({name:'input1', previous:prev}));
 		$('#conceptEditor2').html(templates.ConceptEditor({name:'input2', previous:prev}));
+		$('#conceptEditorAmalCASL').html(templates.ConceptEditor({name:'inputamalcasl', previous:prev}));
+		$('#conceptEditorAmalOWL').html(templates.ConceptEditor({name:'inputamalowl', previous:prev}));
 		$('.outputLoading').hide();
 
 		/*** WIRING **/
@@ -43,6 +48,46 @@ $(function() {
 	}); 
 
 });
+
+function comboInit(thelist)
+{
+  theinput = document.getElementById(theinput);  
+  var idx = thelist.selectedIndex;
+  var content = thelist.options[idx].innerHTML;
+}
+
+function combo(thelist, theinput)
+{
+  theinput = document.getElementById(theinput);  
+  var idx = thelist.selectedIndex;
+  var content = thelist.options[idx].innerHTML;
+  if (idx==0)
+  {
+   $('#HDTPform').attr('style','display:inline-block');
+   $('#AmalgamsCASLform').attr('style','display:none');
+   $('#AmalgamsOWLform').attr('style','display:none');
+  }
+  else if (idx ==1)
+  {
+   $('#HDTPform').attr('style','display:none');
+   $('#AmalgamsCASLform').attr('style','display:inline-block');
+   $('#AmalgamsOWLform').attr('style','display:none');
+
+  }
+  else if (idx == 2)
+  {
+   $('#HDTPform').attr('style','display:none');
+   $('#AmalgamsCASLform').attr('style','display:none');
+   $('#AmalgamsOWLform').attr('style','display:inline-block');
+  }
+  else 
+  {
+   $('#HDTPform').attr('style','display:inline-block');
+   $('#AmalgamsCASLform').attr('style','display:none');
+   $('#AmalgamsOWLform').attr('style','display:none');
+  }
+}
+
 
 function getInput(name) {
 	var $tab = $('#ConceptEditor'+name+' .active');	
