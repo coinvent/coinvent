@@ -101,6 +101,7 @@ function callSave() {
     var blendname = $('input[name=blendname]').val();
     var blend = $('textarea[name=output]').val();
     $.ajax({
+    	method:'POST',
 	url: '/cmd/blend',
 	data: {
 		action:"save",
@@ -124,6 +125,7 @@ function callBackend(action) {
 	$('.outputLoading').show();
 	var pid = $('input[name=pid]').val();
 	$.ajax({
+		method:'POST',
 		url: '/cmd/blend',
 		data: {
 			username:username,
@@ -145,6 +147,7 @@ function callBackend(action) {
 		}
 		pid = $('input[name=pid]').val();
 		$.ajax({
+			method:'POST',
 			url: '/cmd/HETS',
    			data: {
 				action: 'full-theories',
