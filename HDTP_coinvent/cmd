@@ -1,2 +1,2 @@
-HDTPCommand swipl --quiet -G0K -T0K -L0K -s /home/ewen/coinvent/HDTP_coinvent/hdtp.pro -t "trace,notrace,((read_casl(\"field.casl\",\"vspace.casl\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))"
+swipl --quiet -G0K -T0K -L0K -s /home/ewen/coinvent/HDTP_coinvent/hdtp.pro -t "trace,notrace,((read_casl(\"/home/ewen/coinvent/simple-server/uploaded_concepts/ontohub.org_complex-blend_field.casl\",\"/home/ewen/coinvent/simple-server/uploaded_concepts/ontohub.org_complex-blend_vecSpace.casl\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))"
 
