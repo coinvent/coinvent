@@ -1,0 +1,19 @@
+spec Field = 
+  sort FldElt; 
+  op plus:FldElt * FldElt -> FldElt; 
+  op times:FldElt * FldElt -> FldElt; 
+  op neg: FldElt -> FldElt; 
+  op inverse : FldElt -> FldElt; 
+  op 0:FldElt; 
+  op 1:FldElt; 
+  . not ( 1 = 0 ); 
+  . forall x:FldElt . plus(x,0) = x;	%(f_plus_ident)% 
+  . forall x,y:FldElt . (not x = 0) => times(x, inverse(x)) = 1; %(f_nz_inverse)% 
+  . forall x,y,z:FldElt . times(times(x,y),z) = times(times(x,y),z); %(f_ass_times)% 
+  . forall x,y,z:FldElt . times(x,plus(y,z)) = plus(times(x,y),times(x,z)); %(f_t_d)% 
+  . forall x,y,z:FldElt . plus(x,y) = plus(y,x); %(f_com_plus)% 
+  . forall x,y,z:FldElt . plus(x,plus(y,z)) = plus(plus(x,y),z); %(f_assoc_plus)%	
+  . forall x,y,z:FldElt	. plus(x, neg(x)) = 0; %(f_plus_inv)% 
+  . forall x,y:FldElt . times(x,y) = times(y,x); %(f_com_times)% 
+  . forall x,y:FldElt . times(1,x) = x; %(f_times_ident)% 
+  end

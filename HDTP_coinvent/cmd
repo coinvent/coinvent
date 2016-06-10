@@ -1,0 +1,2 @@
+HDTPCommand swipl --quiet -G0K -T0K -L0K -s /home/ewen/coinvent/HDTP_coinvent/hdtp.pro -t "trace,notrace,((read_casl(\"field.casl\",\"vspace.casl\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))"
+
