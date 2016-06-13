@@ -89,7 +89,6 @@ public class HdtpServlet implements IServlet {
 		}
 	}
 
-	@Override
 	public void doPost(WebRequest webRequest) throws Exception {
 
 		JsonResponse out;

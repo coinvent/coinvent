@@ -28,12 +28,16 @@ $(function() {
 
 		$('.doBlend').on('click',function(e){
 			e.preventDefault();
-			callBackend('hdtp');
+			var idx = $('#thelist').prop('selectedIndex');
+			/*alert($('#thelist').prop('selectedIndex'));*/
+			callBackend('hdtp',idx);
 		});
 		
 		$('.doBlendNext').on('click',function(e){
 			e.preventDefault();
-			callBackend('next');
+			var idx = $('#thelist').prop('selectedIndex');
+			/*alert($('#thelist').prop('selectedIndex'));*/
+			callBackend('next',idx);
 		});
 		
 		$('.doBlendClose').on('click',function(e){
@@ -51,7 +55,6 @@ $(function() {
 
 function comboInit(thelist)
 {
-  theinput = document.getElementById(theinput);  
   var idx = thelist.selectedIndex;
   var content = thelist.options[idx].innerHTML;
 }
@@ -116,7 +119,9 @@ function callSave() {
 }
 
 
-function callBackend(action) {
+function callBackend(action,index) {
+	if (index == 0)
+	{
 	var username = window.username;
 	var input1 = getInput('input1');
 	var input2 = getInput('input2');
@@ -162,6 +167,46 @@ function callBackend(action) {
 			$('iframe[id=svg]').attr("src",c.cargo.svg);
 			});
 	});
+	}
+	else if (index == 1)
+	{
+		var input1 = getInput('inputamalcasl');
+		var spname1 = $('input[name=acinput1]').val(); 
+ 		var spname2 = $('input[name=acinput2]').val(); 
+		$('.doBlend').attr('disabled','disabled');
+		$('.doBlendNext').attr('disabled','disabled');
+		$('.outputLoading').show();
+		var pid = $('input[name=pid]').val();
+		if (action == 'next') 
+		{request = 'next';} else {request = 'start';}
+		$.post(
+      		"/cmd/amalgams.json",{request:request,space_name1:spname1,space_name2:spname2,content:input1})
+		    .done(function(data) {
+			$("textarea#output").val(data.cargo.blend);
+  			$("textarea#pid").val(data.cargo.id);
+			});	
+	}
+	else if (index == 2)
+	{
+		var input1 = getInput('inputamalowl');
+		var spname1 = $('input[name=acinput1]').val(); 
+ 		var spname2 = $('input[name=acinput2]').val(); 
+		$('.doBlend').attr('disabled','disabled');
+		$('.doBlendNext').attr('disabled','disabled');
+		$('.outputLoading').show();
+		var pid = $('input[name=pid]').val();
+		if (action == 'next') 
+		{request = 'next';} else {request = 'start';}
+		$.post(
+      		"/cmd/amalgams.json",{request:request,space_name1:spname1,space_name2:spname2,content:input1})
+		    .done(function(data) {
+			$("textarea#output").val(data.cargo.blend);
+  			$("textarea#pid").val(data.cargo.id);
+			});	
+	}
+	else
+	{
+	}	
 }
 
 /** Let's call the server */
