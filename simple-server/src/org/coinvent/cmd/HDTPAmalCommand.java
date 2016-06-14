@@ -2,6 +2,7 @@ package org.coinvent.cmd;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -161,6 +162,11 @@ public class HDTPAmalCommand {
 	}
 	
 	public String getOutput() throws IOException {
+		switch (cmd)
+		{case HDTP : 
+			
+		
+		
 		while(true) {
 			String outs = proc.getOutput().trim();
 			if (outs.endsWith("\'NEXT\'") || outs.endsWith("\'FINISHED\'")) {
@@ -170,6 +176,30 @@ public class HDTPAmalCommand {
 				return outs;
 			}
 			if ( ! proc.isOutputting()) return outs;
+		}
+		case AMALCASL :
+		{
+			while(true) {
+				String outs = proc.getOutput().trim();
+				if (outs.endsWith("Other blend? (n)") || outs.endsWith("Finished")) {
+					// trim the end
+					BufferedReader reader = new BufferedReader(new FileReader("/home/ewen/Amalgamation/blend.json"));
+					String outln;
+					String outp = "";
+					while ((outln = reader.readLine()) != null)
+					{
+						//System.out.println ("Stdout: " + outln);
+						outp += outln;
+						outln = reader.readLine();
+					}
+					return outp;
+				}
+				if ( ! proc.isOutputting()) return "";}}
+			
+		
+		default: {return "";}
+		
+		
 		}
 	}
 
