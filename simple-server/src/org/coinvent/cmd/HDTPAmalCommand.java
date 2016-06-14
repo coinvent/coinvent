@@ -127,8 +127,8 @@ public class HDTPAmalCommand {
 			PrintWriter pwriter=  new PrintWriter("/home/ewen/Amalgamation/settings.py");
 			pwriter.println(file_content);
 			pwriter.close();
-			
-		    procstr = "cd /home/ewen/Amalgamation;/usr/bin/python /home/ewen/Amalgamation/run-blending.py"; 
+			//procstr = SWIPL;
+		    procstr = "cd /home/ewen/Amalgamation;/usr/bin/python /home/ewen/Amalgamation/run-blending.py\n"; 
 		    Log.d(getClass().getSimpleName(), procstr);
 			proc = new ShellScript(procstr);		
 			proc.redirectErrorStream(true);
