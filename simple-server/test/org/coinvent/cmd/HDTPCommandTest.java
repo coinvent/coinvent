@@ -13,7 +13,7 @@ import com.winterwell.utils.io.FileUtils;
 
 public class HDTPCommandTest {
 
-	private HDTPCommand cmd;
+	private HDTPAmalCommand cmd;
 
 
 	@Test
@@ -24,7 +24,7 @@ public class HDTPCommandTest {
 		FileUtils.write(f1, "spec Boat = sorts BodyofWater, Person, Boat; preds is_navigated_by:  Person * Boat; is_located_on: Boat * BodyofWater; meansofTransportation: Boat; ops boat: Boat; bodyofwater: BodyofWater; person: Person; . is_located_on(boat,bodyofwater);. is_navigated_by(person,boat); . meansofTransportation(boat); end");
 		FileUtils.write(f2, "spec House = sorts Plot, Person, House; preds is_inhabited_by:  Person * House; is_located_on: House * Plot; servesasResidence: House; ops house: House; plot: Plot; person: Person; . is_located_on(house,plot); . is_inhabited_by(person,house); . servesasResidence(house); end");
 		
-		cmd = new HDTPCommand(f1, f2);
+		cmd = new HDTPAmalCommand(HDTPAmalCommand.CMD.HDTP,f1, f2,"","");
 		
 		cmd.run();
 		
@@ -70,7 +70,7 @@ public class HDTPCommandTest {
 		FileUtils.write(f1, "spec Boat = sorts BodyofWater, Person, Boat; preds is_navigated_by:  Person * Boat; is_located_on: Boat * BodyofWater; meansofTransportation: Boat; ops boat: Boat; bodyofwater: BodyofWater; person: Person; . is_located_on(boat,bodyofwater);. is_navigated_by(person,boat); . meansofTransportation(boat); end");
 		FileUtils.write(f2, "spec House = sorts Plot, Person, House; preds is_inhabited_by:  Person * House; is_located_on: House * Plot; servesasResidence: House; ops house: House; plot: Plot; person: Person; . is_located_on(house,plot); . is_inhabited_by(person,house); . servesasResidence(house); end");
 		
-		cmd = new HDTPCommand(f1, f2);
+		cmd = new HDTPAmalCommand(HDTPAmalCommand.CMD.HDTP,f1, f2,"","");
 		
 		cmd.run();
 		

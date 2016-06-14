@@ -144,7 +144,7 @@ public class HdtpServlet implements IServlet {
 				
 				String cmd = "((read_casl(\\\"/home/ewen/HDTP_coinvent/input1\\\",\\\"/home/ewen/HDTP_coinvent/input2\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
 				int id = 0;
-				String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s "+HDTPCommand.HDTP.getCanonicalPath()+" -t \""
+				String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s "+HDTPAmalCommand.HDTP.getCanonicalPath()+" -t \""
 						+ cmd + "\"";
 			
 				Log.d(getClass().getSimpleName(), procstr);
