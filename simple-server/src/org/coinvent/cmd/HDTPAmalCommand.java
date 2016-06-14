@@ -1,9 +1,11 @@
 package org.coinvent.cmd;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 
@@ -181,6 +183,7 @@ public class HDTPAmalCommand {
 		{
 			while(true) {
 				String outs = proc.getOutput().trim();
+				
 				if (outs.endsWith("Other blend? (n)") || outs.endsWith("Finished")) {
 					// trim the end
 					BufferedReader reader = new BufferedReader(new FileReader("/home/ewen/Amalgamation/blend.json"));
@@ -193,8 +196,8 @@ public class HDTPAmalCommand {
 						outln = reader.readLine();
 					}
 					return outp;
-				}
-				if ( ! proc.isOutputting()) return "";}}
+				}}}
+				
 			
 		
 		default: {return "";}
