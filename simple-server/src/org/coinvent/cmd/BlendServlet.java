@@ -83,7 +83,7 @@ public class BlendServlet implements IServlet {
 
 	private HDTPAmalCommand cmd;	
 	private HETSCommand hetscmd;
-	private AmalgamsCASLCommand accmd;
+	
 	
 	static Map<String,HDTPAmalCommand> pid2process = new Cache<String,HDTPAmalCommand>(20) {
 		protected void onRemove(String key, HDTPAmalCommand value) {
@@ -251,7 +251,7 @@ public class BlendServlet implements IServlet {
 	private void doNewAmalgamsCASLProcess(File f1, String s1, String s2) throws IOException {
 		cmd = new HDTPAmalCommand(HDTPAmalCommand.CMD.AMALCASL,f1, f1,s1,s2);
 		cmd.run();
-		pid2process.put(""+accmd.getProc().getProcessId(), cmd);
+		pid2process.put(""+cmd.getProc().getProcessId(), cmd);
 		final HDTPAmalCommand fcmd = cmd;
 		reaper.schedule(new TimerTask(){
 			@Override
