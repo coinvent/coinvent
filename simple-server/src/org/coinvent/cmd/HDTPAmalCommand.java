@@ -10,6 +10,9 @@ import com.winterwell.utils.ShellScript;
 import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.Utils;
 import winterwell.utils.reporting.Log;
+import winterwell.utils.time.Dt;
+import winterwell.utils.time.TUnit;
+import winterwell.utils.web.WebUtils;
 
 import com.winterwell.utils.Proc;
 import com.winterwell.utils.io.FileUtils;
@@ -108,15 +111,20 @@ public class HDTPAmalCommand {
 		
 		case AMALCASL :
 			//write input file
-			PrintWriter pwriter = new PrintWriter("/home/ewen/Amalgamation/content.casl","UTF-8");
-			pwriter.println(input1.getAbsolutePath());
-			pwriter.close();
+			
+			Proc proc = new Proc("cp "+ input1.getAbsolutePath() + " "+"/home/ewen/Amalgamation/content.casl");
+			proc.run();
+			proc.waitFor(new Dt(5, TUnit.SECOND));
+			proc.close();
+			//PrintWriter pwriter = new PrintWriter("/home/ewen/Amalgamation/content.casl","UTF-8");
+			//pwriter.println(get_contents(input1.getAbsolutePath()));
+			//pwriter.close();
 			//write settings file
 			String file_post = "numModels = 1\nminIterationsGeneralize=1\nmaxIterationsGeneralize=20\n" +
 					"eproverTimeLimit=4\ndarwinTimeLimit=0.1\nhetsExe=\'hets\'\nblendValuePercentageBelowHighestValueToKeep=0\nuseHetsAPI=0\nhetsUrl='http://localhost:8000/'";
 			String file_content = "inputFile=\"/home/ewen/Amalgamation/content.casl\"\ninputSpaceNames = [\""+
 			sn1+"\",\""+sn2+"\"]\n"+file_post;
-			pwriter=  new PrintWriter("/home/ewen/Amalgamation/settings.py");
+			PrintWriter pwriter=  new PrintWriter("/home/ewen/Amalgamation/settings.py");
 			pwriter.println(file_content);
 			pwriter.close();
 			
