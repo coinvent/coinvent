@@ -196,7 +196,9 @@ public class HDTPAmalCommand {
 						outln = reader.readLine();
 					}
 					return outp;
-				}}}
+				}
+				if ( ! proc.isOutputting()) return outs;
+			}}
 				
 			
 		
