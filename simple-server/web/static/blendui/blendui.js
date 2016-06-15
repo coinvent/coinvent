@@ -189,8 +189,8 @@ function callBackend(action,index) {
 	else if (index == 2)
 	{
 		var input1 = getInput('inputamalowl');
-		var spname1 = $('input[name=acinput1]').val(); 
- 		var spname2 = $('input[name=acinput2]').val(); 
+		var spname1 = $('input[name=aoinput1]').val(); 
+ 		var spname2 = $('input[name=aoinput2]').val(); 
 		$('.doBlend').attr('disabled','disabled');
 		$('.doBlendNext').attr('disabled','disabled');
 		$('.outputLoading').show();
