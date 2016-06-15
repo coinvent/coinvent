@@ -142,13 +142,14 @@ public class HDTPAmalCommand {
 		
 		case AMALOWL:
 			
+			String ontonm = input1.getName();
 			proc = new Proc("cp "+ input1.getAbsolutePath() + " "+"/home/ewen/ontolp-implementation/content.owl");
 			proc.run();
 			proc.waitFor(new Dt(5, TUnit.SECOND));
 			proc.close();
 			file_post = "import sys\nnumModels = 2\nminIterationsGeneralize=1\nmaxIterationsGeneralize=20\n" +
 					"roleDepth=2\nhetsExe=\'hets\'\nontologyPrefix = \"<http://www.semanticweb.org/ontologies/2016/4\"";
-			file_content = "ontologyName = \"horse-bird-ontology\"\ninputFile=\"/home/ewen/ontolp-implementation/content.owl\"\ninputSpaceNames = [\""+
+			file_content = "ontologyName = \""+ontonm+"\"\ninputFile=\"/home/ewen/ontolp-implementation/content.owl\"\ninputSpaceNames = [\""+
 			sn1+"\",\""+sn2+"\"]\n"+file_post;
 			pwriter=  new PrintWriter("/home/ewen/ontolp-implementation/settings.py");
 			pwriter.println(file_content);
