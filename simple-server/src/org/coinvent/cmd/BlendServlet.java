@@ -138,7 +138,10 @@ public class BlendServlet implements IServlet {
 			doNewAmalgamsCASLProcess(f1, s1,s2);
 		} else if (webRequest.actionIs("amalgamsowl"))
 		{
-			
+			File f1 = getFile(webRequest, "content");
+			String s1 = webRequest.get("space_name1");
+			String s2 = webRequest.get("space_name2");
+			doNewAmalgamsOWLProcess(f1, s1,s2);
 		}
 		else if (webRequest.actionIs("next")) {
 			String pid = webRequest.get("pid");
@@ -262,7 +265,20 @@ public class BlendServlet implements IServlet {
 		}, TUnit.HOUR.millisecs);
 	}
 
-
+	private void doNewAmalgamsOWLProcess(File f1, String s1, String s2) throws IOException {
+		cmd = new HDTPAmalCommand(HDTPAmalCommand.CMD.AMALOWL,f1, f1,s1,s2);
+		cmd.run();
+		pid2process.put(""+cmd.getProc().getProcessId(), cmd);
+		final HDTPAmalCommand fcmd = cmd;
+		reaper.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				Log.d("reaper", "Close "+fcmd);
+				fcmd.close();			
+			}				
+		}, TUnit.HOUR.millisecs);
+	}
+	
 	private void doListConcepts(WebRequest webRequest) throws IOException {
 		File dir = getFile2("dummy").getParentFile();
 		if ( ! dir.exists()) dir.mkdirs();
