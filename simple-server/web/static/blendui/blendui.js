@@ -198,7 +198,7 @@ function callBackend(action,index) {
 		if (action == 'next') 
 		{request = 'next';} else {request = 'start';}
 		$.post(
-      		"/cmd/amalgams.json",{action:"amalgamsowl",request:request,space_name1:spname1,space_name2:spname2,content:input1})
+      		"/cmd/blend",{action:"amalgamsowl",request:request,space_name1:spname1,space_name2:spname2,content:input1})
 		    .done(function(data) {
 			$("textarea#output").val(data.cargo.blend);
   			$("textarea#pid").val(data.cargo.id);
