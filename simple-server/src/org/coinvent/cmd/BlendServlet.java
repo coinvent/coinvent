@@ -81,12 +81,12 @@ import com.winterwell.web.WebEx;
  */
 public class BlendServlet implements IServlet {
 
-	private HDTPCommand cmd;	
+	private HDTPAmalCommand cmd;	
 	private HETSCommand hetscmd;
 	
 	
-	static Map<String,HDTPCommand> pid2process = new Cache<String,HDTPCommand>(20) {
-		protected void onRemove(String key, HDTPCommand value) {
+	static Map<String,HDTPAmalCommand> pid2process = new Cache<String,HDTPAmalCommand>(20) {
+		protected void onRemove(String key, HDTPAmalCommand value) {
 			if (value!=null) value.close();
 		}
 	};
@@ -128,9 +128,22 @@ public class BlendServlet implements IServlet {
 		
 		if (webRequest.actionIs("hdtp")||webRequest.actionIs("hets")) {
 			File f1 = getFile(webRequest, "input1");
-			File f2 = getFile(webRequest, "input2");
+			File f2 = getFile(webRequest, "input1");
 			doNewHDTPProcess(f1, f2);
-		} else if (webRequest.actionIs("next")) {
+		} else if (webRequest.actionIs("amalgamscasl"))
+		{  
+			File f1 = getFile(webRequest, "content");
+			String s1 = webRequest.get("space_name1");
+			String s2 = webRequest.get("space_name2");
+			doNewAmalgamsCASLProcess(f1, s1,s2);
+		} else if (webRequest.actionIs("amalgamsowl"))
+		{
+			File f1 = getFile(webRequest, "content");
+			String s1 = webRequest.get("space_name1");
+			String s2 = webRequest.get("space_name2");
+			doNewAmalgamsOWLProcess(f1, s1,s2);
+		}
+		else if (webRequest.actionIs("next")) {
 			String pid = webRequest.get("pid");
 			cmd = pid2process.get(pid);
 			if (cmd==null) {
@@ -225,10 +238,24 @@ public class BlendServlet implements IServlet {
 	}
 
 	private void doNewHDTPProcess(File f1, File f2) throws IOException {
-		cmd = new HDTPCommand(f1, f2);
+		cmd = new HDTPAmalCommand(HDTPAmalCommand.CMD.HDTP,f1, f2,"","");
 		cmd.run();
 		pid2process.put(""+cmd.getProc().getProcessId(), cmd);
-		final HDTPCommand fcmd = cmd;
+		final HDTPAmalCommand fcmd = cmd;
+		reaper.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				Log.d("reaper", "Close "+fcmd);
+				fcmd.close();			
+			}				
+		}, TUnit.HOUR.millisecs);
+	}
+	
+	private void doNewAmalgamsCASLProcess(File f1, String s1, String s2) throws IOException {
+		cmd = new HDTPAmalCommand(HDTPAmalCommand.CMD.AMALCASL,f1, f1,s1,s2);
+		cmd.run();
+		pid2process.put(""+cmd.getProc().getProcessId(), cmd);
+		final HDTPAmalCommand fcmd = cmd;
 		reaper.schedule(new TimerTask(){
 			@Override
 			public void run() {
@@ -238,6 +265,20 @@ public class BlendServlet implements IServlet {
 		}, TUnit.HOUR.millisecs);
 	}
 
+	private void doNewAmalgamsOWLProcess(File f1, String s1, String s2) throws IOException {
+		cmd = new HDTPAmalCommand(HDTPAmalCommand.CMD.AMALOWL,f1, f1,s1,s2);
+		cmd.run();
+		pid2process.put(""+cmd.getProc().getProcessId(), cmd);
+		final HDTPAmalCommand fcmd = cmd;
+		reaper.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				Log.d("reaper", "Close "+fcmd);
+				fcmd.close();			
+			}				
+		}, TUnit.HOUR.millisecs);
+	}
+	
 	private void doListConcepts(WebRequest webRequest) throws IOException {
 		File dir = getFile2("dummy").getParentFile();
 		if ( ! dir.exists()) dir.mkdirs();

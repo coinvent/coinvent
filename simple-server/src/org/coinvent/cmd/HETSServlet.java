@@ -65,15 +65,15 @@ public class HETSServlet implements IServlet {
 					String pid = webRequest.get("pid");
 					cmd.setlocalfile("/web/static/hetsfile"+pid+".dol");
 					// For testing
-					cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"27701"+".dol");
-					//cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+pid+".dol");
+					//cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+"27701"+".dol");
+					cmd.setlocalurl("http%3a%2f%2f148.251.85.37%3a8300%2fstatic%2fhetsfile"+pid+".dol");
 					File file = new File(FileUtils.getWorkingDirectory(), cmd.getlocalfile());
 					FileUtils.write(file, contents);
 					
 					try {
 						//InetAddress IP = InetAddress.getLocalHost();
 						//System.out.println(IP.getHostAddress());
-						String hetsurlstring = ("http://pollux.informatik.uni-bremen.de:8000/dg/"+(cmd.getlocalurl())+"/auto?format=dol");
+						String hetsurlstring = ("http://rest.hets.eu/dg/"+(cmd.getlocalurl())+"/auto?format=dol");
 						URL url = new URL(hetsurlstring);
 						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 						conn.setRequestMethod("GET");
