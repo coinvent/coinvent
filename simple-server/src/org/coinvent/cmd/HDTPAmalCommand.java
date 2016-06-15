@@ -9,6 +9,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.winterwell.utils.ShellScript;
 import com.winterwell.utils.StrUtils;
 import com.winterwell.utils.Utils;
@@ -143,7 +145,24 @@ public class HDTPAmalCommand {
 		case AMALOWL:
 			
 
-			String ontonm = input1.getName();
+			String ontonm = FileUtils.read(input1);
+			  int start = ontonm.indexOf("Ontology:")+9;
+			  
+			     ontonm = ontonm.substring(start);
+			     int end = ontonm.indexOf(">");
+			     ontonm = ontonm.substring(0, end -1);
+			     int m = ontonm.indexOf("/");
+			     
+			     while (m != -1) 
+			     {
+			    	 ontonm = ontonm.substring(m);
+			     }
+			     
+			     
+			
+			
+			
+			//get last name after _ and before extension?
 			proc = new Proc("cp "+ input1.getAbsolutePath() + " "+"/home/ewen/ontolp-implementation/content.owl");
 			proc.run();
 			proc.waitFor(new Dt(5, TUnit.SECOND));
