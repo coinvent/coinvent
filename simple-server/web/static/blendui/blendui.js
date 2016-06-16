@@ -179,11 +179,20 @@ function callBackend(action,index) {
 		var pid = $('input[name=pid]').val();
 		if (action == 'next') 
 		{request = 'next';} else {request = 'start';}
-		$.post(
-      		"/cmd/blend",{action:"amalgamscasl",request:request,space_name1:spname1,space_name2:spname2,content:JSON.stringify(input1)})
-		    .done(function(data) {
-			$("textarea#output").val(data.cargo.blend);
-  			$("textarea#pid").val(data.cargo.id);
+		$.ajax({}
+      		method: 'POST',
+      		url: '/cmd/blend',
+      		data: {action:"amalgamscasl",
+      				request:request,
+      				space_name1:spname1,
+      				space_name2:spname2,
+      				content:JSON.stringify(input1)}
+      			})
+		    .then(function(data,ef) {
+             console.warn(data,ef);
+		    $('textarea[name=output]').removeClass('loading'); 
+			$('textarea[name=output]').val(data.cargo.blend);
+  			$('textarea[name=pid]').val(data.cargo.id);
 			});	
 	}
 	else if (index == 2)
@@ -197,11 +206,20 @@ function callBackend(action,index) {
 		var pid = $('input[name=pid]').val();
 		if (action == 'next') 
 		{request = 'next';} else {request = 'start';}
-		$.post(
-      		"/cmd/blend",{action:"amalgamsowl",request:request,space_name1:spname1,space_name2:spname2,content:JSON.stringify(input1)})
-		    .done(function(data) {
-			$("textarea#output").val(data.cargo.blend);
-  			$("textarea#pid").val(data.cargo.id);
+		$.ajax({}
+      		method: 'POST',
+      		url: '/cmd/blend',
+      		data: {action:"amalgamsowl",
+      				request:request,
+      				space_name1:spname1,
+      				space_name2:spname2,
+      				content:JSON.stringify(input1)}
+      			})
+		    .then(function(data,ef) {
+             console.warn(data,ef);
+		    $('textarea[name=output]').removeClass('loading'); 
+			$('textarea[name=output]').val(data.cargo.blend);
+  			$('textarea[name=pid]').val(data.cargo.id);
 			});	
 	}
 	else
