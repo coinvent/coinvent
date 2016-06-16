@@ -208,7 +208,9 @@ public class BlendServlet implements IServlet {
 			}
 		}
 		String output = cmd==null? null : cmd.getOutput();
-		if (webRequest.actionIs("hets")) {
+		if ((output == "") && (cmd != null))
+		{cmd.close();}
+		if (webRequest.actionIs("hets") && (output != "")) {
 			String pid = Integer.toString((cmd.getProc().getProcessId()));
 			hetscmd = new HETSCommand();
 			hetscmd.setlocalfile("/web/static/hetsfile"+pid+".dol");

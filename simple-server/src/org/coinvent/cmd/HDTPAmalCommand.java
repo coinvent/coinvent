@@ -235,10 +235,11 @@ public class HDTPAmalCommand {
 		
 		while(true) {
 			String outs = proc.getOutput().trim();
-			if (outs.endsWith("\'NEXT\'") || outs.endsWith("\'FINISHED\'")) {
+			if (outs.endsWith("\'NEXT\'")) {
 				// trim the end
 				outs = StrUtils.pop(outs, "\'NEXT\'");
-				outs = StrUtils.pop(outs, "\'FINISHED\'");
+			} else if (outs.endsWith("\'FINISHED\'")) {
+			     outs = "";
 				return outs;
 			}
 			if ( ! proc.isOutputting()) return outs;
