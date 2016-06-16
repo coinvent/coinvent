@@ -144,6 +144,8 @@ function callBackend(action,index) {
 		console.warn(a,b);
 		$('.doBlend').attr('disabled',false);
 		$('.doBlendNext').attr('disabled',false);
+		if (a.cargo.output != "")
+		{
 		var output = "" + a.cargo.input1.text +"\n\n"+ 
 			a.cargo.input2.text +"\n\n"+ a.cargo.output;
 		$('.outputLoading').show();
@@ -151,8 +153,7 @@ function callBackend(action,index) {
 		$('input[name=pid]').val(a.cargo.pid);
 		}
 		pid = $('input[name=pid]').val();
-		if (output != "")
-		{
+		
 		$.ajax({
 			method:'POST',
 			url: '/cmd/HETS',
