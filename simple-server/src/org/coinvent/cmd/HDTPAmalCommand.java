@@ -5,6 +5,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -47,7 +50,14 @@ public class HDTPAmalCommand {
 	String sn1;
 	String sn2;
 	
+	String procstr;
+	
 	CMD cmd;
+	
+	
+	Process procx;
+	InputStream stdout;
+	OutputStream stdin;
 	
 	public File getInput1() {
 		return input1;
@@ -135,9 +145,18 @@ public class HDTPAmalCommand {
 			//procstr = SWIPL;
 		    procstr = "cd /home/ewen/Amalgamation;/usr/bin/python /home/ewen/Amalgamation/run-blending.py\n"; 
 		    Log.d(getClass().getSimpleName(), procstr);
-			proc = new ShellScript(procstr);		
+		    
+		    
+		    ProcessBuilder builder = new ProcessBuilder("/bin/bash");
+			builder.redirectErrorStream(true);	
+			Process procx = builder.start();
+			InputStream stdout = procx.getInputStream();
+			OutputStream stdin = procx.getOutputStream();
+			
+			
+			/*proc = new ShellScript(procstr);		
 			proc.redirectErrorStream(true);
-			this.proc = proc.start();
+			this.proc = proc.start();*/
 			break;
 			
 	
@@ -150,12 +169,13 @@ public class HDTPAmalCommand {
 			  
 			     ontonm = ontonm.substring(start);
 			     int end = ontonm.indexOf(">");
-			     ontonm = ontonm.substring(0, end -1);
+			     ontonm = ontonm.substring(0, end);
 			     int m = ontonm.indexOf("/");
 			     
 			     while (m != -1) 
 			     {
-			    	 ontonm = ontonm.substring(m);
+			    	 ontonm = ontonm.substring(m+1);
+			    	 m = ontonm.indexOf("/");
 			     }
 			     
 			     
@@ -178,9 +198,9 @@ public class HDTPAmalCommand {
 			pwriter.close();
 			 procstr = "cd /home/ewen/ontolp-implementation;/usr/bin/python /home/ewen/ontolp-implementation/run-blending.py\n"; 
 			    Log.d(getClass().getSimpleName(), procstr);
-				proc = new ShellScript(procstr);		
+				/*proc = new ShellScript(procstr);		
 				proc.redirectErrorStream(true);
-				this.proc = proc.start();
+				this.proc = proc.start();*/
 		break;
 		
 		default:
@@ -221,7 +241,7 @@ public class HDTPAmalCommand {
 		}
 		case AMALCASL :
 		{
-			while(true) {
+			/*while(true) {
 				String outs = proc.getOutput().trim();
 				
 				if (outs.endsWith("Other blend? (n)") || outs.endsWith("Finished")) {
@@ -238,7 +258,54 @@ public class HDTPAmalCommand {
 					return outp;
 				}
 				if ( ! proc.isOutputting()) return outs;
-			}}
+			}*/
+		
+		
+			BufferedReader tempreader = new BufferedReader(new InputStreamReader(stdout));
+		
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
+		
+			writer.write(procstr);
+		    writer.flush();
+			
+			String outln = tempreader.readLine();
+			
+			while (outln != null)
+			{
+				System.out.println(outln);
+				
+				if (outln.trim().equals("Other blend? (n)"))
+				{
+					break;
+					}
+				else
+				if (outln.trim().equals("Finished"))
+				{
+					String outp="{}";
+					break;
+					}
+				/*else if (outln.trim().equals("SATISFIABLE"))
+				{
+					break;
+				}*/
+				else
+				{
+				outln = tempreader.readLine();
+				}
+			}
+			BufferedReader reader = new BufferedReader(new FileReader("/home/ewen/Amalgamation/blend.json"));
+			outln =  "";
+			String outp = "";
+			while ((outln = reader.readLine()) != null)
+			{
+				//System.out.println ("Stdout: " + outln);
+				outp += outln;
+				outln = reader.readLine();
+			}
+			return outp;
+		
+		
+		}
 				
 			
 		

@@ -128,7 +128,7 @@ public class BlendServlet implements IServlet {
 		
 		if (webRequest.actionIs("hdtp")||webRequest.actionIs("hets")) {
 			File f1 = getFile(webRequest, "input1");
-			File f2 = getFile(webRequest, "input1");
+			File f2 = getFile(webRequest, "input2");
 			doNewHDTPProcess(f1, f2);
 		} else if (webRequest.actionIs("amalgamscasl"))
 		{  
@@ -254,7 +254,7 @@ public class BlendServlet implements IServlet {
 	private void doNewAmalgamsCASLProcess(File f1, String s1, String s2) throws IOException {
 		cmd = new HDTPAmalCommand(HDTPAmalCommand.CMD.AMALCASL,f1, f1,s1,s2);
 		cmd.run();
-		pid2process.put(""+cmd.getProc().getProcessId(), cmd);
+		//pid2process.put(""+cmd.getProc().getProcessId(), cmd);
 		final HDTPAmalCommand fcmd = cmd;
 		reaper.schedule(new TimerTask(){
 			@Override
