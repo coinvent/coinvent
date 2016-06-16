@@ -192,7 +192,9 @@ function callBackend(action,index) {
              console.warn(data,ef);
 		    $('textarea[name=output]').removeClass('loading'); 
 			$('textarea[name=output]').val(data.cargo.blend);
-  			$('textarea[name=pid]').val(data.cargo.id);
+  			if (a.cargo.pid) {
+				$('input[name=pid]').val(a.cargo.pid);
+			}
 			});	
 	}
 	else if (index == 2)
@@ -219,7 +221,9 @@ function callBackend(action,index) {
              console.warn(data,ef);
 		    $('textarea[name=output]').removeClass('loading'); 
 			$('textarea[name=output]').val(data.cargo.blend);
-  			$('textarea[name=pid]').val(data.cargo.id);
+  			if (a.cargo.pid) {
+				$('input[name=pid]').val(a.cargo.pid);
+			}
 			});	
 	}
 	else
