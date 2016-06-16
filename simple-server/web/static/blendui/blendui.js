@@ -179,7 +179,7 @@ function callBackend(action,index) {
 		var pid = $('input[name=pid]').val();
 		if (action == 'next') 
 		{request = 'next';} else {request = 'start';}
-		$.ajax({}
+		$.ajax({
       		method: 'POST',
       		url: '/cmd/blend',
       		data: {action:"amalgamscasl",
@@ -206,7 +206,7 @@ function callBackend(action,index) {
 		var pid = $('input[name=pid]').val();
 		if (action == 'next') 
 		{request = 'next';} else {request = 'start';}
-		$.ajax({}
+		$.ajax({
       		method: 'POST',
       		url: '/cmd/blend',
       		data: {action:"amalgamsowl",
