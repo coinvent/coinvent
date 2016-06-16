@@ -173,6 +173,7 @@ function callBackend(action,index) {
 	} else {$('.outputLoading').hide();
 			$('textarea[name=output]').removeClass('loading'); 
 			$('textarea[name=output]').val("");	
+			$('.doBlendNext').attr('disabled','disabled');
 		}});
 	}
 	else if (index == 1)
