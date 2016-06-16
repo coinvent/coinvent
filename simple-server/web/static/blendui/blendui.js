@@ -173,9 +173,9 @@ function callBackend(action,index) {
 		var input1 = getInput('inputamalcasl');
 		var spname1 = $('input[name=acinput1]').val(); 
  		var spname2 = $('input[name=acinput2]').val(); 
-		$('.doBlend').attr('disabled','disabled');
-		$('.doBlendNext').attr('disabled','disabled');
-		$('.outputLoading').show();
+		$('.doBlend').attr('disabled',false);
+		$('.doBlendNext').attr('disabled',false);
+		$('.outputLoading').hide();
 		var pid = $('input[name=pid]').val();
 		if (action == 'next') 
 		{request = 'next';} else {request = 'start';}
