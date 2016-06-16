@@ -18,6 +18,7 @@ import java.util.TimerTask;
 import org.coinvent.IServlet;
 import org.eclipse.jetty.util.ajax.JSON;
 
+import winterwell.json.JSONObject;
 import winterwell.utils.StrUtils;
 import winterwell.utils.Utils;
 import com.winterwell.utils.containers.ArrayMap;
@@ -83,6 +84,52 @@ public class BlendServlet implements IServlet {
 
 	private HDTPAmalCommand cmd;	
 	private HETSCommand hetscmd;
+	
+	
+
+	private ArrayMap<String,String> appendAmalgamsCargo(String output, String error, int id)
+	{
+	  ArrayMap<String,String> result = new ArrayMap<String,String>();
+	  JSONObject json = new JSONObject(output);
+	 
+	try
+	{
+	  String blend = json.getString("blend");
+	 String input1 = json.getString("input1");
+	 String input2 = json.getString("input2");
+	 String genericSpace = json.getString("genericSpace");
+	 String blendName = json.getString("blendName");
+	 String blendId = json.getString("blendId");
+	 String cost = json.getString("cost");
+	 String idstring = Integer.toString(id);
+	 
+		
+		result.put("id",Integer.toString(id));
+		result.put("blend",blend);
+		result.put("error",error);
+		result.put("input1",input1);
+		result.put("input2",input2);
+		result.put("genericSpace",genericSpace);
+		result.put("blendName",blendName);
+		result.put("blendId",blendId);
+		result.put("cost",cost);
+		
+		return result;
+	}
+	catch (winterwell.json.JSONException e)
+	{
+		ArrayMap<String,String>t = new ArrayMap<String,String>();
+		t.put("blend","");
+		t.put("id","");
+		t.put("error","Error");
+		return t;
+	}
+	 
+	 // READ JSON INTO ARRAYMAP _ APPEND ID..... -
+	 
+	 
+	 
+  }
 	
 	
 	static Map<String,HDTPAmalCommand> pid2process = new Cache<String,HDTPAmalCommand>(20) {
@@ -218,10 +265,10 @@ public class BlendServlet implements IServlet {
 		} else {
 		
 		
+		ArrayMap cargo;
 		
-		
-		
-		ArrayMap cargo = new ArrayMap(				
+        if (webRequest.actionIs("hdtp")||webRequest.actionIs("hets")) {
+		cargo = new ArrayMap(				
 				"output", output				
 				);
 		if (cmd!=null) {
@@ -231,7 +278,22 @@ public class BlendServlet implements IServlet {
 			cargo.put("input1", new ArrayMap("text", i1));
 			cargo.put("input2", new ArrayMap("text", i2));
 			cargo.put("theory",new ArrayMap("text",i1+"\n\n"+i2+"\n\n"+output));
+		}} else if (webRequest.actionIs("amalgamscasl")||webRequest.actionIs("amalgamsowl")) {
+			
+			cargo = appendAmalgamsCargo(output,"",0);
+			//ArrayMap cargo = new ArrayMap("output", "id not valid: id = "+Integer.toString(id));
+			
+			
+		} else
+		{
+			 cargo = new ArrayMap(				
+					"output", "Not yet implemented"				
+					); 	
 		}
+		
+		
+		
+		
 		
 		JsonResponse jr = new JsonResponse(webRequest, cargo);
 		WebUtils2.sendJson(jr, webRequest);}

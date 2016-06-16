@@ -38,6 +38,10 @@ import com.winterwell.utils.io.FileUtils;
 public class HDTPAmalCommand {
 
 	
+	
+	
+	
+	
 	public enum CMD {HDTP,AMALCASL,AMALOWL};
 	
 	String SWIPL = "swipl";
@@ -117,7 +121,7 @@ public class HDTPAmalCommand {
 		switch (cmd)
 		{case HDTP :
 			String hcmd = "trace,notrace,((read_casl(\\\""+input1.getAbsolutePath()+"\\\",\\\""+input2.getAbsolutePath()+"\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
-			String procstr = SWIPL+" --quiet -G0K -T0K -L0K -s "+HDTP.getCanonicalFile()+" -t \""+ hcmd + "\"";
+			procstr = SWIPL+" --quiet -G0K -T0K -L0K -s "+HDTP.getCanonicalFile()+" -t \""+ hcmd + "\"";
 			Log.d(getClass().getSimpleName(), procstr);
 			proc = new ShellScript(procstr);		
 			proc.redirectErrorStream(true);
@@ -150,8 +154,8 @@ public class HDTPAmalCommand {
 		    ProcessBuilder builder = new ProcessBuilder("/bin/bash");
 			builder.redirectErrorStream(true);	
 			Process procx = builder.start();
-			InputStream stdout = procx.getInputStream();
-			OutputStream stdin = procx.getOutputStream();
+			stdout = procx.getInputStream();
+			stdin = procx.getOutputStream();
 			
 			
 			/*proc = new ShellScript(procstr);		
@@ -282,7 +286,8 @@ public class HDTPAmalCommand {
 				if (outln.trim().equals("Finished"))
 				{
 					String outp="{}";
-					break;
+					return outp;
+					
 					}
 				/*else if (outln.trim().equals("SATISFIABLE"))
 				{
