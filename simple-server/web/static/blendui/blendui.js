@@ -146,7 +146,7 @@ function callBackend(action,index) {
 		$('.doBlendNext').attr('disabled',false);
 		var output = "" + a.cargo.input1.text +"\n\n"+ 
 			a.cargo.input2.text +"\n\n"+ a.cargo.output;
-		$('.outputLoading').hide();
+		$('.outputLoading').show();
 		if (a.cargo.pid) {
 		$('input[name=pid]').val(a.cargo.pid);
 		}
@@ -162,6 +162,7 @@ function callBackend(action,index) {
 			})
 			.then(function(c,d){
 			console.warn(c,d);
+			$('.outputLoading').hide();
 			$('textarea[name=output]').removeClass('loading'); 
 			$('textarea[name=output]').val(c.cargo.blend);	
 			$('iframe[id=svg]').attr("src",c.cargo.svg);
@@ -175,7 +176,7 @@ function callBackend(action,index) {
  		var spname2 = $('input[name=acinput2]').val(); 
 		$('.doBlend').attr('disabled',false);
 		$('.doBlendNext').attr('disabled',false);
-		$('.outputLoading').hide();
+		$('.outputLoading').show();
 		var pid = $('input[name=pid]').val();
 		if (action == 'next') 
 		{request = 'next';} else {request = 'start';}
@@ -190,6 +191,7 @@ function callBackend(action,index) {
       			})
 		    .then(function(data,ef) {
              console.warn(data,ef);
+            $('.outputLoading').hide();
 		    $('textarea[name=output]').removeClass('loading'); 
 			$('textarea[name=output]').val(data.cargo.blend);
   			if (a.cargo.pid) {
