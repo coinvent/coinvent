@@ -238,6 +238,7 @@ public class HDTPAmalCommand {
 			if (outs.endsWith("\'NEXT\'")) {
 				// trim the end
 				outs = StrUtils.pop(outs, "\'NEXT\'");
+				return outs;
 			} else if (outs.endsWith("\'FINISHED\'")) {
 			     outs = "";
 				return outs;
