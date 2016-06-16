@@ -151,6 +151,8 @@ function callBackend(action,index) {
 		$('input[name=pid]').val(a.cargo.pid);
 		}
 		pid = $('input[name=pid]').val();
+		if (output != "")
+		{
 		$.ajax({
 			method:'POST',
 			url: '/cmd/HETS',
@@ -167,7 +169,10 @@ function callBackend(action,index) {
 			$('textarea[name=output]').val(c.cargo.blend);	
 			$('iframe[id=svg]').attr("src",c.cargo.svg);
 			});
-	});
+	} else {$('.outputLoading').hide();
+			$('textarea[name=output]').removeClass('loading'); 
+			$('textarea[name=output]').val("");	
+		}});
 	}
 	else if (index == 1)
 	{
