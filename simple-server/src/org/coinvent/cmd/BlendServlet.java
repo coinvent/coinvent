@@ -106,7 +106,7 @@ public class BlendServlet implements IServlet {
 			String cost = json.getString("cost");
 			String idstring = Integer.toString(id);
 
-			result.put("id", Integer.toString(id));
+			result.put("pid", Integer.toString(id));
 			result.put("blend", blend);
 			result.put("error", error);
 			result.put("input1", input1);
@@ -120,7 +120,7 @@ public class BlendServlet implements IServlet {
 		} catch (winterwell.json.JSONException e) {
 			ArrayMap<String, String> t = new ArrayMap<String, String>();
 			t.put("blend", blend);
-			t.put("id", "");
+			t.put("pid", Integer.toString(id));
 			t.put("error", "Error");
 			return t;
 		}
@@ -292,7 +292,7 @@ public class BlendServlet implements IServlet {
 			((pid2process.get(pid).cmd == CMD.AMALCASL) || (pid2process.get(pid).cmd == CMD.AMALOWL))
 			{
 
-				cargo = appendAmalgamsCargo(output, "", 0);
+				cargo = appendAmalgamsCargo(output, "", cmd.getProc().getProcessId());
 				// ArrayMap cargo = new ArrayMap("output",
 				// "id not valid: id = "+Integer.toString(id));
 
