@@ -233,7 +233,8 @@ function callBackend(action,index) {
       				pid:pid}
       			})
 		    .then(function(data,ef) {
-             console.warn(data,ef);
+			console.warn(data,ef);
+			  $('.outputLoading').hide();
 		    $('textarea[name=output]').removeClass('loading'); 
 			$('textarea[name=output]').val(data.cargo.blend);
   			if (data.cargo.pid) {
