@@ -30,7 +30,15 @@ $(function() {
 			e.preventDefault();
 			var idx = $('#thelist').prop('selectedIndex');
 			/*alert($('#thelist').prop('selectedIndex'));*/
-			callBackend('hdtp',idx);
+			 if (idx==0)
+			 {
+				callBackend('hdtp',idx);
+			}
+			else if (idx == 1)
+				{ callBackend('amalgamscasl',idx)}
+			else if (idx==2)
+				{ callBackend('amalgamsowl',idx)}
+			else {}
 		});
 		
 		$('.doBlendNext').on('click',function(e){
@@ -185,24 +193,23 @@ function callBackend(action,index) {
 		$('.doBlendNext').attr('disabled',false);
 		$('.outputLoading').show();
 		var pid = $('input[name=pid]').val();
-		if (action == 'next') 
-		{request = 'next';} else {request = 'start';}
+		
 		$.ajax({
       		method: 'POST',
       		url: '/cmd/blend',
-      		data: {action:"amalgamscasl",
-      				request:request,
+      		data: {action:action,
       				space_name1:spname1,
       				space_name2:spname2,
-      				content:JSON.stringify(input1)}
+      				content:JSON.stringify(input1),
+      				pid:pid}
       			})
 		    .then(function(data,ef) {
              console.warn(data,ef);
             $('.outputLoading').hide();
 		    $('textarea[name=output]').removeClass('loading'); 
 			$('textarea[name=output]').val(data.cargo.blend);
-  			if (a.cargo.pid) {
-				$('input[name=pid]').val(a.cargo.pid);
+  			if (data.cargo.pid) {
+				$('input[name=pid]').val(data.cargo.pid);
 			}
 			});	
 	}
@@ -211,27 +218,26 @@ function callBackend(action,index) {
 		var input1 = getInput('inputamalowl');
 		var spname1 = $('input[name=aoinput1]').val(); 
  		var spname2 = $('input[name=aoinput2]').val(); 
-		$('.doBlend').attr('disabled','disabled');
-		$('.doBlendNext').attr('disabled','disabled');
+		$('.doBlend').attr('disabled',false);
+		$('.doBlendNext').attr('disabled',false);
 		$('.outputLoading').show();
 		var pid = $('input[name=pid]').val();
-		if (action == 'next') 
-		{request = 'next';} else {request = 'start';}
+		
 		$.ajax({
       		method: 'POST',
       		url: '/cmd/blend',
-      		data: {action:"amalgamsowl",
-      				request:request,
+      		data: {action:action,
       				space_name1:spname1,
       				space_name2:spname2,
-      				content:JSON.stringify(input1)}
+      				content:JSON.stringify(input1),
+      				pid:pid}
       			})
 		    .then(function(data,ef) {
              console.warn(data,ef);
 		    $('textarea[name=output]').removeClass('loading'); 
 			$('textarea[name=output]').val(data.cargo.blend);
-  			if (a.cargo.pid) {
-				$('input[name=pid]').val(a.cargo.pid);
+  			if (data.cargo.pid) {
+				$('input[name=pid]').val(data.cargo.pid);
 			}
 			});	
 	}
