@@ -94,9 +94,10 @@ public class BlendServlet implements IServlet {
 			String error, int id) {
 		ArrayMap<String, String> result = new ArrayMap<String, String>();
 		JSONObject json = new JSONObject(output);
-
+		String blend = "";
 		try {
-			String blend = json.getString("blend");
+			
+			blend = json.getString("blend");
 			String input1 = json.getString("input1");
 			String input2 = json.getString("input2");
 			String genericSpace = json.getString("genericSpace");
@@ -118,7 +119,7 @@ public class BlendServlet implements IServlet {
 			return result;
 		} catch (winterwell.json.JSONException e) {
 			ArrayMap<String, String> t = new ArrayMap<String, String>();
-			t.put("blend", "");
+			t.put("blend", blend);
 			t.put("id", "");
 			t.put("error", "Error");
 			return t;

@@ -46,8 +46,12 @@ public class HDTPAmalCommand {
 	
 	String SWIPL = "swipl";
 	static File HDTP = new File(FileUtils.getWorkingDirectory(), "../HDTP_coinvent/hdtp.pro");
-	static File AmalgamsCASL = new File(FileUtils.getWorkingDirectory(), "../HDTP_coinvent/hdtp.pro");
-	
+	static File AmalgamsCASLbase = new File(FileUtils.getWorkingDirectory(), "../../Amalgamation/");
+	static File AmalgamsOWLbase = new File(FileUtils.getWorkingDirectory(), "../../ontolp-implementation/");
+
+	static File root = new File(FileUtils.getWorkingDirectory().getParent());
+	//String AmalgamsCASLbase = root.getParent() + "/Amalgamation";
+	//String AmalgamsOWLbase = root.getParent() + "ontolp-implementation"
 	File input1;
 	File input2;
 	
@@ -131,7 +135,7 @@ public class HDTPAmalCommand {
 		case AMALCASL :
 			//write input file
 			
-			Proc proc = new Proc("cp "+ input1.getAbsolutePath() + " "+"/home/ewen/Amalgamation/content.casl");
+			Proc proc = new Proc("cp "+ input1.getAbsolutePath() + " "+AmalgamsCASLbase.getCanonicalPath()+"/content.casl");
 			proc.run();
 			proc.waitFor(new Dt(5, TUnit.SECOND));
 			proc.close();
@@ -141,26 +145,26 @@ public class HDTPAmalCommand {
 			//write settings file
 			String file_post = "numModels = 1\nminIterationsGeneralize=1\nmaxIterationsGeneralize=20\n" +
 					"eproverTimeLimit=4\ndarwinTimeLimit=0.1\nhetsExe=\'hets\'\nblendValuePercentageBelowHighestValueToKeep=0\nuseHetsAPI=0\nhetsUrl='http://localhost:8000/'";
-			String file_content = "inputFile=\"/home/ewen/Amalgamation/content.casl\"\ninputSpaceNames = [\""+
+			String file_content = "inputFile=\""+AmalgamsCASLbase.getCanonicalPath()+"/content.casl\"\ninputSpaceNames = [\""+
 			sn1+"\",\""+sn2+"\"]\n"+file_post;
-			PrintWriter pwriter=  new PrintWriter("/home/ewen/Amalgamation/settings.py");
+			PrintWriter pwriter=  new PrintWriter(AmalgamsCASLbase.getCanonicalPath()+"/settings.py");
 			pwriter.println(file_content);
 			pwriter.close();
 			//procstr = SWIPL;
-		    procstr = "cd /home/ewen/Amalgamation;/usr/bin/python /home/ewen/Amalgamation/run-blending.py\n"; 
+		    procstr = "cd "+AmalgamsCASLbase.getCanonicalPath()+";/usr/bin/python "+AmalgamsCASLbase.getCanonicalPath()+"/run-blending.py\n"; 
 		    Log.d(getClass().getSimpleName(), procstr);
 		    
 		    
-		    ProcessBuilder builder = new ProcessBuilder("/bin/bash");
+		    /*ProcessBuilder builder = new ProcessBuilder("/bin/bash");
 			builder.redirectErrorStream(true);	
 			Process procx = builder.start();
 			stdout = procx.getInputStream();
-			stdin = procx.getOutputStream();
+			stdin = procx.getOutputStream();*/
 			
 			
-			/*proc = new ShellScript(procstr);		
+			proc = new ShellScript(procstr);		
 			proc.redirectErrorStream(true);
-			this.proc = proc.start();*/
+			this.proc = proc.start();
 			break;
 			
 	
@@ -187,24 +191,24 @@ public class HDTPAmalCommand {
 			
 			
 			//get last name after _ and before extension?
-			proc = new Proc("cp "+ input1.getAbsolutePath() + " "+"/home/ewen/ontolp-implementation/content.owl");
+			proc = new Proc("cp "+ input1.getAbsolutePath() + " "+AmalgamsOWLbase.getCanonicalPath()+"content.owl");
 			proc.run();
 			proc.waitFor(new Dt(5, TUnit.SECOND));
 			proc.close();
 			file_post = "import sys\nnumModels = 2\nminIterationsGeneralize=1\nmaxIterationsGeneralize=20\n" +
 					"roleDepth=2\nhetsExe=\'hets\'\nontologyPrefix = \"<http://www.semanticweb.org/ontologies/2016/4\"";
 
-			file_content = "ontologyName = \""+ontonm+"\"\ninputFile=\"/home/ewen/ontolp-implementation/content.owl\"\ninputSpaceNames = [\""+
+			file_content = "ontologyName = \""+ontonm+"\"\ninputFile=\""+AmalgamsOWLbase.getCanonicalPath()+"/content.owl\"\ninputSpaceNames = [\""+
 
 			sn1+"\",\""+sn2+"\"]\n"+file_post;
-			pwriter=  new PrintWriter("/home/ewen/ontolp-implementation/settings.py");
+			pwriter=  new PrintWriter(AmalgamsOWLbase.getCanonicalPath()+"/settings.py");
 			pwriter.println(file_content);
 			pwriter.close();
-			 procstr = "cd /home/ewen/ontolp-implementation;/usr/bin/python /home/ewen/ontolp-implementation/run-blending.py\n"; 
+			 procstr = "cd "+AmalgamsOWLbase.getCanonicalPath()+";/usr/bin/python "+AmalgamsOWLbase.getCanonicalPath()+"/run-blending.py\n"; 
 			    Log.d(getClass().getSimpleName(), procstr);
-				/*proc = new ShellScript(procstr);		
+				proc = new ShellScript(procstr);		
 				proc.redirectErrorStream(true);
-				this.proc = proc.start();*/
+				this.proc = proc.start();
 		break;
 		
 		default:
@@ -247,12 +251,15 @@ public class HDTPAmalCommand {
 		}
 		case AMALCASL :
 		{
-			/*while(true) {
+			while(true) {
 				String outs = proc.getOutput().trim();
 				
-				if (outs.endsWith("Other blend? (n)") || outs.endsWith("Finished")) {
+				if (outs.endsWith("Other blend? (n)")) {
 					// trim the end
-					BufferedReader reader = new BufferedReader(new FileReader("/home/ewen/Amalgamation/blend.json"));
+					
+
+					
+					BufferedReader reader = new BufferedReader(new FileReader(AmalgamsCASLbase.getCanonicalPath()+"/blend.json"));
 					String outln;
 					String outp = "";
 					while ((outln = reader.readLine()) != null)
@@ -262,12 +269,41 @@ public class HDTPAmalCommand {
 						outln = reader.readLine();
 					}
 					return outp;
+					
+				}
+				else if (outs.trim().startsWith("finished"))
+				{
+					outs = "";
+					return outs;
 				}
 				if ( ! proc.isOutputting()) return outs;
-			}*/
-		
-		
-			BufferedReader tempreader = new BufferedReader(new InputStreamReader(stdout));
+			}}
+			case AMALOWL :
+			{
+				while(true) {
+					String outs = proc.getOutput().trim();
+					
+					if (outs.endsWith("Other blend? (n)")) {
+						// trim the end
+						BufferedReader reader = new BufferedReader(new FileReader(AmalgamsOWLbase.getAbsolutePath()+"/blend.json"));
+						String outln;
+						String outp = "";
+						while ((outln = reader.readLine()) != null)
+						{
+							//System.out.println ("Stdout: " + outln);
+							outp += outln;
+							outln = reader.readLine();
+						}
+						return outp;
+						
+					}
+					else if (outs.trim().startsWith("finished"))
+					{
+						outs = "";
+						return outs;
+					}
+					if ( ! proc.isOutputting()) return outs;
+			/*BufferedReader tempreader = new BufferedReader(new InputStreamReader(stdout));
 		
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
 		
@@ -294,7 +330,7 @@ public class HDTPAmalCommand {
 				/*else if (outln.trim().equals("SATISFIABLE"))
 				{
 					break;
-				}*/
+				}*//* 
 				else
 				{
 				outln = tempreader.readLine();
@@ -310,9 +346,9 @@ public class HDTPAmalCommand {
 				outln = reader.readLine();
 			}
 			return outp;
+		*/
 		
-		
-		}
+		}}
 				
 			
 		
