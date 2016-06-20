@@ -20,6 +20,9 @@ $(function() {
 		console.log("context=", {name:'input1', previous:prev});
 		$('#conceptEditor1').html(templates.ConceptEditor({name:'input1', previous:prev}));
 		$('#conceptEditor2').html(templates.ConceptEditor({name:'input2', previous:prev}));
+
+
+		/*Make modal an argument??? */
 		$('#conceptEditorAmalCASL').html(templates.ConceptEditor({name:'inputamalcasl', previous:prev}));
 		$('#conceptEditorAmalOWL').html(templates.ConceptEditor({name:'inputamalowl', previous:prev}));
 		$('.outputLoading').hide();
@@ -57,6 +60,9 @@ $(function() {
 			e.preventDefault();
 			callSave();
 		});
+
+	
+
 	}); 
 
 });
@@ -110,7 +116,7 @@ function getInput(name) {
 
 function callSave() {
     var blendname = $('input[name=blendname]').val();
-    var blend = $('textarea[name=output]').val();
+    var blend = $('textarea[name=blendtheory]').val();
     $.ajax({
     	method:'POST',
 	url: '/cmd/blend',
@@ -125,6 +131,7 @@ function callSave() {
 		window.location.reload();
 	});		
 }
+
 
 
 function callBackend(action,index) {
@@ -236,7 +243,8 @@ function callBackend(action,index) {
 			console.warn(data,ef);
 			  $('.outputLoading').hide();
 		    $('textarea[name=output]').removeClass('loading'); 
-			$('textarea[name=output]').val(data.cargo.blend);
+			$('textarea[name=output]').val(data.cargo.theory);
+			$('textarea[name=blendtheory]').val(data.cargo.blend);
   			if (data.cargo.pid) {
 				$('input[name=pid]').val(data.cargo.pid);
 			}
