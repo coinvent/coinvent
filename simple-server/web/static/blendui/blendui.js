@@ -182,7 +182,8 @@ function callBackend(action,index) {
 			console.warn(c,d);
 			$('.outputLoading').hide();
 			$('textarea[name=output]').removeClass('loading'); 
-			$('textarea[name=output]').val(c.cargo.blend);	
+			$('textarea[name=output]').val(c.cargo.theory);	
+			$('textarea[name=blendtheory]').val(c.cargo.blend);
 			$('iframe[id=svg]').attr("src",c.cargo.svg);
 			});
 	} else {$('.outputLoading').hide();
