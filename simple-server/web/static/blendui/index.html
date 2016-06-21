@@ -38,24 +38,28 @@
       </div>
     </nav><!-- ./navbar -->
 
+
     <div id='main-container' class="container" role="main">
 		<form id='PickConceptsForm' class=''>
 			<div id="HDTPform" style='display:inline-block'> 
        <div class='flexbox'>
-				<div class='flexitem concept pad10'>
-					<div class='well'>
-						<h3>Concept 1</h3>
-						<div id='conceptEditor1'>Loading...</div>
-					</div>
-				</div>
-				<div class='flexitem concept pad10'>
-					<div class='well'>
-						<h3>Concept 2</h3>
-						<div id='conceptEditor2'>Loading...</div>
-					</div>
-				</div>
-			</div>
-    </div>
+				
+          <div class='flexitem concept pad10'>
+	 		  		<div class='well'>
+	   					<h3>Concept 1</h3>
+		  			  <div id='conceptEditor1'>Loading...</div>
+					  </div>
+				  </div>
+       
+          <div class='flexitem concept pad10'>
+	   				<div class='well'>
+	 	   				<h3>Concept 2</h3>
+						    <div id='conceptEditor2'>Loading...</div>
+					  </div>
+				  </div>
+        
+       </div>
+      </div>
 
  
       <div id = "AmalgamsCASLform" style='display:none'> 
@@ -94,6 +98,8 @@
 
 
 
+
+
     <div id = "Musicform" style='display:none'> 
        <div class='flexbox'>
         <div class='flexitem concept pad10'>
@@ -102,6 +108,9 @@
       </div>
     </div>
 
+<div id = "blendhidden" style='display:none'>
+  <textarea type = 'hidden' name = 'blendtheory' value=''></textarea>
+</div>
 
 			<div class='flexbox'>
 				<div class='well pad10'>
@@ -128,13 +137,24 @@
 				<textarea name="output" class='form-control' rows="20"></textarea>
 			</div>			
 		</div> 
-			
-		<div class='flexbox'>
-			<div class='well pad10'>
+		
+    <div class='pad10'></div>
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+  Show development graph
+</button>
+<div class="collapse" id="collapseExample">
+  <div class="well">
+    ...
+    <div id = 'svgframe'> 
+		  <div class='flexbox'>
+			 <div class='well pad10'>
 			   	<iframe id="svg" width="100%" height="300"></iframe>
-			</div>
-		</div>
-	
+			 </div>
+		  </div>
+	  </div>
+ </div>
+</div>
+<div class='pad10'></div>
 		<div class='well pad10'>
 			<form>
 				Name for Blend <input name='blendname' class='form-control' type='text'>
@@ -186,6 +206,7 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
 
   </body>
 </html>

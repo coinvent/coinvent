@@ -20,6 +20,9 @@ $(function() {
 		console.log("context=", {name:'input1', previous:prev});
 		$('#conceptEditor1').html(templates.ConceptEditor({name:'input1', previous:prev}));
 		$('#conceptEditor2').html(templates.ConceptEditor({name:'input2', previous:prev}));
+
+
+		/*Make modal an argument??? */
 		$('#conceptEditorAmalCASL').html(templates.ConceptEditor({name:'inputamalcasl', previous:prev}));
 		$('#conceptEditorAmalOWL').html(templates.ConceptEditor({name:'inputamalowl', previous:prev}));
 		$('.outputLoading').hide();
@@ -30,7 +33,15 @@ $(function() {
 			e.preventDefault();
 			var idx = $('#thelist').prop('selectedIndex');
 			/*alert($('#thelist').prop('selectedIndex'));*/
-			callBackend('hdtp',idx);
+			 if (idx==0)
+			 {
+				callBackend('hdtp',idx);
+			}
+			else if (idx == 1)
+				{ callBackend('amalgamscasl',idx)}
+			else if (idx==2)
+				{ callBackend('amalgamsowl',idx)}
+			else {}
 		});
 		
 		$('.doBlendNext').on('click',function(e){
@@ -49,6 +60,9 @@ $(function() {
 			e.preventDefault();
 			callSave();
 		});
+
+	
+
 	}); 
 
 });
@@ -102,7 +116,7 @@ function getInput(name) {
 
 function callSave() {
     var blendname = $('input[name=blendname]').val();
-    var blend = $('textarea[name=output]').val();
+    var blend = $('textarea[name=blendtheory]').val();
     $.ajax({
     method: 'POST',
 	url: '/cmd/blend',
@@ -117,6 +131,7 @@ function callSave() {
 		window.location.reload();
 	});		
 }
+
 
 
 function callBackend(action,index) {
@@ -144,13 +159,16 @@ function callBackend(action,index) {
 		console.warn(a,b);
 		$('.doBlend').attr('disabled',false);
 		$('.doBlendNext').attr('disabled',false);
+		if (a.cargo.output != "")
+		{
 		var output = "" + a.cargo.input1.text +"\n\n"+ 
 			a.cargo.input2.text +"\n\n"+ a.cargo.output;
-		$('.outputLoading').hide();
+		$('.outputLoading').show();
 		if (a.cargo.pid) {
 		$('input[name=pid]').val(a.cargo.pid);
 		}
 		pid = $('input[name=pid]').val();
+		
 		$.ajax({
 			method:'POST',
 			url: '/cmd/HETS',
@@ -162,46 +180,75 @@ function callBackend(action,index) {
 			})
 			.then(function(c,d){
 			console.warn(c,d);
+			$('.outputLoading').hide();
 			$('textarea[name=output]').removeClass('loading'); 
-			$('textarea[name=output]').val(c.cargo.blend);	
+			$('textarea[name=output]').val(c.cargo.theory+"\n\n"+c.cargo.blend);	
+			$('textarea[name=blendtheory]').val(c.cargo.blend);
 			$('iframe[id=svg]').attr("src",c.cargo.svg);
 			});
-	});
+	} else {$('.outputLoading').hide();
+			$('textarea[name=output]').removeClass('loading'); 
+			$('textarea[name=output]').val("");	
+			$('.doBlendNext').attr('disabled','disabled');
+		}});
 	}
 	else if (index == 1)
 	{
 		var input1 = getInput('inputamalcasl');
 		var spname1 = $('input[name=acinput1]').val(); 
  		var spname2 = $('input[name=acinput2]').val(); 
-		$('.doBlend').attr('disabled','disabled');
-		$('.doBlendNext').attr('disabled','disabled');
+		$('.doBlend').attr('disabled',false);
+		$('.doBlendNext').attr('disabled',false);
 		$('.outputLoading').show();
 		var pid = $('input[name=pid]').val();
-		if (action == 'next') 
-		{request = 'next';} else {request = 'start';}
-		$.post(
-      		"/cmd/blend",{action:"amalgamscasl",request:request,space_name1:spname1,space_name2:spname2,content:JSON.stringify(input1)})
-		    .done(function(data) {
-			$("textarea#output").val(data.cargo.blend);
-  			$("textarea#pid").val(data.cargo.id);
+		
+		$.ajax({
+      		method: 'POST',
+      		url: '/cmd/blend',
+      		data: {action:action,
+      				space_name1:spname1,
+      				space_name2:spname2,
+      				content:JSON.stringify(input1),
+      				pid:pid}
+      			})
+		    .then(function(data,ef) {
+             console.warn(data,ef);
+            $('.outputLoading').hide();
+		    $('textarea[name=output]').removeClass('loading'); 
+			$('textarea[name=output]').val(data.cargo.blend);
+  			if (data.cargo.pid) {
+				$('input[name=pid]').val(data.cargo.pid);
+			}
 			});	
 	}
 	else if (index == 2)
-	{
+	{  
 		var input1 = getInput('inputamalowl');
 		var spname1 = $('input[name=aoinput1]').val(); 
  		var spname2 = $('input[name=aoinput2]').val(); 
-		$('.doBlend').attr('disabled','disabled');
-		$('.doBlendNext').attr('disabled','disabled');
+		$('.doBlend').attr('disabled',false);
+		$('.doBlendNext').attr('disabled',false);
 		$('.outputLoading').show();
 		var pid = $('input[name=pid]').val();
-		if (action == 'next') 
-		{request = 'next';} else {request = 'start';}
-		$.post(
-      		"/cmd/blend",{action:"amalgamsowl",request:request,space_name1:spname1,space_name2:spname2,content:JSON.stringify(input1)})
-		    .done(function(data) {
-			$("textarea#output").val(data.cargo.blend);
-  			$("textarea#pid").val(data.cargo.id);
+		
+		$.ajax({
+      		method: 'POST',
+      		url: '/cmd/blend',
+      		data: {action:action,
+      				space_name1:spname1,
+      				space_name2:spname2,
+      				content:JSON.stringify(input1),
+      				pid:pid}
+      			})
+		    .then(function(data,ef) {
+			console.warn(data,ef);
+			  $('.outputLoading').hide();
+		    $('textarea[name=output]').removeClass('loading'); 
+			$('textarea[name=output]').val(data.cargo.theory);
+			$('textarea[name=blendtheory]').val(data.cargo.blend);
+  			if (data.cargo.pid) {
+				$('input[name=pid]').val(data.cargo.pid);
+			}
 			});	
 	}
 	else
