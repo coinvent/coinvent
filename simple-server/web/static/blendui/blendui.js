@@ -76,7 +76,14 @@ $(function() {
         	var i = select.prop('selectedIndex');
         	var title = prev[i];
         	modal.find('.modal-title').text(title);
-        	$('#textarea'+s).val("Balloons");
+        	gettext(title,s);
+
+            $("#save"+s).click(function()
+                        {doSave(title,$("#textarea"+s).val());}
+                      );
+                
+
+
     	});
     	}	
 
@@ -87,6 +94,25 @@ $(function() {
 	}); 
 
 });
+
+function gettext(title,sn)
+{
+	var ans = "";
+	$.ajax({
+    method: 'POST',
+	url: '/cmd/blend',
+	data: {
+		action:"getfile",
+		filename: title
+		}
+        })
+	.then(function(a,b)
+	{
+		console.warn(a,b);
+		$('#textarea'+sn).val(a.cargo.output);
+	});		
+	return ans;
+}
 
 function comboInit(thelist)
 {
@@ -136,20 +162,27 @@ function getInput(name) {
 }
 
 function callSave() {
-    var blendname = $('input[name=blendname]').val();
+ 	var blendname = $('input[name=blendname]').val();
     var blend = $('textarea[name=blendtheory]').val();
+    doSave(blendname,blend);
+    window.location.reload();
+}
+
+function doSave(name,text) {
+    //var blendname = $('input[name=blendname]').val();
+    //var blend = $('textarea[name=blendtheory]').val();
     $.ajax({
     method: 'POST',
 	url: '/cmd/blend',
 	data: {
 		action:"save",
-		blendname: blendname,
-		blend: blend
+		blendname: name,
+		blend: text
 		}
         })
 	.then(function(a,b)
 	{
-		window.location.reload();
+		console.warn(a,b);
 	});		
 }
 

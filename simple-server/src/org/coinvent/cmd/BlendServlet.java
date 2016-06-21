@@ -154,6 +154,20 @@ public class BlendServlet implements IServlet {
 			return;
 		}
 
+		if (webRequest.actionIs("getfile")) {
+			String name = webRequest.get("filename");
+			if (name != null) {
+				File f = new File(FileUtils.getWorkingDirectory(), "uploaded_concepts/"
+						+ (name));
+				String ans = FileUtils.read(f);
+				ArrayMap cargo = new ArrayMap("output",ans); 
+				JsonResponse jr = new JsonResponse(webRequest, cargo);
+				WebUtils2.sendJson(jr, webRequest);
+				return;
+			}
+		}
+		
+		
 		if (webRequest.actionIs("save")) {
 			String name = webRequest.get("blendname");
 			if (name == null) {
