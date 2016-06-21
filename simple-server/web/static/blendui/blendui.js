@@ -61,8 +61,10 @@ $(function() {
 			callSave();
 		});
 
-	
-
+		// HACK TODO wire up to an onchange and a call to the backend
+		$('#textareainput1').val('TODO display the text for input1');
+		$('#textareainput2').val('TODO display the text for input2');
+		
 	}); 
 
 });
