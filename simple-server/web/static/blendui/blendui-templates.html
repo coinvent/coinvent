@@ -22,21 +22,22 @@
 			</select>	
 			<div class='pad10'>		
 			<!-- HACK: provide a delete-all button -->
-			<button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#concepttext">
+			<button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#concepttext<%=name%>"
+				onclick="$('#textarea<%=name%>').val('TODO display the text for <%=name%>'); return true;">
   				Show concept
 			</button>
-		    <div class="modal fade" id="concepttext" role="dialog" aria-labelledby="myModalLabel">
+		    <div class="modal fade" id="concepttext<%=name%>" role="dialog" aria-labelledby="myModalLabel">
       	        <div class="modal-dialog" role="document">
     				<div class="modal-content">
       					<div class="modal-header">
        						 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        					<h4 class="modal-title" id="myModalLabel"></h4>
+        					<h4 class="modal-title" id="myModalLabel<%=name%>"></h4>
       					</div>
       					<div class="modal-body">
         						<div class='flexbox'>
 						<div class='flexitem'>
         			
-						<textarea name="modaloutput" class='form-control' rows="20"></textarea>
+						<textarea id='textarea<%=name%>' name="modaloutput" class='form-control' rows="20"></textarea>
 					</div>			
 				</div> 
       					</div>
