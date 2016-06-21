@@ -6,8 +6,7 @@ $(function() {
 
 	var fTemplates = loadTemplates('/static/blendui/blendui-templates.html');
 
-
-
+    var inputs = ["HDTP1", "HDTP2", "AMALCASL", "AMALOWL"];
 
 	console.log("f", fConcepts, fTemplates);
 
@@ -18,13 +17,17 @@ $(function() {
 		/*** **/
 		var prev = fConcepts.responseJSON.cargo;
 		console.log("context=", {name:'input1', previous:prev});
-		$('#conceptEditor1').html(templates.ConceptEditor({name:'input1', previous:prev}));
-		$('#conceptEditor2').html(templates.ConceptEditor({name:'input2', previous:prev}));
+		for (var k = 0;k<inputs.length;k++) {
+		
+
+		$('#conceptEditor'+inputs[k]).html(templates.ConceptEditor({name:'input'+inputs[k], previous:prev}));
+		//$('#conceptEditorHDTP2').html(templates.ConceptEditor({name:'inputHDTP2', previous:prev}));
 
 
 		/*Make modal an argument??? */
-		$('#conceptEditorAmalCASL').html(templates.ConceptEditor({name:'inputamalcasl', previous:prev}));
-		$('#conceptEditorAmalOWL').html(templates.ConceptEditor({name:'inputamalowl', previous:prev}));
+		//$('#conceptEditorAmalCASL').html(templates.ConceptEditor({name:'inputAMALCASL', previous:prev}));
+		//$('#conceptEditorAmalOWL').html(templates.ConceptEditor({name:'inputAMALOWL', previous:prev}));
+		}
 		$('.outputLoading').hide();
 
 		/*** WIRING **/
@@ -61,9 +64,25 @@ $(function() {
 			callSave();
 		});
 
+
+		for (var j=0;j<inputs.length;j++)
+		{
+		var tab = $('#ConceptEditor'+'input'+inputs[j]+' .active');
+        var tabmodal = tab.find('.modal[name=concepttext]');
+        tabmodal.on('show.bs.modal', function (event) {
+        	var modal = $(this);
+        	var s = modal.prop('id').slice(11);
+        	var select = $('#ConceptEditor'+s+' .active').find('.form-control[name=selectname]');
+        	var i = select.prop('selectedIndex');
+        	var title = prev[i];
+        	modal.find('.modal-title').text(title);
+        	$('#textarea'+s).val("Balloons");
+    	});
+    	}	
+
 		// HACK TODO wire up to an onchange and a call to the backend
-		$('#textareainput1').val('TODO display the text for input1');
-		$('#textareainput2').val('TODO display the text for input2');
+		//$('#textareainput1').val('TODO display the text for input1');
+		//$('#textareainput2').val('TODO display the text for input2');
 		
 	}); 
 
@@ -140,8 +159,8 @@ function callBackend(action,index) {
 	if (index == 0)
 	{
 	var username = window.username;
-	var input1 = getInput('input1');
-	var input2 = getInput('input2');
+	var input1 = getInput('inputHDTP1');
+	var input2 = getInput('inputHDTP2');
 	$('.doBlend').attr('disabled','disabled');
 	$('.doBlendNext').attr('disabled','disabled');
 	$('.outputLoading').show();
@@ -196,7 +215,7 @@ function callBackend(action,index) {
 	}
 	else if (index == 1)
 	{
-		var input1 = getInput('inputamalcasl');
+		var input1 = getInput('inputAMALCASL');
 		var spname1 = $('input[name=acinput1]').val(); 
  		var spname2 = $('input[name=acinput2]').val(); 
 		$('.doBlend').attr('disabled',false);
@@ -225,7 +244,7 @@ function callBackend(action,index) {
 	}
 	else if (index == 2)
 	{  
-		var input1 = getInput('inputamalowl');
+		var input1 = getInput('inputAMALOWL');
 		var spname1 = $('input[name=aoinput1]').val(); 
  		var spname2 = $('input[name=aoinput2]').val(); 
 		$('.doBlend').attr('disabled',false);
@@ -268,5 +287,4 @@ $(function() {
 		$('#ServerSays').text(a.cargo.output); 
 	});*/
 });
-
 
