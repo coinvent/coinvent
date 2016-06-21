@@ -155,7 +155,7 @@ function combo(thelist, theinput)
 
 function getInput(name) {
 	var $tab = $('#ConceptEditor'+name+' .active');	
-	return {name: $tab.find('.form-control[name=name]').val(), 
+	return {name: $tab.find('.form-control[name=selectname]').val(), 
 			text: $tab.find('textarea[name=text]').val(), 
 			url: $tab.find('.form-control[name=url]').val()
 			};
