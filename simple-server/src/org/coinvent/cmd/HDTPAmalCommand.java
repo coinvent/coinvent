@@ -135,7 +135,7 @@ public class HDTPAmalCommand {
 		case AMALCASL :
 			//write input file
 			
-			Proc proc = new Proc("cp "+ input1.getAbsolutePath() + " "+AmalgamsCASLbase.getCanonicalPath()+"/content.casl");
+			proc = new Proc("cp "+ input1.getAbsolutePath() + " "+AmalgamsCASLbase.getCanonicalPath()+"/content.casl");
 			proc.run();
 			proc.waitFor(new Dt(5, TUnit.SECOND));
 			proc.close();
