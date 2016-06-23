@@ -6,7 +6,7 @@ $(function() {
 
 	var fTemplates = loadTemplates('/static/blendui/blendui-templates.html');
 
-    var inputs = ["HDTP1", "HDTP2", "AMALCASL", "AMALOWL"];
+    var inputs = ["HDTP1", "HDTP2", "AMALCASL", "AMALOWL","HAIKU1","HAIKU2"];
 
 	console.log("f", fConcepts, fTemplates);
 
@@ -41,9 +41,11 @@ $(function() {
 				callBackend('hdtp',idx);
 			}
 			else if (idx == 1)
-				{ callBackend('amalgamscasl',idx)}
+				{ callBackend('amalgamscasl',idx);}
 			else if (idx==2)
-				{ callBackend('amalgamsowl',idx)}
+				{ callBackend('amalgamsowl',idx);}
+			else if (idx==3)
+				{callBackend('haiku',idx);}
 			else {}
 		});
 		
@@ -130,25 +132,35 @@ function combo(thelist, theinput)
    $('#HDTPform').attr('style','display:inline-block');
    $('#AmalgamsCASLform').attr('style','display:none');
    $('#AmalgamsOWLform').attr('style','display:none');
+   $('#Haikuorm').attr('style','display:none')
   }
   else if (idx ==1)
   {
    $('#HDTPform').attr('style','display:none');
    $('#AmalgamsCASLform').attr('style','display:inline-block');
    $('#AmalgamsOWLform').attr('style','display:none');
-
+   $('#Haikuform').attr('style','display:none')
   }
   else if (idx == 2)
   {
    $('#HDTPform').attr('style','display:none');
    $('#AmalgamsCASLform').attr('style','display:none');
    $('#AmalgamsOWLform').attr('style','display:inline-block');
+   $('#Haikuform').attr('style','display:none')
   }
-  else 
+  else if (idx == 3)
+  {
+  	$('#HDTPform').attr('style','display:none');
+    $('#AmalgamsCASLform').attr('style','display:none');
+    $('#AmalgamsOWLform').attr('style','display:none');
+    $('#Haikuform').attr('style','display:inline-block')
+  } 
+  else
   {
    $('#HDTPform').attr('style','display:inline-block');
    $('#AmalgamsCASLform').attr('style','display:none');
    $('#AmalgamsOWLform').attr('style','display:none');
+   $('#Haikuform').attr('style','display:none')
   }
 }
 
@@ -305,9 +317,39 @@ function callBackend(action,index) {
 			}
 			});	
 	}
-	else
+	else if (index == 3)
 	{
+		var username = window.username;
+		//var input1 = getInput('inputHAIKU1');
+		//var s1 = gettext(input1,'inputHAIKU1');
+		//var input2 = getInput('inputHAIKU2');
+		//var s2 = gettext(input2,'inputHAIKU2');
+		var $tab1 = $('#ConceptEditor'+'inputHAIKU1'+' .active');	
+		var $tab2 = $('#ConceptEditor'+'inputHAIKU2'+' .active');	
+		var s1 = $tab1.find('textarea[name=text]').val();
+		var s2 = $tab2.find('textarea[name=text]').val();
+		$('.doBlend').attr('disabled','disabled');
+		$('.doBlendNext').attr('disabled','disabled');
+		$('.outputLoading').show();
+		var pid = $('input[name=pid]').val();
+		$.ajax({
+			method: 'POST',
+			url: 'http://socrash.soda.sh:8642/haiku',
+			data: {
+				topic1: s1,
+				topic2: s2
+			}
+		})
+		.then(function(a,b){
+			console.warn(a,b);
+  			$('.outputLoading').hide();
+  			//var arr = JSON.parse(a);
+  			$('textarea[name=output]').removeClass('loading'); 
+			$('textarea[name=output]').val(a.cargo[0].text);
+  		});
 	}	
+	else
+	{}
 }
 
 /** Let's call the server */
