@@ -8,6 +8,8 @@ $(function() {
 
     var inputs = ["HDTP1", "HDTP2", "AMALCASL", "AMALOWL","HAIKU1","HAIKU2"];
 
+    var haikuoutputs = [];
+
 	console.log("f", fConcepts, fTemplates);
 
 	$.when(fConcepts, fTemplates)
@@ -27,7 +29,23 @@ $(function() {
 		/*Make modal an argument??? */
 		//$('#conceptEditorAmalCASL').html(templates.ConceptEditor({name:'inputAMALCASL', previous:prev}));
 		//$('#conceptEditorAmalOWL').html(templates.ConceptEditor({name:'inputAMALOWL', previous:prev}));
+
+
+
 		}
+		$('#liurl'+'inputHAIKU1').hide();
+		$('#liprev'+'inputHAIKU1').hide();
+		$('#titlegroup'+'inputHAIKU1').attr('style','display:none');;
+		$('#byurl'+'inputHAIKU1').hide();
+		$('#prev'+'inputHAIKU1').hide();
+
+		$('#liurl'+'inputHAIKU2').hide();
+		$('#liprev'+'inputHAIKU2').hide();
+		$('#titlegroup'+'inputHAIKU2').attr('style','display:none');;
+		$('#byurl'+'inputHAIKU2').hide();
+		$('#prev'+'inputHAIKU2').hide();
+		//$( "#ConceptEditor"+'inputHAIKU1'+' .active').tabs({ active: 2});
+
 		$('.outputLoading').hide();
 
 		/*** WIRING **/
@@ -132,36 +150,41 @@ function combo(thelist, theinput)
    $('#HDTPform').attr('style','display:inline-block');
    $('#AmalgamsCASLform').attr('style','display:none');
    $('#AmalgamsOWLform').attr('style','display:none');
-   $('#Haikuorm').attr('style','display:none')
+   $('#Haikuorm').attr('style','display:none');
+    $('#svgbutton').show();
   }
   else if (idx ==1)
   {
    $('#HDTPform').attr('style','display:none');
    $('#AmalgamsCASLform').attr('style','display:inline-block');
    $('#AmalgamsOWLform').attr('style','display:none');
-   $('#Haikuform').attr('style','display:none')
+   $('#Haikuform').attr('style','display:none');
+    $('#svgbutton').hide();
   }
   else if (idx == 2)
   {
    $('#HDTPform').attr('style','display:none');
    $('#AmalgamsCASLform').attr('style','display:none');
    $('#AmalgamsOWLform').attr('style','display:inline-block');
-   $('#Haikuform').attr('style','display:none')
+   $('#Haikuform').attr('style','display:none');
+    $('#svgbutton').hide();
   }
   else if (idx == 3)
   {
   	$('#HDTPform').attr('style','display:none');
     $('#AmalgamsCASLform').attr('style','display:none');
     $('#AmalgamsOWLform').attr('style','display:none');
-    $('#Haikuform').attr('style','display:inline-block')
+    $('#Haikuform').attr('style','display:inline-block');
+     $('#svgbutton').hide();
   } 
   else
   {
    $('#HDTPform').attr('style','display:inline-block');
    $('#AmalgamsCASLform').attr('style','display:none');
    $('#AmalgamsOWLform').attr('style','display:none');
-   $('#Haikuform').attr('style','display:none')
-  }
+   $('#Haikuform').attr('style','display:none');
+   $('#svgbutton').show();
+   }
 }
 
 
@@ -320,16 +343,28 @@ function callBackend(action,index) {
 	else if (index == 3)
 	{
 		var username = window.username;
-		//var input1 = getInput('inputHAIKU1');
-		//var s1 = gettext(input1,'inputHAIKU1');
-		//var input2 = getInput('inputHAIKU2');
-		//var s2 = gettext(input2,'inputHAIKU2');
 		var $tab1 = $('#ConceptEditor'+'inputHAIKU1'+' .active');	
 		var $tab2 = $('#ConceptEditor'+'inputHAIKU2'+' .active');	
 		var s1 = $tab1.find('textarea[name=text]').val();
 		var s2 = $tab2.find('textarea[name=text]').val();
-		$('.doBlend').attr('disabled','disabled');
-		$('.doBlendNext').attr('disabled','disabled');
+		if (action == "next")
+		{	
+			haikucounter++;
+			if (haikucounter>=haikuoutputs.length)
+			{
+				$('textarea[name=output]').val("");
+				$('.doBlendNext').attr('disabled','disabled');
+			}
+			else
+			{
+				$('textarea[name=output]').val(haikuoutputs[haikucounter].text);
+			}
+		}
+		else
+		{
+		
+		$('.doBlend').attr('disabled',false);
+		$('.doBlendNext').attr('disabled',false);
 		$('.outputLoading').show();
 		var pid = $('input[name=pid]').val();
 		$.ajax({
@@ -344,9 +379,11 @@ function callBackend(action,index) {
 			console.warn(a,b);
   			$('.outputLoading').hide();
   			//var arr = JSON.parse(a);
+  			haikuoutputs = a.cargo;
+  			haikucounter = 0;
   			$('textarea[name=output]').removeClass('loading'); 
-			$('textarea[name=output]').val(a.cargo[0].text);
-  		});
+			$('textarea[name=output]').val(haikuoutputs[haikucounter].text);
+  		});}
 	}	
 	else
 	{}
