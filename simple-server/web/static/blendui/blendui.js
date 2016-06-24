@@ -150,7 +150,7 @@ function combo(thelist, theinput)
    $('#HDTPform').attr('style','display:inline-block');
    $('#AmalgamsCASLform').attr('style','display:none');
    $('#AmalgamsOWLform').attr('style','display:none');
-   $('#Haikuorm').attr('style','display:none');
+   $('#Haikuform').attr('style','display:none');
     $('#svgbutton').show();
   }
   else if (idx ==1)
