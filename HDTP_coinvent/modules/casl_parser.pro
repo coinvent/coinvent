@@ -51,7 +51,7 @@ quantifier_chain_aux(_Name,Vars,Vars) --> [].
 quantifier(Name,Vars) --> quantname(Name),!,blanks,vardecl_list(Vars).
 
 quantname(forall) --> "forall".
-quantname(forall) --> "exists".
+quantname(exists) --> "exists".
 
 vardecl_list([Vardecl|Vardecls]) --> vardecl(Vardecl),blanks,";",!,blanks,vardecl_list(Vardecls).
 vardecl_list([Vardecl]) --> vardecl(Vardecl).

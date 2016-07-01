@@ -21,6 +21,7 @@ print_casl(Preanalogy):-
     print_casl_mapping(Preanalogy).
 
 print_casl_mapping(preanalogy(Cost,_Source,_Target,Generalisation,_Transfer)):-
+    set_prolog_flag(gc,false),
     collect_struct_variables(Generalisation,Variables),
     extract_mappings(Variables,Mappings),
     sort(Mappings,Mappings_sort),
@@ -45,7 +46,8 @@ print_casl_mapping(preanalogy(Cost,_Source,_Target,Generalisation,_Transfer)):-
     format('view mapping~d_2 : Generalisation~d to ~w =',[Gen_number,Gen_number,T_domain_name]),nl,
     print_casl_mapping_target(Mappings_symbols),nl,
     format('spec blend = combine mapping~d_1, mapping~d_2',[Gen_number,Gen_number]),nl,
-    nl.
+    nl,
+    set_prolog_flag(gc,true).
 
 print_casl_sigs([],Sorts,Sorts).
 
