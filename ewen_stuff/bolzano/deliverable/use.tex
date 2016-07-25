@@ -8,11 +8,11 @@ Here we describe the function and specification of the three different APIs impl
 
 The blend api can be installed locally or is running at the following address
 \begin{center}
-\url{http://148.251.85.37:8300/cmd/blend}
+\url{http://server.coinvent-project.eu}
 \end{center}
 \noindent or if run locally (see \S\ref{sec:inst}
 \begin{center}
-\url{http://localhost:8300/cmd/blend}
+\url{http://localhost:8300/cmd/blendui}
 \end{center}
 
 \subsubsection{Post parameters}
@@ -21,6 +21,8 @@ The post options are as follows:
 \begin{description}
 \item[``action"]This is either
 \begin{description}
+\item[``amalgamscasl"] See \S\ref{sec:amal} for a description of this part of the system
+\item[``amalgamsowl"] See\S\ref{sec:amal} for a description of this part of the system
 \item[``hdtp"] This purely computes a generic space
 \item[``hets"] This computes a generic space and a blend
 \item[``next"] This gives the next answer for a given process id (pid)
@@ -70,20 +72,21 @@ The response cargo field is structured as follows:
 \end{description}
 
 
-\subsection{Blending with Amalgams}
+\subsection{Blending with Amalgams} \label{sec:amal}
 
-The amalgams api can be installed locally or is running at the following address
+The blend api can be installed locally or is running at the following address
 \begin{center}
-\url{http://148.251.85.37:8300/cmd/amalgams}
+\url{http://server.coinvent-project.eu}
 \end{center}
 \noindent or if run locally (see \S\ref{sec:inst}
 \begin{center}
-\url{http://localhost:8300/cmd/amalgams}
+\url{http://localhost:8300/cmd/blendui}
 \end{center}
 
 \subsubsection{Post parameters}
 
 \begin{description}
+\item[``action"] This is either{\em amalgamscasl} or {\em amalgamsowl} depending on whether the input concepts are expressed in CASL or OWL syntax.
 \item[``id"] This is the process id of an amalgams process.
 \item[``content"] This is a file with potentially many concepts defined in CASL.
 \item[``space\_name1"]  This is the name of a specification in the content field.
@@ -101,3 +104,13 @@ The amalgams api can be installed locally or is running at the following address
 \subsubsection{JSON response}
 
 The response field cargo returns the output blend from amalgams computed on the space names given in the post parameters, in a field ``output".
+
+
+\subsection{Blending Haikus}
+
+The interface the Coinvent System incorporates the Haiku blending system whose instructions can be found here:
+\begin{center}
+\url{http://socrash.soda.sh:8642/static/haiku/index.html}
+\end{center}
+
+
