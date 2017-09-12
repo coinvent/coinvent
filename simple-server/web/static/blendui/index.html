@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/static/img/favicon.ico">
 
-    <title>CoInvent Blend UI</title>
+    <title>Cobble - CoInvent Blend UI</title>
 	
 	<link href="/static/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet/less" type="text/css" href="/static/css/coinvent.less">
@@ -27,36 +27,119 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">CoInvent</a>
+          <a class="navbar-brand" href="#">Cobble</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">HDTP</a></li>
-            <li><a href="#aboutModal" data-toggle="modal" data-target="#aboutModal">About</a></li>            
+            <li class="active"><a href="#instructionsModal" data-toggle="modal" data-target="#instructionsModal">Instructions</a></li>
+            <li><a href="#aboutModal" data-toggle="modal" data-target="#aboutModal">About</a></li>           
+            <li><a href="examples.html">Examples</a></li>         
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav><!-- ./navbar -->
 
-    <div id='main-container' class="container" role="main">
 
+    <div id='main-container' class="container" role="main">
 		<form id='PickConceptsForm' class=''>
-			<div class='flexbox'>
-				<div class='flexitem concept pad10'>
-					<div class='well'>
-						<h3>Concept 1</h3>
-						<div id='conceptEditor1'>Loading...</div>
-					</div>
-				</div>
-				<div class='flexitem concept pad10'>
-					<div class='well'>
-						<h3>Concept 2</h3>
-						<div id='conceptEditor2'>Loading...</div>
-					</div>
-				</div>
-			</div>
+			<div id="HDTPform" style='display:inline-block'> 
+       <div class='flexbox'>
+				
+          <div class='flexitem concept pad10'>
+	 		  		<div class='well'>
+	   					<h3>Concept 1</h3>
+		  			  <div id='conceptEditorHDTP1'>Loading...</div>
+					  </div>
+				  </div>
+       
+          <div class='flexitem concept pad10'>
+	   				<div class='well'>
+	 	   				<h3>Concept 2</h3>
+						    <div id='conceptEditorHDTP2'>Loading...</div>
+					  </div>
+				  </div>
+        
+       </div>
+      </div>
+
+ 
+      <div id = "AmalgamsCASLform" style='display:none'> 
+       <div class='flexbox'>
+        <div class='flexitem concept pad10'>
+          <div class='well'>
+            <h3>Concept</h3>
+            <div id='conceptEditorAMALCASL'>Loading...</div>
+          </div>
+        </div>
+        <div class='flexitem concept pad10'>
+          <div class='well'>
+              <h4>Space Name 1:</h4><input type='text' id="acinput1" name="acinput1" />
+              <h4>Space Name 2:</h4><input type='text' id="acinput2" name="acinput2" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id = "AmalgamsOWLform" style='display:none'> 
+       <div class='flexbox'>
+        <div class='flexitem concept pad10'>
+          <div class='well'>
+            <h3>Concept</h3>
+            <div id='conceptEditorAMALOWL'>Loading...</div>
+          </div>
+        </div>
+        <div class='flexitem concept pad10'>
+          <div class='well'>
+              <h4>Space Name 1:</h4><input type='text' id="aoinput1" name="aoinput1" />
+              <h4>Space Name 2:</h4><input type='text' id="aoinput2" name="aoinput2" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+      <div id="Haikuform" style='display:none'> 
+       <div class='flexbox'>
+          <div class='flexitem concept pad10'>
+            <div class='well'>
+              <h3>Concept 1</h3>
+              <div id='conceptEditorHAIKU1'>Loading...</div>
+            </div>
+          </div>   
+          <div class='flexitem concept pad10'>
+            <div class='well'>
+              <h3>Concept 2</h3>
+                <div id='conceptEditorHAIKU2'>Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+ 
+
+    <div id = "Musicform" style='display:none'> 
+       <div class='flexbox'>
+        <div class='flexitem concept pad10'>
+          <h3>Not yet implemented</h3>
+         </div>
+      </div>
+    </div>
+
+<div id = "blendhidden" style='display:none'>
+  <textarea type = 'hidden' name = 'blendtheory' value=''></textarea>
+</div>
+
 			<div class='flexbox'>
 				<div class='well pad10'>
+         
+              <select name="thelist" onChange="combo(this, 'theinput')" onMouseOut="comboInit(this, 'theinput')" id="thelist">
+              <option>Use HDTP (CASL)</option>
+              <option>Use Amalgams (CASL)</option>
+              <option>Use Amalgams (OWL)</option>
+              <option>Use Haiku generator</option>
+              <!-- <option>Use Music System</option> -->
+              </select>
+
 					<button class='btn btn-primary doBlend'>Compute Blend</button>
 					<button class='btn doBlendNext' disabled="disabled">Next</button>
 					<button class='btn doBlendclose' disabled="disabled">Close</button>
@@ -72,13 +155,23 @@
 				<textarea name="output" class='form-control' rows="20"></textarea>
 			</div>			
 		</div> 
-			
-		<div class='flexbox'>
-			<div class='well pad10'>
+		
+    <div class='pad10'></div>
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" id="svgbutton">
+  Show development graph
+</button>
+<div class="collapse" id="collapseExample">
+  <div class="well">
+    <div id = 'svgframe'> 
+		  <div class='flexbox'>
+			 <div class='well pad10'>
 			   	<iframe id="svg" width="100%" height="300"></iframe>
-			</div>
-		</div>
-	
+			 </div>
+		  </div>
+	  </div>
+ </div>
+</div>
+<div class='pad10'></div>
 		<div class='well pad10'>
 			<form>
 				Name for Blend <input name='blendname' class='form-control' type='text'>
@@ -106,15 +199,55 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">HDTP web front-end</h4>
+        <h4 class="modal-title">Coinvent front-end</h4>
       </div>
       <div class="modal-body">
         <p>HDTP by Martin Mohrmann</p>
+        <p>Amalgams by Roberto Confalonieri and Manfred Eppe</p>
         <p>Client/server developed by Ewen Maclean and Daniel Winterstein from the University of Edinburgh</p>
+        <p><a href="http://hets.eu/">HETS</a> developed by Till Mossakowski, Christian Maeder and Mihai Codescu at the University of Magdeburg</p>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+ <div id='instructionsModal' class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h1 class="modal-title">Instructions</h1></div>
+          <div class="modal-body">
+       This page explains using the CoInvent system to compute blends. This <a href="image.jpg">image</a> annotates the fields and their function. In order to use any of the possible funcitonality, input space must be defined in the <i>Concept Editors</i>, which can use
+       <ul>
+        <li><b>Previously defined:</b> previously defined or referenced concepts are saved in the drop down list. These can be viewed and edited using the "Show concept" button.  </li>
+          <li><b>From url:</b>enter the url of a concept file</li>
+          <li><b>Enter text:</b>directly write and name a concept in CASL or OWL format</li>
+       </ul>
+       The combo box has four options - these are listed below:
+        <ul>
+          <li>
+            <h4>Using HDTP</h4>
+            In order to use HDTP and HETS to compute blends, two input concepts are required. You can use the concept editors to choose a concept file as described above. The input language must be CASL. The result is demonstrated in the text area named "Computed Blend". The HETS development graph can be viewed and inspected, and the blend save as a new concept using the save button. The next computed result is given by pressing the "next" button. The "close" button will end the process manually. See the <a href ="examples.html">examples</a> page for a list of concepts online which can be used.
+          </li>
+          <li>
+            <h4>Use Amalgams with CASL</h4>
+              In order to use this version of Amalgams to compute blends, a single input theory in CASL format is specified, and the names of the input space names specified. Press the "Compute Blend button". The best result, as computed by amalgams, is given first and the subsequent results can be found using the "next" button. See the <a href ="examples.html">examples</a> page for a list of concepts online which can be used.
+          </li>
+           <li>
+            <h4>Use Amalgams with OWL</h4>
+              In order to use this version of Amalgams to compute blends, a single input theory in CASL format is specified, and the names of the input space names specified. Press the "Compute Blend button. The best result, as computed by amalgams, is given first and the subsequent results can be found using the "next" button. See the <a href ="examples.html">examples</a> page for a list of concepts online which can be used.
+          </li>
+           <li>
+            <h4>Use the haiku generation module</h4>
+              In order to use the conceptual blending machinery to generate haikus, enter two concepts of any form into the concept editors. Then press the "Compute Blend" button to generate a haiku.
+          </li>
+        </ul>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
   </body>
 </html>

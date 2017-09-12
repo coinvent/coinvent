@@ -119,7 +119,7 @@ spec Gen =
   pred hasP: Main * Sub
 end
 
-view I1: Gen to GeneratorChord =
+view I1 : Gen to GeneratorChord =
    Main |-> Chord,
    Sub |-> Note,
    Example |-> c,
@@ -127,7 +127,7 @@ view I1: Gen to GeneratorChord =
    generator |-> g,
    hasP |-> hasRelNote
 
-view I2: Gen to CycEls = 
+view I2 : Gen to CycEls = 
    Main |-> Group,
    Sub |-> G,
    Example |-> gp,

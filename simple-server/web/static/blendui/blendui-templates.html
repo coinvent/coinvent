@@ -1,47 +1,77 @@
 
-<template id='ConceptEditor'>	
+
+<template id='ConceptEditor'> 
 <div id='ConceptEditor<%=name%>'>
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#prev<%=name%>" aria-controls="prev<%=name%>" role="tab" data-toggle="tab">Previously Defined?</a></li>
-    <li role="presentation"><a href="#byurl<%=name%>" aria-controls="byurl<%=name%>" role="tab" data-toggle="tab">Or from url?</a></li>
-    <li role="presentation"><a href="#bytext<%=name%>" aria-controls="bytext<%=name%>" role="tab" data-toggle="tab">Or enter text?</a></li>
+    <li role="presentation" class="active" id='liprev<%=name%>'><a href="#prev<%=name%>" aria-controls="prev<%=name%>" role="tab" data-toggle="tab">Previously Defined?</a></li>
+    <li role="presentation" id='liurl<%=name%>'><a href="#byurl<%=name%>" aria-controls="byurl<%=name%>" role="tab" data-toggle="tab">From url?</a></li>
+    <li role="presentation" id = 'litext<%=name%>'><a href="#bytext<%=name%>" aria-controls="bytext<%=name%>" role="tab" data-toggle="tab" id="entertext<%=name%>">Enter text?</a></li>
   </ul>
 
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="prev<%=name%>">
-    	<div class='form-group'>
-	    	Name:
-	    	<select name="name" class='form-control'>
-	    		<script>
-	    		for(var i=0; i<previous.length; i++) {
-	    			print("<option value='"+previous[i]+"'>"+previous[i]+"</option>");
-	    		}
-	    		//
-	    		</script>
-			</select>			
-			<!-- HACK: provide a delete-all button -->
-			<div class='pull-right pad10'>
-				<%= name=='input2'? "<a class='btn btn-danger btn-xs' onclick='return confirm(\"Delete all cached concepts! Are you sure?\")' href='/cmd/blend?action=DELETE-ALL'>delete all</a>" : "" %>
-			</div>
-		</div>
+      <div class='form-group'>
+        Name:
+        <select id='select<%=name%>' name="selectname" class='form-control'>
+          <script>
+          for(var i=0; i<previous.length; i++) {
+            print("<option value='"+previous[i]+"'>"+previous[i]+"</option>");
+          }
+          //
+          </script>
+      </select> 
+      <div class='pad10'>   
+      <!-- HACK: provide a delete-all button -->
+      <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#concepttext<%=name%>">
+          Show concept
+      </button>
+        <div class="modal fade" id="concepttext<%=name%>" name="concepttext" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel<%=name%>"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class='flexbox'>
+            <div class='flexitem'>
+              
+            <textarea id='textarea<%=name%>' name="modaloutput" class='form-control' rows="20"></textarea>
+          </div>      
+        </div> 
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" id = "save<%=name%>">Save</button>
+                </div>
+            </div>
+          </div>
+      </div>
+    </div>
+      <div class='pull-right pad10'>
+        <%= name=='input2'? "<a class='btn btn-danger btn-xs' onclick='return confirm(\"Delete all cached concepts! Are you sure?\")' href='/cmd/blend?action=DELETE-ALL'>delete all</a>" : "" %>
+      </div>
+    </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="byurl<%=name%>">
-    	<div class='form-group'>
-    		Url:
-    		<input name="url" class='form-control'>    	
-    	</div>
+      <div class='form-group'>
+        Url:
+        <input name="url" class='form-control'>     
+      </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="bytext<%=name%>">
-    	<div class='form-group'>
-			Name: 
-			<input name="name" class='form-control'>
-		</div>
-		<div class='form-group'> 	
-			Definition:
-			<textarea name="text" class='form-control'></textarea>
-		</div>
+      <div class='form-group' id='titlegroup<%=name%>'>
+      Name: 
+      <input id ="titlename<%=name%>" name="titlename<%=name%>" class='form-control'/>
+    </div>
+    <div class='form-group'>  
+      Definition:
+      <textarea name="text" class='form-control'></textarea>
+    </div>
     </div>
   </div><!-- ./tab-content -->
+
+
 </div>
 </template>

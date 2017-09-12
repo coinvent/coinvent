@@ -1,0 +1,18 @@
+spec NatSuc = 
+   sort Nat
+   op 0:Nat
+   s: Nat -> Nat
+   op exp: Nat * Nat -> Nat
+   op qexp: Nat * Nat * Nat -> Nat
+   op __ + __ : Nat * Nat -> Nat
+   op __ * __ : Nat * Nat -> Nat
+   forall x,y,z:Nat  
+      . exp(x,0) = s(0)
+      . exp(x,s(y)) = x * exp(x,y)  
+      . qexp(x,s(y),z) = qexp(x,y,x*z) 
+      . qexp(x,0,z) = z
+      . 0 + x = x
+      . s(x) + y = s(x+y)
+      . 0 * x = 0
+      . s(x) * y = y + (x*y)
+end

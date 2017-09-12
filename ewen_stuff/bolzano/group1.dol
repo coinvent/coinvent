@@ -1,0 +1,10 @@
+spec Group1  = 
+   sort S;
+   op binop: S * S -> S;
+   op ident: S;
+   op inv: S -> S;
+   forall x,y,z: S
+       . (binop(binop(x,y),z) = binop(x,(binop(y,z))))  
+       . (binop(inv(x),x) = ident)
+       . (binop(x,ident) = x);
+ end

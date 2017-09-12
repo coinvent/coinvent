@@ -2,11 +2,8 @@ package org.coinvent;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.coinvent.HdtpRequests.ActiveType;
 
 @Deprecated
 public class ProcessActiveTriple {

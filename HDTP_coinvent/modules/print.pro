@@ -21,6 +21,7 @@ print_casl(Preanalogy):-
     print_casl_mapping(Preanalogy).
 
 print_casl_mapping(preanalogy(Cost,_Source,_Target,Generalisation,_Transfer)):-
+    set_prolog_flag(gc,false),
     collect_struct_variables(Generalisation,Variables),
     extract_mappings(Variables,Mappings),
     sort(Mappings,Mappings_sort),
@@ -45,7 +46,8 @@ print_casl_mapping(preanalogy(Cost,_Source,_Target,Generalisation,_Transfer)):-
     format('view mapping~d_2 : Generalisation~d to ~w =',[Gen_number,Gen_number,T_domain_name]),nl,
     print_casl_mapping_target(Mappings_symbols),nl,
     format('spec blend = combine mapping~d_1, mapping~d_2',[Gen_number,Gen_number]),nl,
-    nl.
+    nl,
+    set_prolog_flag(gc,true).
 
 print_casl_sigs([],Sorts,Sorts).
 
@@ -293,7 +295,37 @@ print_term(Term_struct):-
 
 print_casl_generalisation_term(Term_struct):-
     unstruct_casl_generalisation_term(Term_struct,Term),
-    write(Term).
+    write_casl_term(Term).
+
+write_casl_term(Var):- 
+    var(Var),!,write(Var).
+write_casl_term(Term):- 
+    Term=..[Op],!,
+    write(Op).
+% predefined infix operators
+write_casl_term(Term):-
+    Term=..[Op,Arg1,Arg2],
+    member(Op,['=','=e=','not','/\\','\\/','=>','<=>']),!, 
+    write('( '),
+    write_casl_term(Arg1),
+    write(' '),
+    write(Op),
+    write(' '),
+    write_casl_term(Arg2),
+    write(' )').
+write_casl_term(Term):-
+    Term=..[Op|Args],
+    write(Op),
+    write('( '),
+    write_casl_terms(Args),
+    write(' )').
+
+write_casl_terms([Term]):- 
+    !, write_casl_term(Term).
+write_casl_terms([Term|Terms]):- 
+    write_casl_term(Term),
+    write(' , '),
+    write_casl_terms(Terms).
 
 print_generalisation_term(Term_struct):-
     unstruct_generalisation_term(Term_struct,Term),

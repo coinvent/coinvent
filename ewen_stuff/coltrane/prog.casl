@@ -1,6 +1,25 @@
 %% This gives 24 stable models with 0 non-optimal steps
-from Basic/StructuredDatatypes get List
-from Basic/Numbers get Nat
+%%from Basic/StructuredDatatypes get List
+%%from Basic/Numbers get Nat
+
+spec List = 
+  sort El
+  sort L
+     op nil:L 
+     op cons: El*L -> L
+     op app: L * L -> L
+     op rev: L -> L
+     op qrev: L * L -> L
+     forall x,y: L; h:El
+       . app(nil,x) = x
+       . app(cons(h,x),y) = cons(h,app(x,y))
+       . rev(nil) = nil
+       . rev(cons(h,x)) = app(rev(x),cons(h,nil))
+       . qrev(nil,x) = x
+       . qrev(cons(h,x),y) = qrev(x,cons(h,y))
+       . rev(x) = qrev(x,nil)  %implied
+end
+
 spec SemSys = 
   sort PriorityDummySort
   op prioDummyOp : PriorityDummySort

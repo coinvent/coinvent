@@ -118,10 +118,10 @@ spec Gen =
 end
 
  
-view I1: Gen to Field =
+view I1 : Gen to Field =
 		__ plus __ |-> __ + __, zero |-> 0, minus __ |-> - __
 
-view I2: Gen to VectorSpace =
+view I2 : Gen to VectorSpace =
 	       __ plus __ |-> __ vpl __,zero |-> vzero, minus __ |-> vmi __
 
 spec Colimit = 
@@ -171,7 +171,7 @@ spec Complex_Field =
      end
 
 
-view I3: Colimit to Complex_Field =
+view I3 : Colimit to Complex_Field =
      Generic |-> Complex,
      Real |-> Real,
      NonZeroComplex |-> NonZeroComplex,

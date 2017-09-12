@@ -1,24 +1,25 @@
 package org.coinvent.cmd;
 
-import org.coinvent.ProcessActiveTriple.ActiveType;
-import org.coinvent.HdtpRequests.HdtpRequest;
-import org.coinvent.HdtpRequests.ReadType;
-import org.coinvent.IServlet;
-import org.coinvent.CoinventConfig;
-import org.coinvent.ProcessActiveTriple;
-
-import winterwell.utils.containers.ArrayMap;
-import winterwell.web.ajax.JsonResponse;
-import winterwell.web.app.WebRequest;
-
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+
+import org.coinvent.CoinventConfig;
+import org.coinvent.HdtpRequests.HdtpRequest;
+import org.coinvent.HdtpRequests.ReadType;
+import org.coinvent.IServlet;
+import org.coinvent.ProcessActiveTriple;
+import org.coinvent.ProcessActiveTriple.ActiveType;
+
+import com.winterwell.utils.containers.ArrayMap;
+import winterwell.utils.reporting.Log;
+import com.winterwell.web.ajax.JsonResponse;
+import winterwell.web.app.WebRequest;
 
 import com.winterwell.utils.web.WebUtils2;
 import com.winterwell.web.FakeBrowser;
@@ -88,7 +89,6 @@ public class HdtpServlet implements IServlet {
 		}
 	}
 
-	@Override
 	public void doPost(WebRequest webRequest) throws Exception {
 
 		JsonResponse out;
@@ -141,12 +141,13 @@ public class HdtpServlet implements IServlet {
 				
                 
                 
-				
-				String cmd = "((read_casl(\\\"/home/ewen/HDTP_coinvent/input1\\\",\\\"/home/ewen/HDTP_coinvent/input2\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
+                
+				String cmd = "trace,notrace,((read_casl(\\\"/home/ewen/HDTP_coinvent/input1\\\",\\\"/home/ewen/HDTP_coinvent/input2\\\",Hdtp),gen_simple_casl(Hdtp),nl,print('NEXT'),nl,get_char(':'));(nl,print('FINISHED'),nl))";
 				int id = 0;
-				String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s "+HDTPCommand.HDTP.getCanonicalPath()+" -t \""
+				String procstr = "/usr/bin/swipl --quiet -G0K -T0K -L0K -s "+HDTPAmalCommand.HDTP.getCanonicalPath()+" -t \""
 						+ cmd + "\"";
 			
+				Log.d(getClass().getSimpleName(), procstr);
 				System.out.println(procstr);
 				ProcessActiveTriple pa = null;
 				Process proc = null;

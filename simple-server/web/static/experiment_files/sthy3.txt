@@ -1,0 +1,17 @@
+spec List = 
+  sort El
+  sort L
+     op nil:L 
+     op cons: El * L -> L
+     op app: L * L -> L
+     op rem: El * L -> L
+     op rem_els: L * L -> L
+     forall x,y,t: L; h,h':El
+       . app(nil,x) = x
+       . app(cons(h,x),y) = cons(h,app(x,y))
+       . rem_els(nil,y) = y
+       . rem_els(cons(h,x),y) = rem_els(x,rem(h,y))
+       . rem(h,nil) = nil
+       . not (h = h') => rem(h,cons(h',t)) =  cons(h',rem(h,t))
+       . (h = h') => rem(h,cons(h',t)) = rem(h,t)
+end
